@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="stylesheet" href="_ds/organic-f9463fec-dcf5-45f5-a915-4bb7e563e6f2/styles.css">
+<script src="_ds/organic-f9463fec-dcf5-45f5-a915-4bb7e563e6f2/_ds_bundle.js"></script>
+<style>
+body{margin:0;background:var(--color-surface)}
+a{color:var(--color-accent-700)}a:hover{color:var(--color-accent)}
+.turn{padding:44px 48px 40px;border-bottom:1px solid color-mix(in srgb, var(--color-text) 10%, transparent)}
+.thd{display:flex;align-items:baseline;gap:10px;margin:0 0 24px}
+.tid{font:600 10px ui-monospace,Menlo,monospace;padding:3px 7px;background:var(--color-text);color:var(--color-bg);border-radius:4px;text-decoration:none}
+.tname{font:600 13px/1.2 var(--font-body);color:var(--color-text)}
+.opts{display:flex;flex-wrap:wrap;gap:44px;align-items:flex-start}
+.opt{display:flex;flex-direction:column;gap:11px;scroll-margin:20px}
+.olabel{display:flex;align-items:baseline;gap:9px;font:400 12px/1.3 var(--font-body);color:color-mix(in srgb, var(--color-text) 60%, transparent)}
+.oid{font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:color-mix(in srgb, var(--color-text) 12%, transparent);color:var(--color-text);border-radius:5px;text-decoration:none}
+.opt:target .oid{background:var(--color-accent);color:#fff}
+</style>
+</helmet>
+<template id="__bundler_thumbnail">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400"><rect width="400" height="400" fill="#f5ead8"/><circle cx="200" cy="200" r="112" fill="#f6ddc9"/><g stroke="#c67139" stroke-width="17" stroke-linecap="round" fill="none"><path d="M200 128a44 44 0 0 0-44 44c0 38-16 46-16 46h120s-16-8-16-46a44 44 0 0 0-44-44"/><path d="M184 240a16 16 0 0 0 32 0"/></g></svg>
+</template>
+
+<section class="turn" id="t1">
+<div class="thd"><a class="tid" href="#t1">1</a><span class="tname">Recall Watch — iOS flow</span></div>
+<div class="opts">
+
+<div class="opt" id="1a">
+<div class="olabel"><a class="oid" href="#1a">1a</a>Feed-first home · tap cards, chips, tabs</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" hint-size="402px,874px">
+<div style="height:100%;display:flex;flex-direction:column;background:var(--color-bg);font-family:var(--font-body);color:var(--color-text);overflow:hidden">
+
+<sc-if value="{{ isFeed }}" hint-placeholder-val="{{ true }}">
+<div style="flex:1;overflow-y:auto;padding:58px 20px 20px">
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+<span style="font-family:var(--font-heading);font-size:14px;color:var(--color-accent-700)">Recall Watch</span>
+<span style="width:34px;height:34px;border-radius:999px;background:var(--color-neutral-200);display:flex;align-items:center;justify-content:center"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent-2-700)" stroke-width="2.75" stroke-linecap="round"><path d="M12 3a6 6 0 0 0-6 6c0 5-2 6-2 6h16s-2-1-2-6a6 6 0 0 0-6-6"/><path d="M10 20a2 2 0 0 0 4 0"/></svg></span>
+</div>
+<h1 style="font-family:var(--font-heading);font-size:32px;line-height:1.08;letter-spacing:-.015em;margin:0 0 8px">Good morning, Sam.</h1>
+<p style="margin:0 0 20px;font-size:14.5px;line-height:1.5;color:color-mix(in srgb, var(--color-text) 66%, transparent);text-wrap:pretty">Three new recalls since Thursday. One of them is sitting in your kitchen — let's sort that out first.</p>
+
+<div style="border-radius:30px;background:var(--color-accent-200);padding:18px;margin-bottom:24px;box-shadow:var(--shadow-md)">
+<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+<span style="width:9px;height:9px;border-radius:999px;background:var(--color-accent)"></span>
+<span style="font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--color-accent-700);font-weight:700">In your pantry</span>
+</div>
+<div style="font-family:var(--font-heading);font-size:20px;line-height:1.2;margin-bottom:5px">Harvest Ridge chicken strips</div>
+<div style="font-size:13.5px;line-height:1.45;color:color-mix(in srgb, var(--color-text) 68%, transparent);margin-bottom:14px">Lot 6238 is part of a Class I recall for possible <i>Listeria</i>. Don't cook it — it's a full refund.</div>
+<div style="display:flex;gap:8px">
+<button type="button" onClick="{{ openPantryItem }}" style="border:none;cursor:pointer;font-family:var(--font-heading);font-size:13.5px;padding:12px 18px;border-radius:999px;background:var(--color-accent);color:var(--color-bg)" style-hover="{{ hoverPrimary }}" style-active="{{ activePrimary }}" style-focus="{{ focusRing }}">See what to do</button>
+<button type="button" onClick="{{ goSubs }}" style="cursor:pointer;font-family:var(--font-heading);font-size:13.5px;padding:12px 18px;border-radius:999px;background:transparent;color:var(--color-accent-700);border:1px solid color-mix(in srgb, var(--color-accent-700) 35%, transparent)" style-hover="{{ hoverGhost }}" style-active="{{ activeGhost }}" style-focus="{{ focusRing }}">Find a swap</button>
+</div>
+</div>
+
+<div style="display:flex;gap:7px;overflow-x:auto;margin:0 -20px 18px;padding:0 20px 2px">
+<sc-for list="{{ chips }}" as="c" hint-placeholder-count="5">
+<button type="button" onClick="{{ c.onClick }}" style="flex:none;cursor:pointer;font-size:12.5px;font-weight:600;padding:8px 14px;border-radius:999px;border:1px solid color-mix(in srgb, var(--color-text) 14%, transparent);background:{{ c.bg }};color:{{ c.fg }}" style-hover="{{ hoverChip }}" style-focus="{{ focusRing }}">{{ c.label }}</button>
+</sc-for>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:14px">
+<sc-for list="{{ feed }}" as="r" hint-placeholder-count="4">
+<div onClick="{{ r.onClick }}" style="cursor:pointer;background:var(--color-neutral-100);border-radius:28px;padding:17px 18px;box-shadow:var(--shadow-sm)">
+<div style="display:flex;align-items:center;gap:8px;margin-bottom:9px">
+<span style="font-size:9.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;padding:4px 9px;border-radius:999px;background:{{ r.tone.bg }};color:{{ r.tone.fg }}">{{ r.cls }}</span>
+<span style="font-size:11.5px;color:color-mix(in srgb, var(--color-text) 50%, transparent)">{{ r.date }}</span>
+<span style="margin-left:auto;font-size:11.5px;color:color-mix(in srgb, var(--color-text) 50%, transparent)">{{ r.states }}</span>
+</div>
+<div style="font-family:var(--font-heading);font-size:18px;line-height:1.2;margin-bottom:3px">{{ r.product }}</div>
+<div style="font-size:13px;color:color-mix(in srgb, var(--color-text) 62%, transparent);margin-bottom:12px">{{ r.brand }} · {{ r.reason }}</div>
+<div style="display:flex;align-items:center;gap:8px">
+<span style="font-size:11.5px;font-weight:600;padding:5px 11px;border-radius:999px;background:var(--color-accent-2-200);color:var(--color-accent-2-700)">{{ r.subs }} swaps ready</span>
+<span style="margin-left:auto;color:var(--color-accent-700)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></span>
+</div>
+</div>
+</sc-for>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isDetail }}" hint-placeholder-val="{{ false }}">
+<div style="flex:1;overflow-y:auto;padding:58px 20px 20px">
+<div style="display:flex;align-items:center;gap:11px;margin-bottom:14px">
+<button type="button" onClick="{{ goFeed }}" style="cursor:pointer;border:none;background:var(--color-neutral-200);width:36px;height:36px;border-radius:999px;display:flex;align-items:center;justify-content:center" style-hover="{{ hoverGhost }}" style-focus="{{ focusRing }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-text)" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="m14 6-6 6 6 6"/></svg></button>
+<span style="font-size:12.5px;color:color-mix(in srgb, var(--color-text) 55%, transparent)">{{ active.number }}</span>
+</div>
+<span style="display:inline-block;font-size:9.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;padding:5px 11px;border-radius:999px;background:{{ active.tone.bg }};color:{{ active.tone.fg }};margin-bottom:11px">{{ active.cls }} · {{ active.risk }}</span>
+<h1 style="font-family:var(--font-heading);font-size:27px;line-height:1.12;letter-spacing:-.015em;margin:0 0 5px">{{ active.product }}</h1>
+<div style="font-size:14px;color:color-mix(in srgb, var(--color-text) 62%, transparent);margin-bottom:18px">{{ active.brand }}</div>
+<div style="border-radius:24px;background:var(--color-accent-200);padding:15px 16px;margin-bottom:18px">
+<div style="font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--color-accent-700);font-weight:700;margin-bottom:5px">Why it was recalled</div>
+<div style="font-size:14px;line-height:1.5;text-wrap:pretty">{{ active.detail }}</div>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:22px">
+<sc-for list="{{ active.facts }}" as="f" hint-placeholder-count="4">
+<div style="background:var(--color-neutral-100);border-radius:20px;padding:12px 14px">
+<div style="font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:color-mix(in srgb, var(--color-text) 45%, transparent);font-weight:700;margin-bottom:3px">{{ f.k }}</div>
+<div style="font-family:var(--font-heading);font-size:15px;line-height:1.25">{{ f.v }}</div>
+</div>
+</sc-for>
+</div>
+<h2 style="font-family:var(--font-heading);font-size:20px;margin:0 0 12px">What to do</h2>
+<div style="display:flex;flex-direction:column;gap:11px;margin-bottom:22px">
+<sc-for list="{{ active.steps }}" as="s" hint-placeholder-count="3">
+<div style="display:flex;gap:12px;align-items:flex-start">
+<span style="flex:none;width:26px;height:26px;border-radius:999px;background:var(--color-accent-2-200);color:var(--color-accent-2-700);font-family:var(--font-heading);font-size:13px;display:flex;align-items:center;justify-content:center">{{ s.n }}</span>
+<span style="font-size:14px;line-height:1.5;padding-top:3px;text-wrap:pretty">{{ s.t }}</span>
+</div>
+</sc-for>
+</div>
+<h2 style="font-family:var(--font-heading);font-size:20px;margin:0 0 12px">Affected lots</h2>
+<div style="display:flex;flex-direction:column;gap:8px;margin-bottom:24px">
+<sc-for list="{{ active.lots }}" as="l" hint-placeholder-count="2">
+<div style="display:flex;align-items:center;gap:10px;background:var(--color-neutral-100);border-radius:999px;padding:11px 16px;font-size:13.5px">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent-600)" stroke-width="2.75" stroke-linecap="round"><path d="M12 8v4.5"/><path d="M12 16.5h.01"/><circle cx="12" cy="12" r="9"/></svg>{{ l }}
+</div>
+</sc-for>
+</div>
+<div style="display:flex;flex-direction:column;gap:10px">
+<button type="button" onClick="{{ goSubs }}" style="cursor:pointer;border:none;font-family:var(--font-heading);font-size:15px;padding:15px;border-radius:999px;background:var(--color-accent);color:var(--color-bg)" style-hover="{{ hoverPrimary }}" style-active="{{ activePrimary }}" style-focus="{{ focusRing }}">Show me what to buy instead</button>
+<button type="button" onClick="{{ goStore }}" style="cursor:pointer;font-family:var(--font-heading);font-size:15px;padding:15px;border-radius:999px;background:transparent;color:var(--color-text);border:1px solid color-mix(in srgb, var(--color-text) 20%, transparent)" style-hover="{{ hoverGhost }}" style-active="{{ activeGhost }}" style-focus="{{ focusRing }}">Where to return it</button>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isSubs }}" hint-placeholder-val="{{ false }}">
+<div style="flex:1;overflow-y:auto;padding:58px 20px 20px">
+<div style="display:flex;align-items:center;gap:11px;margin-bottom:14px">
+<button type="button" onClick="{{ goDetail }}" style="cursor:pointer;border:none;background:var(--color-neutral-200);width:36px;height:36px;border-radius:999px;display:flex;align-items:center;justify-content:center" style-hover="{{ hoverGhost }}" style-focus="{{ focusRing }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-text)" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="m14 6-6 6 6 6"/></svg></button>
+<span style="font-size:12.5px;color:color-mix(in srgb, var(--color-text) 55%, transparent)">Instead of {{ active.short }}</span>
+</div>
+<h1 style="font-family:var(--font-heading);font-size:27px;line-height:1.12;margin:0 0 7px">Swaps, best first</h1>
+<p style="margin:0 0 22px;font-size:14px;line-height:1.5;color:color-mix(in srgb, var(--color-text) 66%, transparent);text-wrap:pretty">Ranked by how close each one gets you to the dinner you already planned.</p>
+<div style="display:flex;flex-direction:column;gap:24px">
+<sc-for list="{{ subGroups }}" as="g" hint-placeholder-count="3">
+<div>
+<div style="display:flex;align-items:center;gap:9px;margin-bottom:11px">
+<span style="font-family:var(--font-heading);font-size:12.5px;width:23px;height:23px;border-radius:999px;background:var(--color-text);color:var(--color-bg);display:flex;align-items:center;justify-content:center">{{ g.n }}</span>
+<span style="font-family:var(--font-heading);font-size:17px">{{ g.title }}</span>
+</div>
+<div style="display:flex;flex-direction:column;gap:10px">
+<sc-for list="{{ g.items }}" as="s" hint-placeholder-count="2">
+<div style="background:var(--color-neutral-100);border-radius:26px;padding:15px 16px;box-shadow:var(--shadow-sm);display:flex;gap:12px;align-items:flex-start">
+<span style="flex:none;width:44px;height:44px;border-radius:999px;background:var(--color-accent-2-200)"></span>
+<div style="flex:1">
+<div style="font-family:var(--font-heading);font-size:16px;line-height:1.2;margin-bottom:3px">{{ s.name }}</div>
+<div style="font-size:12.5px;line-height:1.45;color:color-mix(in srgb, var(--color-text) 62%, transparent);margin-bottom:9px;text-wrap:pretty">{{ s.why }}</div>
+<div style="display:flex;flex-wrap:wrap;gap:6px">
+<span style="font-size:11px;font-weight:600;padding:4px 10px;border-radius:999px;background:var(--color-accent-2-200);color:var(--color-accent-2-700)">{{ s.match }}</span>
+<span style="font-size:11px;font-weight:600;padding:4px 10px;border-radius:999px;background:var(--color-neutral-200);color:color-mix(in srgb, var(--color-text) 62%, transparent)">{{ s.avail }}</span>
+</div>
+</div>
+</div>
+</sc-for>
+</div>
+</div>
+</sc-for>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isSearch }}" hint-placeholder-val="{{ false }}">
+<div style="flex:1;overflow-y:auto;padding:58px 20px 20px">
+<h1 style="font-family:var(--font-heading);font-size:27px;line-height:1.12;margin:0 0 14px">Search recalls</h1>
+<div style="display:flex;align-items:center;gap:9px;background:var(--color-neutral-100);border-radius:999px;padding:12px 16px;margin-bottom:14px;box-shadow:var(--shadow-sm)">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="color-mix(in srgb, var(--color-text) 50%, transparent)" stroke-width="2.75" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+<input value="{{ query }}" onChange="{{ setQuery }}" placeholder="Brand, product or lot number" style="flex:1;border:none;outline:none;background:transparent;font-family:var(--font-body);font-size:14.5px;color:var(--color-text)">
+</div>
+<div style="display:flex;gap:7px;overflow-x:auto;margin:0 -20px 16px;padding:0 20px 2px">
+<sc-for list="{{ chips }}" as="c" hint-placeholder-count="5">
+<button type="button" onClick="{{ c.onClick }}" style="flex:none;cursor:pointer;font-size:12.5px;font-weight:600;padding:8px 14px;border-radius:999px;border:1px solid color-mix(in srgb, var(--color-text) 14%, transparent);background:{{ c.bg }};color:{{ c.fg }}" style-hover="{{ hoverChip }}" style-focus="{{ focusRing }}">{{ c.label }}</button>
+</sc-for>
+</div>
+<div style="font-size:12.5px;color:color-mix(in srgb, var(--color-text) 50%, transparent);margin-bottom:12px">{{ resultLabel }}</div>
+<div style="display:flex;flex-direction:column;gap:10px">
+<sc-for list="{{ results }}" as="r" hint-placeholder-count="4">
+<div onClick="{{ r.onClick }}" style="cursor:pointer;display:flex;gap:12px;align-items:center;background:var(--color-neutral-100);border-radius:24px;padding:14px 16px">
+<span style="flex:none;width:7px;height:38px;border-radius:999px;background:{{ r.tone.fg }}"></span>
+<div style="flex:1">
+<div style="font-family:var(--font-heading);font-size:15.5px;line-height:1.2">{{ r.product }}</div>
+<div style="font-size:12.5px;color:color-mix(in srgb, var(--color-text) 58%, transparent)">{{ r.brand }} · {{ r.date }}</div>
+</div>
+<span style="color:var(--color-accent-700)"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="m10 6 6 6-6 6"/></svg></span>
+</div>
+</sc-for>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isPantry }}" hint-placeholder-val="{{ false }}">
+<div style="flex:1;overflow-y:auto;padding:58px 20px 20px">
+<h1 style="font-family:var(--font-heading);font-size:27px;line-height:1.12;margin:0 0 7px">My pantry</h1>
+<p style="margin:0 0 20px;font-size:14px;color:color-mix(in srgb, var(--color-text) 66%, transparent)">12 items watched · USDA and FDA feeds checked 20 minutes ago</p>
+<div style="display:flex;gap:10px;margin-bottom:22px">
+<div style="flex:1;background:var(--color-accent-200);border-radius:22px;padding:14px 15px">
+<div style="font-family:var(--font-heading);font-size:26px;color:var(--color-accent-700);line-height:1">1</div>
+<div style="font-size:11.5px;color:var(--color-accent-700);font-weight:600;margin-top:3px">Recalled</div>
+</div>
+<div style="flex:1;background:var(--color-neutral-200);border-radius:22px;padding:14px 15px">
+<div style="font-family:var(--font-heading);font-size:26px;line-height:1">2</div>
+<div style="font-size:11.5px;color:color-mix(in srgb, var(--color-text) 60%, transparent);font-weight:600;margin-top:3px">Check lot</div>
+</div>
+<div style="flex:1;background:var(--color-accent-2-200);border-radius:22px;padding:14px 15px">
+<div style="font-family:var(--font-heading);font-size:26px;color:var(--color-accent-2-700);line-height:1">9</div>
+<div style="font-size:11.5px;color:var(--color-accent-2-700);font-weight:600;margin-top:3px">No recall found</div>
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:9px">
+<sc-for list="{{ pantry }}" as="p" hint-placeholder-count="6">
+<div onClick="{{ p.onClick }}" style="cursor:pointer;display:flex;gap:12px;align-items:center;background:var(--color-neutral-100);border-radius:26px;padding:13px 15px">
+<span style="flex:none;width:42px;height:42px;border-radius:999px;background:var(--color-neutral-200)"></span>
+<div style="flex:1">
+<div style="font-family:var(--font-heading);font-size:15.5px;line-height:1.2">{{ p.name }}</div>
+<div style="font-size:12.5px;color:color-mix(in srgb, var(--color-text) 58%, transparent)">{{ p.meta }}</div>
+</div>
+<span style="flex:none;max-width:96px;text-align:center;font-size:10px;font-weight:700;line-height:1.25;padding:5px 9px;border-radius:14px;background:{{ p.tone.bg }};color:{{ p.tone.fg }}">{{ p.status }}</span>
+</div>
+</sc-for>
+</div>
+<button type="button" onClick="{{ goScan }}" style="cursor:pointer;width:100%;margin-top:16px;font-family:var(--font-heading);font-size:14.5px;padding:14px;border-radius:999px;background:transparent;color:var(--color-text);border:1px dashed color-mix(in srgb, var(--color-text) 28%, transparent)" style-hover="{{ hoverGhost }}" style-focus="{{ focusRing }}">Add from a receipt or barcode</button>
+</div>
+</sc-if>
+
+<sc-if value="{{ isStore }}" hint-placeholder-val="{{ false }}">
+<div style="flex:1;overflow-y:auto;padding:58px 0 20px">
+<div style="padding:0 20px 14px;display:flex;align-items:center;gap:11px">
+<button type="button" onClick="{{ goDetail }}" style="cursor:pointer;border:none;background:var(--color-neutral-200);width:36px;height:36px;border-radius:999px;display:flex;align-items:center;justify-content:center" style-hover="{{ hoverGhost }}" style-focus="{{ focusRing }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-text)" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="m14 6-6 6 6 6"/></svg></button>
+<span style="font-size:12.5px;color:color-mix(in srgb, var(--color-text) 55%, transparent)">Returns &amp; refunds</span>
+</div>
+<div style="margin:0 20px 18px;height:186px;border-radius:28px;background:var(--color-accent-2-200);position:relative;overflow:hidden">
+<div style="position:absolute;inset:0;background:radial-gradient(circle at 28% 40%,color-mix(in srgb, var(--color-accent) 20%, transparent),transparent 62%)"></div>
+<div style="position:absolute;left:24%;top:36%;width:16px;height:16px;border-radius:999px;background:var(--color-accent);box-shadow:0 0 0 7px color-mix(in srgb, var(--color-accent) 22%, transparent)"></div>
+<div style="position:absolute;left:62%;top:58%;width:12px;height:12px;border-radius:999px;background:var(--color-accent-2);box-shadow:0 0 0 6px color-mix(in srgb, var(--color-accent-2) 22%, transparent)"></div>
+<div style="position:absolute;left:0;right:0;bottom:0;padding:12px 16px;font-size:11px;color:color-mix(in srgb, var(--color-text) 45%, transparent)">Map placeholder — real map goes here</div>
+</div>
+<div style="padding:0 20px">
+<h1 style="font-family:var(--font-heading);font-size:25px;line-height:1.12;margin:0 0 7px">Take it back here</h1>
+<p style="margin:0 0 18px;font-size:14px;line-height:1.5;color:color-mix(in srgb, var(--color-text) 66%, transparent);text-wrap:pretty">Full refund with or without a receipt — stores are required to take recalled product back.</p>
+<div style="display:flex;flex-direction:column;gap:10px">
+<sc-for list="{{ stores }}" as="s" hint-placeholder-count="3">
+<div style="background:var(--color-neutral-100);border-radius:24px;padding:15px 16px">
+<div style="display:flex;align-items:baseline;gap:8px">
+<div style="font-family:var(--font-heading);font-size:16px;flex:1">{{ s.name }}</div>
+<div style="font-size:12px;color:var(--color-accent-2-700);font-weight:700">{{ s.dist }}</div>
+</div>
+<div style="font-size:12.5px;color:color-mix(in srgb, var(--color-text) 58%, transparent);margin:3px 0 9px">{{ s.addr }}</div>
+<div style="font-size:12.5px;color:var(--color-accent-700);font-weight:600">{{ s.note }}</div>
+</div>
+</sc-for>
+</div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isOnboard }}" hint-placeholder-val="{{ false }}">
+<div style="flex:1;display:flex;flex-direction:column;padding:58px 24px 28px;background:var(--color-bg)">
+<div style="display:flex;gap:6px;margin-bottom:34px">
+<sc-for list="{{ obDots }}" as="d" hint-placeholder-count="3">
+<span style="flex:1;height:4px;border-radius:999px;background:{{ d.bg }}"></span>
+</sc-for>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;justify-content:center">
+<div style="width:88px;height:88px;border-radius:999px;background:{{ ob.blob }};margin-bottom:26px;display:flex;align-items:center;justify-content:center;color:{{ ob.blobFg }}">{{ ob.icon }}</div>
+<h1 style="font-family:var(--font-heading);font-size:32px;line-height:1.08;letter-spacing:-.015em;margin:0 0 12px">{{ ob.title }}</h1>
+<p style="margin:0 0 26px;font-size:15.5px;line-height:1.55;color:color-mix(in srgb, var(--color-text) 66%, transparent);text-wrap:pretty">{{ ob.body }}</p>
+<div style="display:flex;flex-wrap:wrap;gap:8px">
+<sc-for list="{{ ob.picks }}" as="p" hint-placeholder-count="4">
+<button type="button" onClick="{{ p.onClick }}" style="cursor:pointer;font-family:var(--font-body);font-size:13.5px;font-weight:600;padding:11px 16px;border-radius:999px;border:1px solid {{ p.border }};background:{{ p.bg }};color:{{ p.fg }}" style-focus="{{ focusRing }}">{{ p.label }}</button>
+</sc-for>
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:10px">
+<button type="button" onClick="{{ obNext }}" style="cursor:pointer;border:none;font-family:var(--font-heading);font-size:15.5px;padding:16px;border-radius:999px;background:var(--color-accent);color:var(--color-bg)" style-hover="{{ hoverPrimary }}" style-active="{{ activePrimary }}" style-focus="{{ focusRing }}">{{ ob.cta }}</button>
+<button type="button" onClick="{{ goFeed }}" style="cursor:pointer;border:none;background:transparent;font-family:var(--font-body);font-size:13.5px;font-weight:600;padding:8px;color:color-mix(in srgb, var(--color-text) 50%, transparent)" style-focus="{{ focusRing }}">{{ ob.skip }}</button>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isScan }}" hint-placeholder-val="{{ false }}">
+<div style="flex:1;display:flex;flex-direction:column;background:var(--color-accent-900)">
+<div style="padding:52px 20px 0;display:flex;align-items:center;gap:11px">
+<button type="button" onClick="{{ goPantry }}" style="cursor:pointer;border:none;background:color-mix(in srgb, var(--color-bg) 16%, transparent);width:36px;height:36px;border-radius:999px;display:flex;align-items:center;justify-content:center" style-focus="{{ focusRing }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-bg)" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="m6 6 12 12"/><path d="m18 6-12 12"/></svg></button>
+<span style="font-size:12.5px;color:color-mix(in srgb, var(--color-bg) 65%, transparent)">{{ scanHint }}</span>
+</div>
+<div style="flex:1;display:flex;align-items:center;justify-content:center;position:relative">
+<div style="width:250px;height:170px;border-radius:26px;border:2px dashed color-mix(in srgb, var(--color-bg) 40%, transparent);display:flex;align-items:center;justify-content:center">
+<span style="font-family:var(--font-heading);font-size:14px;color:color-mix(in srgb, var(--color-bg) 55%, transparent)">Barcode or lot code</span>
+</div>
+</div>
+<sc-if value="{{ scanIdle }}" hint-placeholder-val="{{ true }}">
+<div style="padding:0 22px 40px;text-align:center">
+<p style="margin:0 0 18px;font-size:14.5px;line-height:1.5;color:color-mix(in srgb, var(--color-bg) 70%, transparent);text-wrap:pretty">Point at the barcode. If the pack has a lot code stamped near the seal, we'll read that too — it's what tells us whether your pack is the recalled one.</p>
+<button type="button" onClick="{{ doScan }}" style="cursor:pointer;border:none;font-family:var(--font-heading);font-size:15.5px;padding:16px 30px;border-radius:999px;background:var(--color-accent-400);color:var(--color-accent-900)" style-focus="{{ focusRing }}">Simulate a scan</button>
+</div>
+</sc-if>
+<sc-if value="{{ scanDone }}" hint-placeholder-val="{{ false }}">
+<div style="background:var(--color-bg);border-radius:32px 32px 0 0;padding:22px 22px 34px">
+<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+<span style="width:9px;height:9px;border-radius:999px;background:{{ scanTone.fg }}"></span>
+<span style="font-size:10px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:{{ scanTone.fg }}">{{ scanKicker }}</span>
+</div>
+<div style="font-family:var(--font-heading);font-size:26px;line-height:1.1;margin-bottom:8px">{{ scanVerdict }}</div>
+<div style="font-size:14.5px;line-height:1.5;color:color-mix(in srgb, var(--color-text) 66%, transparent);margin-bottom:14px;text-wrap:pretty">{{ scanBody }}</div>
+<div style="display:flex;gap:9px;align-items:flex-start;background:var(--color-neutral-200);border-radius:16px;padding:11px 13px;margin-bottom:18px">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="color-mix(in srgb, var(--color-text) 55%, transparent)" stroke-width="2.75" stroke-linecap="round" style="flex:none;margin-top:1px"><circle cx="12" cy="12" r="9"/><path d="M12 8v4.5"/><path d="M12 16.5h.01"/></svg>
+<span style="font-size:12px;line-height:1.4;color:color-mix(in srgb, var(--color-text) 62%, transparent)">{{ scanCaveat }}</span>
+</div>
+<div style="display:flex;gap:9px">
+<button type="button" onClick="{{ openScanned }}" style="flex:1;cursor:pointer;border:none;font-family:var(--font-heading);font-size:14.5px;padding:15px;border-radius:999px;background:var(--color-accent);color:var(--color-bg)" style-hover="{{ hoverPrimary }}" style-active="{{ activePrimary }}" style-focus="{{ focusRing }}">See what to do</button>
+<button type="button" onClick="{{ resetScan }}" style="flex:none;cursor:pointer;font-family:var(--font-heading);font-size:14.5px;padding:15px 20px;border-radius:999px;background:transparent;color:var(--color-text);border:1px solid color-mix(in srgb, var(--color-text) 20%, transparent)" style-hover="{{ hoverGhost }}" style-focus="{{ focusRing }}">Scan again</button>
+</div>
+</div>
+</sc-if>
+</div>
+</sc-if>
+
+<sc-if value="{{ showTabs }}" hint-placeholder-val="{{ true }}">
+<div style="flex:none;display:flex;gap:2px;background:var(--color-neutral-100);border-top:1px solid color-mix(in srgb, var(--color-text) 9%, transparent);padding:9px 8px 30px">
+<button type="button" onClick="{{ goFeed }}" style="flex:1;cursor:pointer;border:none;background:transparent;display:flex;flex-direction:column;align-items:center;gap:4px;padding:4px 0;color:{{ tabFeed }}">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h10"/></svg>
+<span style="font-size:10.5px;font-weight:600">Recalls</span>
+</button>
+<button type="button" onClick="{{ goSearch }}" style="flex:1;cursor:pointer;border:none;background:transparent;display:flex;flex-direction:column;align-items:center;gap:4px;padding:4px 0;color:{{ tabSearch }}">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+<span style="font-size:10.5px;font-weight:600">Search</span>
+</button>
+<button type="button" onClick="{{ goPantry }}" style="flex:1;cursor:pointer;border:none;background:transparent;display:flex;flex-direction:column;align-items:center;gap:4px;padding:4px 0;color:{{ tabPantry }}">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8h14v12H5z"/><path d="M5 8V5h14v3"/><path d="M12 12v4"/></svg>
+<span style="font-size:10.5px;font-weight:600">Pantry</span>
+</button>
+<button type="button" onClick="{{ goStore }}" style="flex:1;cursor:pointer;border:none;background:transparent;display:flex;flex-direction:column;align-items:center;gap:4px;padding:4px 0;color:{{ tabStore }}">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>
+<span style="font-size:10.5px;font-weight:600">Returns</span>
+</button>
+</div>
+</div>
+</x-import>
+</div>
+</div>
+</section>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:560,&quot;height&quot;:980}}">
+const TONE = {
+  I: { bg: 'var(--color-accent-200)', fg: 'var(--color-accent-700)' },
+  II: { bg: 'var(--color-neutral-200)', fg: 'var(--color-neutral-700)' },
+  III: { bg: 'var(--color-accent-2-200)', fg: 'var(--color-accent-2-700)' },
+};
+
+const RECALLS = [
+  {
+    id: 'r1', cls: 'Class I', risk: 'High risk', number: 'FSIS-RC-041-2026',
+    product: 'Frozen breaded chicken strips', short: 'chicken strips',
+    brand: 'Harvest Ridge Foods', reason: 'Possible Listeria', date: 'Today, 7:12a',
+    states: '14 states', subs: 6, tone: TONE.I, cat: 'Poultry',
+    detail: 'Routine FSIS sampling found Listeria monocytogenes in a finished-product sample. 42,600 lb of product is affected.',
+    facts: [['Produced', 'Jan 8–19, 2026'], ['Est. number', 'P-38412'], ['Sold at', 'Grocery, frozen'], ['Reported illness', 'None yet']],
+    steps: [
+      'Check the lot code on the back of the bag against the list below.',
+      'If it matches, do not cook or eat it — Listeria survives freezing.',
+      'Bag it and take it to any store that sells the brand for a full refund.',
+      'Wipe the freezer shelf and anything the package touched with hot soapy water.',
+    ],
+    lots: ['Lot 6238 · Best by 07 JAN 2027', 'Lot 6241 · Best by 09 JAN 2027'],
+  },
+  {
+    id: 'r2', cls: 'Class I', risk: 'High risk', number: 'FSIS-RC-039-2026',
+    product: 'Ready-to-eat turkey deli slices', short: 'turkey slices',
+    brand: 'Meadowline Deli Co.', reason: 'Undeclared milk allergen', date: 'Yesterday',
+    states: '9 states', subs: 4, tone: TONE.I, cat: 'Allergen',
+    detail: 'A packaging changeover put a honey-cured formula containing milk into cartons that do not declare milk.',
+    facts: [['Produced', 'Jan 12–16, 2026'], ['Est. number', 'P-19207'], ['Sold at', 'Deli counter'], ['Reported illness', '1 reaction'] ],
+    steps: [
+      'If anyone in your house avoids dairy, stop serving it now.',
+      'Compare the carton code to the affected lots below.',
+      'Return it to the deli counter — no receipt needed.',
+    ],
+    lots: ['Lot MD-2213', 'Lot MD-2214'],
+  },
+  {
+    id: 'r3', cls: 'Class II', risk: 'Low risk', number: 'FSIS-RC-038-2026',
+    product: 'Beef and bean burritos, 8 ct', short: 'beef burritos',
+    brand: 'Rio Compass', reason: 'Misbranding, wrong filling', date: '2 days ago',
+    states: '6 states', subs: 5, tone: TONE.II, cat: 'Beef',
+    detail: 'Cartons labelled beef and bean contain a chicken filling. No allergen or safety risk, but the label is wrong.',
+    facts: [['Produced', 'Dec 28, 2025'], ['Est. number', 'EST-7741'], ['Sold at', 'Club stores'], ['Reported illness', 'None']],
+    steps: ['Fine to eat unless you avoid chicken.', 'Return for a refund if the filling matters to you.'],
+    lots: ['Lot RC-8890'],
+  },
+  {
+    id: 'r4', cls: 'Class III', risk: 'Minimal', number: 'FSIS-RC-036-2026',
+    product: 'Smoked pork sausage links', short: 'sausage links',
+    brand: 'Copper Hollow', reason: 'Underweight packages', date: '4 days ago',
+    states: '3 states', subs: 3, tone: TONE.III, cat: 'Pork',
+    detail: 'A filler calibration drift left some 12 oz packages short by up to 1.4 oz. Product itself is safe.',
+    facts: [['Produced', 'Jan 2–5, 2026'], ['Est. number', 'EST-3120'], ['Sold at', 'Regional grocery'], ['Reported illness', 'None']],
+    steps: ['Safe to eat.', 'Ask for the price difference at customer service if you want it.'],
+    lots: ['Lot CH-114'],
+  },
+];
+
+const SUBS = {
+  r1: [
+    { n: 1, title: 'Same thing, different brand', items: [
+      { name: 'Fielder & Co. breaded chicken strips', why: 'Same cut, same breading, no open recalls in five years.', match: 'Closest match', avail: 'In stock nearby' },
+      { name: 'Store-brand crispy chicken tenders', why: 'A dollar less per pound and cooks in the same 18 minutes.', match: 'Very close', avail: 'In stock nearby' },
+    ]},
+    { n: 2, title: 'Similar food, similar nutrition', items: [
+      { name: 'Plain frozen chicken breast cutlets', why: 'Same protein, less sodium — breading is the only thing you lose.', match: 'Nutrition match', avail: 'Widely available' },
+      { name: 'Breaded turkey cutlets', why: 'Reads and eats almost identically for kids.', match: 'Good match', avail: 'Some stores' },
+    ]},
+    { n: 3, title: 'Cook it differently tonight', items: [
+      { name: 'Crispy chickpea and rice bowls', why: 'Pantry-only, 20 minutes, uses the rice you already opened.', match: 'No shopping', avail: 'Recipe' },
+      { name: 'Sheet-pan sausage and vegetables', why: 'Swap the protein entirely and keep the same weeknight rhythm.', match: 'Easy swap', avail: 'Recipe' },
+    ]},
+  ],
+};
+
+const PANTRY = [
+  { name: 'Harvest Ridge chicken strips', meta: 'Lot 6238 · added Jan 14', status: 'Recalled', tone: TONE.I, id: 'r1' },
+  { name: 'Meadowline turkey slices', meta: 'Lot code not scanned yet', status: 'Check lot', tone: TONE.II, id: 'r2' },
+  { name: 'Rio Compass burritos', meta: 'Lot RC-8871 · added Jan 3', status: 'Check lot', tone: TONE.II, id: 'r3' },
+  { name: 'Copper Hollow sausage', meta: 'Lot CH-120 · added Dec 29', status: 'No recall found', tone: TONE.III, id: 'r4' },
+  { name: 'Greenfold spinach, frozen', meta: 'Lot GF-55 · added Jan 11', status: 'No recall found', tone: TONE.III, id: 'r1' },
+  { name: 'Two Rivers ground beef', meta: 'Lot TR-402 · added Jan 16', status: 'No recall found', tone: TONE.III, id: 'r1' },
+];
+
+const STORES = [
+  { name: 'Wilcox Market — Fifth St.', dist: '0.4 mi', addr: '1220 Fifth St., open until 10p', note: 'Refund desk at the front, ask for a recall return' },
+  { name: 'Grandview Grocery', dist: '1.1 mi', addr: '88 Grandview Ave., open until 9p', note: 'Also carries the Fielder & Co. swap' },
+  { name: 'Northline Wholesale Club', dist: '3.6 mi', addr: '4400 Northline Pkwy., open until 8:30p', note: 'Membership card needed for the refund' },
+];
+
+const FILTERS = ['All recalls', 'High risk', 'Allergen', 'Poultry', 'Beef', 'Pork'];
+
+const ICON = (paths, color) => React.createElement('svg', { width: 40, height: 40, viewBox: '0 0 24 24', fill: 'none', stroke: color, strokeWidth: 2.75, strokeLinecap: 'round', strokeLinejoin: 'round' }, paths.map((d, i) => React.createElement('path', { key: i, d })));
+
+const ONBOARD = [
+  {
+    title: 'Recalls, in plain words.',
+    body: 'Every USDA and FDA food recall, rewritten so you can tell in one read whether it matters in your kitchen.',
+    cta: 'Sounds good', skip: 'Just let me browse',
+    icon: ['M4 6h16', 'M4 12h16', 'M4 18h10'],
+  },
+  {
+    title: 'Anything you steer around?',
+    body: 'Pick what your household avoids and those recalls get pulled to the top — with the allergen called out before anything else.',
+    cta: 'Continue', skip: 'Skip for now',
+    icon: ['M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z', 'M12 10h.01'],
+    picks: ['Milk', 'Eggs', 'Peanuts', 'Tree nuts', 'Soy', 'Wheat', 'Sesame', 'Shellfish'],
+  },
+  {
+    title: 'We only ping you when it counts.',
+    body: 'A notification for Class I recalls and anything matching your pantry or allergens. Nothing else — no digests, no marketing.',
+    cta: 'Turn on alerts', skip: 'Maybe later',
+    icon: ['M12 3a6 6 0 0 0-6 6c0 5-2 6-2 6h16s-2-1-2-6a6 6 0 0 0-6-6', 'M10 20a2 2 0 0 0 4 0'],
+  },
+];
+
+class Component extends DCLogic {
+  state = { screen: 'onboard', activeId: 'r1', filter: 'All recalls', query: '', obStep: 0, avoid: ['Milk'], scan: 'idle' };
+
+  set = (p) => this.setState(p);
+
+  filtered() {
+    const f = this.state.filter, q = this.state.query.trim().toLowerCase();
+    return RECALLS.filter((r) => {
+      const okF = f === 'All recalls' || (f === 'High risk' ? r.risk === 'High risk' : r.cat === f);
+      const okQ = !q || (r.product + r.brand + r.lots.join(' ')).toLowerCase().includes(q);
+      return okF && okQ;
+    });
+  }
+
+  renderVals() {
+    const s = this.state;
+    const active = RECALLS.find((r) => r.id === s.activeId) || RECALLS[0];
+    const open = (id) => () => this.set({ screen: 'detail', activeId: id });
+    const decorate = (list) => list.map((r) => ({
+      ...r,
+      facts: r.facts.map(([k, v]) => ({ k, v })),
+      steps: r.steps.map((t, i) => ({ n: i + 1, t })),
+      onClick: open(r.id),
+    }));
+    const tab = (name) => (s.screen === name ? 'var(--color-accent)' : 'color-mix(in srgb, var(--color-text) 42%, transparent)');
+    const list = this.filtered();
+    const ob = ONBOARD[s.obStep] || ONBOARD[0];
+
+    return {
+      isFeed: s.screen === 'feed', isDetail: s.screen === 'detail', isSubs: s.screen === 'subs',
+      isSearch: s.screen === 'search', isPantry: s.screen === 'pantry', isStore: s.screen === 'store',
+      feed: decorate(RECALLS),
+      results: decorate(list),
+      resultLabel: list.length + (list.length === 1 ? ' active recall' : ' active recalls') + (s.filter === 'All recalls' ? '' : ' in ' + s.filter),
+      active: {
+        ...active,
+        facts: active.facts.map(([k, v]) => ({ k, v })),
+        steps: active.steps.map((t, i) => ({ n: i + 1, t })),
+      },
+      subGroups: SUBS[active.id] || SUBS.r1,
+      pantry: PANTRY.map((p) => ({ ...p, onClick: open(p.id) })),
+      stores: STORES,
+      chips: FILTERS.map((label) => ({
+        label,
+        bg: s.filter === label ? 'var(--color-text)' : 'var(--color-neutral-100)',
+        fg: s.filter === label ? 'var(--color-bg)' : 'color-mix(in srgb, var(--color-text) 70%, transparent)',
+        onClick: () => this.set({ filter: label }),
+      })),
+      query: s.query,
+      setQuery: (e) => this.set({ query: e.target.value }),
+      openPantryItem: open('r1'),
+      goFeed: () => this.set({ screen: 'feed' }),
+      goDetail: () => this.set({ screen: 'detail' }),
+      goSubs: () => this.set({ screen: 'subs' }),
+      goSearch: () => this.set({ screen: 'search' }),
+      goPantry: () => this.set({ screen: 'pantry' }),
+      goStore: () => this.set({ screen: 'store' }),
+      isOnboard: s.screen === 'onboard', isScan: s.screen === 'scan',
+      showTabs: s.screen !== 'onboard' && s.screen !== 'scan',
+      obDots: ONBOARD.map((_, i) => ({ bg: i <= s.obStep ? 'var(--color-accent)' : 'color-mix(in srgb, var(--color-text) 14%, transparent)' })),
+      ob: {
+        ...ob,
+        blob: s.obStep === 1 ? 'var(--color-accent-2-200)' : 'var(--color-accent-200)',
+        blobFg: s.obStep === 1 ? 'var(--color-accent-2-700)' : 'var(--color-accent-700)',
+        icon: ICON(ob.icon, s.obStep === 1 ? 'var(--color-accent-2-700)' : 'var(--color-accent-700)'),
+        picks: (ob.picks || []).map((label) => {
+          const on = s.avoid.includes(label);
+          return {
+            label,
+            bg: on ? 'var(--color-accent-2-700)' : 'transparent',
+            fg: on ? 'var(--color-bg)' : 'color-mix(in srgb, var(--color-text) 70%, transparent)',
+            border: on ? 'var(--color-accent-2-700)' : 'color-mix(in srgb, var(--color-text) 18%, transparent)',
+            onClick: () => this.setState((st) => ({ avoid: st.avoid.includes(label) ? st.avoid.filter((a) => a !== label) : st.avoid.concat(label) })),
+          };
+        }),
+      },
+      obNext: () => (s.obStep < ONBOARD.length - 1 ? this.set({ obStep: s.obStep + 1 }) : this.set({ screen: 'feed' })),
+      scanIdle: s.scan === 'idle', scanDone: s.scan === 'done',
+      scanHint: s.scan === 'done' ? 'Matched in 0.4s' : 'Hold steady',
+      scanTone: TONE.I,
+      scanKicker: 'Recalled — do not eat',
+      scanVerdict: 'Harvest Ridge chicken strips',
+      scanBody: 'Lot 6238 is named in a Class I recall for possible Listeria. Full refund at any store that carries the brand.',
+      scanCaveat: 'A barcode identifies the product line, not your individual pack — always check the lot code stamped near the seal. Feeds last checked 20 minutes ago.',
+      doScan: () => this.set({ scan: 'done' }),
+      resetScan: () => this.set({ scan: 'idle' }),
+      openScanned: () => this.set({ screen: 'detail', activeId: 'r1', scan: 'idle' }),
+      goScan: () => this.set({ screen: 'scan', scan: 'idle' }),
+      hoverPrimary: { background: 'var(--color-accent-600)' },
+      activePrimary: { background: 'var(--color-accent-700)' },
+      hoverGhost: { background: 'color-mix(in srgb, var(--color-text) 7%, transparent)' },
+      activeGhost: { background: 'color-mix(in srgb, var(--color-text) 14%, transparent)' },
+      hoverChip: { borderColor: 'var(--color-accent)' },
+      focusRing: { outline: '2px solid var(--color-accent)', outlineOffset: '2px' },
+      tabFeed: tab('feed'), tabSearch: tab('search'), tabPantry: tab('pantry'), tabStore: tab('store'),
+    };
+  }
+}
+
+</script>
+</body>
+</html>

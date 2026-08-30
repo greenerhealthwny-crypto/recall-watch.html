@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/organic-f9463fec-dcf5-45f5-a915-4bb7e563e6f2/styles.css">
+<script src="./doc-page.js"></script>
+<style>
+doc-page:not(:defined){visibility:hidden}
+body{margin:0}
+a{color:var(--color-accent-700)}
+a:hover{color:var(--color-accent)}
+.cal,.tile{break-inside:avoid;orphans:3;widows:3}
+</style>
+</helmet>
+<doc-page margin="0.85in">
+<div slot="footer" style="display:flex;justify-content:space-between;align-items:baseline;padding-top:8px;border-top:1px solid var(--color-divider);font:400 9.5pt/1.4 var(--font-body);color:color-mix(in srgb, var(--color-text) 50%, transparent)">
+<span>Recall Watch — build spec</span>
+<span>Internal draft, v0.1</span>
+</div>
+
+<div style="font-family:var(--font-body);color:var(--color-text);font-size:11.5pt;line-height:1.62">
+
+<div style="font:700 9pt/1 var(--font-body);letter-spacing:.14em;text-transform:uppercase;color:var(--color-accent-700);margin-bottom:14px">Build specification</div>
+<h1 style="font-family:var(--font-heading);font-size:34pt;line-height:1.05;letter-spacing:-.015em;margin:0 0 14px;font-weight:400">Recall Watch</h1>
+<p style="font-size:14pt;line-height:1.5;color:color-mix(in srgb, var(--color-text) 68%, transparent);margin:0 0 26px;max-width:34em">A consumer app that tracks USDA food recalls and tells people what to buy instead. This document turns the approved prototype into something a team can estimate and build.</p>
+
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:30px">
+<div class="tile" style="background:var(--color-neutral-200);border-radius:16px;padding:14px 16px">
+<div style="font:700 8.5pt/1 var(--font-body);letter-spacing:.1em;text-transform:uppercase;color:color-mix(in srgb, var(--color-text) 50%, transparent);margin-bottom:6px">Status</div>
+<div style="font-family:var(--font-heading);font-size:13pt">Prototype approved</div>
+</div>
+<div class="tile" style="background:var(--color-neutral-200);border-radius:16px;padding:14px 16px">
+<div style="font:700 8.5pt/1 var(--font-body);letter-spacing:.1em;text-transform:uppercase;color:color-mix(in srgb, var(--color-text) 50%, transparent);margin-bottom:6px">Platform</div>
+<div style="font-family:var(--font-heading);font-size:13pt">iOS first</div>
+</div>
+<div class="tile" style="background:var(--color-neutral-200);border-radius:16px;padding:14px 16px">
+<div style="font:700 8.5pt/1 var(--font-body);letter-spacing:.1em;text-transform:uppercase;color:color-mix(in srgb, var(--color-text) 50%, transparent);margin-bottom:6px">Open decisions</div>
+<div style="font-family:var(--font-heading);font-size:13pt">6, listed below</div>
+</div>
+</div>
+
+<h2 style="font-family:var(--font-heading);font-size:19pt;font-weight:400;margin:0 0 10px">1. What the product is</h2>
+<p style="margin:0 0 12px">Recall Watch answers one question quickly: <em>is the food in my kitchen safe, and if not, what do I buy instead?</em> It is a browse-and-search app first — the user can read the week's recalls without ever creating an account — with an optional watched-pantry layer that turns the feed into a personal alert.</p>
+<p style="margin:0 0 14px">Primary users are home cooks and parents of children with food allergies. Secondary users are restaurant QA staff and institutional buyers, who need the same data with different filters; they are explicitly <strong>out of scope for v1</strong>.</p>
+
+<div class="cal" style="background:var(--color-accent-200);border-radius:20px;padding:18px 20px;margin:0 0 26px">
+<div style="font:700 8.5pt/1 var(--font-body);letter-spacing:.1em;text-transform:uppercase;color:var(--color-accent-700);margin-bottom:8px">The hard part, stated plainly</div>
+<p style="margin:0">The UI is the easy half. The product's value depends on two data problems that are not solved by design: matching a physical package in someone's freezer to a recall notice, and knowing which substitute product is actually on a nearby shelf. Estimate those first — everything else is scaffolding around them.</p>
+</div>
+
+<h2 style="font-family:var(--font-heading);font-size:19pt;font-weight:400;margin:0 0 10px">2. Scope</h2>
+<h3 style="font-family:var(--font-heading);font-size:13.5pt;font-weight:400;margin:0 0 6px">In scope for v1</h3>
+<ul style="margin:0 0 14px;padding-left:1.15em">
+<li>Recall feed, ranked by risk class and pantry relevance.</li>
+<li>Recall detail: reason, affected lots, what-to-do steps, agency reference number.</li>
+<li>Search with filters (risk class, category, allergen, free text over brand/product/lot).</li>
+<li>Ranked substitutes in three tiers: same product different brand, nutritionally similar alternative, recipe-level swap.</li>
+<li>Watched pantry with per-item status: recalled, check lot, clear.</li>
+<li>Barcode and lot-code scan producing a plain-language verdict.</li>
+<li>Return locations with refund guidance.</li>
+<li>Onboarding: what the app does, allergen preferences, notification opt-in.</li>
+<li>Push notifications for Class I recalls and pantry or allergen matches only.</li>
+</ul>
+<h3 style="font-family:var(--font-heading);font-size:13.5pt;font-weight:400;margin:0 0 6px">Out of scope for v1</h3>
+<ul style="margin:0 0 22px;padding-left:1.15em">
+<li>Accounts across devices, sharing a pantry between household members.</li>
+<li>Restaurant or institutional workflows, bulk lot lookup, compliance reporting.</li>
+<li>Receipt OCR ingestion (the onboarding button should degrade to barcode-only).</li>
+<li>Android and web clients.</li>
+<li>Any nutrition claim beyond what a substitute's own label states.</li>
+</ul>
+
+<h2 style="font-family:var(--font-heading);font-size:19pt;font-weight:400;margin:0 0 10px">3. Data sources</h2>
+<p style="margin:0 0 12px">USDA FSIS covers meat, poultry, and processed egg products only. Everything else a shopper thinks of as food — produce, dairy, seafood, packaged goods, infant formula — falls to FDA. A user who scans a bag of spinach and gets "no recalls found" from a USDA-only app has been actively misled, so v1 should ingest both feeds even though the app is named for USDA.</p>
+<table style="width:100%;border-collapse:collapse;font-size:10.5pt;margin:0 0 12px">
+<thead>
+<tr style="border-bottom:1.5px solid var(--color-text)">
+<th style="text-align:left;padding:8px 10px 8px 0;font-family:var(--font-heading);font-weight:400">Source</th>
+<th style="text-align:left;padding:8px 10px;font-family:var(--font-heading);font-weight:400">Covers</th>
+<th style="text-align:left;padding:8px 0 8px 10px;font-family:var(--font-heading);font-weight:400">Notes for the build</th>
+</tr>
+</thead>
+<tbody>
+<tr style="border-bottom:1px solid var(--color-divider)">
+<td style="padding:9px 10px 9px 0;vertical-align:top">FSIS recall API</td>
+<td style="padding:9px 10px;vertical-align:top">Meat, poultry, egg products</td>
+<td style="padding:9px 0 9px 10px;vertical-align:top">Structured fields for class, establishment number, states. Lot identifiers often live in free-text or an attached PDF.</td>
+</tr>
+<tr style="border-bottom:1px solid var(--color-divider)">
+<td style="padding:9px 10px 9px 0;vertical-align:top">FDA enforcement reports</td>
+<td style="padding:9px 10px;vertical-align:top">Produce, dairy, packaged goods, formula</td>
+<td style="padding:9px 0 9px 10px;vertical-align:top">Published on a lag after the public press release; reconcile both so the app is not last to know.</td>
+</tr>
+<tr style="border-bottom:1px solid var(--color-divider)">
+<td style="padding:9px 10px 9px 0;vertical-align:top">Product catalog / UPC</td>
+<td style="padding:9px 10px;vertical-align:top">Barcode to product identity</td>
+<td style="padding:9px 0 9px 10px;vertical-align:top">Vendor decision required. Recall notices rarely publish UPCs, so this is a join, not a lookup.</td>
+</tr>
+<tr>
+<td style="padding:9px 10px 9px 0;vertical-align:top">Store inventory or ad data</td>
+<td style="padding:9px 10px;vertical-align:top">Substitute availability</td>
+<td style="padding:9px 0 9px 10px;vertical-align:top">Hardest to source. Degrade honestly to "commonly stocked" when unavailable.</td>
+</tr>
+</tbody>
+</table>
+<p style="margin:0 0 22px;font-size:10.5pt;color:color-mix(in srgb, var(--color-text) 62%, transparent)">Table 1. Feeds and the integration risk each one carries.</p>
+
+<h2 style="font-family:var(--font-heading);font-size:19pt;font-weight:400;margin:0 0 10px">4. The matching problem</h2>
+<p style="margin:0 0 12px">A recall names a brand, a product description, an establishment number, and a set of lot or use-by codes. A pantry item, as captured by a phone camera, is a UPC plus whatever the user typed. Joining those two is the core engineering work, and it fails in specific ways worth designing for:</p>
+<ul style="margin:0 0 12px;padding-left:1.15em">
+<li><strong>Lot codes are unstructured.</strong> Formats vary per plant and appear as free text or scanned PDFs. Expect a parsing layer with per-brand rules and a manual review queue.</li>
+<li><strong>The barcode does not carry the lot.</strong> A UPC identifies the product line, not the pack. Scanning alone can only ever produce "this product line is recalled — check your lot code," which is why the scan verdict sheet must ask for a second look rather than declaring safety.</li>
+<li><strong>Absence is not safety.</strong> The app must never say "safe." The vocabulary throughout is <em>no recall found</em>, with the date of last data refresh visible.</li>
+</ul>
+<p style="margin:0 0 22px">Recommended v1 posture: three states only — <strong>recalled</strong> (confident match on product and lot), <strong>check lot</strong> (product line matches, lot unknown or unparsed), <strong>no recall found</strong>. The prototype's third state is labelled "clear," which overpromises; rename it.</p>
+
+<h2 style="font-family:var(--font-heading);font-size:19pt;font-weight:400;margin:0 0 10px">5. Substitute ranking</h2>
+<p style="margin:0 0 12px">Substitutes are presented in three tiers, each answering a different user need. The ranking within a tier should be explainable in one sentence in the UI — users distrust silent recommendations about food.</p>
+<ol style="margin:0 0 12px;padding-left:1.3em">
+<li style="margin-bottom:5px"><strong>Same product, different brand.</strong> Match on category and form factor. Exclude any brand with an open recall, and any brand sharing the implicated establishment number — co-packing means a "different brand" can come off the same line.</li>
+<li style="margin-bottom:5px"><strong>Nutritionally similar alternative.</strong> Match on protein, sodium, and preparation time. State the tradeoff explicitly ("less sodium, no breading") rather than implying equivalence.</li>
+<li><strong>Recipe-level swap.</strong> A different dinner that fits the same weeknight slot. Cheapest tier to build and the most likely to be useful when the shelf is empty.</li>
+</ol>
+<p style="margin:0 0 22px">Allergen preferences from onboarding are a hard filter on every tier, not a ranking signal. A substitute that violates a stated allergen must never appear, even ranked low.</p>
+
+<h2 style="font-family:var(--font-heading);font-size:19pt;font-weight:400;margin:0 0 10px">6. Screens and states</h2>
+<p style="margin:0 0 12px">The prototype covers the happy path for eight screens. Each needs the states below before it can ship; none of them are designed yet.</p>
+<table style="width:100%;border-collapse:collapse;font-size:10.5pt;margin:0 0 12px">
+<thead>
+<tr style="border-bottom:1.5px solid var(--color-text)">
+<th style="text-align:left;padding:8px 10px 8px 0;font-family:var(--font-heading);font-weight:400">Screen</th>
+<th style="text-align:left;padding:8px 0 8px 10px;font-family:var(--font-heading);font-weight:400">States still required</th>
+</tr>
+</thead>
+<tbody>
+<tr style="border-bottom:1px solid var(--color-divider)">
+<td style="padding:9px 10px 9px 0;vertical-align:top">Feed</td>
+<td style="padding:9px 0 9px 10px;vertical-align:top">No new recalls this week; feed stale or offline; pantry empty so no personal card.</td>
+</tr>
+<tr style="border-bottom:1px solid var(--color-divider)">
+<td style="padding:9px 10px 9px 0;vertical-align:top">Recall detail</td>
+<td style="padding:9px 0 9px 10px;vertical-align:top">Lots not yet published; recall later expanded or terminated; notice available only as a PDF.</td>
+</tr>
+<tr style="border-bottom:1px solid var(--color-divider)">
+<td style="padding:9px 10px 9px 0;vertical-align:top">Search</td>
+<td style="padding:9px 0 9px 10px;vertical-align:top">Zero results; zero results because of an active filter; query looks like a lot code.</td>
+</tr>
+<tr style="border-bottom:1px solid var(--color-divider)">
+<td style="padding:9px 10px 9px 0;vertical-align:top">Substitutes</td>
+<td style="padding:9px 0 9px 10px;vertical-align:top">No substitutes found; all candidates filtered out by allergens; availability unknown.</td>
+</tr>
+<tr style="border-bottom:1px solid var(--color-divider)">
+<td style="padding:9px 10px 9px 0;vertical-align:top">Pantry</td>
+<td style="padding:9px 0 9px 10px;vertical-align:top">Empty first-run; item added but unmatched; remove and undo.</td>
+</tr>
+<tr style="border-bottom:1px solid var(--color-divider)">
+<td style="padding:9px 10px 9px 0;vertical-align:top">Scan</td>
+<td style="padding:9px 0 9px 10px;vertical-align:top">Camera permission denied; barcode unreadable; product not in catalog; manual code entry.</td>
+</tr>
+<tr style="border-bottom:1px solid var(--color-divider)">
+<td style="padding:9px 10px 9px 0;vertical-align:top">Returns</td>
+<td style="padding:9px 0 9px 10px;vertical-align:top">Location permission denied; no stores nearby; real map integration.</td>
+</tr>
+<tr>
+<td style="padding:9px 10px 9px 0;vertical-align:top">Onboarding</td>
+<td style="padding:9px 0 9px 10px;vertical-align:top">Notification permission denied and the re-ask path; skip-everything path.</td>
+</tr>
+</tbody>
+</table>
+<p style="margin:0 0 22px;font-size:10.5pt;color:color-mix(in srgb, var(--color-text) 62%, transparent)">Table 2. Missing states by screen. Empty and error states are most of the remaining design work.</p>
+
+<h2 style="font-family:var(--font-heading);font-size:19pt;font-weight:400;margin:0 0 10px">7. Notifications</h2>
+<p style="margin:0 0 22px">Onboarding promises alerts for Class I recalls and pantry or allergen matches, and nothing else. That promise is a product constraint: no digests, no engagement pushes, no marketing. Breaking it costs the permission permanently. Alerts must be idempotent — a recall that is later expanded should update rather than re-fire, and a terminated recall should send one clear correction.</p>
+
+<h2 style="font-family:var(--font-heading);font-size:19pt;font-weight:400;margin:0 0 10px">8. Trust, accuracy, and liability</h2>
+<p style="margin:0 0 12px">Telling someone their food is safe is a legal position, not a UX copy decision. Before launch, counsel should review the verdict language, the disclaimer placement, and the data-freshness commitment. Design implications that follow regardless:</p>
+<ul style="margin:0 0 12px;padding-left:1.15em">
+<li>Last-refreshed timestamp visible wherever a verdict is given.</li>
+<li>Never the word "safe"; always "no recall found."</li>
+<li>Every recall links out to the originating agency notice as the authority.</li>
+<li>An in-app path to report a mismatch, feeding the manual review queue.</li>
+</ul>
+<p style="margin:0 0 22px">Accessibility is also a safety matter here: risk must never be conveyed by color alone — every class badge carries a text label, and the interface should be verified at largest Dynamic Type with VoiceOver.</p>
+
+<h2 style="font-family:var(--font-heading);font-size:19pt;font-weight:400;margin:0 0 10px">9. Open decisions</h2>
+<ol style="margin:0 0 22px;padding-left:1.3em">
+<li style="margin-bottom:5px">Do we ingest FDA recalls in v1, or ship USDA-only and accept the coverage gap?</li>
+<li style="margin-bottom:5px">Which product catalog vendor, and what does UPC coverage actually look like for store brands?</li>
+<li style="margin-bottom:5px">Can we get store-level availability at launch, or do substitutes ship without it?</li>
+<li style="margin-bottom:5px">Is the pantry local-only in v1, or does it require accounts and sync?</li>
+<li style="margin-bottom:5px">What refresh interval do we commit to publicly, and what is our alerting SLA against it?</li>
+<li>Who staffs the manual lot-parsing review queue, and what is the turnaround target?</li>
+</ol>
+
+<h2 style="font-family:var(--font-heading);font-size:19pt;font-weight:400;margin:0 0 10px">10. Recommended sequence</h2>
+<p style="margin:0 0 12px">Build the risky half first. A polished client over an unreliable match is worse than no product.</p>
+<ol style="margin:0 0 10px;padding-left:1.3em">
+<li style="margin-bottom:5px"><strong>Spike the ingestion and lot parser</strong> against six months of historical notices. Measure what fraction of recalls yield machine-readable lot codes. This number decides the product.</li>
+<li style="margin-bottom:5px"><strong>Ship browse and search only.</strong> No pantry, no scan, no accounts. Read-only, useful, low liability.</li>
+<li style="margin-bottom:5px"><strong>Add substitutes</strong> starting with tiers one and three, which need no availability data.</li>
+<li style="margin-bottom:5px"><strong>Add pantry and scan</strong> once matching confidence is measured and the three-state vocabulary holds up in testing.</li>
+<li><strong>Add notifications last</strong> — they are only trustworthy once matching is.</li>
+</ol>
+<p style="margin:0">User-test the current prototype against step two's scope before writing production code: the fastest way to invalidate this plan is to watch five people try to find their own groceries in it.</p>
+
+</div>
+</doc-page>
+</x-dc>
+</body>
+</html>
