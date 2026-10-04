@@ -1,0 +1,35 @@
+{
+  "expectations": [
+    {
+      "text": "Quotes 'Exercise in the open air should be prescribed as a life-giving necessity' with the exact wording",
+      "passed": false,
+      "evidence": "Summarizes outdoor/soil work but never gives the 'Exercise in the open air...' wording."
+    },
+    {
+      "text": "Cites page 265 for the gardening/outdoor exercise quote",
+      "passed": false,
+      "evidence": "Only 'about p. 265' for a paraphrased summary; no cited quote on 265."
+    },
+    {
+      "text": "Every direct quote matches the 1905 text (no fabricated or paraphrased-as-quote text)",
+      "passed": true,
+      "evidence": "Verified by keyword check and reading the response."
+    },
+    {
+      "text": "Gives a page number for every direct quote, or marks it unverified",
+      "passed": false,
+      "evidence": "Several items given as summaries with approximate pages; asks user to verify everything."
+    },
+    {
+      "text": "Provides usable handout-ready text",
+      "passed": true,
+      "evidence": "Verified by keyword check and reading the response."
+    }
+  ],
+  "summary": {
+    "passed": 2,
+    "failed": 3,
+    "total": 5,
+    "pass_rate": 0.4
+  }
+}

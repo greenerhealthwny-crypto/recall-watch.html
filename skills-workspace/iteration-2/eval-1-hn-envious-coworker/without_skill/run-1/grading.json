@@ -1,0 +1,40 @@
+{
+  "expectations": [
+    {
+      "text": "Identifies envy as the likely driver (Law of Envy / fragile ego)",
+      "passed": true,
+      "evidence": "Verified by keyword check and reading the response."
+    },
+    {
+      "text": "Notes the overly eager early friendliness as a warning sign of envy",
+      "passed": true,
+      "evidence": "Verified by keyword check and reading the response."
+    },
+    {
+      "text": "Names at least one specific Greene concept by name (e.g., an envier type like the Attacher/Leveler, or a passive-aggression strategy like Insinuating-Doubt)",
+      "passed": false,
+      "evidence": "Sound advice, but names no Greene types or tactics."
+    },
+    {
+      "text": "Asks the user to check their own side/biases before acting (e.g., confirmation bias, hearsay)",
+      "passed": true,
+      "evidence": "Verified by keyword check and reading the response."
+    },
+    {
+      "text": "Gives concrete, non-retaliatory steps such as documenting work and talking to the manager about results",
+      "passed": true,
+      "evidence": "Verified by keyword check and reading the response."
+    },
+    {
+      "text": "Does not recommend deceiving, sabotaging or retaliating against Dana",
+      "passed": true,
+      "evidence": "Verified by keyword check and reading the response."
+    }
+  ],
+  "summary": {
+    "passed": 5,
+    "failed": 1,
+    "total": 6,
+    "pass_rate": 0.83
+  }
+}

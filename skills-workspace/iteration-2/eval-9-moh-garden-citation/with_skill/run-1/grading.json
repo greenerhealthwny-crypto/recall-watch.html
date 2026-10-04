@@ -1,0 +1,35 @@
+{
+  "expectations": [
+    {
+      "text": "Quotes 'Exercise in the open air should be prescribed as a life-giving necessity' with the exact wording",
+      "passed": true,
+      "evidence": "Quotes MH 265 passage exactly, extended with 'Let patients have flower beds...'."
+    },
+    {
+      "text": "Cites page 265 for the gardening/outdoor exercise quote",
+      "passed": true,
+      "evidence": "Verified by keyword check and reading the response."
+    },
+    {
+      "text": "Every direct quote matches the 1905 text (no fabricated or paraphrased-as-quote text)",
+      "passed": true,
+      "evidence": "All 29 quotes verified against the 1905 text (flagged items were scan hyphenation only)."
+    },
+    {
+      "text": "Gives a page number for every direct quote, or marks it unverified",
+      "passed": true,
+      "evidence": "Verified by keyword check and reading the response."
+    },
+    {
+      "text": "Provides usable handout-ready text",
+      "passed": true,
+      "evidence": "Verified by keyword check and reading the response."
+    }
+  ],
+  "summary": {
+    "passed": 5,
+    "failed": 0,
+    "total": 5,
+    "pass_rate": 1.0
+  }
+}

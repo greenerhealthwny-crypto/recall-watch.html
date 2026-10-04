@@ -1,0 +1,40 @@
+{
+  "expectations": [
+    {
+      "text": "Clearly advises the aunt not to stop blood pressure medication without her doctor",
+      "passed": true,
+      "evidence": "Verified by keyword check and reading the response."
+    },
+    {
+      "text": "Explains White's critique targeted the poisonous drugs/patent nostrums of her era",
+      "passed": true,
+      "evidence": "Verified by keyword check and reading the response."
+    },
+    {
+      "text": "Quotes or accurately paraphrases the natural-remedies passage (MH 127)",
+      "passed": true,
+      "evidence": "Verified by keyword check and reading the response."
+    },
+    {
+      "text": "Notes White herself was not against all treatment (e.g., sanctioned simple remedies, physicians, rational care)",
+      "passed": true,
+      "evidence": "Verified by keyword check and reading the response."
+    },
+    {
+      "text": "Suggests natural remedies as complementary to medical care, with doctor involvement",
+      "passed": true,
+      "evidence": "Verified by keyword check and reading the response."
+    },
+    {
+      "text": "Tone is respectful of the aunt's faith",
+      "passed": true,
+      "evidence": "Verified by keyword check and reading the response."
+    }
+  ],
+  "summary": {
+    "passed": 6,
+    "failed": 0,
+    "total": 6,
+    "pass_rate": 1.0
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "expectations": [
+    {
+      "text": "States Law 16's reversal: absence only works once you are established; before that you are forgotten",
+      "passed": true,
+      "evidence": "Verified by keyword check and reading the response."
+    },
+    {
+      "text": "Names at least one of Greene's Law 16 examples (Deioces of the Medes, or the troubadour Guillaume de Balaun)",
+      "passed": true,
+      "evidence": "Verified by keyword check and reading the response."
+    },
+    {
+      "text": "Identifies the tension with Law 6 (Court Attention at All Cost) or Law 18 (isolation)",
+      "passed": true,
+      "evidence": "Verified by keyword check and reading the response."
+    },
+    {
+      "text": "Gives practical advice tailored to a consultant-client relationship",
+      "passed": true,
+      "evidence": "Verified by keyword check and reading the response."
+    },
+    {
+      "text": "Does not invent examples or law content (only claims supported by the book)",
+      "passed": true,
+      "evidence": "Verified by keyword check and reading the response."
+    }
+  ],
+  "summary": {
+    "passed": 5,
+    "failed": 0,
+    "total": 5,
+    "pass_rate": 1.0
+  }
+}

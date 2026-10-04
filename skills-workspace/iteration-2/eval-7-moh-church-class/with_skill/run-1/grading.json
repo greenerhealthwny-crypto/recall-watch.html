@@ -1,0 +1,40 @@
+{
+  "expectations": [
+    {
+      "text": "Quotes the eight natural remedies passage accurately (pure air, sunlight, abstemiousness, rest, exercise, proper diet, the use of water, trust in divine power)",
+      "passed": true,
+      "evidence": "Verified by keyword check and reading the response."
+    },
+    {
+      "text": "Each of the 4 weeks includes a quote with an MH page citation",
+      "passed": true,
+      "evidence": "Verified by keyword check and reading the response."
+    },
+    {
+      "text": "Quotes are accurate to the 1905 text (no fabricated quotes)",
+      "passed": true,
+      "evidence": "All quotes verified against the 1905 text by script (flagged items were scan hyphenation only)."
+    },
+    {
+      "text": "Includes diabetes-specific safety (don't change meds without doctor, hypoglycemia risk with meal timing changes)",
+      "passed": true,
+      "evidence": "Verified by keyword check and reading the response."
+    },
+    {
+      "text": "Gives practical weekly habits/activities",
+      "passed": true,
+      "evidence": "Verified by keyword check and reading the response."
+    },
+    {
+      "text": "Recommends consulting a physician or dietitian",
+      "passed": true,
+      "evidence": "Verified by keyword check and reading the response."
+    }
+  ],
+  "summary": {
+    "passed": 6,
+    "failed": 0,
+    "total": 6,
+    "pass_rate": 1.0
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "expectations": [
+    {
+      "text": "Cites Law 41 (Avoid Stepping into a Great Man's Shoes)",
+      "passed": true,
+      "evidence": "Verified by keyword check and reading the response."
+    },
+    {
+      "text": "Cites Law 45 (Preach the Need for Change, but Never Reform Too Much at Once)",
+      "passed": true,
+      "evidence": "Verified by keyword check and reading the response."
+    },
+    {
+      "text": "Cites at least two other relevant laws by number (e.g., 9, 43, 1, 24, 5)",
+      "passed": true,
+      "evidence": "Verified by keyword check and reading the response."
+    },
+    {
+      "text": "Gives a phased 90-day plan with concrete actions",
+      "passed": true,
+      "evidence": "Verified by keyword check and reading the response."
+    },
+    {
+      "text": "Includes at least one Reversal / risk or limit of the laws",
+      "passed": true,
+      "evidence": "Verified by keyword check and reading the response."
+    },
+    {
+      "text": "Advises respecting Linda's legacy rather than disparaging her publicly",
+      "passed": true,
+      "evidence": "Verified by keyword check and reading the response."
+    }
+  ],
+  "summary": {
+    "passed": 6,
+    "failed": 0,
+    "total": 6,
+    "pass_rate": 1.0
+  }
+}

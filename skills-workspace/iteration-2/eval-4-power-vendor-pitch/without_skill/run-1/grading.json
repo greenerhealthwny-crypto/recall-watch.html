@@ -1,0 +1,40 @@
+{
+  "expectations": [
+    {
+      "text": "Identifies Law 40 (Despise the Free Lunch)",
+      "passed": false,
+      "evidence": "Spots the baked-in 'free' cost but doesn't cite Law 40."
+    },
+    {
+      "text": "Identifies Law 31 (Control the Options) re: only two choices",
+      "passed": false,
+      "evidence": "Calls it a false choice but doesn't cite Law 31."
+    },
+    {
+      "text": "Identifies the flattery as a tactic (Law 21 or 33 or similar)",
+      "passed": true,
+      "evidence": "Verified by keyword check and reading the response."
+    },
+    {
+      "text": "Calls out the artificial deadline / urgency",
+      "passed": true,
+      "evidence": "Verified by keyword check and reading the response."
+    },
+    {
+      "text": "Gives concrete negotiation steps (ask for other terms, total cost of ownership, exit clauses, references, competing quotes)",
+      "passed": true,
+      "evidence": "Verified by keyword check and reading the response."
+    },
+    {
+      "text": "Keeps advice ethical (no recommendation to deceive the vendor)",
+      "passed": true,
+      "evidence": "Verified by keyword check and reading the response."
+    }
+  ],
+  "summary": {
+    "passed": 4,
+    "failed": 2,
+    "total": 6,
+    "pass_rate": 0.67
+  }
+}
