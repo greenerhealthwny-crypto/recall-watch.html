@@ -1,0 +1,406 @@
+# The Daily Laws — Calendar of 366 Titles
+
+Day-by-day titles from *The Daily Laws* (Robert Greene, 2021), extracted from the user's PDF. Look up a date with `grep "^- October 4:"` style searches. February 29 is included for leap years.
+
+
+## January — Your Life's Task: Planting the Seeds for Mastery
+
+- January 1: Discover Your Calling
+- January 2: Reconnect with Your Childhood Obsession
+- January 3: The Voice
+- January 4: It Is Already within You
+- January 5: Know What You're Drawn to and Immerse Yourself in It
+- January 6: Change Is the Law
+- January 7: Money and Success
+- January 8: Occupy Your Own Niche
+- January 9: Find Inspiration from Your Heroes
+- January 10: Embrace Your Weirdness
+- January 11: What Makes You Feel More Alive?
+- January 12: The Obstacle Is the Way
+- January 13: Master the Small Things
+- January 14: Avoid the False Path
+- January 15: Let a Sense of Purpose Guide You
+- January 16: There Are No Superior Callings
+- January 17: The True Source of Creativity
+- January 18: Stop Being So Nice
+- January 19: Listen to Your Inner Authority
+- January 20: See Mastery as Salvation
+- January 21: Depending on Others Is Misery
+- January 22: Use Resistance and Negative Spurs
+- January 23: Create a Ladder of Descending Goals
+- January 24: Combine Your Fascinations
+- January 25: Change Yourself from within, Little by Little
+- January 26: Avoid the Counterforces to Mastery
+- January 27: The Real Secret
+- January 28: The Path Is Not Linear
+- January 29: Become Who You Are
+- January 30: Trust the Process
+- January 31: The Source of All Power
+
+## February — The Ideal Apprenticeship: Transforming Yourself
+
+- February 1: Submit to Reality
+- February 2: What the Mentor Needs
+- February 3: You Have One Goal
+- February 4: Value Learning above Everything Else
+- February 5: Accumulate Skills
+- February 6: Consider Yourself a Builder
+- February 7: The Only Shortcut to Mastery
+- February 8: The Perfect Mentor
+- February 9: Redefine Pleasure
+- February 10: Learn from Everything
+- February 11: Enter the Cycle of Accelerated Returns
+- February 12: Learn by Doing
+- February 13: How to Learn Quickly and Deeply
+- February 14: Move Toward Resistance
+- February 15: Concentrated Practice Cannot Fail
+- February 16: Love the Detailed Work
+- February 17: The Painful Truth
+- February 18: Two Kinds of Failure
+- February 19: Choose Time
+- February 20: Understand How the Brain Works
+- February 21: Create the Need for You
+- February 22: Absorb Purposeful Energy
+- February 23: Never Enough Knowledge
+- February 24: Surpass Your Master
+- February 25: Keep Expanding Your Horizons
+- February 26: Venture Outside Your Comfort Zone
+- February 27: Establish Your Own Style
+- February 28: To the Master Goes the Knife
+- February 29: Take the Hacker Approach
+
+## March — The Master at Work: Activating Skills and Attaining Mastery
+
+- March 1: Awaken the Dimensional Mind
+- March 2: Get to the Inside
+- March 3: Cultivate the Craftsman Ethic
+- March 4: The Creative Process
+- March 5: Look Wider and Think Further Ahead
+- March 6: The Gift of Our Original Mind
+- March 7: Keep the Mind Moving
+- March 8: Retain Your Sense of Wonder
+- March 9: Impatience Is Your Enemy
+- March 10: Knowledge Is Your Superior
+- March 11: Intensity of Focus
+- March 12: Perfect Yourself through Failure
+- March 13: Creative Endurance
+- March 14: Immerse Yourself in the Details
+- March 15: Make Your Work Come to Life
+- March 16: Alter Your Perspective
+- March 17: These Powers Can't Come Cheaply
+- March 18: The Power of Desire and Determination
+- March 19: The Deadening Dynamic
+- March 20: The Master's Brain
+- March 21: The Universal Master
+- March 22: On Meditation
+- March 23: Listen to Your Frustration
+- March 24: The Mind as a Muscle
+- March 25: Cultivate Negative Capability
+- March 26: Pay Attention to Negative Cues
+- March 27: The Power of Peak Experiences
+- March 28: Move Beyond Intellect
+- March 29: Fuse the Intuitive with the Rational, A
+- March 30: Fuse the Intuitive with the Rational, B
+- March 31: Connect to Your Destiny
+
+## April — The Perfect Courtier: Playing the Game of Power
+
+- April 1: Never Outshine the Master
+- April 2: Make the Master Feel Glorious and Superior
+- April 3: Find Out Who Holds the Strings
+- April 4: Know When to Take and Give Credit
+- April 5: Remake Yourself into a Character of Power
+- April 6: Seem Dumber Than Your Mark
+- April 7: Do Not Be the Court Cynic
+- April 8: Master Your Emotional Responses
+- April 9: So Much Depends on Reputation
+- April 10: Always Say Less Than Necessary
+- April 11: Appeal to People's Self-Interest
+- April 12: Use Your Enemies
+- April 13: Better to Be Attacked Than Ignored
+- April 14: View the World as a Vast Interconnected Palace
+- April 15: Create a Cultlike Following
+- April 16: Do Not Commit to Anyone
+- April 17: Stay Above the Fray
+- April 18: Startle the Snakes
+- April 19: Tailor Your Flattery
+- April 20: Be Royal in Your Own Fashion
+- April 21: Be Merciless with Your Enemies
+- April 22: Sow the Seeds of Doubt
+- April 23: Fear the Power of Infection
+- April 24: Avoid the False Alliance
+- April 25: Enter Action with Boldness
+- April 26: Make Your Accomplishments Seem Effortless
+- April 27: Despise the Free Lunch
+- April 28: There Is No Revenge Like Oblivion
+- April 29: Cultivate an Air of Unpredictability
+- April 30: Never Appear Too Perfect
+
+## May — The Supposed Nonplayers of Power: Recognizing Toxic Types and Disguised Power Strategies
+
+- May 1: Everyone Is a Player in the Game
+- May 2: Take on the Toxic Types
+- May 3: Judge Them on Their Behavior, Not on Their Words
+- May 4: The Appearance of Naiveté
+- May 5: Be Careful Whom You Offend
+- May 6: See Through the False Front
+- May 7: The Subtle-Superiority Strategy
+- May 8: Look at Their Past
+- May 9: See Through the Emotional Outburst
+- May 10: Don't Mistake Extra Conviction for Truth
+- May 11: The Pattern
+- May 12: Be Wary of the Noble Gesture
+- May 13: Recognize Deep Narcissists before You Fall for Them
+- May 14: The Grandiose Leader
+- May 15: The Machiavellian Gift
+- May 16: The Fake Traditionalist
+- May 17: Deciphering the Shadow
+- May 18: Look Beneath the Mask
+- May 19: Demanding Equality
+- May 20: The Unambitious Front
+- May 21: The Aggressive Pleaser
+- May 22: Determine the Strength of People's Character
+- May 23: Don't Always Believe Your Eyes
+- May 24: Easy Money
+- May 25: Avoid the Drama Magnet
+- May 26: The Sincerity Ploy
+- May 27: Detect Their True Motives
+- May 28: The Effective Truth
+- May 29: Nothing Personal
+- May 30: Everyone Wants More Power
+- May 31: Know Who You're Dealing With
+
+## June — The Divine Craft: Mastering the Arts of Indirection and Manipulation
+
+- June 1: Wear the Appropriate Mask
+- June 2: Use Absence to Increase Respect
+- June 3: Take Control of Your Image
+- June 4: Play on People's Instinct to Trust Appearances
+- June 5: Create Dramatic Effects
+- June 6: Play Your Role Well
+- June 7: Never Impugn People's Intelligence
+- June 8: Distract Them from Your Real Goal
+- June 9: Give People the Opportunity to Feel Superior
+- June 10: Infect the Group with Productive Emotions
+- June 11: Strike the Shepherd
+- June 12: Use the Surrender Tactic
+- June 13: Lead from the Front
+- June 14: Deter with a Threatening Presence
+- June 15: The Art of Presence and Absence
+- June 16: Get Others to Play with the Cards You Deal
+- June 17: The Seductive Visuals
+- June 18: Never Reform Too Much at Once
+- June 19: Make Others Come to You
+- June 20: Display a Hint of Weakness
+- June 21: The Slow Power Grab
+- June 22: Control What You Reveal
+- June 23: Play to Their High Self-Opinion
+- June 24: Demonic Language
+- June 25: Create an Air of Mystery
+- June 26: Never Conventional
+- June 27: Play to People's Fantasies
+- June 28: Renew Your Aura of Authority
+- June 29: Mirror Their Values
+- June 30: Play the Honest Rogue
+
+## July — The Seductive Character: Penetrating Hearts and Minds
+
+- July 1: Look at the World through the Eyes of a Seducer
+- July 2: Delay Satisfaction
+- July 3: Direct Your Gaze Outward
+- July 4: The Empathic Attitude
+- July 5: Stir Up the Transgressive and Taboo
+- July 6: The Soft Sell
+- July 7: Appear to Be an Object of Desire
+- July 8: The Anti-Seducer
+- July 9: Make Them Want to Spoil You
+- July 10: Set Off Viral Effects
+- July 11: Friend to Lover
+- July 12: Flout Their Expectations
+- July 13: Make Use of Contrasts
+- July 14: Create Calculated Surprises
+- July 15: Heighten the Experience
+- July 16: Enter Their Spirit
+- July 17: Create Temptation
+- July 18: Prove Yourself
+- July 19: Lure Others into Your Fantasy World
+- July 20: Be a Source of Pleasure
+- July 21: The Law of Covetousness
+- July 22: Create a Wound
+- July 23: Pay Attention to Detail
+- July 24: Make Them Fetishize You
+- July 25: Play with Ambiguity
+- July 26: Know When to Withdraw
+- July 27: Know When to Be Bold
+- July 28: Communicate to People's Senses
+- July 29: The Pursuer Is Pursued
+- July 30: The Thrill of Illusion
+- July 31: Poeticize Your Presence
+
+## August — The Master Persuader: Softening People's Resistance
+
+- August 1: The Hypnotist's Art
+- August 2: Play on Their Competitive Spirit
+- August 3: Make Them the Star of the Show
+- August 4: Channel Overpowering Emotions
+- August 5: Win through Your Actions
+- August 6: Keep Them Guessing
+- August 7: Consider Their Self-Interest
+- August 8: Avoid Argument
+- August 9: The Moral Effect
+- August 10: Anchor Their Ego
+- August 11: Master the Art of Insinuation
+- August 12: Use Their Emotions
+- August 13: Penetrate Their Minds
+- August 14: Leave People with a Feeling
+- August 15: Create Compelling Spectacles
+- August 16: Use Their Rigidity
+- August 17: Persuade with a Light Touch
+- August 18: Make Them Feel Your Point
+- August 19: Let Them Win on the Minor Points
+- August 20: How to Deal with the Irritating
+- August 21: The Master Motivator
+- August 22: The Lure of the Unfamiliar
+- August 23: Find Their Thumbscrew
+- August 24: Mix Harshness and Kindness
+- August 25: Cultivate the Third Eye
+- August 26: Appeal to Their Unrealized Greatness
+- August 27: Transform Yourself into a Deep Listener
+- August 28: Instill a Feeling of Inner Security
+- August 29: Infect People with the Proper Mood
+- August 30: Imagine Them in the Best Light
+- August 31: Come to Terms with Your Own Self-Opinion
+
+## September — The Grand Strategist: Rising Out of Tactical Hell
+
+- September 1: Elevate Yourself Above the Battlefield
+- September 2: Control the Entire Chessboard
+- September 3: Attack the Center of Gravity
+- September 4: Avoid Tactical Hell
+- September 5: Place Yourself in Shih
+- September 6: Never Attack Your Opponents Head-On
+- September 7: Divide and Conquer
+- September 8: Exploit the Chaos
+- September 9: See the Larger Dangers That Loom in the Future
+- September 10: Never Seem Defensive
+- September 11: The Warrior's Creed
+- September 12: Time Is All You Have
+- September 13: Think of the Unintended Consequences
+- September 14: Crowd Out Panic
+- September 15: Drop Your Preconceived Notions
+- September 16: Force Them Off the Negative
+- September 17: Balance Ends and Means
+- September 18: The Piecemeal Strategy
+- September 19: Make Use of the Cat's-Paw
+- September 20: Hit from Unexpected Angles
+- September 21: Get Them to Reveal Their Intentions
+- September 22: Create Maximum Disorder
+- September 23: Develop Your Fingerspitzengefühl
+- September 24: Retreat to Gain Perspective
+- September 25: Stay Away from the Corners
+- September 26: Let Go of the Past
+- September 27: Give Yourself Space to Maneuver
+- September 28: Plan All the Way to the End
+- September 29: Assume Formlessness
+- September 30: Do Not Go Past the Mark You Aimed For
+
+## October — The Emotional Self: Coming to Terms with Our Dark Side
+
+- October 1: The Primary Law of Human Nature
+- October 2: There's Nothing Stronger Than Human Nature
+- October 3: The Inner Athena
+- October 4: Analyze, Scrutinize, Question
+- October 5: Do Not Let Success Intoxicate You
+- October 6: See into Your Own Nature
+- October 7: Rationality: A Simple Definition
+- October 8: The Madness of Groups
+- October 9: The Power of Association
+- October 10: Think for Yourself
+- October 11: Beware the Fragile Ego
+- October 12: See Things as They Are, Not as Your Emotions Color Them
+- October 13: Change Your Circumstances by Changing Your Attitude
+- October 14: Confront Your Dark Side
+- October 15: Create Mental Space from the Group
+- October 16: Test for Envy
+- October 17: See into the Spirit of the Times
+- October 18: Think Like a Writer
+- October 19: Accept People as Facts
+- October 20: See Beyond the Moment
+- October 21: Recognize Your Aggressive Impulses
+- October 22: Lost in Trivia
+- October 23: The Lost Self
+- October 24: Know How Little You Know
+- October 25: Examine Your Emotions to Their Roots
+- October 26: Resist Simple Explanations
+- October 27: See Your Shadow
+- October 28: Move Closer to What You Envy
+- October 29: Manage Your Grandiose Tendencies
+- October 30: The Myth of Progress
+- October 31: You Are the Obstacle
+
+## November — The Rational Human: Realizing Your Higher Self
+
+- November 1: Hope for Us All
+- November 2: Keep Free of the Emotional Whirlpool
+- November 3: Increase Your Reaction Time
+- November 4: Make Envy a Spur to Achievement
+- November 5: Know Yourself Thoroughly
+- November 6: Who Is to Blame?
+- November 7: Practice Mitfreude
+- November 8: Supreme Patience
+- November 9: Channel Your Grandiose Impulses
+- November 10: Transcending Tribalism
+- November 11: Ascend the Mountain
+- November 12: Break the Codes of Convention
+- November 13: Suffer Fools Gladly
+- November 14: Project Saintliness
+- November 15: Adopt a Generous Spirit
+- November 16: Integrate the Shadow Side
+- November 17: Balance Imagination and Reality
+- November 18: Focus Outwardly
+- November 19: Destiny
+- November 20: Focus and Prioritize
+- November 21: Connect to What Is Nearest to You
+- November 22: Embrace Whatever Happens to You
+- November 23: Admire Human Greatness
+- November 24: Seek the Upward Pull of the Group
+- November 25: Transform Self-Love into Empathy
+- November 26: The Confirmation Bias
+- November 27: Assume You're Misjudging the People Around You
+- November 28: Make the Past Come to Life
+- November 29: The Rider and the Horse
+- November 30: Advance with a Sense of Purpose
+
+## December — The Cosmic Sublime: Expanding the Mind to Its Furthest Reaches
+
+- December 1: The Infinite and the Awesome
+- December 2: A Most Improbable Occurrence
+- December 3: Turn and Face Your Mortality
+- December 4: The Universe Is within You
+- December 5: Immerse the Mind in the Moment
+- December 6: Alive Time or Dead Time?
+- December 7: The Bullet in the Side
+- December 8: Connect to Something Larger Than Yourself
+- December 9: Encounters with the Inhuman and the Infinite
+- December 10: See the Whole
+- December 11: The Child's Sense of Scale
+- December 12: Life and Death
+- December 13: How to View the World
+- December 14: Release Yourself from Habits and Banality
+- December 15: Create Physical Death Awareness
+- December 16: The Near-Death Experience
+- December 17: Let the Impermanence of It All Sink In
+- December 18: Have a Sense of Urgency and Desperation
+- December 19: Feel Reborn
+- December 20: Know What Matters
+- December 21: Let Death Awareness Disperse Our Differences
+- December 22: The Ultimate in Stupidity
+- December 23: Avoid the False Sublime
+- December 24: Place Yourself on Death Ground
+- December 25: This Too Will Not Last
+- December 26: Journey Inside the Global Brain
+- December 27: Amor Fati
+- December 28: The Sky and the Stars
+- December 29: Meditate on the Mysteries
+- December 30: Accept Your Insignificance
+- December 31: The Ultimate Freedom
