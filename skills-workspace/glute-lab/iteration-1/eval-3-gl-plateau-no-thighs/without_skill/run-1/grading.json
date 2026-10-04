@@ -1,0 +1,45 @@
+{
+  "expectations": [
+    {
+      "text": "Identifies too much volume / too little effort and recommends cutting weekly glute volume and frequency (e.g., 2-3 days, fewer sets)",
+      "passed": true,
+      "evidence": "Checked by reading the response."
+    },
+    {
+      "text": "Recommends pushing sets closer to failure (effort over volume)",
+      "passed": true,
+      "evidence": "Checked by reading the response."
+    },
+    {
+      "text": "Recommends deloads or fluctuating training stress",
+      "passed": true,
+      "evidence": "Checked by reading the response."
+    },
+    {
+      "text": "Recommends glute-dominant exercises (barbell glute bridge, hip thrust variations, abduction) to grow glutes without thighs",
+      "passed": true,
+      "evidence": "Hip thrusts, bridges, kickbacks, abduction; doesn't single out the barbell glute bridge but meets the assertion."
+    },
+    {
+      "text": "Recommends reducing quad/hamstring-dominant exercises (squats, lunges, leg press, etc.)",
+      "passed": true,
+      "evidence": "Checked by reading the response."
+    },
+    {
+      "text": "Notes thigh size is often fat rather than muscle and addresses diet/protein",
+      "passed": true,
+      "evidence": "Checked by reading the response."
+    },
+    {
+      "text": "Mentions progressive overload / tracking strength on a main lift",
+      "passed": true,
+      "evidence": "Checked by reading the response."
+    }
+  ],
+  "summary": {
+    "passed": 7,
+    "failed": 0,
+    "total": 7,
+    "pass_rate": 1.0
+  }
+}

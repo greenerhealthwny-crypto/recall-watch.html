@@ -1,0 +1,45 @@
+{
+  "expectations": [
+    {
+      "text": "Uses 3 training days per week with glute work each day",
+      "passed": true,
+      "evidence": "Checked by reading the response."
+    },
+    {
+      "text": "Balances horizontal (thrust/bridge), vertical (squat/deadlift/lunge) and lateral/rotary (abduction) exercises across the week",
+      "passed": true,
+      "evidence": "Checked by reading the response."
+    },
+    {
+      "text": "Mixes heavy (1-5), medium (6-12) and light/high-rep (13+) work",
+      "passed": true,
+      "evidence": "Checked by reading the response."
+    },
+    {
+      "text": "Places big lifts (hip thrust, squat or deadlift) first in sessions and pump/abduction work last",
+      "passed": true,
+      "evidence": "Checked by reading the response."
+    },
+    {
+      "text": "Ramps effort across the 4 weeks (easier week 1, hardest week 4) or otherwise programs a deload",
+      "passed": true,
+      "evidence": "Checked by reading the response."
+    },
+    {
+      "text": "Gives specific sets x reps and effort targets (RIR/RPE or to-failure guidance)",
+      "passed": true,
+      "evidence": "Checked by reading the response."
+    },
+    {
+      "text": "Explains how to progress (beat reps/load, log numbers)",
+      "passed": true,
+      "evidence": "Checked by reading the response."
+    }
+  ],
+  "summary": {
+    "passed": 7,
+    "failed": 0,
+    "total": 7,
+    "pass_rate": 1.0
+  }
+}

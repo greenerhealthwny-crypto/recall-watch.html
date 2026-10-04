@@ -1,0 +1,13 @@
+{
+  "eval_id": 2,
+  "eval_name": "gl-hipthrust-quads-back",
+  "prompt": "When I do barbell hip thrusts I mostly feel it in my quads and my lower back gets sore afterward. I'm 5'2\" and I use the flat bench at my gym. What am I doing wrong?",
+  "assertions": [
+    "Says the standard flat bench (~16 in+) is likely too high and suggests a lower setup around 12 in for her height",
+    "Suggests moving the feet farther out (shins roughly vertical at the top) to reduce quads",
+    "Suggests driving through the heels",
+    "Suggests adding a band around the knees",
+    "Addresses low back: ribs down / posterior pelvic tilt at lockout / chin tucked, avoiding lumbar hyperextension",
+    "Mentions the American hip thrust or bench-position fix (bottom of shoulder blades at bench edge)"
+  ]
+}

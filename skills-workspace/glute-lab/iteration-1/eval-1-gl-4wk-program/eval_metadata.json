@@ -1,0 +1,14 @@
+{
+  "eval_id": 1,
+  "eval_name": "gl-4wk-program",
+  "prompt": "I'm a 34-year-old woman, I lift 3 days a week (Mon/Wed/Fri) at a commercial gym, about an hour each. I can hip thrust 185 lb for 8 and squat 135 for 5. Build me a 4-week glute-focused program.",
+  "assertions": [
+    "Uses 3 training days per week with glute work each day",
+    "Balances horizontal (thrust/bridge), vertical (squat/deadlift/lunge) and lateral/rotary (abduction) exercises across the week",
+    "Mixes heavy (1-5), medium (6-12) and light/high-rep (13+) work",
+    "Places big lifts (hip thrust, squat or deadlift) first in sessions and pump/abduction work last",
+    "Ramps effort across the 4 weeks (easier week 1, hardest week 4) or otherwise programs a deload",
+    "Gives specific sets x reps and effort targets (RIR/RPE or to-failure guidance)",
+    "Explains how to progress (beat reps/load, log numbers)"
+  ]
+}

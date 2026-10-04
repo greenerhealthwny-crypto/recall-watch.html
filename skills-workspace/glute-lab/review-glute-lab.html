@@ -1,0 +1,1325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eval Review</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&family=Lora:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js" integrity="sha384-EnyY0/GSHQGSxSgMwaIPzSESbqoOLSexfnSMN2AP+39Ckmn92stwABZynq1JyzdT" crossorigin="anonymous"></script>
+  <style>
+    :root {
+      --bg: #faf9f5;
+      --surface: #ffffff;
+      --border: #e8e6dc;
+      --text: #141413;
+      --text-muted: #b0aea5;
+      --accent: #d97757;
+      --accent-hover: #c4613f;
+      --green: #788c5d;
+      --green-bg: #eef2e8;
+      --red: #c44;
+      --red-bg: #fceaea;
+      --header-bg: #141413;
+      --header-text: #faf9f5;
+      --radius: 6px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Lora', Georgia, serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ---- Header ---- */
+    .header {
+      background: var(--header-bg);
+      color: var(--header-text);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .header h1 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+    .header .instructions {
+      font-size: 0.8rem;
+      opacity: 0.7;
+      margin-top: 0.25rem;
+    }
+    .header .progress {
+      font-size: 0.875rem;
+      opacity: 0.8;
+      text-align: right;
+    }
+
+    /* ---- Main content ---- */
+    .main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.5rem 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    /* ---- Sections ---- */
+    .section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      flex-shrink: 0;
+    }
+    .section-header {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.75rem 1rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+    }
+    .section-body {
+      padding: 1rem;
+    }
+
+    /* ---- Config badge ---- */
+    .config-badge {
+      display: inline-block;
+      padding: 0.2rem 0.625rem;
+      border-radius: 9999px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      margin-left: 0.75rem;
+      vertical-align: middle;
+    }
+    .config-badge.config-primary {
+      background: rgba(33, 150, 243, 0.12);
+      color: #1976d2;
+    }
+    .config-badge.config-baseline {
+      background: rgba(255, 193, 7, 0.15);
+      color: #f57f17;
+    }
+
+    /* ---- Prompt ---- */
+    .prompt-text {
+      white-space: pre-wrap;
+      font-size: 0.9375rem;
+      line-height: 1.6;
+    }
+
+    /* ---- Outputs ---- */
+    .output-file {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .output-file + .output-file {
+      margin-top: 1rem;
+    }
+    .output-file-header {
+      padding: 0.5rem 0.75rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .output-file-header .dl-btn {
+      font-size: 0.7rem;
+      color: var(--accent);
+      text-decoration: none;
+      cursor: pointer;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-weight: 500;
+      opacity: 0.8;
+    }
+    .output-file-header .dl-btn:hover {
+      opacity: 1;
+      text-decoration: underline;
+    }
+    .output-file-content {
+      padding: 0.75rem;
+      overflow-x: auto;
+    }
+    .output-file-content pre {
+      font-size: 0.8125rem;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+    }
+    .output-file-content img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 4px;
+    }
+    .output-file-content iframe {
+      width: 100%;
+      height: 600px;
+      border: none;
+    }
+    .output-file-content table {
+      border-collapse: collapse;
+      font-size: 0.8125rem;
+      width: 100%;
+    }
+    .output-file-content table td,
+    .output-file-content table th {
+      border: 1px solid var(--border);
+      padding: 0.375rem 0.5rem;
+      text-align: left;
+    }
+    .output-file-content table th {
+      background: var(--bg);
+      font-weight: 600;
+    }
+    .output-file-content .download-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 0.875rem;
+      cursor: pointer;
+    }
+    .output-file-content .download-link:hover {
+      background: var(--border);
+    }
+    .empty-state {
+      color: var(--text-muted);
+      font-style: italic;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    /* ---- Feedback ---- */
+    .prev-feedback {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.625rem 0.75rem;
+      margin-top: 0.75rem;
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+    .prev-feedback-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.25rem;
+      color: var(--text-muted);
+    }
+    .feedback-textarea {
+      width: 100%;
+      min-height: 100px;
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 0.9375rem;
+      line-height: 1.5;
+      resize: vertical;
+      color: var(--text);
+    }
+    .feedback-textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    .feedback-status {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.5rem;
+      min-height: 1.1em;
+    }
+
+    /* ---- Grades (collapsible) ---- */
+    .grades-toggle {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+    }
+    .grades-toggle:hover {
+      color: var(--accent);
+    }
+    .grades-toggle .arrow {
+      margin-right: 0.5rem;
+      transition: transform 0.15s;
+      font-size: 0.75rem;
+    }
+    .grades-toggle .arrow.open {
+      transform: rotate(90deg);
+    }
+    .grades-content {
+      display: none;
+      margin-top: 0.75rem;
+    }
+    .grades-content.open {
+      display: block;
+    }
+    .grades-summary {
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .grade-badge {
+      display: inline-block;
+      padding: 0.125rem 0.5rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .grade-pass { background: var(--green-bg); color: var(--green); }
+    .grade-fail { background: var(--red-bg); color: var(--red); }
+    .assertion-list {
+      list-style: none;
+    }
+    .assertion-item {
+      padding: 0.625rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.8125rem;
+    }
+    .assertion-item:last-child { border-bottom: none; }
+    .assertion-status {
+      font-weight: 600;
+      margin-right: 0.5rem;
+    }
+    .assertion-status.pass { color: var(--green); }
+    .assertion-status.fail { color: var(--red); }
+    .assertion-evidence {
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      margin-top: 0.25rem;
+      padding-left: 1.5rem;
+    }
+
+    /* ---- View tabs ---- */
+    .view-tabs {
+      display: flex;
+      gap: 0;
+      padding: 0 2rem;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .view-tab {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.625rem 1.25rem;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      background: none;
+      color: var(--text-muted);
+      border-bottom: 2px solid transparent;
+      transition: all 0.15s;
+    }
+    .view-tab:hover { color: var(--text); }
+    .view-tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+    .view-panel { display: none; }
+    .view-panel.active { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
+
+    /* ---- Benchmark view ---- */
+    .benchmark-view {
+      padding: 1.5rem 2rem;
+      overflow-y: auto;
+      flex: 1;
+    }
+    .benchmark-table {
+      border-collapse: collapse;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 0.8125rem;
+      width: 100%;
+      margin-bottom: 1.5rem;
+    }
+    .benchmark-table th, .benchmark-table td {
+      padding: 0.625rem 0.75rem;
+      text-align: left;
+      border: 1px solid var(--border);
+    }
+    .benchmark-table th {
+      font-family: 'Poppins', sans-serif;
+      background: var(--header-bg);
+      color: var(--header-text);
+      font-weight: 500;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .benchmark-table tr:hover { background: var(--bg); }
+    .benchmark-table tr.benchmark-row-with { background: rgba(33, 150, 243, 0.06); }
+    .benchmark-table tr.benchmark-row-without { background: rgba(255, 193, 7, 0.06); }
+    .benchmark-table tr.benchmark-row-with:hover { background: rgba(33, 150, 243, 0.12); }
+    .benchmark-table tr.benchmark-row-without:hover { background: rgba(255, 193, 7, 0.12); }
+    .benchmark-table tr.benchmark-row-avg { font-weight: 600; border-top: 2px solid var(--border); }
+    .benchmark-table tr.benchmark-row-avg.benchmark-row-with { background: rgba(33, 150, 243, 0.12); }
+    .benchmark-table tr.benchmark-row-avg.benchmark-row-without { background: rgba(255, 193, 7, 0.12); }
+    .benchmark-delta-positive { color: var(--green); font-weight: 600; }
+    .benchmark-delta-negative { color: var(--red); font-weight: 600; }
+    .benchmark-notes {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem;
+    }
+    .benchmark-notes h3 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+    }
+    .benchmark-notes ul {
+      list-style: disc;
+      padding-left: 1.25rem;
+    }
+    .benchmark-notes li {
+      font-size: 0.8125rem;
+      line-height: 1.6;
+      margin-bottom: 0.375rem;
+    }
+    .benchmark-empty {
+      color: var(--text-muted);
+      font-style: italic;
+      text-align: center;
+      padding: 3rem;
+    }
+
+    /* ---- Navigation ---- */
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+      flex-shrink: 0;
+    }
+    .nav-btn {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.5rem 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text);
+      transition: all 0.15s;
+    }
+    .nav-btn:hover:not(:disabled) {
+      background: var(--bg);
+      border-color: var(--text-muted);
+    }
+    .nav-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    .done-btn {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.5rem 1.5rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: all 0.15s;
+    }
+    .done-btn:hover {
+      background: var(--bg);
+      border-color: var(--text-muted);
+    }
+    .done-btn.ready {
+      border: none;
+      background: var(--accent);
+      color: white;
+      font-weight: 600;
+    }
+    .done-btn.ready:hover {
+      background: var(--accent-hover);
+    }
+    /* ---- Done overlay ---- */
+    .done-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 100;
+      justify-content: center;
+      align-items: center;
+    }
+    .done-overlay.visible {
+      display: flex;
+    }
+    .done-card {
+      background: var(--surface);
+      border-radius: 12px;
+      padding: 2rem 3rem;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      max-width: 500px;
+    }
+    .done-card h2 {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .done-card p {
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
+    }
+    .done-card .btn-row {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+    }
+    .done-card button {
+      padding: 0.5rem 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 0.875rem;
+    }
+    .done-card button:hover {
+      background: var(--bg);
+    }
+    /* ---- Toast ---- */
+    .toast {
+      position: fixed;
+      bottom: 5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--header-bg);
+      color: var(--header-text);
+      padding: 0.625rem 1.25rem;
+      border-radius: var(--radius);
+      font-size: 0.875rem;
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+      z-index: 200;
+    }
+    .toast.visible {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <div id="app" style="height:100vh; display:flex; flex-direction:column;">
+    <div class="header">
+      <div>
+        <h1>Eval Review: <span id="skill-name"></span></h1>
+        <div class="instructions">Review each output and leave feedback below. Navigate with arrow keys or buttons. When done, copy feedback and paste into Claude Code.</div>
+      </div>
+      <div class="progress" id="progress"></div>
+    </div>
+
+    <!-- View tabs (only shown when benchmark data exists) -->
+    <div class="view-tabs" id="view-tabs" style="display:none;">
+      <button class="view-tab active" onclick="switchView('outputs')">Outputs</button>
+      <button class="view-tab" onclick="switchView('benchmark')">Benchmark</button>
+    </div>
+
+    <!-- Outputs panel (qualitative review) -->
+    <div class="view-panel active" id="panel-outputs">
+    <div class="main">
+      <!-- Prompt -->
+      <div class="section">
+        <div class="section-header">Prompt <span class="config-badge" id="config-badge" style="display:none;"></span></div>
+        <div class="section-body">
+          <div class="prompt-text" id="prompt-text"></div>
+        </div>
+      </div>
+
+      <!-- Outputs -->
+      <div class="section">
+        <div class="section-header">Output</div>
+        <div class="section-body" id="outputs-body">
+          <div class="empty-state">No output files found</div>
+        </div>
+      </div>
+
+      <!-- Previous Output (collapsible) -->
+      <div class="section" id="prev-outputs-section" style="display:none;">
+        <div class="section-header">
+          <div class="grades-toggle" onclick="togglePrevOutputs()">
+            <span class="arrow" id="prev-outputs-arrow">&#9654;</span>
+            Previous Output
+          </div>
+        </div>
+        <div class="grades-content" id="prev-outputs-content"></div>
+      </div>
+
+      <!-- Grades (collapsible) -->
+      <div class="section" id="grades-section" style="display:none;">
+        <div class="section-header">
+          <div class="grades-toggle" onclick="toggleGrades()">
+            <span class="arrow" id="grades-arrow">&#9654;</span>
+            Formal Grades
+          </div>
+        </div>
+        <div class="grades-content" id="grades-content"></div>
+      </div>
+
+      <!-- Feedback -->
+      <div class="section">
+        <div class="section-header">Your Feedback</div>
+        <div class="section-body">
+          <textarea
+            class="feedback-textarea"
+            id="feedback"
+            placeholder="What do you think of this output? Any issues, suggestions, or things that look great?"
+          ></textarea>
+          <div class="feedback-status" id="feedback-status"></div>
+          <div class="prev-feedback" id="prev-feedback" style="display:none;">
+            <div class="prev-feedback-label">Previous feedback</div>
+            <div id="prev-feedback-text"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav" id="outputs-nav">
+      <button class="nav-btn" id="prev-btn" onclick="navigate(-1)">&#8592; Previous</button>
+      <button class="done-btn" id="done-btn" onclick="showDoneDialog()">Submit All Reviews</button>
+      <button class="nav-btn" id="next-btn" onclick="navigate(1)">Next &#8594;</button>
+    </div>
+    </div><!-- end panel-outputs -->
+
+    <!-- Benchmark panel (quantitative stats) -->
+    <div class="view-panel" id="panel-benchmark">
+      <div class="benchmark-view" id="benchmark-content">
+        <div class="benchmark-empty">No benchmark data available. Run a benchmark to see quantitative results here.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Done overlay -->
+  <div class="done-overlay" id="done-overlay">
+    <div class="done-card">
+      <h2>Review Complete</h2>
+      <p>Your feedback has been saved. Go back to your Claude Code session and tell Claude you're done reviewing.</p>
+      <div class="btn-row">
+        <button onclick="closeDoneDialog()">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ---- Embedded data (injected by generate_review.py) ----
+    const EMBEDDED_DATA = {"skill_name": "glute-lab", "runs": [{"id": "eval-1-gl-4wk-program-with_skill-run-1", "prompt": "(No prompt found)", "eval_id": null, "outputs": [{"name": "response.md", "type": "text", "content": "# Your 4-Week Glute Program (Mon / Wed / Fri, ~60 min)\n\nThis is built on Bret Contreras's *Glute Lab* principles:\n\n- **Three glute days a week.** In his experience, that's the sweet spot for most people.\n- **A different focus each day.** Monday is the hip thrust, Wednesday the squat, Friday the hinge.\n- **The Rule of Thirds:**\n  - **Direction of force:** about a third of your glute work is horizontal (hip thrusts, back extensions), a third vertical (squats, lunges, deadlifts) and a third side-to-side or rotational (abduction).\n  - **Weight:** a mix of heavy, medium and light sets.\n  - **Effort:** some sets close to failure, some moderate, some easy.\n- **A 4-week ramp.** Week 1 is easy and week 4 is where you go for personal records.\n\nYour numbers (hip thrust 185\u00d78, squat 135\u00d75) put you at roughly a 225\u2013235 lb hip thrust max and a 150\u2013155 lb squat max. The loads below are based on those estimates. Treat them as starting points and adjust to how the bar moves.\n\n---\n\n## How the 4 weeks progress\n\n\"RIR\" means reps in reserve: how many more good reps you could have done when you stopped the set.\n\n| Week | Feel | Main lifts | Accessories |\n|---|---|---|---|\n| **1: Groove** | About 60\u201370% effort. Learn the exercises and find your weights. | 3\u20134 RIR, no failure | 3 RIR |\n| **2: Build** | Normal training | 2 RIR | 2 RIR |\n| **3: Push** | Hard, with a little left in the tank | 1 RIR | 1\u20132 RIR |\n| **4: Peak** | Go for personal records (PRs) | Last set as many reps as possible (AMRAP) with good form | 1 RIR |\n\n**Rest:** 2\u20133 minutes on the first lift of each day, about 90 seconds on accessories, and 30\u201360 seconds on the pump and abduction work.\n\n**Fitting it into an hour:** do the upper-body pair (exercise E) as a superset. On Mon and Wed you can also slot it into your rest periods during exercises B\u2013D.\n\n---\n\n## Warm-up (5\u20137 min, every session)\n- Glute bridge: 1\u00d720 with a 1-second squeeze at the top\n- Banded lateral walk: 1\u00d710 steps each way\n- Bodyweight squat: 1\u00d710\n- Then 2\u20133 lighter warm-up sets of your first lift (for example, on hip thrusts: empty bar \u00d710, 95\u00d76, 135\u00d74)\n\n---\n\n## Monday: Hip Thrust Focus (horizontal, heavy)\n\n| # | Exercise | Sets \u00d7 Reps | Notes |\n|---|---|---|---|\n| A | **Barbell hip thrust** | 4\u00d76 | W1: 165 \u00b7 W2: 175 \u00b7 W3: 185 \u00b7 W4: 195 (last set AMRAP) |\n| B | Goblet squat (heels slightly elevated is fine) | 3\u00d710\u201312 | Go deep. Add 5\u201310 lb when you get 12 reps at the target RIR. |\n| C | 45\u00b0 back extension, glute-style (rounded upper back, feet turned out) | 3\u00d715\u201320 | Hold a plate or dumbbell once 20 reps is easy |\n| D | Seated hip abduction machine | 3\u00d720 | Change torso angle each set: leaning back, upright, leaning forward. Don't go to failure. |\n| E | Lat pulldown + dumbbell bench press (superset) | 2\u20133\u00d710 each | Keeps your upper body progressing |\n\n**Glute sets: about 13**\n\n## Wednesday: Squat Focus (vertical, heavy)\n\n| # | Exercise | Sets \u00d7 Reps | Notes |\n|---|---|---|---|\n| A | **Barbell back squat** | 4\u00d75 | W1: 115 \u00b7 W2: 125 \u00b7 W3: 135 \u00b7 W4: 140\u2013145 (last set AMRAP) |\n| B | Dumbbell Bulgarian split squat | 3\u00d78 per leg | Start with your weaker leg. Lean your torso forward slightly to bias the glutes. |\n| C | Single-leg or B-stance hip thrust | 3\u00d712 per leg | Bodyweight or a light dumbbell. Squeeze 1 second at the top. |\n| D | Side-lying hip abduction (band or ankle weight) | 2\u00d720 per leg | Slow and controlled. You should feel a burn in your upper glute. |\n| E | Seated cable row + dumbbell shoulder press (superset) | 2\u20133\u00d710 each | |\n\n**Glute sets: about 12**\n\n## Friday: Hinge + Pump Focus (vertical stretch, then light horizontal)\n\n| # | Exercise | Sets \u00d7 Reps | Notes |\n|---|---|---|---|\n| A | **Romanian deadlift (barbell)** | 3\u00d78 | Start around 95\u2013115 in W1 and add 10 lb a week while your back stays flat. Push hips back and stop when your hamstrings are fully stretched. |\n| B | Knee-banded barbell hip thrust | 3\u00d715 | About 125\u2013135. Keep a steady rhythm without resting between reps. Push your knees out against the band. |\n| C | Dumbbell walking lunge | 2\u00d720 total steps | Take longer strides to target the glutes more. |\n| D | **3-minute band burnout** | 1 round, no rest | 60 s band kickbacks (30 s per leg) \u2192 30 s lateral band walk \u2192 30 s seated band abduction \u2192 30 s banded bridge hold \u2192 30 s glute squeeze in a plank |\n| E | Assisted chin-up or pulldown + push-ups (superset) | 2\u20133 sets each | |\n\n**Glute sets: about 9, plus the burnout**\n\n**Weekly total:** about 34 glute sets. That's within the book's 10\u201340 range for dedicated glute training. If you're still sore when the next session comes around, cut one set from each accessory before you cut the main lifts.\n\n---\n\n## Progression rules\n1. **Log everything:** weight, reps and how many reps you had left. Each week, try to beat last week's total on the same lift (sets \u00d7 reps \u00d7 load), whether by adding load, reps or better form.\n2. **Main lifts (A):** follow the weekly loads above. If week 2 felt like 3+ RIR, add 5\u201310 lb from then on. If it felt like 0\u20131, repeat that weight.\n3. **Accessories:** use double progression. Stay in the rep range, and once you hit the top of it on every set at the target RIR, add a little weight next time.\n4. **Form before load.** Lock out every hip thrust, squat to at least parallel and keep the same depth on every rep. A rep with shortened range doesn't count as progress.\n\n## Hip thrust checklist (your most important lift)\n- Bench edge just below your shoulder blades. Use a bar pad.\n- Feet about shoulder-width, toes slightly out. At the top your shins should be close to vertical.\n- Look forward and tuck your chin as you rise. Keep your ribs down, and finish with a slight tuck of the pelvis (posterior tilt). Squeeze for 1 second at the top.\n- Push through your heels and keep your knees out.\n- **Feel it in your quads?** Move your feet farther out, add a knee band or use a lower bench. **Feel it in your hamstrings?** Bring your feet closer. **Low back?** You're likely arching at lockout, so keep your ribs down and tuck slightly at the top.\n\n## Swaps if something hurts or you don't feel your glutes\n- Back squat bothers your back or hips \u2192 goblet squat, leg press or hack squat\n- RDL bothers your back \u2192 45\u00b0 back extension or cable pull-through\n- Knee irritation from lunges or split squats \u2192 reverse lunges or step-ups\n- No abduction machine \u2192 knee-banded seated abduction (sitting on a bench)\n\nTrain *around* pain, never through it. Sharp or lingering pain is a reason to see a physical therapist, not to push harder.\n\n---\n\n## After week 4\n- **Week 5:** start a new 4-week cycle with another easy week, using your new numbers as the baseline.\n- **Rotate your focus.** Strength is easy to keep and hard to gain, so Contreras suggests specializing in one or two lifts per month.\n  - **Next block:** for example, a squat focus. Squat twice a week and keep hip thrusts at maintenance volume.\n  - **The block after:** for example, a hip thrust focus, using the hip thrust example from the book where each day uses different reps:\n\n| Day | Hip thrust | Approx. % of max | Then |\n|---|---|---|---|\n| Mon | 3\u00d710 | ~75% | 1 AMRAP set |\n| Wed | 4\u00d76 | ~85% | 1 AMRAP set |\n| Fri | 2\u00d715 | ~65% | 1 AMRAP set |\n\n- Keep the same exercise categories but change the variations every 3\u20136 weeks (Contreras calls this \"same but different\").\n\n## Recovery basics\n- **Protein:** about 0.8 g per lb of body weight per day, spread over 3\u20134 meals. That's about 110 g a day at 140 lb.\n- **Calories:** you don't need to bulk to grow your glutes. Eating at maintenance and getting stronger for months works well. If you're dieting, holding your strength steady counts as progress.\n- **Sleep and rest:** 7\u20139 hours of sleep and at least one full rest day a week.\n- **Cardio:** walking or easy cycling is fine. Do it after lifting or on other days, and keep it moderate so it doesn't cut into recovery.\n\nStrength gains come in waves, and some weeks will feel flat. Judge your progress by four things together: strength, body weight, measurements and the mirror. Most of all, praise yourself for the effort you put in.\n\n*This is training education, not medical advice. If you have an injury, a medical condition, or are pregnant or postpartum, check with your doctor or a physical therapist first.*\n"}], "grading": {"expectations": [{"text": "Uses 3 training days per week with glute work each day", "passed": true, "evidence": "Checked by reading the response."}, {"text": "Balances horizontal (thrust/bridge), vertical (squat/deadlift/lunge) and lateral/rotary (abduction) exercises across the week", "passed": true, "evidence": "Checked by reading the response."}, {"text": "Mixes heavy (1-5), medium (6-12) and light/high-rep (13+) work", "passed": true, "evidence": "Checked by reading the response."}, {"text": "Places big lifts (hip thrust, squat or deadlift) first in sessions and pump/abduction work last", "passed": true, "evidence": "Checked by reading the response."}, {"text": "Ramps effort across the 4 weeks (easier week 1, hardest week 4) or otherwise programs a deload", "passed": true, "evidence": "Checked by reading the response."}, {"text": "Gives specific sets x reps and effort targets (RIR/RPE or to-failure guidance)", "passed": true, "evidence": "Checked by reading the response."}, {"text": "Explains how to progress (beat reps/load, log numbers)", "passed": true, "evidence": "Checked by reading the response."}], "summary": {"passed": 7, "failed": 0, "total": 7, "pass_rate": 1.0}}}, {"id": "eval-1-gl-4wk-program-without_skill-run-1", "prompt": "(No prompt found)", "eval_id": null, "outputs": [{"name": "response.md", "type": "text", "content": "# 4-Week Glute-Focused Program (Mon / Wed / Fri, about 60 min)\n\nYou're already strong for a glute program. A 185 x 8 hip thrust works out to an estimated max of about 230 lb, and a 135 x 5 squat to about 150\u2013155 lb. So this plan uses real loads and real progression, not light band work.\n\n**How it's set up**\n- **Every day trains glutes**, but each day leads with a different main lift:\n  - **Mon: heavy hip thrust + squat.** Heavy loads, with the glutes working hardest when the hips are fully extended at the top.\n  - **Wed: hinge + single-leg.** This puts load on the glutes while they're stretched, which is a strong growth signal.\n  - **Fri: hip thrust volume + abduction.** Higher reps, a strong pump, and work for the upper glutes (side and top of the hip).\n- **About 12\u201316 hard glute sets per week**, which is the productive range for most intermediate lifters.\n- **Two short upper-body pairings each day** so you stay balanced on a 3-day schedule. Skip them if you train upper body elsewhere.\n- **Weeks 1\u20133 build, and Week 4 is a lighter week with a rep test.**\n\n---\n\n## Effort guide (RIR = reps in reserve)\n\nRIR is how many more reps you could have done when you stop the set.\n\n| Week | Main lifts | Accessories | Notes |\n|---|---|---|---|\n| 1 | RIR 3 (3 reps left) | RIR 2 | Groove technique and set your working weights |\n| 2 | RIR 2 | RIR 1\u20132 | Add weight or reps |\n| 3 | RIR 1 | RIR 0\u20131 (last set to failure on machines and bands) | Hardest week |\n| 4 | RIR 3\u20134, sets cut by about 40% | RIR 2\u20133 | Lighter week. AMRAP (as many reps as possible) test on Friday |\n\n**Rest:** 2\u20133 min on the main lifts, 60\u201390 s on accessories, 30\u201345 s between paired upper-body sets.\n\n---\n\n## Warm-up (5\u20137 min, every session)\n- 1 x 20 glute bridges (bodyweight, pause at the top)\n- 1 x 15 banded lateral walks each way, or 1 x 15 clamshells per side\n- 1 x 10 bodyweight squats or goblet squats\n- Ramp-up sets on the first lift: bar x 10, about 50% x 5, about 75% x 3, then your working sets\n\n---\n\n## MONDAY: Heavy Thrust + Squat\n\n| # | Exercise | Wk 1 | Wk 2 | Wk 3 | Wk 4 |\n|---|---|---|---|---|---|\n| A | **Barbell hip thrust** | 4 x 6 @ 175 | 4 x 6 @ 185 | 4 x 5 @ 195\u2013200 | 2 x 6 @ 165 |\n| B | **Back squat** | 3 x 6 @ 115 | 3 x 6 @ 120 | 4 x 5 @ 125\u2013130 | 2 x 5 @ 105 |\n| C | **Dumbbell reverse lunge** (deficit optional) | 3 x 10/leg | 3 x 10/leg (+5 lb per hand) | 3 x 12/leg | 2 x 10/leg |\n| D1 | Lat pulldown | 3 x 10 | 3 x 10 | 3 x 12 | 2 x 10 |\n| D2 | Dumbbell incline press | 3 x 10 | 3 x 10 | 3 x 12 | 2 x 10 |\n| E | **Seated hip abduction machine** | 2 x 20 | 3 x 20 | 3 x 20 + 1 dropset | 2 x 15 |\n\n**Hip thrust cues:** keep your chin tucked and look forward, not at the ceiling. Tilt the pelvis back slightly at the top so the ribs stay down and the lower back doesn't arch. Shins should be vertical at lockout. Pause 1 s at the top. If you feel it in your quads, move your feet a little farther out. If you feel it in your hamstrings, bring them closer.\n\n**Squat:** sit down between your hips rather than back. A slightly wider stance with toes turned out about 15\u201330\u00b0 gets the glutes more involved. Go as deep as you can while keeping your lower back neutral.\n\n---\n\n## WEDNESDAY: Hinge + Single-Leg\n\n| # | Exercise | Wk 1 | Wk 2 | Wk 3 | Wk 4 |\n|---|---|---|---|---|---|\n| A | **Romanian deadlift (barbell)** | 3 x 8 @ about 115 | 3 x 8 @ about 125 | 4 x 8 @ about 135 | 2 x 8 @ about 105 |\n| B | **Bulgarian split squat** (dumbbells, slight forward lean) | 3 x 8/leg | 3 x 10/leg | 3 x 10/leg (heavier) | 2 x 8/leg |\n| C | **45\u00b0 back extension, glute-biased** (round the upper back, toes out, push hips into the pad) | 3 x 15 | 3 x 15 (hold a plate) | 3 x 12 (heavier) + last set to failure | 2 x 12 |\n| D1 | One-arm dumbbell row | 3 x 10/side | 3 x 10/side | 3 x 12/side | 2 x 10/side |\n| D2 | Seated dumbbell shoulder press | 3 x 10 | 3 x 10 | 3 x 12 | 2 x 10 |\n| E | **Cable kickback** (lean slightly forward, kick back and slightly out) | 2 x 15/leg | 3 x 15/leg | 3 x 15/leg | 2 x 12/leg |\n\n**RDL starting weight:** begin around 95\u2013115 lb and use the heaviest weight you can move with a flat back and a full hamstring stretch, bar just below the knee or mid-shin. Use a 3-second lowering. Stretch under load is the point of this lift, so don't rush the descent.\n\n**Bulgarians:** a longer stance and a forward torso lean shift more of the work to the glutes. Start with your weaker leg and match the reps on the other side.\n\n---\n\n## FRIDAY: Thrust Volume + Upper Glutes\n\n| # | Exercise | Wk 1 | Wk 2 | Wk 3 | Wk 4 |\n|---|---|---|---|---|---|\n| A | **Barbell hip thrust (or glute bridge)** | 3 x 12 @ 145 | 3 x 12 @ 155 | 3 x 12 @ 160\u2013165 | **AMRAP test: 1 x max reps @ 185** |\n| B | **Leg press, feet high and wide** | 3 x 12 | 3 x 12 | 3 x 15 | 2 x 12 |\n| C | **B-stance (kickstand) dumbbell RDL** | 3 x 10/leg | 3 x 10/leg | 3 x 12/leg | 2 x 10/leg |\n| D1 | Seated cable row | 3 x 12 | 3 x 12 | 3 x 12 | 2 x 12 |\n| D2 | Push-ups (incline if needed) | 3 x AMRAP-2 (stop 2 short of max) | 3 x AMRAP-2 | 3 x AMRAP-1 | 2 x 8 |\n| E | **Glute finisher:** 1 round = 20 banded frog pumps + 20 banded seated abductions + 20 banded lateral walks | 2 rounds | 2 rounds | 3 rounds | 1 round |\n\n**Week 4 test:** after a good warm-up, hip thrust 185 for as many clean reps as you can, with a full lockout and a 1-second pause on every rep. Then do 2 x 12 at 135 and the rest of a light session. If you beat 8 reps, the program worked. Use your new numbers to set the next block.\n\n---\n\n## Progression rules\n1. **Double progression on accessories:** pick a weight and work within the rep range. Once you hit the top of the range on every set at the target RIR, add weight next week (5 lb on dumbbells, 5\u201310 lb on machines and cables).\n2. **The barbell numbers above are targets, not rules.** If a week feels clearly harder than the target RIR (bad sleep, stress, your cycle), repeat the previous week's weight. If it feels easier, go up 5\u201310 lb.\n3. **Form is the limit.** Hip thrusts need a full lockout and squats need consistent depth. A rep that loses either doesn't count.\n4. **Log everything:** weight, reps and how hard the last set felt. Progress is what you can measure.\n\n---\n\n## Getting the most out of it\n- **Protein:** about 0.7\u20131 g per lb of bodyweight per day, spread over 3\u20134 meals.\n- **Calories:** to grow your glutes noticeably, eat at maintenance or a small surplus (+150\u2013250 kcal per day). In a deficit you can still get stronger and keep muscle, but growth will be slower.\n- **Steps and recovery:** 7,000\u201310,000 steps a day and 7+ hours of sleep. Don't add hard leg conditioning on Tuesday or Thursday. Light cardio or walking is fine.\n- **Mind-muscle connection:** on the accessories, slow down, squeeze at the point where the muscle is shortest, and actually feel your glutes working. On the main lifts, focus on moving the weight well.\n- **Equipment substitutions:**\n  - No hip thrust bench or station: use a flat bench and a barbell pad, or a Smith machine.\n  - No abduction machine: banded seated abductions or cable standing abductions.\n  - No back extension station: cable pull-throughs.\n- **Pain is different from effort.** Sharp pain in the knee, back or hip means stop the lift and swap it for a pain-free variation. A deep muscle burn is fine.\n\n## After Week 4\nRun the block again with your hip thrust loads raised by 10\u201315 lb and your squat by 5\u201310 lb. You can also rotate the main lifts:\n- Front squat or high-bar pause squat in place of the back squat\n- Trap-bar deadlift in place of the RDL\n- Single-leg hip thrust in place of the Friday thrust\n\nChanging the lifts every 4\u20138 weeks keeps you progressing and keeps the plan interesting.\n"}], "grading": {"expectations": [{"text": "Uses 3 training days per week with glute work each day", "passed": true, "evidence": "Checked by reading the response."}, {"text": "Balances horizontal (thrust/bridge), vertical (squat/deadlift/lunge) and lateral/rotary (abduction) exercises across the week", "passed": true, "evidence": "Checked by reading the response."}, {"text": "Mixes heavy (1-5), medium (6-12) and light/high-rep (13+) work", "passed": true, "evidence": "Checked by reading the response."}, {"text": "Places big lifts (hip thrust, squat or deadlift) first in sessions and pump/abduction work last", "passed": true, "evidence": "Checked by reading the response."}, {"text": "Ramps effort across the 4 weeks (easier week 1, hardest week 4) or otherwise programs a deload", "passed": true, "evidence": "Checked by reading the response."}, {"text": "Gives specific sets x reps and effort targets (RIR/RPE or to-failure guidance)", "passed": true, "evidence": "Checked by reading the response."}, {"text": "Explains how to progress (beat reps/load, log numbers)", "passed": true, "evidence": "Checked by reading the response."}], "summary": {"passed": 7, "failed": 0, "total": 7, "pass_rate": 1.0}}}, {"id": "eval-2-gl-hipthrust-quads-back-with_skill-run-1", "prompt": "(No prompt found)", "eval_id": null, "outputs": [{"name": "response.md", "type": "text", "content": "You're probably not doing much \"wrong.\" These are two of the most common hip thrust complaints, and they usually have fairly mechanical causes. Most likely your **bench is too high for your height**, and you're **arching your lower back at the top** instead of finishing the movement with your hips. Here's how to fix both, based on Bret Contreras's *Glute Lab* (he's the coach who popularized the barbell hip thrust).\n\n## 1. Your bench is probably too tall (the main reason you feel your quads)\n\nContreras's guidelines for bench height:\n\n- **Most people:** about 14 in (35 cm).\n- **Lifters 5'2\" or shorter** (or anyone with long legs and a short torso): **about 12 in (30 cm).**\n- **Too high \u2192 more quads.** Too low \u2192 you end up hinging over the bench.\n\nGym flat benches are often around 16\u201318 inches, so at 5'2\" you could easily be 4\u20136 inches too high. That shifts the work toward your quads, and it also makes it easier to arch your back to get the bar up.\n\n**Ways to get a lower bench:**\n- An **aerobic step with risers**, braced against a wall so it can't slide. This is the setup Contreras suggests, and you can set it right around 12 in.\n- An **adjustable decline bench**, a lower padded box, or a hip thrust machine if your gym has one.\n- **Check your setup:** the bench edge should sit just **below your shoulder blades**. If it sits higher on your back, the bench is too tall or you're too far onto it.\n\n## 2. Other ways to move the work from your quads to your glutes\n\nTry these one at a time and see which ones help:\n\n| Fix | What to do |\n|---|---|\n| **Move your feet farther out** | At the top, your shins should be about vertical. If your knees end up well past your toes, your feet are too close. |\n| **Push through your heels** | It's fine if your toes lift a little. |\n| **Use a mini band around your knees** | Pushing your knees out against the band brings in more glute. Keep your knees tracking over your middle toes. |\n| **Lock out fully and squeeze** | Finish with shoulders, hips and knees roughly in a line, and hold a hard squeeze for about 1 second. Stop the set when you can't reach full lockout. |\n| **Try the \"American hip thrust\"** | Put the bench edge at mid-back with your feet a bit closer, and focus on tilting your pelvis under. It uses less quad and more hamstring, and Contreras specifically recommends it when regular hip thrusts bother your back. |\n\nAlso, **feeling some quad doesn't mean your glutes aren't working.** How strongly you feel a muscle varies a lot between people, and it improves with practice. Do a few sets of bodyweight or banded glute bridges as a warm-up and focus on the squeeze.\n\n## 3. Lower back soreness: stop finishing the lift with your spine\n\nThe usual cause is **spinal hyperextension at lockout**. When your hips stop rising, you keep going by arching your lower back and flaring your ribs. That loads your back instead of your glutes, and a bench that's too tall makes it worse.\n\nFixes from the book:\n- **\"Move from your sternum down.\"** Keep your ribs down and your torso stiff. Your upper body should rise as one piece, pivoting on the bench.\n- **Tuck your chin and look forward**, not up at the ceiling. Your gaze should follow your torso up, ending on the wall in front of you or your knees.\n- **Tilt your pelvis slightly under at the top** (posterior pelvic tilt, like tucking your tailbone). Many lifters, Contreras included, like a slight arch at the bottom that turns into a tuck at the top.\n- **At the top, your torso should be about parallel to the floor**, not arched above it.\n- **Brace your core at the bottom** of each rep before you drive up.\n- **Don't slide up and down the bench.** Your shoulder blades should stay in the same spot the whole set.\n\n**Lighten the load while you learn this.** If you can't reach full lockout without arching, the weight is too heavy for now. Hip thrusts are meant to be easy on the lower back when done well, so lower back soreness means something needs to change.\n\n## A quick plan for your next session\n\n1. Set up on a lower surface (about 12 in), with the edge just below your shoulder blades. Use a bar pad.\n2. Warm up with 2 sets of 15\u201320 banded glute bridges, holding the squeeze at the top.\n3. Hip thrust **3 sets of 10\u201312** with about **60\u201370% of your usual weight**. Use a knee band, keep your shins vertical at the top, push through your heels, keep your chin tucked and ribs down, and hold a 1-second squeeze with your pelvis tucked.\n4. Film one set from the side. Check for vertical shins, a flat (not arched) torso at the top, and full hip extension.\n5. Add weight only once every rep looks like that.\n\nIf one setup still doesn't feel right, try the American hip thrust variation. Contreras's general rule is to keep what you feel in your glutes and what doesn't hurt.\n\n**One caution:** normal muscle soreness that fades in a day or two is one thing. If your back pain is sharp, lasts, spreads into your leg, or happens even with good form and lighter weights, stop the exercise and see a physical therapist or doctor. Until then, you can work around it with knee-banded bridges, frog pumps, and band abduction work, which are easy on the back.\n"}], "grading": {"expectations": [{"text": "Says the standard flat bench (~16 in+) is likely too high and suggests a lower setup around 12 in for her height", "passed": true, "evidence": "Checked by reading the response."}, {"text": "Suggests moving the feet farther out (shins roughly vertical at the top) to reduce quads", "passed": true, "evidence": "Checked by reading the response."}, {"text": "Suggests driving through the heels", "passed": true, "evidence": "Checked by reading the response."}, {"text": "Suggests adding a band around the knees", "passed": true, "evidence": "Checked by reading the response."}, {"text": "Addresses low back: ribs down / posterior pelvic tilt at lockout / chin tucked, avoiding lumbar hyperextension", "passed": true, "evidence": "Checked by reading the response."}, {"text": "Mentions the American hip thrust or bench-position fix (bottom of shoulder blades at bench edge)", "passed": true, "evidence": "Checked by reading the response."}], "summary": {"passed": 6, "failed": 0, "total": 6, "pass_rate": 1.0}}}, {"id": "eval-2-gl-hipthrust-quads-back-without_skill-run-1", "prompt": "(No prompt found)", "eval_id": null, "outputs": [{"name": "response.md", "type": "text", "content": "Feeling hip thrusts in your quads and lower back is one of the most common complaints, and your height plus the flat bench probably explain a lot of it. Here's what's likely going on and how to fix it.\n\n## 1. The bench is probably too tall for you\n\nMost standard flat benches are about 16\u201317\" (40\u201345 cm) high. That height suits people around 5'6\" and taller. At 5'2\", a standard bench puts your torso too high relative to your feet, which tends to:\n\n- Make you push up and back with your legs (more quads) instead of pivoting your hips up\n- Make it hard to keep your shoulders and ribcage stable, so you finish the rep by arching your lower back\n\n**Fixes:**\n- **Raise your feet.** Put a low aerobic step or a couple of stacked bumper plates (about 2\u20134\") under your feet. This is the easiest fix and it effectively \"lowers\" the bench.\n- **Use a lower surface.** An aerobic step with risers, a plyo box set lower, or a lower bench if your gym has one. You want something around 13\u201315\" (33\u201338 cm).\n- **Position your upper back correctly.** The edge of the bench should sit just below your shoulder blades (around the bottom tips), not up at your neck or down mid-back.\n\n## 2. Your feet are probably too close to your butt\n\nFoot position decides which muscles take most of the load:\n\n- **Feet too close:** knees travel forward, so more quads (this is probably you)\n- **Feet too far out:** more hamstrings\n- **Just right:** at the **top** of the rep your **shins are vertical**, with knees roughly over your ankles and about a 90\u00b0 bend at the knee\n\n**Fix:** Do a rep with an empty bar or no weight, pause at the top, and look at your shins. If your knees are past your toes, move your feet out an inch or two. Also:\n- Feet about shoulder-width or slightly wider, toes turned out a little (around 15\u201330\u00b0)\n- Push through your **heels and midfoot**. Some people can lift their toes slightly to feel this. If your heels are coming up, you're pushing through the balls of your feet, which brings in more quads.\n- Let your knees track out a little, in line with your toes\n\n## 3. Your lower back is finishing the rep instead of your glutes\n\nLower back soreness almost always means you're **hyperextending your lumbar spine at the top**. Your ribs flare up and your back arches to get \"extra height\" once your hips have stopped extending.\n\n**Fixes:**\n- **Tuck your chin and look forward, not at the ceiling.** As you rise, keep your eyes on the wall in front of you or toward your knees. Throwing your head back pulls your spine into an arch.\n- **Ribs down.** Keep your ribcage \"stacked\" over your pelvis through the whole rep.\n- **Posterior pelvic tilt at the top.** Think \"tuck your tailbone under\" or \"zip your pubic bone toward your ribs\" as you lock out. This is the single biggest cue for getting the work into your glutes instead of your back.\n- **Pivot around the bench.** Your upper back should rotate on the bench edge like a hinge. Your torso and hips move together as one unit, and you shouldn't be sliding up the bench.\n- **Stop at full hip extension.** At lockout your body should form a straight line from your knees to your shoulders. Going higher than that is your back, not your glutes.\n\n## 4. The weight may be too heavy for now\n\nIf load has outrun technique, your body will find the easiest path, which is quads and lower back. Drop the weight by 30\u201350% for a couple of weeks and:\n- Hold a **2\u20133 second squeeze at the top** of every rep\n- Use a controlled lowering (about 2 seconds)\n- Add a light **mini band just above your knees** so you have something to push out against. This tends to light up the glutes.\n\nYou should feel a strong glute burn and squeeze. If you can't feel your glutes at that weight, more weight won't fix it.\n\n## Quick checklist for your next session\n\n1. Raise your feet on a step or plates (or use a lower bench)\n2. Bench edge just below your shoulder blades\n3. Feet placed so your shins are vertical at the top, pushing through your heels\n4. Chin tucked, eyes forward, ribs down\n5. Tuck your pelvis at lockout and stop when your hips are straight\n6. Lighter weight with a 2-second pause at the top\n\n## Helpful warm-ups and alternatives\n\n- **Glute bridges on the floor** (bodyweight or banded): the floor is a \"perfect height\" for everyone, so these are great for learning the posterior tilt and lockout.\n- **Single-leg hip thrusts** (bodyweight) for 1\u20132 sets before your barbell work to \"wake up\" your glutes.\n- If the bench setup still feels off, **barbell glute bridges from the floor** are a great substitute while you sort out your equipment.\n\n**One note:** normal muscle soreness in your back that fades in a day or two usually goes away once your form is fixed. If you have sharp pain, pain that lasts, or pain that travels down your leg, stop doing the exercise and get it checked by a physical therapist or doctor.\n"}], "grading": {"expectations": [{"text": "Says the standard flat bench (~16 in+) is likely too high and suggests a lower setup around 12 in for her height", "passed": false, "evidence": "Says the bench is too tall but suggests 13\u201315 in, not ~12 in for 5'2\"; still a reasonable fix."}, {"text": "Suggests moving the feet farther out (shins roughly vertical at the top) to reduce quads", "passed": true, "evidence": "Checked by reading the response."}, {"text": "Suggests driving through the heels", "passed": true, "evidence": "Checked by reading the response."}, {"text": "Suggests adding a band around the knees", "passed": true, "evidence": "Checked by reading the response."}, {"text": "Addresses low back: ribs down / posterior pelvic tilt at lockout / chin tucked, avoiding lumbar hyperextension", "passed": true, "evidence": "Checked by reading the response."}, {"text": "Mentions the American hip thrust or bench-position fix (bottom of shoulder blades at bench edge)", "passed": true, "evidence": "No American hip thrust, but gives the bench-edge-below-shoulder-blades fix."}], "summary": {"passed": 5, "failed": 1, "total": 6, "pass_rate": 0.83}}}, {"id": "eval-3-gl-plateau-no-thighs-with_skill-run-1", "prompt": "(No prompt found)", "eval_id": null, "outputs": [{"name": "response.md", "type": "text", "content": "Eight months of training five days a week is a lot of consistency, so that part isn't the issue. Here's what I think is going on and what I'd change. The approach comes from Bret Contreras's *Glute Lab*.\n\n## What's probably holding you back\n\n**1. You're doing far more volume than you can recover from.** Five days \u00d7 15 sets is about **75 glute sets a week**. Contreras's range is **10\u201340 weekly glute sets**, depending on the person, and most people do best somewhere in the middle. He gives an example close to yours: a lifter doing 4 sessions \u00d7 15 sets (60 sets a week) cut back to 2 \u00d7 12 (24 sets a week). With less fatigue, the strength and muscle she had been building could finally show. Past a certain point, extra sets just add fatigue. The first set of an exercise gives most of the stimulus, and each set after it adds less.\n\n**2. You may be getting less effort per set than you think.** This is the most common mistake Contreras sees: \"too much volume, too little effort.\" When you have 15 sets to get through five days in a row, you naturally pace yourself, and many sets end with 4\u20136 reps still in the tank. Growth comes mainly from the last ~5 reps before failure (the \"stimulating reps\"). You can have high frequency, high volume or high effort, but you can't have all three at once.\n\n**3. Your exercise choices are probably growing your thighs.** If your 15 sets lean on squats, lunges, step-ups, split squats, leg press or heavy RDLs, those are vertically loaded, quad- and hamstring-heavy lifts. They work the lower glutes in a stretched position, but they also build a lot of leg. Glute-dominant exercises (hip thrusts, bridges, abduction) put most of the tension on the glutes.\n\n**4. You're probably not progressing.** If your hip thrust weight has been about the same for months, the stimulus hasn't changed either. Mechanical tension that increases over time is the main driver of growth.\n\n**5. Recovery and food matter more than they seem.** Five hard days, poor sleep or not eating enough can stall even a perfect program.\n\n## What to change\n\n### Train glutes 3 days a week, not 5\nContreras considers three glute days the sweet spot for most people. In his rough estimate, three days get you about 98% of possible gains, and a 4th or 5th day helps or hurts depending on recovery. If you love being in the gym, use days 4\u20135 for upper body or a short, easy band \"pump\" session (see below), not another hard glute day.\n\n### Cut to about 12\u201315 hard sets per session (~36\u201345 a week), and make every set count\n- **Main lift:** take it to failure or 1 rep shy.\n- **Accessories:** stop 2\u20133 reps shy of failure.\n- **Band and abduction work:** go for burn and pump, not true failure.\n- Rest 2\u20133 minutes on the main lift. If you can chat between sets of hip thrusts, you aren't working hard enough.\n\n### Swap leg-dominant lifts for glute-dominant ones\nTo grow your glutes without growing your legs, Contreras says to **cut back on** squats, lunges, step-ups, split squats, leg press, hack squats, leg extensions and heavy hinges. **Emphasize** instead:\n- **Barbell glute bridges** (he calls these the \"money\" lift for this goal) and hip thrusts\n- Feet-elevated hip thrusts, frog pumps\n- Abduction: seated machine or knee-banded seated abduction, side-lying abduction, lateral band walks\n- Hip external rotation (cable or band)\n- Lighter hinges that hit the glutes more than the hamstrings: cable pull-throughs, reverse hypers, kettlebell swings, American deadlifts (shorter range)\n- Low-load activation work to warm up\n\nYou don't need to drop squats or lunges completely. One lighter, higher-rep set a week keeps the movement pattern without driving leg growth.\n\n### Get the glutes, not the quads, doing the work on thrusts\nIf you feel thrusts mostly in your thighs:\n- Shoulder blades on the bench edge. A bench of about 14 in suits most people; lower it if you're short.\n- Move your feet a bit farther out, so your shins are roughly vertical at the top.\n- Push through your heels, knees out. A band around your knees helps.\n- Ribs down, chin tucked, slight posterior pelvic tilt at the top, and squeeze for 1 second.\n- If you still feel it mostly in your quads, try the **American hip thrust** (bench edge at mid-back instead of under the shoulder blades).\n\n## A sample week\n\n| Day | Exercise | Sets \u00d7 reps | Effort |\n|---|---|---|---|\n| **Mon: heavy** | Barbell hip thrust | 4 \u00d7 6\u20138 | Last 2 sets 0\u20131 RIR |\n| | Cable pull-through | 3 \u00d7 12\u201315 | 2 RIR |\n| | Seated hip abduction machine (lean forward) | 3 \u00d7 15\u201320 | 1\u20132 RIR |\n| | Side-lying hip abduction | 2 \u00d7 20/leg | Burn, not failure |\n| **Wed: medium** | Barbell glute bridge | 3 \u00d7 10\u201312 | 1 RIR |\n| | Single-leg or B-stance hip thrust | 3 \u00d7 10\u201312/leg | 1\u20132 RIR |\n| | 45\u00b0 back extension (rounded upper back, glute focus) | 3 \u00d7 15\u201320 | 2 RIR |\n| | Cable standing hip external rotation | 2 \u00d7 15/side | 2 RIR |\n| **Fri: light / pump** | Feet-elevated hip thrust (pause 2 s at top) | 3 \u00d7 15\u201320 | 1\u20132 RIR |\n| | Reverse hyper or kettlebell swing | 3 \u00d7 15\u201320 | 2 RIR |\n| | Frog pumps | 2 \u00d7 30\u201350 | Close to failure |\n| | 3-minute band burnout (kickbacks \u2192 band walks \u2192 banded seated abduction \u2192 banded bridge hold) | 1 | Pump, not failure |\n\nThat's about 12\u201313 sets per session and about 38 a week. It also follows Contreras's **Rule of Thirds** across the week:\n- A mix of heavy, medium and light rep ranges.\n- A mix of horizontal (thrusts, bridges), hinge, and lateral or rotary (abduction) work.\n- Some sets taken to failure, some a few reps shy, some nowhere near failure.\n\n**Optional days 4\u20135:** upper body, walking, or a 10-minute low-damage band session (banded bridges, clams, band walks) kept well short of failure. Take at least one full rest day.\n\n## How to progress\n- **Start with an easy week.** You're carrying eight months of fatigue. Run the program at about 60\u201370% effort with no sets to failure. Strength often jumps after this.\n- **Use 4-week cycles:**\n  - Week 1: easy\n  - Week 2: normal, still no failure\n  - Week 3: to failure with a little left in the tank\n  - Week 4: go for personal bests (PRs)\n\n  Then start the next cycle.\n- **Log every set** and try to beat your load or total reps over time. Before adding weight, improve your form and range of motion, then add reps, then add load.\n- **Rotate the program every 4\u20136 weeks.** For example, run a hip-thrust-focused month, then a bridge or single-leg month.\n\n## About the thighs\nTwo things are worth knowing:\n- **Part of what you're seeing may be fat, not muscle.** Contreras notes that when people say their legs are getting bigger, it's often leg fat rather than leg muscle, and you can't spot-reduce fat. Body-fat changes from diet show up on your thighs as well.\n- **Bigger glutes make thighs look smaller.** Growing the glutes changes the proportions of your whole lower body.\n\n## Food, sleep and recovery\n- **Protein:** about 1 g per lb of lean body mass a day, or roughly 0.8 g per lb of body weight, split across 3\u20134 meals.\n- **Calories:** your glutes are unlikely to grow if you're also in a long calorie deficit. Eat around maintenance, or slightly above it if you're lean. A rough estimate of maintenance is body weight (lb) \u00d7 14\u201315. Eating at maintenance while getting much stronger can grow your glutes while your waist stays the same or shrinks.\n- **Sleep:** 7\u20139 hours.\n- **Cardio:** keep it moderate (walking is best). Lots of hard cardio competes with recovery.\n\n## What to expect\nProgress comes in waves, and it's slower after the first few months. Give this plan **at least 12 weeks** (three cycles) before you judge it. Track it in four ways: hip thrust and bridge numbers, monthly progress photos in the same lighting, a hip/glute tape measurement, and body weight. If your thrust is clearly climbing, your glutes are almost certainly growing.\n\n*This is training education, not medical advice. If any of these exercises causes sharp or lasting pain, stop doing it and see a physical therapist.*\n"}], "grading": {"expectations": [{"text": "Identifies too much volume / too little effort and recommends cutting weekly glute volume and frequency (e.g., 2-3 days, fewer sets)", "passed": true, "evidence": "Checked by reading the response."}, {"text": "Recommends pushing sets closer to failure (effort over volume)", "passed": true, "evidence": "Checked by reading the response."}, {"text": "Recommends deloads or fluctuating training stress", "passed": true, "evidence": "Checked by reading the response."}, {"text": "Recommends glute-dominant exercises (barbell glute bridge, hip thrust variations, abduction) to grow glutes without thighs", "passed": true, "evidence": "Checked by reading the response."}, {"text": "Recommends reducing quad/hamstring-dominant exercises (squats, lunges, leg press, etc.)", "passed": true, "evidence": "Checked by reading the response."}, {"text": "Notes thigh size is often fat rather than muscle and addresses diet/protein", "passed": true, "evidence": "Checked by reading the response."}, {"text": "Mentions progressive overload / tracking strength on a main lift", "passed": true, "evidence": "Checked by reading the response."}], "summary": {"passed": 7, "failed": 0, "total": 7, "pass_rate": 1.0}}}, {"id": "eval-3-gl-plateau-no-thighs-without_skill-run-1", "prompt": "(No prompt found)", "eval_id": null, "outputs": [{"name": "response.md", "type": "text", "content": "Eight months of consistent work with little to show for it is frustrating. The good news is that your setup points to a few likely causes, and each one can be fixed. Here's what I'd change, starting with the biggest factor.\n\n## 1. You're probably doing too much, and not hard enough\n\nFive days a week at about 15 sets per session comes to roughly **75 glute sets a week**. That's far more than most people can recover from or make productive. With that much volume, a few things tend to go wrong:\n\n- **Effort per set drops.** You pace yourself, and most sets end well short of failure. Those sets add fatigue but don't do much for growth.\n- **Recovery never catches up.** Glutes need time to repair and grow between hard sessions. Training them hard every weekday leaves very little room for that.\n- **Loads stall.** If your hip thrust or RDL weights haven't gone up much in months, that's a strong sign you're overreaching rather than progressing.\n\n**The change:** train glutes **3 (at most 4) days a week**, with about **10\u201315 quality sets per session**. That's roughly **30\u201345 hard sets a week**, about half what you're doing now. Take most working sets to **1\u20133 reps short of failure**. On isolation moves like abduction and kickbacks, it's fine to go all the way to failure on the last set.\n\n## 2. Track your lifts and add weight or reps over time\n\nMuscle grows when you gradually ask it to do more. If you don't already keep a log, start one. For each main lift, aim to beat last time by adding a rep or a little weight. Keep using the same core exercises for 6\u201312 weeks before rotating them, so progress is measurable. Changing exercises constantly makes it hard to tell whether you're actually getting stronger.\n\n## 3. Pick hip-dominant exercises so your thighs grow less\n\nIf your program has a lot of squats, lunges, leg press, split squats or step-ups, your quads (and adductors) are getting heavy work. That's very likely why your thighs are growing. The fix is to move most of your volume to exercises where the hips do the work and the knees stay fairly still:\n\n**Prioritize these (they emphasize glutes and keep thigh involvement low):**\n- Barbell hip thrusts and glute bridges (your main lift)\n- Romanian deadlifts and good mornings (these also work the hamstrings, but don't build the front of the thigh much)\n- 45\u00b0 back extensions done glute-focused: round your upper back slightly, turn your feet out, and squeeze your glutes to come up\n- Cable or machine kickbacks\n- Hip abduction (machine, banded, or seated/lying). This targets the upper glutes and side glutes, which give the \"shelf\" and the rounder look from behind.\n- Frog pumps, or high-rep banded bridges as a finisher\n\n**Reduce or adjust these:**\n- Cut back on heavy squats, leg press, lunges and step-ups, or remove them for a training block. You don't have to drop them forever.\n- If you keep a squat pattern, favor versions that load the glutes more and the quads less: sit back more, use a wider stance, go a bit less deep if your knees travel far forward, or swap in box squats. Use moderate loads.\n- On lunges and split squats, take a longer stride and lean your torso slightly forward. That shifts more of the work to the glutes.\n\n## 4. Check whether the thigh growth is muscle or fat\n\nBefore you assume the squats are to blame, check whether your bodyweight has crept up. Many women store fat on the thighs and hips first. If the scale has risen, some of the \"bigger thighs\" may be fat rather than muscle, and that calls for a different fix: a small calorie adjustment rather than different exercises. Take tape measurements of your thighs, hips and waist plus progress photos every 3\u20134 weeks. Measurements tell you much more than how your jeans feel.\n\n## 5. Eat enough to grow\n\nYou can't build much new muscle if you're eating too little.\n- **Protein:** about **1.6\u20132.2 g per kg of bodyweight per day** (about 0.7\u20131 g per pound), spread across 3\u20134 meals.\n- **Calories:** if you're at a healthy body fat and want real glute growth, eat at **maintenance or a small surplus** (around +200\u2013300 kcal/day). Dieting the whole time while hoping your glutes grow is one of the most common reasons for a plateau.\n- **Sleep:** 7\u20139 hours. This is where recovery actually happens.\n\n## 6. Learn to feel your glutes working\n\nIf you mostly feel your hamstrings, quads or lower back during hip thrusts and bridges, your glutes may not be doing their share of the work. Some cues that help:\n- On hip thrusts, tuck your chin and keep your ribs down. Tilt your pelvis slightly backward (a \"posterior pelvic tilt\") at the top, and push through your heels or mid-foot.\n- Pause for 1\u20132 seconds at the top of every rep and squeeze.\n- Do a short activation warm-up before lifting, such as 2 sets of banded glute bridges and banded abduction.\n- Lighten the load if you need to. A weight you can actually feel in your glutes beats a heavier one your back takes over.\n\n## A sample week\n\n**Day 1: Heavy hip extension**\n- Barbell hip thrust: 4 \u00d7 6\u201310\n- Romanian deadlift: 3 \u00d7 8\u201310\n- Hip abduction machine: 3 \u00d7 15\u201320\n- Cable kickback: 2 \u00d7 12\u201315 per side\n\n**Day 2: Moderate / pump**\n- Glute-focused 45\u00b0 back extension: 3 \u00d7 12\u201320\n- Single-leg hip thrust: 3 \u00d7 10\u201312 per side\n- Banded or seated abduction: 3 \u00d7 20\u201330\n- Frog pumps: 2 \u00d7 30 to near failure\n\n**Day 3: Strength + variety**\n- Barbell glute bridge or hip thrust (heavier, or with a pause at the top): 4 \u00d7 8\u201312\n- Glute-biased squat variation (box squat or wide-stance squat, moderate weight) *or* a long-stride split squat: 3 \u00d7 8\u201310. Leave this out entirely if you want to minimize thigh growth.\n- Cable pull-through or kettlebell swing: 3 \u00d7 12\u201315\n- Lying or side-lying abduction: 2 \u00d7 15\u201320 per side\n\nRest 2\u20133 minutes between sets on the main lifts and 60\u201390 seconds on the accessories. Every 6\u20138 weeks, take an easier week where you cut sets and weight by about a third, then build back up.\n\n## Be realistic about timing\n\nOnce these pieces are in place (recovery, real effort, steady weight increases, enough food), most people notice visible changes in **8\u201312 weeks**. After that, results keep building slowly. Genetics also affect how glutes grow and where your body stores fat, so judge your progress against your own measurements, not other people's photos.\n\n**In short:** train glutes less often but harder, base your program on hip thrusts, RDLs, back extensions and abduction instead of squats and lunges, track your lifts so the numbers keep going up, and eat enough protein and calories to grow.\n"}], "grading": {"expectations": [{"text": "Identifies too much volume / too little effort and recommends cutting weekly glute volume and frequency (e.g., 2-3 days, fewer sets)", "passed": true, "evidence": "Checked by reading the response."}, {"text": "Recommends pushing sets closer to failure (effort over volume)", "passed": true, "evidence": "Checked by reading the response."}, {"text": "Recommends deloads or fluctuating training stress", "passed": true, "evidence": "Checked by reading the response."}, {"text": "Recommends glute-dominant exercises (barbell glute bridge, hip thrust variations, abduction) to grow glutes without thighs", "passed": true, "evidence": "Hip thrusts, bridges, kickbacks, abduction; doesn't single out the barbell glute bridge but meets the assertion."}, {"text": "Recommends reducing quad/hamstring-dominant exercises (squats, lunges, leg press, etc.)", "passed": true, "evidence": "Checked by reading the response."}, {"text": "Notes thigh size is often fat rather than muscle and addresses diet/protein", "passed": true, "evidence": "Checked by reading the response."}, {"text": "Mentions progressive overload / tracking strength on a main lift", "passed": true, "evidence": "Checked by reading the response."}], "summary": {"passed": 7, "failed": 0, "total": 7, "pass_rate": 1.0}}}], "previous_feedback": {}, "previous_outputs": {}, "benchmark": {"metadata": {"skill_name": "glute-lab", "skill_path": "<path/to/skill>", "executor_model": "<model-name>", "analyzer_model": "<model-name>", "timestamp": "2026-10-04T13:42:46Z", "evals_run": [1, 2, 3], "runs_per_configuration": 3}, "runs": [{"eval_id": 1, "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 7, "failed": 0, "total": 7, "time_seconds": 70.4, "tokens": 85663, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Uses 3 training days per week with glute work each day", "passed": true, "evidence": "Checked by reading the response."}, {"text": "Balances horizontal (thrust/bridge), vertical (squat/deadlift/lunge) and lateral/rotary (abduction) exercises across the week", "passed": true, "evidence": "Checked by reading the response."}, {"text": "Mixes heavy (1-5), medium (6-12) and light/high-rep (13+) work", "passed": true, "evidence": "Checked by reading the response."}, {"text": "Places big lifts (hip thrust, squat or deadlift) first in sessions and pump/abduction work last", "passed": true, "evidence": "Checked by reading the response."}, {"text": "Ramps effort across the 4 weeks (easier week 1, hardest week 4) or otherwise programs a deload", "passed": true, "evidence": "Checked by reading the response."}, {"text": "Gives specific sets x reps and effort targets (RIR/RPE or to-failure guidance)", "passed": true, "evidence": "Checked by reading the response."}, {"text": "Explains how to progress (beat reps/load, log numbers)", "passed": true, "evidence": "Checked by reading the response."}], "notes": []}, {"eval_id": 2, "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 6, "failed": 0, "total": 6, "time_seconds": 35.8, "tokens": 75159, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Says the standard flat bench (~16 in+) is likely too high and suggests a lower setup around 12 in for her height", "passed": true, "evidence": "Checked by reading the response."}, {"text": "Suggests moving the feet farther out (shins roughly vertical at the top) to reduce quads", "passed": true, "evidence": "Checked by reading the response."}, {"text": "Suggests driving through the heels", "passed": true, "evidence": "Checked by reading the response."}, {"text": "Suggests adding a band around the knees", "passed": true, "evidence": "Checked by reading the response."}, {"text": "Addresses low back: ribs down / posterior pelvic tilt at lockout / chin tucked, avoiding lumbar hyperextension", "passed": true, "evidence": "Checked by reading the response."}, {"text": "Mentions the American hip thrust or bench-position fix (bottom of shoulder blades at bench edge)", "passed": true, "evidence": "Checked by reading the response."}], "notes": []}, {"eval_id": 3, "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 7, "failed": 0, "total": 7, "time_seconds": 48.8, "tokens": 86518, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Identifies too much volume / too little effort and recommends cutting weekly glute volume and frequency (e.g., 2-3 days, fewer sets)", "passed": true, "evidence": "Checked by reading the response."}, {"text": "Recommends pushing sets closer to failure (effort over volume)", "passed": true, "evidence": "Checked by reading the response."}, {"text": "Recommends deloads or fluctuating training stress", "passed": true, "evidence": "Checked by reading the response."}, {"text": "Recommends glute-dominant exercises (barbell glute bridge, hip thrust variations, abduction) to grow glutes without thighs", "passed": true, "evidence": "Checked by reading the response."}, {"text": "Recommends reducing quad/hamstring-dominant exercises (squats, lunges, leg press, etc.)", "passed": true, "evidence": "Checked by reading the response."}, {"text": "Notes thigh size is often fat rather than muscle and addresses diet/protein", "passed": true, "evidence": "Checked by reading the response."}, {"text": "Mentions progressive overload / tracking strength on a main lift", "passed": true, "evidence": "Checked by reading the response."}], "notes": []}, {"eval_id": 1, "configuration": "without_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 7, "failed": 0, "total": 7, "time_seconds": 48.4, "tokens": 67176, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Uses 3 training days per week with glute work each day", "passed": true, "evidence": "Checked by reading the response."}, {"text": "Balances horizontal (thrust/bridge), vertical (squat/deadlift/lunge) and lateral/rotary (abduction) exercises across the week", "passed": true, "evidence": "Checked by reading the response."}, {"text": "Mixes heavy (1-5), medium (6-12) and light/high-rep (13+) work", "passed": true, "evidence": "Checked by reading the response."}, {"text": "Places big lifts (hip thrust, squat or deadlift) first in sessions and pump/abduction work last", "passed": true, "evidence": "Checked by reading the response."}, {"text": "Ramps effort across the 4 weeks (easier week 1, hardest week 4) or otherwise programs a deload", "passed": true, "evidence": "Checked by reading the response."}, {"text": "Gives specific sets x reps and effort targets (RIR/RPE or to-failure guidance)", "passed": true, "evidence": "Checked by reading the response."}, {"text": "Explains how to progress (beat reps/load, log numbers)", "passed": true, "evidence": "Checked by reading the response."}], "notes": []}, {"eval_id": 2, "configuration": "without_skill", "run_number": 1, "result": {"pass_rate": 0.83, "passed": 5, "failed": 1, "total": 6, "time_seconds": 31.8, "tokens": 65102, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Says the standard flat bench (~16 in+) is likely too high and suggests a lower setup around 12 in for her height", "passed": false, "evidence": "Says the bench is too tall but suggests 13\u201315 in, not ~12 in for 5'2\"; still a reasonable fix."}, {"text": "Suggests moving the feet farther out (shins roughly vertical at the top) to reduce quads", "passed": true, "evidence": "Checked by reading the response."}, {"text": "Suggests driving through the heels", "passed": true, "evidence": "Checked by reading the response."}, {"text": "Suggests adding a band around the knees", "passed": true, "evidence": "Checked by reading the response."}, {"text": "Addresses low back: ribs down / posterior pelvic tilt at lockout / chin tucked, avoiding lumbar hyperextension", "passed": true, "evidence": "Checked by reading the response."}, {"text": "Mentions the American hip thrust or bench-position fix (bottom of shoulder blades at bench edge)", "passed": true, "evidence": "No American hip thrust, but gives the bench-edge-below-shoulder-blades fix."}], "notes": []}, {"eval_id": 3, "configuration": "without_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 7, "failed": 0, "total": 7, "time_seconds": 39.2, "tokens": 65886, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Identifies too much volume / too little effort and recommends cutting weekly glute volume and frequency (e.g., 2-3 days, fewer sets)", "passed": true, "evidence": "Checked by reading the response."}, {"text": "Recommends pushing sets closer to failure (effort over volume)", "passed": true, "evidence": "Checked by reading the response."}, {"text": "Recommends deloads or fluctuating training stress", "passed": true, "evidence": "Checked by reading the response."}, {"text": "Recommends glute-dominant exercises (barbell glute bridge, hip thrust variations, abduction) to grow glutes without thighs", "passed": true, "evidence": "Hip thrusts, bridges, kickbacks, abduction; doesn't single out the barbell glute bridge but meets the assertion."}, {"text": "Recommends reducing quad/hamstring-dominant exercises (squats, lunges, leg press, etc.)", "passed": true, "evidence": "Checked by reading the response."}, {"text": "Notes thigh size is often fat rather than muscle and addresses diet/protein", "passed": true, "evidence": "Checked by reading the response."}, {"text": "Mentions progressive overload / tracking strength on a main lift", "passed": true, "evidence": "Checked by reading the response."}], "notes": []}], "run_summary": {"with_skill": {"pass_rate": {"mean": 1.0, "stddev": 0.0, "min": 1.0, "max": 1.0}, "time_seconds": {"mean": 51.6667, "stddev": 17.4772, "min": 35.8, "max": 70.4}, "tokens": {"mean": 82446.6667, "stddev": 6325.7664, "min": 75159, "max": 86518}}, "without_skill": {"pass_rate": {"mean": 0.9433, "stddev": 0.0981, "min": 0.83, "max": 1.0}, "time_seconds": {"mean": 39.8, "stddev": 8.3162, "min": 31.8, "max": 48.4}, "tokens": {"mean": 66054.6667, "stddev": 1047.237, "min": 65102, "max": 67176}}, "delta": {"pass_rate": "+0.06", "time_seconds": "+11.9", "tokens": "+16392"}}, "notes": []}};
+
+    // ---- State ----
+    let feedbackMap = {};  // run_id -> feedback text
+    let currentIndex = 0;
+    let visitedRuns = new Set();
+
+    // ---- Init ----
+    async function init() {
+      // Load saved feedback from server — but only if this isn't a fresh
+      // iteration (indicated by previous_feedback being present). When
+      // previous feedback exists, the feedback.json on disk is stale from
+      // the prior iteration and should not pre-fill the textareas.
+      const hasPrevious = Object.keys(EMBEDDED_DATA.previous_feedback || {}).length > 0
+        || Object.keys(EMBEDDED_DATA.previous_outputs || {}).length > 0;
+      if (!hasPrevious) {
+        try {
+          const resp = await fetch("/api/feedback");
+          const data = await resp.json();
+          if (data.reviews) {
+            for (const r of data.reviews) feedbackMap[r.run_id] = r.feedback;
+          }
+        } catch { /* first run, no feedback yet */ }
+      }
+
+      document.getElementById("skill-name").textContent = EMBEDDED_DATA.skill_name;
+      showRun(0);
+
+      // Wire up feedback auto-save
+      const textarea = document.getElementById("feedback");
+      let saveTimeout = null;
+      textarea.addEventListener("input", () => {
+        clearTimeout(saveTimeout);
+        document.getElementById("feedback-status").textContent = "";
+        saveTimeout = setTimeout(() => saveCurrentFeedback(), 800);
+      });
+    }
+
+    // ---- Navigation ----
+    function navigate(delta) {
+      const newIndex = currentIndex + delta;
+      if (newIndex >= 0 && newIndex < EMBEDDED_DATA.runs.length) {
+        saveCurrentFeedback();
+        showRun(newIndex);
+      }
+    }
+
+    function updateNavButtons() {
+      document.getElementById("prev-btn").disabled = currentIndex === 0;
+      document.getElementById("next-btn").disabled =
+        currentIndex === EMBEDDED_DATA.runs.length - 1;
+    }
+
+    // ---- Show a run ----
+    function showRun(index) {
+      currentIndex = index;
+      const run = EMBEDDED_DATA.runs[index];
+
+      // Progress
+      document.getElementById("progress").textContent =
+        `${index + 1} of ${EMBEDDED_DATA.runs.length}`;
+
+      // Prompt
+      document.getElementById("prompt-text").textContent = run.prompt;
+
+      // Config badge
+      const badge = document.getElementById("config-badge");
+      const configMatch = run.id.match(/(with_skill|without_skill|new_skill|old_skill)/);
+      if (configMatch) {
+        const config = configMatch[1];
+        const isBaseline = config === "without_skill" || config === "old_skill";
+        badge.textContent = config.replace(/_/g, " ");
+        badge.className = "config-badge " + (isBaseline ? "config-baseline" : "config-primary");
+        badge.style.display = "inline-block";
+      } else {
+        badge.style.display = "none";
+      }
+
+      // Outputs
+      renderOutputs(run);
+
+      // Previous outputs
+      renderPrevOutputs(run);
+
+      // Grades
+      renderGrades(run);
+
+      // Previous feedback
+      const prevFb = (EMBEDDED_DATA.previous_feedback || {})[run.id];
+      const prevEl = document.getElementById("prev-feedback");
+      if (prevFb) {
+        document.getElementById("prev-feedback-text").textContent = prevFb;
+        prevEl.style.display = "block";
+      } else {
+        prevEl.style.display = "none";
+      }
+
+      // Feedback
+      document.getElementById("feedback").value = feedbackMap[run.id] || "";
+      document.getElementById("feedback-status").textContent = "";
+
+      updateNavButtons();
+
+      // Track visited runs and promote done button when all visited
+      visitedRuns.add(index);
+      const doneBtn = document.getElementById("done-btn");
+      if (visitedRuns.size >= EMBEDDED_DATA.runs.length) {
+        doneBtn.classList.add("ready");
+      }
+
+      // Scroll main content to top
+      document.querySelector(".main").scrollTop = 0;
+    }
+
+    // ---- Render outputs ----
+    function renderOutputs(run) {
+      const container = document.getElementById("outputs-body");
+      container.innerHTML = "";
+
+      const outputs = run.outputs || [];
+      if (outputs.length === 0) {
+        container.innerHTML = '<div class="empty-state">No output files</div>';
+        return;
+      }
+
+      for (const file of outputs) {
+        const fileDiv = document.createElement("div");
+        fileDiv.className = "output-file";
+
+        // Always show file header with download link
+        const header = document.createElement("div");
+        header.className = "output-file-header";
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = file.name;
+        header.appendChild(nameSpan);
+        const dlBtn = document.createElement("a");
+        dlBtn.className = "dl-btn";
+        dlBtn.textContent = "Download";
+        dlBtn.download = file.name;
+        dlBtn.href = getDownloadUri(file);
+        header.appendChild(dlBtn);
+        fileDiv.appendChild(header);
+
+        const content = document.createElement("div");
+        content.className = "output-file-content";
+
+        if (file.type === "text") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          content.appendChild(pre);
+        } else if (file.type === "image") {
+          const img = document.createElement("img");
+          img.src = file.data_uri;
+          img.alt = file.name;
+          content.appendChild(img);
+        } else if (file.type === "pdf") {
+          const iframe = document.createElement("iframe");
+          iframe.src = file.data_uri;
+          content.appendChild(iframe);
+        } else if (file.type === "xlsx") {
+          renderXlsx(content, file.data_b64);
+        } else if (file.type === "binary") {
+          const a = document.createElement("a");
+          a.className = "download-link";
+          a.href = file.data_uri;
+          a.download = file.name;
+          a.textContent = "Download " + file.name;
+          content.appendChild(a);
+        } else if (file.type === "error") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          pre.style.color = "var(--red)";
+          content.appendChild(pre);
+        }
+
+        fileDiv.appendChild(content);
+        container.appendChild(fileDiv);
+      }
+    }
+
+    // ---- XLSX rendering via SheetJS ----
+    function renderXlsx(container, b64Data) {
+      try {
+        const raw = Uint8Array.from(atob(b64Data), c => c.charCodeAt(0));
+        const wb = XLSX.read(raw, { type: "array" });
+
+        for (let i = 0; i < wb.SheetNames.length; i++) {
+          const sheetName = wb.SheetNames[i];
+          const ws = wb.Sheets[sheetName];
+
+          if (wb.SheetNames.length > 1) {
+            const sheetLabel = document.createElement("div");
+            sheetLabel.style.cssText =
+              "font-weight:600; font-size:0.8rem; color:#b0aea5; margin-top:0.5rem; margin-bottom:0.25rem;";
+            sheetLabel.textContent = "Sheet: " + sheetName;
+            container.appendChild(sheetLabel);
+          }
+
+          const htmlStr = XLSX.utils.sheet_to_html(ws, { editable: false });
+          const wrapper = document.createElement("div");
+          wrapper.innerHTML = htmlStr;
+          container.appendChild(wrapper);
+        }
+      } catch (err) {
+        container.textContent = "Error rendering spreadsheet: " + err.message;
+      }
+    }
+
+    // ---- Grades ----
+    function renderGrades(run) {
+      const section = document.getElementById("grades-section");
+      const content = document.getElementById("grades-content");
+
+      if (!run.grading) {
+        section.style.display = "none";
+        return;
+      }
+
+      const grading = run.grading;
+      section.style.display = "block";
+      // Reset to collapsed
+      content.classList.remove("open");
+      document.getElementById("grades-arrow").classList.remove("open");
+
+      const summary = grading.summary || {};
+      const expectations = grading.expectations || [];
+
+      let html = '<div style="padding: 1rem;">';
+
+      // Summary line
+      const passRate = summary.pass_rate != null
+        ? Math.round(summary.pass_rate * 100) + "%"
+        : "?";
+      const badgeClass = summary.pass_rate >= 0.8 ? "grade-pass" : summary.pass_rate >= 0.5 ? "" : "grade-fail";
+      html += '<div class="grades-summary">';
+      html += '<span class="grade-badge ' + badgeClass + '">' + passRate + '</span>';
+      html += '<span>' + (summary.passed || 0) + ' passed, ' + (summary.failed || 0) + ' failed of ' + (summary.total || 0) + '</span>';
+      html += '</div>';
+
+      // Assertions list
+      html += '<ul class="assertion-list">';
+      for (const exp of expectations) {
+        const statusClass = exp.passed ? "pass" : "fail";
+        const statusIcon = exp.passed ? "\u2713" : "\u2717";
+        html += '<li class="assertion-item">';
+        html += '<span class="assertion-status ' + statusClass + '">' + statusIcon + '</span>';
+        html += '<span>' + escapeHtml(exp.text) + '</span>';
+        if (exp.evidence) {
+          html += '<div class="assertion-evidence">' + escapeHtml(exp.evidence) + '</div>';
+        }
+        html += '</li>';
+      }
+      html += '</ul>';
+
+      html += '</div>';
+      content.innerHTML = html;
+    }
+
+    function toggleGrades() {
+      const content = document.getElementById("grades-content");
+      const arrow = document.getElementById("grades-arrow");
+      content.classList.toggle("open");
+      arrow.classList.toggle("open");
+    }
+
+    // ---- Previous outputs (collapsible) ----
+    function renderPrevOutputs(run) {
+      const section = document.getElementById("prev-outputs-section");
+      const content = document.getElementById("prev-outputs-content");
+      const prevOutputs = (EMBEDDED_DATA.previous_outputs || {})[run.id];
+
+      if (!prevOutputs || prevOutputs.length === 0) {
+        section.style.display = "none";
+        return;
+      }
+
+      section.style.display = "block";
+      // Reset to collapsed
+      content.classList.remove("open");
+      document.getElementById("prev-outputs-arrow").classList.remove("open");
+
+      // Render the files into the content area
+      content.innerHTML = "";
+      const wrapper = document.createElement("div");
+      wrapper.style.padding = "1rem";
+
+      for (const file of prevOutputs) {
+        const fileDiv = document.createElement("div");
+        fileDiv.className = "output-file";
+
+        const header = document.createElement("div");
+        header.className = "output-file-header";
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = file.name;
+        header.appendChild(nameSpan);
+        const dlBtn = document.createElement("a");
+        dlBtn.className = "dl-btn";
+        dlBtn.textContent = "Download";
+        dlBtn.download = file.name;
+        dlBtn.href = getDownloadUri(file);
+        header.appendChild(dlBtn);
+        fileDiv.appendChild(header);
+
+        const fc = document.createElement("div");
+        fc.className = "output-file-content";
+
+        if (file.type === "text") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          fc.appendChild(pre);
+        } else if (file.type === "image") {
+          const img = document.createElement("img");
+          img.src = file.data_uri;
+          img.alt = file.name;
+          fc.appendChild(img);
+        } else if (file.type === "pdf") {
+          const iframe = document.createElement("iframe");
+          iframe.src = file.data_uri;
+          fc.appendChild(iframe);
+        } else if (file.type === "xlsx") {
+          renderXlsx(fc, file.data_b64);
+        } else if (file.type === "binary") {
+          const a = document.createElement("a");
+          a.className = "download-link";
+          a.href = file.data_uri;
+          a.download = file.name;
+          a.textContent = "Download " + file.name;
+          fc.appendChild(a);
+        }
+
+        fileDiv.appendChild(fc);
+        wrapper.appendChild(fileDiv);
+      }
+
+      content.appendChild(wrapper);
+    }
+
+    function togglePrevOutputs() {
+      const content = document.getElementById("prev-outputs-content");
+      const arrow = document.getElementById("prev-outputs-arrow");
+      content.classList.toggle("open");
+      arrow.classList.toggle("open");
+    }
+
+    // ---- Feedback (saved to server -> feedback.json) ----
+    function saveCurrentFeedback() {
+      const run = EMBEDDED_DATA.runs[currentIndex];
+      const text = document.getElementById("feedback").value;
+
+      if (text.trim() === "") {
+        delete feedbackMap[run.id];
+      } else {
+        feedbackMap[run.id] = text;
+      }
+
+      // Build reviews array from map
+      const reviews = [];
+      for (const [run_id, feedback] of Object.entries(feedbackMap)) {
+        if (feedback.trim()) {
+          reviews.push({ run_id, feedback, timestamp: new Date().toISOString() });
+        }
+      }
+
+      fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reviews, status: "in_progress" }),
+      }).then(() => {
+        document.getElementById("feedback-status").textContent = "Saved";
+      }).catch(() => {
+        // Static mode or server unavailable — no-op on auto-save,
+        // feedback will be downloaded on final submit
+        document.getElementById("feedback-status").textContent = "Will download on submit";
+      });
+    }
+
+    // ---- Done ----
+    function showDoneDialog() {
+      // Save current textarea to feedbackMap (but don't POST yet)
+      const run = EMBEDDED_DATA.runs[currentIndex];
+      const text = document.getElementById("feedback").value;
+      if (text.trim() === "") {
+        delete feedbackMap[run.id];
+      } else {
+        feedbackMap[run.id] = text;
+      }
+
+      // POST once with status: complete — include ALL runs so the model
+      // can distinguish "no feedback" (looks good) from "not reviewed"
+      const reviews = [];
+      const ts = new Date().toISOString();
+      for (const r of EMBEDDED_DATA.runs) {
+        reviews.push({ run_id: r.id, feedback: feedbackMap[r.id] || "", timestamp: ts });
+      }
+      const payload = JSON.stringify({ reviews, status: "complete" }, null, 2);
+      fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: payload,
+      }).then(() => {
+        document.getElementById("done-overlay").classList.add("visible");
+      }).catch(() => {
+        // Server not available (static mode) — download as file
+        const blob = new Blob([payload], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "feedback.json";
+        a.click();
+        URL.revokeObjectURL(url);
+        document.getElementById("done-overlay").classList.add("visible");
+      });
+    }
+
+    function closeDoneDialog() {
+      // Reset status back to in_progress
+      saveCurrentFeedback();
+      document.getElementById("done-overlay").classList.remove("visible");
+    }
+
+    // ---- Toast ----
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("visible");
+      setTimeout(() => toast.classList.remove("visible"), 2000);
+    }
+
+    // ---- Keyboard nav ----
+    document.addEventListener("keydown", (e) => {
+      // Don't capture when typing in textarea
+      if (e.target.tagName === "TEXTAREA") return;
+
+      if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+        e.preventDefault();
+        navigate(-1);
+      } else if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+        e.preventDefault();
+        navigate(1);
+      }
+    });
+
+    // ---- Util ----
+    function getDownloadUri(file) {
+      if (file.data_uri) return file.data_uri;
+      if (file.data_b64) return "data:application/octet-stream;base64," + file.data_b64;
+      if (file.type === "text") return "data:text/plain;charset=utf-8," + encodeURIComponent(file.content);
+      return "#";
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement("div");
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // ---- View switching ----
+    function switchView(view) {
+      document.querySelectorAll(".view-tab").forEach(t => t.classList.remove("active"));
+      document.querySelectorAll(".view-panel").forEach(p => p.classList.remove("active"));
+      document.querySelector(`[onclick="switchView('${view}')"]`).classList.add("active");
+      document.getElementById("panel-" + view).classList.add("active");
+    }
+
+    // ---- Benchmark rendering ----
+    function renderBenchmark() {
+      const data = EMBEDDED_DATA.benchmark;
+      if (!data) return;
+
+      // Show the tabs
+      document.getElementById("view-tabs").style.display = "flex";
+
+      const container = document.getElementById("benchmark-content");
+      const summary = data.run_summary || {};
+      const metadata = data.metadata || {};
+      const notes = data.notes || [];
+
+      let html = "";
+
+      // Header
+      html += "<h2 style='font-family: Poppins, sans-serif; margin-bottom: 0.5rem;'>Benchmark Results</h2>";
+      html += "<p style='color: var(--text-muted); font-size: 0.875rem; margin-bottom: 1.25rem;'>";
+      if (metadata.skill_name) html += "<strong>" + escapeHtml(metadata.skill_name) + "</strong> &mdash; ";
+      if (metadata.timestamp) html += metadata.timestamp + " &mdash; ";
+      if (metadata.evals_run) html += "Evals: " + metadata.evals_run.join(", ") + " &mdash; ";
+      html += (metadata.runs_per_configuration || "?") + " runs per configuration";
+      html += "</p>";
+
+      // Summary table
+      html += '<table class="benchmark-table">';
+
+      function fmtStat(stat, pct) {
+        if (!stat) return "—";
+        const suffix = pct ? "%" : "";
+        const m = pct ? (stat.mean * 100).toFixed(0) : stat.mean.toFixed(1);
+        const s = pct ? (stat.stddev * 100).toFixed(0) : stat.stddev.toFixed(1);
+        return m + suffix + " ± " + s + suffix;
+      }
+
+      function deltaClass(val) {
+        if (!val) return "";
+        const n = parseFloat(val);
+        if (n > 0) return "benchmark-delta-positive";
+        if (n < 0) return "benchmark-delta-negative";
+        return "";
+      }
+
+      // Discover config names dynamically (everything except "delta")
+      const configs = Object.keys(summary).filter(k => k !== "delta");
+      const configA = configs[0] || "config_a";
+      const configB = configs[1] || "config_b";
+      const labelA = configA.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      const labelB = configB.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      const a = summary[configA] || {};
+      const b = summary[configB] || {};
+      const delta = summary.delta || {};
+
+      html += "<thead><tr><th>Metric</th><th>" + escapeHtml(labelA) + "</th><th>" + escapeHtml(labelB) + "</th><th>Delta</th></tr></thead>";
+      html += "<tbody>";
+
+      html += "<tr><td><strong>Pass Rate</strong></td>";
+      html += "<td>" + fmtStat(a.pass_rate, true) + "</td>";
+      html += "<td>" + fmtStat(b.pass_rate, true) + "</td>";
+      html += '<td class="' + deltaClass(delta.pass_rate) + '">' + (delta.pass_rate || "—") + "</td></tr>";
+
+      // Time (only show row if data exists)
+      if (a.time_seconds || b.time_seconds) {
+        html += "<tr><td><strong>Time (s)</strong></td>";
+        html += "<td>" + fmtStat(a.time_seconds, false) + "</td>";
+        html += "<td>" + fmtStat(b.time_seconds, false) + "</td>";
+        html += '<td class="' + deltaClass(delta.time_seconds) + '">' + (delta.time_seconds ? delta.time_seconds + "s" : "—") + "</td></tr>";
+      }
+
+      // Tokens (only show row if data exists)
+      if (a.tokens || b.tokens) {
+        html += "<tr><td><strong>Tokens</strong></td>";
+        html += "<td>" + fmtStat(a.tokens, false) + "</td>";
+        html += "<td>" + fmtStat(b.tokens, false) + "</td>";
+        html += '<td class="' + deltaClass(delta.tokens) + '">' + (delta.tokens || "—") + "</td></tr>";
+      }
+
+      html += "</tbody></table>";
+
+      // Per-eval breakdown (if runs data available)
+      const runs = data.runs || [];
+      if (runs.length > 0) {
+        const evalIds = [...new Set(runs.map(r => r.eval_id))].sort((a, b) => a - b);
+
+        html += "<h3 style='font-family: Poppins, sans-serif; margin-bottom: 0.75rem;'>Per-Eval Breakdown</h3>";
+
+        const hasTime = runs.some(r => r.result && r.result.time_seconds != null);
+        const hasErrors = runs.some(r => r.result && r.result.errors > 0);
+
+        for (const evalId of evalIds) {
+          const evalRuns = runs.filter(r => r.eval_id === evalId);
+          const evalName = evalRuns[0] && evalRuns[0].eval_name ? evalRuns[0].eval_name : "Eval " + evalId;
+
+          html += "<h4 style='font-family: Poppins, sans-serif; margin: 1rem 0 0.5rem; color: var(--text);'>" + escapeHtml(evalName) + "</h4>";
+          html += '<table class="benchmark-table">';
+          html += "<thead><tr><th>Config</th><th>Run</th><th>Pass Rate</th>";
+          if (hasTime) html += "<th>Time (s)</th>";
+          if (hasErrors) html += "<th>Crashes During Execution</th>";
+          html += "</tr></thead>";
+          html += "<tbody>";
+
+          // Group by config and render with average rows
+          const configGroups = [...new Set(evalRuns.map(r => r.configuration))];
+          for (let ci = 0; ci < configGroups.length; ci++) {
+            const config = configGroups[ci];
+            const configRuns = evalRuns.filter(r => r.configuration === config);
+            if (configRuns.length === 0) continue;
+
+            const rowClass = ci === 0 ? "benchmark-row-with" : "benchmark-row-without";
+            const configLabel = config.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+
+            for (const run of configRuns) {
+              const r = run.result || {};
+              const prClass = r.pass_rate >= 0.8 ? "benchmark-delta-positive" : r.pass_rate < 0.5 ? "benchmark-delta-negative" : "";
+              html += '<tr class="' + rowClass + '">';
+              html += "<td>" + configLabel + "</td>";
+              html += "<td>" + run.run_number + "</td>";
+              html += '<td class="' + prClass + '">' + ((r.pass_rate || 0) * 100).toFixed(0) + "% (" + (r.passed || 0) + "/" + (r.total || 0) + ")</td>";
+              if (hasTime) html += "<td>" + (r.time_seconds != null ? r.time_seconds.toFixed(1) : "—") + "</td>";
+              if (hasErrors) html += "<td>" + (r.errors || 0) + "</td>";
+              html += "</tr>";
+            }
+
+            // Average row
+            const rates = configRuns.map(r => (r.result || {}).pass_rate || 0);
+            const avgRate = rates.reduce((a, b) => a + b, 0) / rates.length;
+            const avgPrClass = avgRate >= 0.8 ? "benchmark-delta-positive" : avgRate < 0.5 ? "benchmark-delta-negative" : "";
+            html += '<tr class="benchmark-row-avg ' + rowClass + '">';
+            html += "<td>" + configLabel + "</td>";
+            html += "<td>Avg</td>";
+            html += '<td class="' + avgPrClass + '">' + (avgRate * 100).toFixed(0) + "%</td>";
+            if (hasTime) {
+              const times = configRuns.map(r => (r.result || {}).time_seconds).filter(t => t != null);
+              html += "<td>" + (times.length ? (times.reduce((a, b) => a + b, 0) / times.length).toFixed(1) : "—") + "</td>";
+            }
+            if (hasErrors) html += "<td></td>";
+            html += "</tr>";
+          }
+          html += "</tbody></table>";
+
+          // Per-assertion detail for this eval
+          const runsWithExpectations = {};
+          for (const config of configGroups) {
+            runsWithExpectations[config] = evalRuns.filter(r => r.configuration === config && r.expectations && r.expectations.length > 0);
+          }
+          const hasAnyExpectations = Object.values(runsWithExpectations).some(runs => runs.length > 0);
+          if (hasAnyExpectations) {
+            // Collect all unique assertion texts across all configs
+            const allAssertions = [];
+            const seen = new Set();
+            for (const config of configGroups) {
+              for (const run of runsWithExpectations[config]) {
+                for (const exp of (run.expectations || [])) {
+                  if (!seen.has(exp.text)) {
+                    seen.add(exp.text);
+                    allAssertions.push(exp.text);
+                  }
+                }
+              }
+            }
+
+            html += '<table class="benchmark-table" style="margin-top: 0.5rem;">';
+            html += "<thead><tr><th>Assertion</th>";
+            for (const config of configGroups) {
+              const label = config.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+              html += "<th>" + escapeHtml(label) + "</th>";
+            }
+            html += "</tr></thead><tbody>";
+
+            for (const assertionText of allAssertions) {
+              html += "<tr><td>" + escapeHtml(assertionText) + "</td>";
+
+              for (const config of configGroups) {
+                html += "<td>";
+                for (const run of runsWithExpectations[config]) {
+                  const exp = (run.expectations || []).find(e => e.text === assertionText);
+                  if (exp) {
+                    const cls = exp.passed ? "benchmark-delta-positive" : "benchmark-delta-negative";
+                    const icon = exp.passed ? "\u2713" : "\u2717";
+                    html += '<span class="' + cls + '" title="Run ' + run.run_number + ': ' + escapeHtml(exp.evidence || "") + '">' + icon + "</span> ";
+                  } else {
+                    html += "— ";
+                  }
+                }
+                html += "</td>";
+              }
+              html += "</tr>";
+            }
+            html += "</tbody></table>";
+          }
+        }
+      }
+
+      // Notes
+      if (notes.length > 0) {
+        html += '<div class="benchmark-notes">';
+        html += "<h3>Analysis Notes</h3>";
+        html += "<ul>";
+        for (const note of notes) {
+          html += "<li>" + escapeHtml(note) + "</li>";
+        }
+        html += "</ul></div>";
+      }
+
+      container.innerHTML = html;
+    }
+
+    // ---- Start ----
+    init();
+    renderBenchmark();
+  </script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+{
+  "eval_id": 3,
+  "eval_name": "gl-plateau-no-thighs",
+  "prompt": "I've been training glutes 5 days a week, about 15 sets each session, for 8 months and my butt hasn't really grown. I also feel like my thighs are getting bigger, which I don't want. What should I change?",
+  "assertions": [
+    "Identifies too much volume / too little effort and recommends cutting weekly glute volume and frequency (e.g., 2-3 days, fewer sets)",
+    "Recommends pushing sets closer to failure (effort over volume)",
+    "Recommends deloads or fluctuating training stress",
+    "Recommends glute-dominant exercises (barbell glute bridge, hip thrust variations, abduction) to grow glutes without thighs",
+    "Recommends reducing quad/hamstring-dominant exercises (squats, lunges, leg press, etc.)",
+    "Notes thigh size is often fat rather than muscle and addresses diet/protein",
+    "Mentions progressive overload / tracking strength on a main lift"
+  ]
+}

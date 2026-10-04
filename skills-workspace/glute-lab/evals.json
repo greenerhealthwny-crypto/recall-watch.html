@@ -1,0 +1,49 @@
+{
+  "skill_name": "glute-lab",
+  "evals": [
+    {
+      "id": 1,
+      "name": "gl-4wk-program",
+      "prompt": "I'm a 34-year-old woman, I lift 3 days a week (Mon/Wed/Fri) at a commercial gym, about an hour each. I can hip thrust 185 lb for 8 and squat 135 for 5. Build me a 4-week glute-focused program.",
+      "assertions": [
+        "Uses 3 training days per week with glute work each day",
+        "Balances horizontal (thrust/bridge), vertical (squat/deadlift/lunge) and lateral/rotary (abduction) exercises across the week",
+        "Mixes heavy (1-5), medium (6-12) and light/high-rep (13+) work",
+        "Places big lifts (hip thrust, squat or deadlift) first in sessions and pump/abduction work last",
+        "Ramps effort across the 4 weeks (easier week 1, hardest week 4) or otherwise programs a deload",
+        "Gives specific sets x reps and effort targets (RIR/RPE or to-failure guidance)",
+        "Explains how to progress (beat reps/load, log numbers)"
+      ],
+      "skill": "glute-lab"
+    },
+    {
+      "id": 2,
+      "name": "gl-hipthrust-quads-back",
+      "prompt": "When I do barbell hip thrusts I mostly feel it in my quads and my lower back gets sore afterward. I'm 5'2\" and I use the flat bench at my gym. What am I doing wrong?",
+      "assertions": [
+        "Says the standard flat bench (~16 in+) is likely too high and suggests a lower setup around 12 in for her height",
+        "Suggests moving the feet farther out (shins roughly vertical at the top) to reduce quads",
+        "Suggests driving through the heels",
+        "Suggests adding a band around the knees",
+        "Addresses low back: ribs down / posterior pelvic tilt at lockout / chin tucked, avoiding lumbar hyperextension",
+        "Mentions the American hip thrust or bench-position fix (bottom of shoulder blades at bench edge)"
+      ],
+      "skill": "glute-lab"
+    },
+    {
+      "id": 3,
+      "name": "gl-plateau-no-thighs",
+      "prompt": "I've been training glutes 5 days a week, about 15 sets each session, for 8 months and my butt hasn't really grown. I also feel like my thighs are getting bigger, which I don't want. What should I change?",
+      "assertions": [
+        "Identifies too much volume / too little effort and recommends cutting weekly glute volume and frequency (e.g., 2-3 days, fewer sets)",
+        "Recommends pushing sets closer to failure (effort over volume)",
+        "Recommends deloads or fluctuating training stress",
+        "Recommends glute-dominant exercises (barbell glute bridge, hip thrust variations, abduction) to grow glutes without thighs",
+        "Recommends reducing quad/hamstring-dominant exercises (squats, lunges, leg press, etc.)",
+        "Notes thigh size is often fat rather than muscle and addresses diet/protein",
+        "Mentions progressive overload / tracking strength on a main lift"
+      ],
+      "skill": "glute-lab"
+    }
+  ]
+}

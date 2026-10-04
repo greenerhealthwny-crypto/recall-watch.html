@@ -1,0 +1,40 @@
+{
+  "expectations": [
+    {
+      "text": "Says the standard flat bench (~16 in+) is likely too high and suggests a lower setup around 12 in for her height",
+      "passed": false,
+      "evidence": "Says the bench is too tall but suggests 13\u201315 in, not ~12 in for 5'2\"; still a reasonable fix."
+    },
+    {
+      "text": "Suggests moving the feet farther out (shins roughly vertical at the top) to reduce quads",
+      "passed": true,
+      "evidence": "Checked by reading the response."
+    },
+    {
+      "text": "Suggests driving through the heels",
+      "passed": true,
+      "evidence": "Checked by reading the response."
+    },
+    {
+      "text": "Suggests adding a band around the knees",
+      "passed": true,
+      "evidence": "Checked by reading the response."
+    },
+    {
+      "text": "Addresses low back: ribs down / posterior pelvic tilt at lockout / chin tucked, avoiding lumbar hyperextension",
+      "passed": true,
+      "evidence": "Checked by reading the response."
+    },
+    {
+      "text": "Mentions the American hip thrust or bench-position fix (bottom of shoulder blades at bench edge)",
+      "passed": true,
+      "evidence": "No American hip thrust, but gives the bench-edge-below-shoulder-blades fix."
+    }
+  ],
+  "summary": {
+    "passed": 5,
+    "failed": 1,
+    "total": 6,
+    "pass_rate": 0.83
+  }
+}
