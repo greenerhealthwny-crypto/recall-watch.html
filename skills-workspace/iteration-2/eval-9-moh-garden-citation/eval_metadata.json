@@ -1,0 +1,12 @@
+{
+  "eval_id": 9,
+  "eval_name": "moh-garden-citation",
+  "prompt": "I'm making a handout for our church's community garden ministry. What exactly does The Ministry of Healing say about gardening and working outdoors? I need the exact wording and page numbers so I can cite it properly.",
+  "assertions": [
+    "Quotes 'Exercise in the open air should be prescribed as a life-giving necessity' with the exact wording",
+    "Cites page 265 for the gardening/outdoor exercise quote",
+    "Every direct quote matches the 1905 text (no fabricated or paraphrased-as-quote text)",
+    "Gives a page number for every direct quote, or marks it unverified",
+    "Provides usable handout-ready text"
+  ]
+}

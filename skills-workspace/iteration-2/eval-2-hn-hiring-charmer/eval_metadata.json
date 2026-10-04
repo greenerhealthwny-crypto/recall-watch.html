@@ -1,0 +1,13 @@
+{
+  "eval_id": 2,
+  "eval_name": "hn-hiring-charmer",
+  "prompt": "I'm hiring a program coordinator for my small health nonprofit. One candidate was incredibly charming, talked big about projects they'd led, but got vague when I asked for specifics, and badmouthed two former bosses. Everyone else on the panel loved them. What should I look for before I make an offer?",
+  "assertions": [
+    "Applies 'character is destiny' / judge by patterns of past behavior rather than charm",
+    "Flags badmouthing former bosses as a red flag",
+    "Names a specific Greene toxic type (e.g., the Big Talker) or the appearance bias",
+    "Recommends concrete verification steps (structured reference checks, work samples, behavioral questions)",
+    "Addresses the panel's enthusiasm as possible group/appearance bias",
+    "Avoids diagnosing the candidate with a clinical disorder"
+  ]
+}

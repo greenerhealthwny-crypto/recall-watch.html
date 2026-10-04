@@ -1,0 +1,11 @@
+{
+  "eval_id": 6,
+  "eval_name": "daily-7day-plan",
+  "prompt": "Make me a 7-day practice plan from Robert Greene's Daily Laws. I just started a new job at a hospital admin office and I want to navigate the office politics without becoming a snake.",
+  "assertions": [
+    "Each of the 7 days references an actual Daily Laws date and title from the book",
+    "Draws mostly from the April-June power/courtier/toxic-types months",
+    "Each day has a concrete action for a hospital admin setting",
+    "Explicitly frames the approach ethically (defense and integrity, not manipulation)"
+  ]
+}

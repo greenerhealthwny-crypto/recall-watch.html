@@ -117,6 +117,34 @@
         "Suggests natural remedies as complementary to medical care, with doctor involvement",
         "Tone is respectful of the aunt's faith"
       ]
+    },
+    {
+      "id": 9,
+      "name": "moh-garden-citation",
+      "skill": "ministry-of-healing",
+      "prompt": "I'm making a handout for our church's community garden ministry. What exactly does The Ministry of Healing say about gardening and working outdoors? I need the exact wording and page numbers so I can cite it properly.",
+      "expected_output": "Exact 'Exercise in the open air ... cultivation of the soil' quote with MH 265, other accurate quotes with pages, no fabricated quotes.",
+      "assertions": [
+        "Quotes 'Exercise in the open air should be prescribed as a life-giving necessity' with the exact wording",
+        "Cites page 265 for the gardening/outdoor exercise quote",
+        "Every direct quote matches the 1905 text (no fabricated or paraphrased-as-quote text)",
+        "Gives a page number for every direct quote, or marks it unverified",
+        "Provides usable handout-ready text"
+      ]
+    },
+    {
+      "id": 10,
+      "name": "power-law16-reversal",
+      "skill": "laws-of-power",
+      "prompt": "I'm a consultant and I'm thinking about pulling back from a client to make them value me more, using Law 16 of the 48 Laws. What's the reversal for that law, which historical examples did Greene use, and does any other law contradict it?",
+      "expected_output": "Law 16 reversal (absence before established = forgotten), Deioces example, tension with Law 6, practical consultant advice.",
+      "assertions": [
+        "States Law 16's reversal: absence only works once you are established; before that you are forgotten",
+        "Names at least one of Greene's Law 16 examples (Deioces of the Medes, or the troubadour Guillaume de Balaun)",
+        "Identifies the tension with Law 6 (Court Attention at All Cost) or Law 18 (isolation)",
+        "Gives practical advice tailored to a consultant-client relationship",
+        "Does not invent examples or law content (only claims supported by the book)"
+      ]
     }
   ]
 }

@@ -1,0 +1,12 @@
+{
+  "eval_id": 10,
+  "eval_name": "power-law16-reversal",
+  "prompt": "I'm a consultant and I'm thinking about pulling back from a client to make them value me more, using Law 16 of the 48 Laws. What's the reversal for that law, which historical examples did Greene use, and does any other law contradict it?",
+  "assertions": [
+    "States Law 16's reversal: absence only works once you are established; before that you are forgotten",
+    "Names at least one of Greene's Law 16 examples (Deioces of the Medes, or the troubadour Guillaume de Balaun)",
+    "Identifies the tension with Law 6 (Court Attention at All Cost) or Law 18 (isolation)",
+    "Gives practical advice tailored to a consultant-client relationship",
+    "Does not invent examples or law content (only claims supported by the book)"
+  ]
+}

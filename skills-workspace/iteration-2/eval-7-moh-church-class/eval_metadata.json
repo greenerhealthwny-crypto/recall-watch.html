@@ -1,0 +1,13 @@
+{
+  "eval_id": 7,
+  "eval_name": "moh-church-class",
+  "prompt": "Design a 4-week church health class outline based on Ellen White's Ministry of Healing natural remedies. Audience is adults in their 50s and 60s, several have type 2 diabetes. Include a quote from the book for each week.",
+  "assertions": [
+    "Quotes the eight natural remedies passage accurately (pure air, sunlight, abstemiousness, rest, exercise, proper diet, the use of water, trust in divine power)",
+    "Each of the 4 weeks includes a quote with an MH page citation",
+    "Quotes are accurate to the 1905 text (no fabricated quotes)",
+    "Includes diabetes-specific safety (don't change meds without doctor, hypoglycemia risk with meal timing changes)",
+    "Gives practical weekly habits/activities",
+    "Recommends consulting a physician or dietitian"
+  ]
+}

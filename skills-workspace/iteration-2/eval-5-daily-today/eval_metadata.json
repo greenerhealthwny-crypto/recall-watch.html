@@ -1,0 +1,12 @@
+{
+  "eval_id": 5,
+  "eval_name": "daily-today",
+  "prompt": "What's today's daily law? Today is October 4. I run a small bakery and I've been getting really worked up and firing off angry replies to bad online reviews.",
+  "assertions": [
+    "States the October 4 title as 'Analyze, Scrutinize, Question'",
+    "Places it in October's theme (the Emotional Self)",
+    "Includes a short meditation/reflection",
+    "Includes a one-line daily law takeaway",
+    "Gives a concrete practice tailored to replying to bad reviews"
+  ]
+}
