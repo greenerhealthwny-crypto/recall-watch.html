@@ -1,0 +1,13 @@
+{
+  "eval_id": 3,
+  "eval_name": "power-new-director",
+  "prompt": "I just got promoted to replace a director everyone loved who retired after 20 years. Staff keep saying 'that's not how Linda did it.' I need to overhaul our client intake process, which is a mess. Which of the 48 laws apply and what should I actually do in my first 90 days?",
+  "assertions": [
+    "Cites Law 41 (Avoid Stepping into a Great Man's Shoes)",
+    "Cites Law 45 (Preach the Need for Change, but Never Reform Too Much at Once)",
+    "Cites at least two other relevant laws by number (e.g., 9, 43, 1, 24, 5)",
+    "Gives a phased 90-day plan with concrete actions",
+    "Includes at least one Reversal / risk or limit of the laws",
+    "Advises respecting Linda's legacy rather than disparaging her publicly"
+  ]
+}

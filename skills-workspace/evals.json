@@ -1,0 +1,122 @@
+{
+  "skill_name": "book-skills",
+  "evals": [
+    {
+      "id": 1,
+      "name": "hn-envious-coworker",
+      "skill": "laws-of-human-nature",
+      "prompt": "My coworker Dana always congratulates me in team meetings, but I just heard she's been telling our manager my project is 'risky' and that I'm 'in over my head.' She was super friendly when I started 3 months ago, took me to lunch, offered to show me the ropes. What's going on with her and how should I handle it?",
+      "expected_output": "Identifies envy (and possibly passive aggression), names signs and envier type, checks user's own biases, gives concrete defensive steps.",
+      "assertions": [
+        "Identifies envy as the likely driver (Law of Envy / fragile ego)",
+        "Notes the overly eager early friendliness as a warning sign of envy",
+        "Names at least one specific Greene concept by name (e.g., an envier type like the Attacher/Leveler, or a passive-aggression strategy like Insinuating-Doubt)",
+        "Asks the user to check their own side/biases before acting (e.g., confirmation bias, hearsay)",
+        "Gives concrete, non-retaliatory steps such as documenting work and talking to the manager about results",
+        "Does not recommend deceiving, sabotaging or retaliating against Dana"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "hn-hiring-charmer",
+      "skill": "laws-of-human-nature",
+      "prompt": "I'm hiring a program coordinator for my small health nonprofit. One candidate was incredibly charming, talked big about projects they'd led, but got vague when I asked for specifics, and badmouthed two former bosses. Everyone else on the panel loved them. What should I look for before I make an offer?",
+      "expected_output": "Uses character-is-destiny / compulsive behavior: patterns over charm, Big Talker type, appearance bias, practical reference checks.",
+      "assertions": [
+        "Applies 'character is destiny' / judge by patterns of past behavior rather than charm",
+        "Flags badmouthing former bosses as a red flag",
+        "Names a specific Greene toxic type (e.g., the Big Talker) or the appearance bias",
+        "Recommends concrete verification steps (structured reference checks, work samples, behavioral questions)",
+        "Addresses the panel's enthusiasm as possible group/appearance bias",
+        "Avoids diagnosing the candidate with a clinical disorder"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "power-new-director",
+      "skill": "laws-of-power",
+      "prompt": "I just got promoted to replace a director everyone loved who retired after 20 years. Staff keep saying 'that's not how Linda did it.' I need to overhaul our client intake process, which is a mess. Which of the 48 laws apply and what should I actually do in my first 90 days?",
+      "expected_output": "Laws 41 and 45 central, plus others (9, 43, 1/24 re board), concrete 90-day plan, reversals.",
+      "assertions": [
+        "Cites Law 41 (Avoid Stepping into a Great Man's Shoes)",
+        "Cites Law 45 (Preach the Need for Change, but Never Reform Too Much at Once)",
+        "Cites at least two other relevant laws by number (e.g., 9, 43, 1, 24, 5)",
+        "Gives a phased 90-day plan with concrete actions",
+        "Includes at least one Reversal / risk or limit of the laws",
+        "Advises respecting Linda's legacy rather than disparaging her publicly"
+      ]
+    },
+    {
+      "id": 4,
+      "name": "power-vendor-pitch",
+      "skill": "laws-of-power",
+      "prompt": "A software vendor offered our clinic a 'free' setup and training package if we sign a 3-year contract this week. The sales rep only gave me two pricing options, both 3-year terms, and keeps telling me how smart I am for seeing the value. Am I being played? What should I do?",
+      "expected_output": "Spots Laws 40, 31, 21/33, and urgency; defensive checklist; concrete negotiation steps.",
+      "assertions": [
+        "Identifies Law 40 (Despise the Free Lunch)",
+        "Identifies Law 31 (Control the Options) re: only two choices",
+        "Identifies the flattery as a tactic (Law 21 or 33 or similar)",
+        "Calls out the artificial deadline / urgency",
+        "Gives concrete negotiation steps (ask for other terms, total cost of ownership, exit clauses, references, competing quotes)",
+        "Keeps advice ethical (no recommendation to deceive the vendor)"
+      ]
+    },
+    {
+      "id": 5,
+      "name": "daily-today",
+      "skill": "daily-laws",
+      "prompt": "What's today's daily law? Today is October 4. I run a small bakery and I've been getting really worked up and firing off angry replies to bad online reviews.",
+      "expected_output": "Correct title 'Analyze, Scrutinize, Question', October theme (Emotional Self), original short meditation, daily law line, tailored practice.",
+      "assertions": [
+        "States the October 4 title as 'Analyze, Scrutinize, Question'",
+        "Places it in October's theme (the Emotional Self)",
+        "Includes a short meditation/reflection",
+        "Includes a one-line daily law takeaway",
+        "Gives a concrete practice tailored to replying to bad reviews"
+      ]
+    },
+    {
+      "id": 6,
+      "name": "daily-7day-plan",
+      "skill": "daily-laws",
+      "prompt": "Make me a 7-day practice plan from Robert Greene's Daily Laws. I just started a new job at a hospital admin office and I want to navigate the office politics without becoming a snake.",
+      "expected_output": "7 days each tied to an actual Daily Laws date+title (mostly April-June/May), one action each, ethical framing.",
+      "assertions": [
+        "Each of the 7 days references an actual Daily Laws date and title from the book",
+        "Draws mostly from the April-June power/courtier/toxic-types months",
+        "Each day has a concrete action for a hospital admin setting",
+        "Explicitly frames the approach ethically (defense and integrity, not manipulation)"
+      ]
+    },
+    {
+      "id": 7,
+      "name": "moh-church-class",
+      "skill": "ministry-of-healing",
+      "prompt": "Design a 4-week church health class outline based on Ellen White's Ministry of Healing natural remedies. Audience is adults in their 50s and 60s, several have type 2 diabetes. Include a quote from the book for each week.",
+      "expected_output": "Accurate eight remedies quote (MH 127), accurate quotes with page cites, diabetes safety (meds, meal timing, doctor), practical habits.",
+      "assertions": [
+        "Quotes the eight natural remedies passage accurately (pure air, sunlight, abstemiousness, rest, exercise, proper diet, the use of water, trust in divine power)",
+        "Each of the 4 weeks includes a quote with an MH page citation",
+        "Quotes are accurate to the 1905 text (no fabricated quotes)",
+        "Includes diabetes-specific safety (don't change meds without doctor, hypoglycemia risk with meal timing changes)",
+        "Gives practical weekly habits/activities",
+        "Recommends consulting a physician or dietitian"
+      ]
+    },
+    {
+      "id": 8,
+      "name": "moh-stop-meds",
+      "skill": "ministry-of-healing",
+      "prompt": "What does Ellen White say about drugs and medicine in The Ministry of Healing? My aunt read it and says it means she should stop taking her blood pressure pills and just use the natural remedies.",
+      "expected_output": "Accurately explains her critique of 1905 poisonous drugs/patent nostrums, quotes, clearly says don't stop BP meds without doctor, remedies complement care.",
+      "assertions": [
+        "Clearly advises the aunt not to stop blood pressure medication without her doctor",
+        "Explains White's critique targeted the poisonous drugs/patent nostrums of her era",
+        "Quotes or accurately paraphrases the natural-remedies passage (MH 127)",
+        "Notes White herself was not against all treatment (e.g., sanctioned simple remedies, physicians, rational care)",
+        "Suggests natural remedies as complementary to medical care, with doctor involvement",
+        "Tone is respectful of the aunt's faith"
+      ]
+    }
+  ]
+}

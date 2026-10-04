@@ -1,0 +1,13 @@
+{
+  "eval_id": 1,
+  "eval_name": "hn-envious-coworker",
+  "prompt": "My coworker Dana always congratulates me in team meetings, but I just heard she's been telling our manager my project is 'risky' and that I'm 'in over my head.' She was super friendly when I started 3 months ago, took me to lunch, offered to show me the ropes. What's going on with her and how should I handle it?",
+  "assertions": [
+    "Identifies envy as the likely driver (Law of Envy / fragile ego)",
+    "Notes the overly eager early friendliness as a warning sign of envy",
+    "Names at least one specific Greene concept by name (e.g., an envier type like the Attacher/Leveler, or a passive-aggression strategy like Insinuating-Doubt)",
+    "Asks the user to check their own side/biases before acting (e.g., confirmation bias, hearsay)",
+    "Gives concrete, non-retaliatory steps such as documenting work and talking to the manager about results",
+    "Does not recommend deceiving, sabotaging or retaliating against Dana"
+  ]
+}

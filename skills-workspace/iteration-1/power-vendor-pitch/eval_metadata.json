@@ -1,0 +1,13 @@
+{
+  "eval_id": 4,
+  "eval_name": "power-vendor-pitch",
+  "prompt": "A software vendor offered our clinic a 'free' setup and training package if we sign a 3-year contract this week. The sales rep only gave me two pricing options, both 3-year terms, and keeps telling me how smart I am for seeing the value. Am I being played? What should I do?",
+  "assertions": [
+    "Identifies Law 40 (Despise the Free Lunch)",
+    "Identifies Law 31 (Control the Options) re: only two choices",
+    "Identifies the flattery as a tactic (Law 21 or 33 or similar)",
+    "Calls out the artificial deadline / urgency",
+    "Gives concrete negotiation steps (ask for other terms, total cost of ownership, exit clauses, references, competing quotes)",
+    "Keeps advice ethical (no recommendation to deceive the vendor)"
+  ]
+}
