@@ -1,0 +1,35 @@
+{
+  "expectations": [
+    {
+      "text": "States the October 4 title as 'Analyze, Scrutinize, Question'",
+      "passed": false,
+      "evidence": "Says it can't recall the October 4 entry; gives a generic October paraphrase."
+    },
+    {
+      "text": "Places it in October's theme (the Emotional Self)",
+      "passed": true,
+      "evidence": "Verified by keyword check and reading the response."
+    },
+    {
+      "text": "Includes a short meditation/reflection",
+      "passed": true,
+      "evidence": "Verified by keyword check and reading the response."
+    },
+    {
+      "text": "Includes a one-line daily law takeaway",
+      "passed": true,
+      "evidence": "Verified by keyword check and reading the response."
+    },
+    {
+      "text": "Gives a concrete practice tailored to replying to bad reviews",
+      "passed": true,
+      "evidence": "Verified by keyword check and reading the response."
+    }
+  ],
+  "summary": {
+    "passed": 4,
+    "failed": 1,
+    "total": 5,
+    "pass_rate": 0.8
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "expectations": [
+    {
+      "text": "Each of the 7 days references an actual Daily Laws date and title from the book",
+      "passed": true,
+      "evidence": "All cited dates/titles verified against calendar.md (Apr 1,3,7,8,9,10,17; May 3; Nov 3; Feb 21)."
+    },
+    {
+      "text": "Draws mostly from the April-June power/courtier/toxic-types months",
+      "passed": true,
+      "evidence": "Verified by keyword check and reading the response."
+    },
+    {
+      "text": "Each day has a concrete action for a hospital admin setting",
+      "passed": true,
+      "evidence": "Verified by keyword check and reading the response."
+    },
+    {
+      "text": "Explicitly frames the approach ethically (defense and integrity, not manipulation)",
+      "passed": true,
+      "evidence": "Verified by keyword check and reading the response."
+    }
+  ],
+  "summary": {
+    "passed": 4,
+    "failed": 0,
+    "total": 4,
+    "pass_rate": 1.0
+  }
+}

@@ -1,0 +1,808 @@
+{
+  "metadata": {
+    "skill_name": "book-skills",
+    "skill_path": "<path/to/skill>",
+    "executor_model": "<model-name>",
+    "analyzer_model": "<model-name>",
+    "timestamp": "2026-10-04T13:10:37Z",
+    "evals_run": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "runs_per_configuration": 3
+  },
+  "runs": [
+    {
+      "eval_id": 1,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": 52.0,
+        "tokens": 75695,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Identifies envy as the likely driver (Law of Envy / fragile ego)",
+          "passed": true,
+          "evidence": "Verified by keyword check and reading the response."
+        },
+        {
+          "text": "Notes the overly eager early friendliness as a warning sign of envy",
+          "passed": true,
+          "evidence": "Verified by keyword check and reading the response."
+        },
+        {
+          "text": "Names at least one specific Greene concept by name (e.g., an envier type like the Attacher/Leveler, or a passive-aggression strategy like Insinuating-Doubt)",
+          "passed": true,
+          "evidence": "Verified by keyword check and reading the response."
+        },
+        {
+          "text": "Asks the user to check their own side/biases before acting (e.g., confirmation bias, hearsay)",
+          "passed": true,
+          "evidence": "Verified by keyword check and reading the response."
+        },
+        {
+          "text": "Gives concrete, non-retaliatory steps such as documenting work and talking to the manager about results",
+          "passed": true,
+          "evidence": "Verified by keyword check and reading the response."
+        },
+        {
+          "text": "Does not recommend deceiving, sabotaging or retaliating against Dana",
+          "passed": true,
+          "evidence": "Verified by keyword check and reading the response."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": 45.8,
+        "tokens": 75430,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Applies 'character is destiny' / judge by patterns of past behavior rather than charm",
+          "passed": true,
+          "evidence": "Verified by keyword check and reading the response."
+        },
+        {
+          "text": "Flags badmouthing former bosses as a red flag",
+          "passed": true,
+          "evidence": "Verified by keyword check and reading the response."
+        },
+        {
+          "text": "Names a specific Greene toxic type (e.g., the Big Talker) or the appearance bias",
+          "passed": true,
+          "evidence": "Verified by keyword check and reading the response."
+        },
+        {
+          "text": "Recommends concrete verification steps (structured reference checks, work samples, behavioral questions)",
+          "passed": true,
+          "evidence": "Verified by keyword check and reading the response."
+        },
+        {
+          "text": "Addresses the panel's enthusiasm as possible group/appearance bias",
+          "passed": true,
+          "evidence": "Verified by keyword check and reading the response."
+        },
+        {
+          "text": "Avoids diagnosing the candidate with a clinical disorder",
+          "passed": true,
+          "evidence": "Verified by keyword check and reading the response."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 3,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": 74.9,
+        "tokens": 78644,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Cites Law 41 (Avoid Stepping into a Great Man's Shoes)",
+          "passed": true,
+          "evidence": "Verified by keyword check and reading the response."
+        },
+        {
+          "text": "Cites Law 45 (Preach the Need for Change, but Never Reform Too Much at Once)",
+          "passed": true,
+          "evidence": "Verified by keyword check and reading the response."
+        },
+        {
+          "text": "Cites at least two other relevant laws by number (e.g., 9, 43, 1, 24, 5)",
+          "passed": true,
+          "evidence": "Verified by keyword check and reading the response."
+        },
+        {
+          "text": "Gives a phased 90-day plan with concrete actions",
+          "passed": true,
+          "evidence": "Verified by keyword check and reading the response."
+        },
+        {
+          "text": "Includes at least one Reversal / risk or limit of the laws",
+          "passed": true,
+          "evidence": "Verified by keyword check and reading the response."
+        },
+        {
+          "text": "Advises respecting Linda's legacy rather than disparaging her publicly",
+          "passed": true,
+          "evidence": "Verified by keyword check and reading the response."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 4,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": 45.4,
+        "tokens": 79834,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Identifies Law 40 (Despise the Free Lunch)",
+          "passed": true,
+          "evidence": "Verified by keyword check and reading the response."
+        },
+        {
+          "text": "Identifies Law 31 (Control the Options) re: only two choices",
+          "passed": true,
+          "evidence": "Verified by keyword check and reading the response."
+        },
+        {
+          "text": "Identifies the flattery as a tactic (Law 21 or 33 or similar)",
+          "passed": true,
+          "evidence": "Verified by keyword check and reading the response."
+        },
+        {
+          "text": "Calls out the artificial deadline / urgency",
+          "passed": true,
+          "evidence": "Verified by keyword check and reading the response."
+        },
+        {
+          "text": "Gives concrete negotiation steps (ask for other terms, total cost of ownership, exit clauses, references, competing quotes)",
+          "passed": true,
+          "evidence": "Verified by keyword check and reading the response."
+        },
+        {
+          "text": "Keeps advice ethical (no recommendation to deceive the vendor)",
+          "passed": true,
+          "evidence": "Verified by keyword check and reading the response."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 5,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "time_seconds": 26.2,
+        "tokens": 68449,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "States the October 4 title as 'Analyze, Scrutinize, Question'",
+          "passed": true,
+          "evidence": "Title matches calendar: 'Analyze, Scrutinize, Question'."
+        },
+        {
+          "text": "Places it in October's theme (the Emotional Self)",
+          "passed": true,
+          "evidence": "Verified by keyword check and reading the response."
+        },
+        {
+          "text": "Includes a short meditation/reflection",
+          "passed": true,
+          "evidence": "Verified by keyword check and reading the response."
+        },
+        {
+          "text": "Includes a one-line daily law takeaway",
+          "passed": true,
+          "evidence": "Verified by keyword check and reading the response."
+        },
+        {
+          "text": "Gives a concrete practice tailored to replying to bad reviews",
+          "passed": true,
+          "evidence": "Verified by keyword check and reading the response."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 6,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 4,
+        "failed": 0,
+        "total": 4,
+        "time_seconds": 49.5,
+        "tokens": 75046,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Each of the 7 days references an actual Daily Laws date and title from the book",
+          "passed": true,
+          "evidence": "All cited dates/titles verified against calendar.md (Apr 1,3,7,8,9,10,17; May 3; Nov 3; Feb 21)."
+        },
+        {
+          "text": "Draws mostly from the April-June power/courtier/toxic-types months",
+          "passed": true,
+          "evidence": "Verified by keyword check and reading the response."
+        },
+        {
+          "text": "Each day has a concrete action for a hospital admin setting",
+          "passed": true,
+          "evidence": "Verified by keyword check and reading the response."
+        },
+        {
+          "text": "Explicitly frames the approach ethically (defense and integrity, not manipulation)",
+          "passed": true,
+          "evidence": "Verified by keyword check and reading the response."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 7,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": 70.4,
+        "tokens": 78182,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Quotes the eight natural remedies passage accurately (pure air, sunlight, abstemiousness, rest, exercise, proper diet, the use of water, trust in divine power)",
+          "passed": true,
+          "evidence": "Verified by keyword check and reading the response."
+        },
+        {
+          "text": "Each of the 4 weeks includes a quote with an MH page citation",
+          "passed": true,
+          "evidence": "Verified by keyword check and reading the response."
+        },
+        {
+          "text": "Quotes are accurate to the 1905 text (no fabricated quotes)",
+          "passed": true,
+          "evidence": "All book quotes verified against the 1905 text by script."
+        },
+        {
+          "text": "Includes diabetes-specific safety (don't change meds without doctor, hypoglycemia risk with meal timing changes)",
+          "passed": true,
+          "evidence": "Verified by keyword check and reading the response."
+        },
+        {
+          "text": "Gives practical weekly habits/activities",
+          "passed": true,
+          "evidence": "Verified by keyword check and reading the response."
+        },
+        {
+          "text": "Recommends consulting a physician or dietitian",
+          "passed": true,
+          "evidence": "Verified by keyword check and reading the response."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 8,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": 40.1,
+        "tokens": 75050,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Clearly advises the aunt not to stop blood pressure medication without her doctor",
+          "passed": true,
+          "evidence": "Verified by keyword check and reading the response."
+        },
+        {
+          "text": "Explains White's critique targeted the poisonous drugs/patent nostrums of her era",
+          "passed": true,
+          "evidence": "Verified by keyword check and reading the response."
+        },
+        {
+          "text": "Quotes or accurately paraphrases the natural-remedies passage (MH 127)",
+          "passed": true,
+          "evidence": "Verified by keyword check and reading the response."
+        },
+        {
+          "text": "Notes White herself was not against all treatment (e.g., sanctioned simple remedies, physicians, rational care)",
+          "passed": true,
+          "evidence": "Verified by keyword check and reading the response."
+        },
+        {
+          "text": "Suggests natural remedies as complementary to medical care, with doctor involvement",
+          "passed": true,
+          "evidence": "Verified by keyword check and reading the response."
+        },
+        {
+          "text": "Tone is respectful of the aunt's faith",
+          "passed": true,
+          "evidence": "Verified by keyword check and reading the response."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 1,
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.83,
+        "passed": 5,
+        "failed": 1,
+        "total": 6,
+        "time_seconds": 33.7,
+        "tokens": 64801,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Identifies envy as the likely driver (Law of Envy / fragile ego)",
+          "passed": true,
+          "evidence": "Verified by keyword check and reading the response."
+        },
+        {
+          "text": "Notes the overly eager early friendliness as a warning sign of envy",
+          "passed": true,
+          "evidence": "Verified by keyword check and reading the response."
+        },
+        {
+          "text": "Names at least one specific Greene concept by name (e.g., an envier type like the Attacher/Leveler, or a passive-aggression strategy like Insinuating-Doubt)",
+          "passed": false,
+          "evidence": "Names envy/rivalry generically; no Greene types or strategies named."
+        },
+        {
+          "text": "Asks the user to check their own side/biases before acting (e.g., confirmation bias, hearsay)",
+          "passed": true,
+          "evidence": "Verified by keyword check and reading the response."
+        },
+        {
+          "text": "Gives concrete, non-retaliatory steps such as documenting work and talking to the manager about results",
+          "passed": true,
+          "evidence": "Verified by keyword check and reading the response."
+        },
+        {
+          "text": "Does not recommend deceiving, sabotaging or retaliating against Dana",
+          "passed": true,
+          "evidence": "Verified by keyword check and reading the response."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.83,
+        "passed": 5,
+        "failed": 1,
+        "total": 6,
+        "time_seconds": 36.8,
+        "tokens": 65269,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Applies 'character is destiny' / judge by patterns of past behavior rather than charm",
+          "passed": true,
+          "evidence": "Verified by keyword check and reading the response."
+        },
+        {
+          "text": "Flags badmouthing former bosses as a red flag",
+          "passed": true,
+          "evidence": "Verified by keyword check and reading the response."
+        },
+        {
+          "text": "Names a specific Greene toxic type (e.g., the Big Talker) or the appearance bias",
+          "passed": false,
+          "evidence": "Good general advice but no Big Talker type or appearance bias named."
+        },
+        {
+          "text": "Recommends concrete verification steps (structured reference checks, work samples, behavioral questions)",
+          "passed": true,
+          "evidence": "Verified by keyword check and reading the response."
+        },
+        {
+          "text": "Addresses the panel's enthusiasm as possible group/appearance bias",
+          "passed": true,
+          "evidence": "Verified by keyword check and reading the response."
+        },
+        {
+          "text": "Avoids diagnosing the candidate with a clinical disorder",
+          "passed": true,
+          "evidence": "Verified by keyword check and reading the response."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 3,
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": 65.1,
+        "tokens": 67709,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Cites Law 41 (Avoid Stepping into a Great Man's Shoes)",
+          "passed": true,
+          "evidence": "Verified by keyword check and reading the response."
+        },
+        {
+          "text": "Cites Law 45 (Preach the Need for Change, but Never Reform Too Much at Once)",
+          "passed": true,
+          "evidence": "Verified by keyword check and reading the response."
+        },
+        {
+          "text": "Cites at least two other relevant laws by number (e.g., 9, 43, 1, 24, 5)",
+          "passed": true,
+          "evidence": "Verified by keyword check and reading the response."
+        },
+        {
+          "text": "Gives a phased 90-day plan with concrete actions",
+          "passed": true,
+          "evidence": "Verified by keyword check and reading the response."
+        },
+        {
+          "text": "Includes at least one Reversal / risk or limit of the laws",
+          "passed": true,
+          "evidence": "Verified by keyword check and reading the response."
+        },
+        {
+          "text": "Advises respecting Linda's legacy rather than disparaging her publicly",
+          "passed": true,
+          "evidence": "Verified by keyword check and reading the response."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 4,
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.67,
+        "passed": 4,
+        "failed": 2,
+        "total": 6,
+        "time_seconds": 26.6,
+        "tokens": 64416,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Identifies Law 40 (Despise the Free Lunch)",
+          "passed": false,
+          "evidence": "Calls the 'free' setup baked into price but never cites Law 40."
+        },
+        {
+          "text": "Identifies Law 31 (Control the Options) re: only two choices",
+          "passed": false,
+          "evidence": "Calls it a 'false choice' but never cites Law 31."
+        },
+        {
+          "text": "Identifies the flattery as a tactic (Law 21 or 33 or similar)",
+          "passed": true,
+          "evidence": "Verified by keyword check and reading the response."
+        },
+        {
+          "text": "Calls out the artificial deadline / urgency",
+          "passed": true,
+          "evidence": "Verified by keyword check and reading the response."
+        },
+        {
+          "text": "Gives concrete negotiation steps (ask for other terms, total cost of ownership, exit clauses, references, competing quotes)",
+          "passed": true,
+          "evidence": "Verified by keyword check and reading the response."
+        },
+        {
+          "text": "Keeps advice ethical (no recommendation to deceive the vendor)",
+          "passed": true,
+          "evidence": "Verified by keyword check and reading the response."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 5,
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.8,
+        "passed": 4,
+        "failed": 1,
+        "total": 5,
+        "time_seconds": 21.3,
+        "tokens": 63839,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "States the October 4 title as 'Analyze, Scrutinize, Question'",
+          "passed": false,
+          "evidence": "Says it can't recall the October 4 entry; gives a generic October paraphrase."
+        },
+        {
+          "text": "Places it in October's theme (the Emotional Self)",
+          "passed": true,
+          "evidence": "Verified by keyword check and reading the response."
+        },
+        {
+          "text": "Includes a short meditation/reflection",
+          "passed": true,
+          "evidence": "Verified by keyword check and reading the response."
+        },
+        {
+          "text": "Includes a one-line daily law takeaway",
+          "passed": true,
+          "evidence": "Verified by keyword check and reading the response."
+        },
+        {
+          "text": "Gives a concrete practice tailored to replying to bad reviews",
+          "passed": true,
+          "evidence": "Verified by keyword check and reading the response."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 6,
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.5,
+        "passed": 2,
+        "failed": 2,
+        "total": 4,
+        "time_seconds": 62.5,
+        "tokens": 67386,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Each of the 7 days references an actual Daily Laws date and title from the book",
+          "passed": false,
+          "evidence": "Explicitly declines to name day-by-day titles/dates to avoid inventing them."
+        },
+        {
+          "text": "Draws mostly from the April-June power/courtier/toxic-types months",
+          "passed": false,
+          "evidence": "Uses monthly themes only, no specific April-June entries."
+        },
+        {
+          "text": "Each day has a concrete action for a hospital admin setting",
+          "passed": true,
+          "evidence": "Verified by keyword check and reading the response."
+        },
+        {
+          "text": "Explicitly frames the approach ethically (defense and integrity, not manipulation)",
+          "passed": true,
+          "evidence": "Verified by keyword check and reading the response."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 7,
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": 69.5,
+        "tokens": 68846,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Quotes the eight natural remedies passage accurately (pure air, sunlight, abstemiousness, rest, exercise, proper diet, the use of water, trust in divine power)",
+          "passed": true,
+          "evidence": "Verified by keyword check and reading the response."
+        },
+        {
+          "text": "Each of the 4 weeks includes a quote with an MH page citation",
+          "passed": true,
+          "evidence": "Verified by keyword check and reading the response."
+        },
+        {
+          "text": "Quotes are accurate to the 1905 text (no fabricated quotes)",
+          "passed": true,
+          "evidence": "All book quotes verified against the 1905 text by script (from memory, but accurate)."
+        },
+        {
+          "text": "Includes diabetes-specific safety (don't change meds without doctor, hypoglycemia risk with meal timing changes)",
+          "passed": true,
+          "evidence": "Verified by keyword check and reading the response."
+        },
+        {
+          "text": "Gives practical weekly habits/activities",
+          "passed": true,
+          "evidence": "Verified by keyword check and reading the response."
+        },
+        {
+          "text": "Recommends consulting a physician or dietitian",
+          "passed": true,
+          "evidence": "Verified by keyword check and reading the response."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 8,
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": 35.0,
+        "tokens": 65381,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Clearly advises the aunt not to stop blood pressure medication without her doctor",
+          "passed": true,
+          "evidence": "Verified by keyword check and reading the response."
+        },
+        {
+          "text": "Explains White's critique targeted the poisonous drugs/patent nostrums of her era",
+          "passed": true,
+          "evidence": "Verified by keyword check and reading the response."
+        },
+        {
+          "text": "Quotes or accurately paraphrases the natural-remedies passage (MH 127)",
+          "passed": true,
+          "evidence": "Verified by keyword check and reading the response."
+        },
+        {
+          "text": "Notes White herself was not against all treatment (e.g., sanctioned simple remedies, physicians, rational care)",
+          "passed": true,
+          "evidence": "Verified by keyword check and reading the response."
+        },
+        {
+          "text": "Suggests natural remedies as complementary to medical care, with doctor involvement",
+          "passed": true,
+          "evidence": "Verified by keyword check and reading the response."
+        },
+        {
+          "text": "Tone is respectful of the aunt's faith",
+          "passed": true,
+          "evidence": "Verified by keyword check and reading the response."
+        }
+      ],
+      "notes": []
+    }
+  ],
+  "run_summary": {
+    "with_skill": {
+      "pass_rate": {
+        "mean": 1.0,
+        "stddev": 0.0,
+        "min": 1.0,
+        "max": 1.0
+      },
+      "time_seconds": {
+        "mean": 50.5375,
+        "stddev": 15.7723,
+        "min": 26.2,
+        "max": 74.9
+      },
+      "tokens": {
+        "mean": 75791.25,
+        "stddev": 3491.8465,
+        "min": 68449,
+        "max": 79834
+      }
+    },
+    "without_skill": {
+      "pass_rate": {
+        "mean": 0.8287,
+        "stddev": 0.1781,
+        "min": 0.5,
+        "max": 1.0
+      },
+      "time_seconds": {
+        "mean": 43.8125,
+        "stddev": 18.8771,
+        "min": 21.3,
+        "max": 69.5
+      },
+      "tokens": {
+        "mean": 65955.875,
+        "stddev": 1791.2453,
+        "min": 63839,
+        "max": 68846
+      }
+    },
+    "delta": {
+      "pass_rate": "+0.17",
+      "time_seconds": "+6.7",
+      "tokens": "+9835"
+    }
+  },
+  "notes": []
+}

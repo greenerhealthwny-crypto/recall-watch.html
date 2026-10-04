@@ -1,0 +1,40 @@
+{
+  "expectations": [
+    {
+      "text": "Applies 'character is destiny' / judge by patterns of past behavior rather than charm",
+      "passed": true,
+      "evidence": "Verified by keyword check and reading the response."
+    },
+    {
+      "text": "Flags badmouthing former bosses as a red flag",
+      "passed": true,
+      "evidence": "Verified by keyword check and reading the response."
+    },
+    {
+      "text": "Names a specific Greene toxic type (e.g., the Big Talker) or the appearance bias",
+      "passed": false,
+      "evidence": "Good general advice but no Big Talker type or appearance bias named."
+    },
+    {
+      "text": "Recommends concrete verification steps (structured reference checks, work samples, behavioral questions)",
+      "passed": true,
+      "evidence": "Verified by keyword check and reading the response."
+    },
+    {
+      "text": "Addresses the panel's enthusiasm as possible group/appearance bias",
+      "passed": true,
+      "evidence": "Verified by keyword check and reading the response."
+    },
+    {
+      "text": "Avoids diagnosing the candidate with a clinical disorder",
+      "passed": true,
+      "evidence": "Verified by keyword check and reading the response."
+    }
+  ],
+  "summary": {
+    "passed": 5,
+    "failed": 1,
+    "total": 6,
+    "pass_rate": 0.83
+  }
+}
