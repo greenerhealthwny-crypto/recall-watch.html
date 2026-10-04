@@ -7,7 +7,7 @@ description: 'Apply the teachings of "The Ministry of Healing" (Ellen G. White, 
 
 A working guide to Ellen G. White's *The Ministry of Healing* (1905), a foundational text of Seventh-day Adventist health ministry and the source of the "eight natural remedies" that later inspired lifestyle-medicine programs such as NEWSTART. The book argues that Christ's ministry joined physical healing with spiritual restoration, and calls every believer to be a "medical missionary": to relieve suffering, teach health, and point people to God.
 
-**Source coverage:** Built from the full text of the 1905 Review and Herald edition (public domain), obtained from archive.org because the user's 344 MB scanned PDF couldn't be downloaded from Drive. Page numbers in `references/teachings.md` follow that edition (they match the standard edition used in EGW citations, e.g., *MH 127*).
+**Source coverage:** Built from the full text of the 1905 Review and Herald edition (public domain), obtained from archive.org because the user's 344 MB scanned PDF couldn't be downloaded from Drive. Page numbers follow that edition and match the standard pagination used in EGW citations (e.g., *MH 127*). The complete book is bundled, one section per page, in `references/fulltext.md` (pages 7–541).
 
 ## Core teachings
 
@@ -35,10 +35,11 @@ A working guide to Ellen G. White's *The Ministry of Healing* (1905), a foundati
 | Daily spiritual life, relationships, service | §8 (The Worker's Need) |
 | Modern-evidence notes and safety guardrails | §9 |
 | Turning the book into a class, program or handout | §10 |
+| Exact wording or a page number for any passage, or a topic the summaries don't cover | `references/fulltext.md` (search it; don't load it whole) |
 
 **Workflow:**
 1. **Identify the purpose.** Personal devotional study, a sermon or Bible study, a church or community health program, a client handout, or a historical/theological question.
-2. **Find the teaching** in the reference and quote it accurately with an *MH page* citation. The book is public domain, so direct quotation is fine; keep quotes short and exact.
+2. **Find the teaching** in `references/teachings.md`. For exact wording, a page number, or anything the summaries don't cover, search `references/fulltext.md` for a distinctive phrase (e.g., `grep -n -i "cultivation of the soil" references/fulltext.md`); the nearest `## MH` heading above the hit is the page. Quote only text you found there, with its *MH page*. The book is public domain, so direct quotation is fine; keep quotes exact, fixing only obvious scan errors. Don't download the book or quote from memory.
 3. **Apply it** to the user's setting (e.g., a NEWSTART-style 8-week class, a cooking demo, a recovery ministry, a food pantry).
 4. **Add the modern-evidence and safety notes (§9)** whenever the advice touches medical treatment, medication, diet for a medical condition, pregnancy, children or eating disorders.
 

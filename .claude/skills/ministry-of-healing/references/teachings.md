@@ -1,6 +1,6 @@
 # The Ministry of Healing — Reference
 
-Summaries of each part, with short direct quotations (public domain, 1905). Page numbers follow the original edition (*MH*); "~" means the page is approximate. Every quote here has been checked against the 1905 text; when citing a passage that has no page here, say the page is unverified rather than guessing.
+Summaries of each part, with short direct quotations (public domain, 1905). Page numbers follow the original edition (*MH*); "~" means the page is approximate. Every quote here has been checked against the 1905 text; for any other passage, or to confirm a page, search `fulltext.md` (the whole book, one section per page) rather than guessing.
 
 ## Contents
 - §0 Chapter map
