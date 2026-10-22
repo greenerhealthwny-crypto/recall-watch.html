@@ -1,0 +1,13 @@
+{
+  "eval_id": 2,
+  "eval_name": "fm-retort-deviation",
+  "prompt": "I'm studying thermal processing. We can a low-acid vegetable with a scheduled process of 2.4 minutes at 250 F. Yesterday the retort only reached 240 F for the full 2.4 minutes. Can you explain D value, z value and the 12D concept, and tell me how many log reductions of C. botulinum spores that batch actually got? Is it safe?",
+  "assertions": [
+    "Defines D value as the time at a given temperature for a 1-log (90%) reduction",
+    "Defines z value as the temperature change that changes D by 10-fold (about 18 F / 10 C for C. botulinum)",
+    "Explains the 12D botulinum cook with D250 of about 0.2 min giving 2.4 min",
+    "Calculates D240 = 0.2 x 10^(10/18) which is about 0.72 min, giving about 3.3 log reductions",
+    "Concludes the batch is under-processed and unsafe: hold, do not release, and reprocess or destroy with a process authority's evaluation",
+    "Mentions why low-acid foods matter (pH above 4.6 and water activity above 0.85, C. botulinum can grow)"
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "skill_name": "food-microbiology",
+  "evals": [
+    {"id": 1, "name": "fm-church-gravy",
+     "prompt": "We had a church dinner. The roast beef and gravy were cooked the day before, left to cool overnight in a big stock pot on the counter, then reheated before serving. About 10-12 hours after the meal around 30 of the 40 guests had bad cramps and diarrhea, but hardly anyone vomited or had a fever. What most likely caused this and how do we stop it happening again?",
+     "assertions": [
+      "Identifies Clostridium perfringens as the most likely cause",
+      "Explains that spores survive cooking and germinate/multiply rapidly during slow cooling or warm holding of the large pot",
+      "Explains it is a toxicoinfection: large numbers eaten, enterotoxin released when cells sporulate in the gut (not a preformed toxin)",
+      "Uses onset time and symptoms to rule out alternatives such as S. aureus or emetic B. cereus (rapid vomiting) and Salmonella (fever)",
+      "Gives specific cooling controls: shallow containers/portioning, ice bath or fridge so food cools quickly through the danger zone",
+      "Gives holding/reheating controls: hot hold at or above about 140 F (60 C) and reheat to about 165 F (74 C)"]},
+    {"id": 2, "name": "fm-retort-deviation",
+     "prompt": "I'm studying thermal processing. We can a low-acid vegetable with a scheduled process of 2.4 minutes at 250 F. Yesterday the retort only reached 240 F for the full 2.4 minutes. Can you explain D value, z value and the 12D concept, and tell me how many log reductions of C. botulinum spores that batch actually got? Is it safe?",
+     "assertions": [
+      "Defines D value as the time at a given temperature for a 1-log (90%) reduction",
+      "Defines z value as the temperature change that changes D by 10-fold (about 18 F / 10 C for C. botulinum)",
+      "Explains the 12D botulinum cook with D250 of about 0.2 min giving 2.4 min",
+      "Calculates D240 = 0.2 x 10^(10/18) which is about 0.72 min, giving about 3.3 log reductions",
+      "Concludes the batch is under-processed and unsafe: hold, do not release, and reprocess or destroy with a process authority's evaluation",
+      "Mentions why low-acid foods matter (pH above 4.6 and water activity above 0.85, C. botulinum can grow)"]},
+    {"id": 3, "name": "fm-deli-listeria",
+     "prompt": "We're a small plant that cooks, chills and slices deli turkey breast for retail. How do we control Listeria monocytogenes? Outline the main hazards and the critical control points we should put in our HACCP / food safety plan.",
+     "assertions": [
+      "Notes Listeria grows at refrigeration temperatures and is a serious hazard for pregnant women, the elderly and the immunocompromised",
+      "Identifies post-cook recontamination from the plant environment (slicers, drains, biofilms) as the main risk for sliced RTE products",
+      "Recommends an environmental monitoring program (e.g. zone-based swabbing for Listeria spp.) and verification",
+      "Recommends post-lethality treatment and/or growth inhibitors (e.g. HPP or post-package pasteurization, lactate/diacetate, bacteriocins such as nisin/pediocin, or phage)",
+      "Lists cooking (lethality) and chilling/cooling as CCPs with measurable critical limits, monitoring, corrective actions, verification and records (HACCP principles)",
+      "Covers sanitation (clean before sanitize, SSOPs, equipment design) and GMPs/hygienic zoning"]}
+  ]
+}

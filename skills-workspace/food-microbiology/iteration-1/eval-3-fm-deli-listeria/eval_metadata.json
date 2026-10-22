@@ -1,0 +1,13 @@
+{
+  "eval_id": 3,
+  "eval_name": "fm-deli-listeria",
+  "prompt": "We're a small plant that cooks, chills and slices deli turkey breast for retail. How do we control Listeria monocytogenes? Outline the main hazards and the critical control points we should put in our HACCP / food safety plan.",
+  "assertions": [
+    "Notes Listeria grows at refrigeration temperatures and is a serious hazard for pregnant women, the elderly and the immunocompromised",
+    "Identifies post-cook recontamination from the plant environment (slicers, drains, biofilms) as the main risk for sliced RTE products",
+    "Recommends an environmental monitoring program (e.g. zone-based swabbing for Listeria spp.) and verification",
+    "Recommends post-lethality treatment and/or growth inhibitors (e.g. HPP or post-package pasteurization, lactate/diacetate, bacteriocins such as nisin/pediocin, or phage)",
+    "Lists cooking (lethality) and chilling/cooling as CCPs with measurable critical limits, monitoring, corrective actions, verification and records (HACCP principles)",
+    "Covers sanitation (clean before sanitize, SSOPs, equipment design) and GMPs/hygienic zoning"
+  ]
+}
