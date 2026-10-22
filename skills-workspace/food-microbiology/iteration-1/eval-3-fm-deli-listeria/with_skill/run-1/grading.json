@@ -1,0 +1,40 @@
+{
+  "expectations": [
+    {
+      "text": "Notes Listeria grows at refrigeration temperatures and is a serious hazard for pregnant women, the elderly and the immunocompromised",
+      "passed": true,
+      "evidence": "Psychrotrophic table row; pregnant/elderly/immunocompromised mentioned"
+    },
+    {
+      "text": "Identifies post-cook recontamination from the plant environment (slicers, drains, biofilms) as the main risk for sliced RTE products",
+      "passed": true,
+      "evidence": "Recontamination after cooking during chilling, peeling, slicing, packing is the main risk; harborage, biofilms"
+    },
+    {
+      "text": "Recommends an environmental monitoring program (e.g. zone-based swabbing for Listeria spp.) and verification",
+      "passed": true,
+      "evidence": "Environmental monitoring with zones (9 mentions)"
+    },
+    {
+      "text": "Recommends post-lethality treatment and/or growth inhibitors (e.g. HPP or post-package pasteurization, lactate/diacetate, bacteriocins such as nisin/pediocin, or phage)",
+      "passed": true,
+      "evidence": "HPP / post-package pasteurization and lactate/diacetate, bacteriocins, phage"
+    },
+    {
+      "text": "Lists cooking (lethality) and chilling/cooling as CCPs with measurable critical limits, monitoring, corrective actions, verification and records (HACCP principles)",
+      "passed": true,
+      "evidence": "CCPs with critical limits, monitoring, corrective actions, verification, records"
+    },
+    {
+      "text": "Covers sanitation (clean before sanitize, SSOPs, equipment design) and GMPs/hygienic zoning",
+      "passed": true,
+      "evidence": "SSOPs, clean then sanitize, GMPs and hygienic zoning"
+    }
+  ],
+  "summary": {
+    "passed": 6,
+    "failed": 0,
+    "total": 6,
+    "pass_rate": 1.0
+  }
+}

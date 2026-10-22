@@ -1,0 +1,40 @@
+{
+  "expectations": [
+    {
+      "text": "Defines D value as the time at a given temperature for a 1-log (90%) reduction",
+      "passed": true,
+      "evidence": "D defined as time for 90% kill"
+    },
+    {
+      "text": "Defines z value as the temperature change that changes D by 10-fold (about 18 F / 10 C for C. botulinum)",
+      "passed": true,
+      "evidence": "z = 18 F (10 C)"
+    },
+    {
+      "text": "Explains the 12D botulinum cook with D250 of about 0.2 min giving 2.4 min",
+      "passed": true,
+      "evidence": "Uses D250 = 0.21 (12D ~2.5 min); notes 2.4 min is the classic botulinum cook"
+    },
+    {
+      "text": "Calculates D240 = 0.2 x 10^(10/18) which is about 0.72 min, giving about 3.3 log reductions",
+      "passed": true,
+      "evidence": "D240 ~0.75 min, ~3.2 logs (consistent with D=0.21)"
+    },
+    {
+      "text": "Concludes the batch is under-processed and unsafe: hold, do not release, and reprocess or destroy with a process authority's evaluation",
+      "passed": true,
+      "evidence": "Not safe: hold, document, process authority, reprocess or destroy"
+    },
+    {
+      "text": "Mentions why low-acid foods matter (pH above 4.6 and water activity above 0.85, C. botulinum can grow)",
+      "passed": true,
+      "evidence": "Low-acid canned foods pH > 4.6, aw > 0.85"
+    }
+  ],
+  "summary": {
+    "passed": 6,
+    "failed": 0,
+    "total": 6,
+    "pass_rate": 1.0
+  }
+}

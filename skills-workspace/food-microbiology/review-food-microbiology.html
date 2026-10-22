@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eval Review</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&family=Lora:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js" integrity="sha384-EnyY0/GSHQGSxSgMwaIPzSESbqoOLSexfnSMN2AP+39Ckmn92stwABZynq1JyzdT" crossorigin="anonymous"></script>
+  <style>
+    :root {
+      --bg: #faf9f5;
+      --surface: #ffffff;
+      --border: #e8e6dc;
+      --text: #141413;
+      --text-muted: #b0aea5;
+      --accent: #d97757;
+      --accent-hover: #c4613f;
+      --green: #788c5d;
+      --green-bg: #eef2e8;
+      --red: #c44;
+      --red-bg: #fceaea;
+      --header-bg: #141413;
+      --header-text: #faf9f5;
+      --radius: 6px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Lora', Georgia, serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ---- Header ---- */
+    .header {
+      background: var(--header-bg);
+      color: var(--header-text);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .header h1 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+    .header .instructions {
+      font-size: 0.8rem;
+      opacity: 0.7;
+      margin-top: 0.25rem;
+    }
+    .header .progress {
+      font-size: 0.875rem;
+      opacity: 0.8;
+      text-align: right;
+    }
+
+    /* ---- Main content ---- */
+    .main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.5rem 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    /* ---- Sections ---- */
+    .section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      flex-shrink: 0;
+    }
+    .section-header {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.75rem 1rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+    }
+    .section-body {
+      padding: 1rem;
+    }
+
+    /* ---- Config badge ---- */
+    .config-badge {
+      display: inline-block;
+      padding: 0.2rem 0.625rem;
+      border-radius: 9999px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      margin-left: 0.75rem;
+      vertical-align: middle;
+    }
+    .config-badge.config-primary {
+      background: rgba(33, 150, 243, 0.12);
+      color: #1976d2;
+    }
+    .config-badge.config-baseline {
+      background: rgba(255, 193, 7, 0.15);
+      color: #f57f17;
+    }
+
+    /* ---- Prompt ---- */
+    .prompt-text {
+      white-space: pre-wrap;
+      font-size: 0.9375rem;
+      line-height: 1.6;
+    }
+
+    /* ---- Outputs ---- */
+    .output-file {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .output-file + .output-file {
+      margin-top: 1rem;
+    }
+    .output-file-header {
+      padding: 0.5rem 0.75rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .output-file-header .dl-btn {
+      font-size: 0.7rem;
+      color: var(--accent);
+      text-decoration: none;
+      cursor: pointer;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-weight: 500;
+      opacity: 0.8;
+    }
+    .output-file-header .dl-btn:hover {
+      opacity: 1;
+      text-decoration: underline;
+    }
+    .output-file-content {
+      padding: 0.75rem;
+      overflow-x: auto;
+    }
+    .output-file-content pre {
+      font-size: 0.8125rem;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+    }
+    .output-file-content img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 4px;
+    }
+    .output-file-content iframe {
+      width: 100%;
+      height: 600px;
+      border: none;
+    }
+    .output-file-content table {
+      border-collapse: collapse;
+      font-size: 0.8125rem;
+      width: 100%;
+    }
+    .output-file-content table td,
+    .output-file-content table th {
+      border: 1px solid var(--border);
+      padding: 0.375rem 0.5rem;
+      text-align: left;
+    }
+    .output-file-content table th {
+      background: var(--bg);
+      font-weight: 600;
+    }
+    .output-file-content .download-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 0.875rem;
+      cursor: pointer;
+    }
+    .output-file-content .download-link:hover {
+      background: var(--border);
+    }
+    .empty-state {
+      color: var(--text-muted);
+      font-style: italic;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    /* ---- Feedback ---- */
+    .prev-feedback {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.625rem 0.75rem;
+      margin-top: 0.75rem;
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+    .prev-feedback-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.25rem;
+      color: var(--text-muted);
+    }
+    .feedback-textarea {
+      width: 100%;
+      min-height: 100px;
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 0.9375rem;
+      line-height: 1.5;
+      resize: vertical;
+      color: var(--text);
+    }
+    .feedback-textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    .feedback-status {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.5rem;
+      min-height: 1.1em;
+    }
+
+    /* ---- Grades (collapsible) ---- */
+    .grades-toggle {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+    }
+    .grades-toggle:hover {
+      color: var(--accent);
+    }
+    .grades-toggle .arrow {
+      margin-right: 0.5rem;
+      transition: transform 0.15s;
+      font-size: 0.75rem;
+    }
+    .grades-toggle .arrow.open {
+      transform: rotate(90deg);
+    }
+    .grades-content {
+      display: none;
+      margin-top: 0.75rem;
+    }
+    .grades-content.open {
+      display: block;
+    }
+    .grades-summary {
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .grade-badge {
+      display: inline-block;
+      padding: 0.125rem 0.5rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .grade-pass { background: var(--green-bg); color: var(--green); }
+    .grade-fail { background: var(--red-bg); color: var(--red); }
+    .assertion-list {
+      list-style: none;
+    }
+    .assertion-item {
+      padding: 0.625rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.8125rem;
+    }
+    .assertion-item:last-child { border-bottom: none; }
+    .assertion-status {
+      font-weight: 600;
+      margin-right: 0.5rem;
+    }
+    .assertion-status.pass { color: var(--green); }
+    .assertion-status.fail { color: var(--red); }
+    .assertion-evidence {
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      margin-top: 0.25rem;
+      padding-left: 1.5rem;
+    }
+
+    /* ---- View tabs ---- */
+    .view-tabs {
+      display: flex;
+      gap: 0;
+      padding: 0 2rem;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .view-tab {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.625rem 1.25rem;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      background: none;
+      color: var(--text-muted);
+      border-bottom: 2px solid transparent;
+      transition: all 0.15s;
+    }
+    .view-tab:hover { color: var(--text); }
+    .view-tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+    .view-panel { display: none; }
+    .view-panel.active { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
+
+    /* ---- Benchmark view ---- */
+    .benchmark-view {
+      padding: 1.5rem 2rem;
+      overflow-y: auto;
+      flex: 1;
+    }
+    .benchmark-table {
+      border-collapse: collapse;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 0.8125rem;
+      width: 100%;
+      margin-bottom: 1.5rem;
+    }
+    .benchmark-table th, .benchmark-table td {
+      padding: 0.625rem 0.75rem;
+      text-align: left;
+      border: 1px solid var(--border);
+    }
+    .benchmark-table th {
+      font-family: 'Poppins', sans-serif;
+      background: var(--header-bg);
+      color: var(--header-text);
+      font-weight: 500;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .benchmark-table tr:hover { background: var(--bg); }
+    .benchmark-table tr.benchmark-row-with { background: rgba(33, 150, 243, 0.06); }
+    .benchmark-table tr.benchmark-row-without { background: rgba(255, 193, 7, 0.06); }
+    .benchmark-table tr.benchmark-row-with:hover { background: rgba(33, 150, 243, 0.12); }
+    .benchmark-table tr.benchmark-row-without:hover { background: rgba(255, 193, 7, 0.12); }
+    .benchmark-table tr.benchmark-row-avg { font-weight: 600; border-top: 2px solid var(--border); }
+    .benchmark-table tr.benchmark-row-avg.benchmark-row-with { background: rgba(33, 150, 243, 0.12); }
+    .benchmark-table tr.benchmark-row-avg.benchmark-row-without { background: rgba(255, 193, 7, 0.12); }
+    .benchmark-delta-positive { color: var(--green); font-weight: 600; }
+    .benchmark-delta-negative { color: var(--red); font-weight: 600; }
+    .benchmark-notes {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem;
+    }
+    .benchmark-notes h3 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+    }
+    .benchmark-notes ul {
+      list-style: disc;
+      padding-left: 1.25rem;
+    }
+    .benchmark-notes li {
+      font-size: 0.8125rem;
+      line-height: 1.6;
+      margin-bottom: 0.375rem;
+    }
+    .benchmark-empty {
+      color: var(--text-muted);
+      font-style: italic;
+      text-align: center;
+      padding: 3rem;
+    }
+
+    /* ---- Navigation ---- */
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+      flex-shrink: 0;
+    }
+    .nav-btn {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.5rem 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text);
+      transition: all 0.15s;
+    }
+    .nav-btn:hover:not(:disabled) {
+      background: var(--bg);
+      border-color: var(--text-muted);
+    }
+    .nav-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    .done-btn {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.5rem 1.5rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: all 0.15s;
+    }
+    .done-btn:hover {
+      background: var(--bg);
+      border-color: var(--text-muted);
+    }
+    .done-btn.ready {
+      border: none;
+      background: var(--accent);
+      color: white;
+      font-weight: 600;
+    }
+    .done-btn.ready:hover {
+      background: var(--accent-hover);
+    }
+    /* ---- Done overlay ---- */
+    .done-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 100;
+      justify-content: center;
+      align-items: center;
+    }
+    .done-overlay.visible {
+      display: flex;
+    }
+    .done-card {
+      background: var(--surface);
+      border-radius: 12px;
+      padding: 2rem 3rem;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      max-width: 500px;
+    }
+    .done-card h2 {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .done-card p {
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
+    }
+    .done-card .btn-row {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+    }
+    .done-card button {
+      padding: 0.5rem 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 0.875rem;
+    }
+    .done-card button:hover {
+      background: var(--bg);
+    }
+    /* ---- Toast ---- */
+    .toast {
+      position: fixed;
+      bottom: 5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--header-bg);
+      color: var(--header-text);
+      padding: 0.625rem 1.25rem;
+      border-radius: var(--radius);
+      font-size: 0.875rem;
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+      z-index: 200;
+    }
+    .toast.visible {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <div id="app" style="height:100vh; display:flex; flex-direction:column;">
+    <div class="header">
+      <div>
+        <h1>Eval Review: <span id="skill-name"></span></h1>
+        <div class="instructions">Review each output and leave feedback below. Navigate with arrow keys or buttons. When done, copy feedback and paste into Claude Code.</div>
+      </div>
+      <div class="progress" id="progress"></div>
+    </div>
+
+    <!-- View tabs (only shown when benchmark data exists) -->
+    <div class="view-tabs" id="view-tabs" style="display:none;">
+      <button class="view-tab active" onclick="switchView('outputs')">Outputs</button>
+      <button class="view-tab" onclick="switchView('benchmark')">Benchmark</button>
+    </div>
+
+    <!-- Outputs panel (qualitative review) -->
+    <div class="view-panel active" id="panel-outputs">
+    <div class="main">
+      <!-- Prompt -->
+      <div class="section">
+        <div class="section-header">Prompt <span class="config-badge" id="config-badge" style="display:none;"></span></div>
+        <div class="section-body">
+          <div class="prompt-text" id="prompt-text"></div>
+        </div>
+      </div>
+
+      <!-- Outputs -->
+      <div class="section">
+        <div class="section-header">Output</div>
+        <div class="section-body" id="outputs-body">
+          <div class="empty-state">No output files found</div>
+        </div>
+      </div>
+
+      <!-- Previous Output (collapsible) -->
+      <div class="section" id="prev-outputs-section" style="display:none;">
+        <div class="section-header">
+          <div class="grades-toggle" onclick="togglePrevOutputs()">
+            <span class="arrow" id="prev-outputs-arrow">&#9654;</span>
+            Previous Output
+          </div>
+        </div>
+        <div class="grades-content" id="prev-outputs-content"></div>
+      </div>
+
+      <!-- Grades (collapsible) -->
+      <div class="section" id="grades-section" style="display:none;">
+        <div class="section-header">
+          <div class="grades-toggle" onclick="toggleGrades()">
+            <span class="arrow" id="grades-arrow">&#9654;</span>
+            Formal Grades
+          </div>
+        </div>
+        <div class="grades-content" id="grades-content"></div>
+      </div>
+
+      <!-- Feedback -->
+      <div class="section">
+        <div class="section-header">Your Feedback</div>
+        <div class="section-body">
+          <textarea
+            class="feedback-textarea"
+            id="feedback"
+            placeholder="What do you think of this output? Any issues, suggestions, or things that look great?"
+          ></textarea>
+          <div class="feedback-status" id="feedback-status"></div>
+          <div class="prev-feedback" id="prev-feedback" style="display:none;">
+            <div class="prev-feedback-label">Previous feedback</div>
+            <div id="prev-feedback-text"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav" id="outputs-nav">
+      <button class="nav-btn" id="prev-btn" onclick="navigate(-1)">&#8592; Previous</button>
+      <button class="done-btn" id="done-btn" onclick="showDoneDialog()">Submit All Reviews</button>
+      <button class="nav-btn" id="next-btn" onclick="navigate(1)">Next &#8594;</button>
+    </div>
+    </div><!-- end panel-outputs -->
+
+    <!-- Benchmark panel (quantitative stats) -->
+    <div class="view-panel" id="panel-benchmark">
+      <div class="benchmark-view" id="benchmark-content">
+        <div class="benchmark-empty">No benchmark data available. Run a benchmark to see quantitative results here.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Done overlay -->
+  <div class="done-overlay" id="done-overlay">
+    <div class="done-card">
+      <h2>Review Complete</h2>
+      <p>Your feedback has been saved. Go back to your Claude Code session and tell Claude you're done reviewing.</p>
+      <div class="btn-row">
+        <button onclick="closeDoneDialog()">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ---- Embedded data (injected by generate_review.py) ----
+    const EMBEDDED_DATA = {"skill_name": "food-microbiology", "runs": [{"id": "eval-1-fm-church-gravy-with_skill-run-1", "prompt": "We had a church dinner. The roast beef and gravy were cooked the day before, left to cool overnight in a big stock pot on the counter, then reheated before serving. About 10-12 hours after the meal around 30 of the 40 guests had bad cramps and diarrhea, but hardly anyone vomited or had a fever. What most likely caused this and how do we stop it happening again?", "eval_id": 1, "outputs": [{"name": "response.md", "type": "text", "content": "# Church dinner illness: most likely *Clostridium perfringens*\n\nI'm sorry this happened. Your description fits one organism very closely. Only lab testing can confirm it, though, so read this as the most likely explanation rather than a diagnosis.\n\n## The most likely cause\n\nThe most likely cause is ***Clostridium perfringens* (type A) food poisoning**, carried by the roast beef and/or gravy. Each part of your story matches its known pattern.\n\n| What you saw | Why it points to *C. perfringens* |\n|---|---|\n| Onset **10\u201312 hours** after the meal | Typical incubation is about **8\u201316 hours** (often 8\u201312). That is too slow for a toxin already formed in the food (*S. aureus* takes about 2\u20136 h) and too fast for infections like *Salmonella* or *Campylobacter* (usually a day or more). |\n| **Cramps and diarrhea**, **little vomiting, no fever** | This is the classic picture. The toxin is released in the gut and mainly causes diarrhea and abdominal pain. Vomiting and fever are uncommon. |\n| **Roast beef and gravy** | Large cuts of cooked meat, gravies and stews are the classic foods. |\n| Cooked the day before, **cooled overnight in a big stock pot on the counter**, then reheated | This is the textbook failure that causes these outbreaks: a large mass of food cooled slowly. |\n| **About 75% of guests** (30 of 40) ill | A high attack rate from one shared, heavily contaminated dish is typical. |\n\n**Less likely, but possible: diarrheal *Bacillus cereus*.** It has a similar onset (about 6\u201314 h), similar diarrhea-and-cramps symptoms, and the same cause (slow cooling of meats and gravies). Only stool or food testing can tell the two apart. The prevention steps are the same for both.\n\n## Why it happened: the microbiology\n\n1. ***C. perfringens* forms spores.** Raw meat and spices often carry its spores, which are found in soil and animal intestines. Normal cooking kills ordinary bacteria but **not the spores**.\n2. **Cooking actually helps it.** Heat \"activates\" the spores so they are ready to germinate. Cooking also kills competing bacteria and drives oxygen out of the food. *C. perfringens* is an anaerobe, so a deep pot of gravy or a thick roast suits it well.\n3. **Slow cooling lets it grow.** A large stock pot on the counter can stay in the danger zone (roughly 40\u2013140 \u00b0F) for many hours. The centre may stay warm almost all night. *C. perfringens* is among the fastest-growing bacteria known: near 109\u2013113 \u00b0F it can double about every **7\u201310 minutes**. Overnight, a few spores can become millions of cells per gram.\n4. **The reheat wasn't enough.** If the food is only warmed rather than brought to a full, even boil or to 165 \u00b0F throughout, many cells survive. Reheating also cannot undo hours of growth.\n5. **The illness starts in the gut.** People who eat food with very high counts (about a million or more cells per gram) swallow cells that form spores in the intestine. As they do, they release an enterotoxin, which causes the cramps and diarrhea. This is why symptoms appear after many hours rather than quickly.\n\nMost of the risk came from **cooling a large volume slowly at room temperature**. Large-batch slow cooling is one of the most common causes of foodborne outbreaks.\n\n## How to stop it happening again\n\n### 1. Cool food fast (the most important fix)\n- **Don't leave cooked food to cool on the counter**, especially in a deep pot.\n- Follow the FDA Food Code standard: cool from **135 \u00b0F to 70 \u00b0F within 2 hours**, then to **41 \u00b0F or below within a further 4 hours** (6 hours in total).\n- Practical ways to meet it:\n  - **Divide food into shallow pans**, about 2 inches deep or less, and refrigerate them uncovered or loosely covered until cold.\n  - **Slice or cut roasts** into smaller pieces, or into portions of about 4 inches thick or less, before chilling.\n  - Stand the pot of gravy or stock in an **ice-water bath** and stir it. Ice paddles or cooling wands also help.\n  - Leave space around containers in the fridge so air can circulate, and don't overload a domestic fridge with hot food.\n- Use a **probe thermometer** to check that the food is actually getting cold in time.\n\n### 2. Reheat properly\n- Reheat leftovers quickly to **165 \u00b0F (74 \u00b0C) throughout**. Bring gravy to a **rolling boil**.\n- Don't slowly warm food in a roaster, slow cooker or warming oven, because that is more time in the danger zone.\n\n### 3. Hold hot, or hold cold\n- Once food is hot, keep it at **135 \u00b0F or above**. The textbook cites 140 \u00b0F; the current FDA Food Code uses 135 \u00b0F. Use chafing dishes or roasters that are actually hot enough, and check with a thermometer.\n- Otherwise, keep it at **41 \u00b0F or below** until reheating.\n- Don't let food sit warm for hours before serving.\n\n### 4. Plan the menu around the risk\n- If possible, **cook large roasts and gravy on the day** and serve them straight away. Otherwise, cook the meat ahead and make the gravy fresh.\n- Make a simple **checklist for volunteers**: cooling method, temperature checks, reheat temperature, and a log sheet. Church and community kitchens are a classic setting for these outbreaks, because well-meaning cooks prepare large amounts for big groups.\n- Consider a **food handler course** for your regular kitchen volunteers. Many local health departments offer short ones.\n\n## What to do now\n\n- **Ill guests:** Most *C. perfringens* illness is short (usually under 24 hours) and resolves on its own. People should drink plenty of fluids. Anyone who is elderly, very young, pregnant or has other health problems should **see a clinician**, as should anyone with severe or lasting symptoms, signs of dehydration, **bloody diarrhea, high fever, or symptoms lasting more than 2\u20133 days**. Those symptoms would suggest a different cause.\n- **Report it to your local health department.** An outbreak affecting 30 people is something they will want to know about. They can collect stool samples and test any **leftover food**, which can confirm the organism. If any roast beef or gravy is left, keep it refrigerated and labelled, and don't eat it or throw it away until they advise you.\n- Write down **who ate what**, when symptoms started, and how each dish was prepared and stored. This helps the investigation, and it may show whether the beef, the gravy or both were the source.\n\n---\n*This is educational information based on food microbiology principles, not medical advice or a diagnosis. Check the temperature limits with your local health department or the current FDA Food Code, as local rules can differ.*\n"}], "grading": {"expectations": [{"text": "Identifies Clostridium perfringens as the most likely cause", "passed": true, "evidence": "Names C. perfringens type A as most likely"}, {"text": "Explains that spores survive cooking and germinate/multiply rapidly during slow cooling or warm holding of the large pot", "passed": true, "evidence": "Spores survive cooking, activated; anaerobic deep pot; doubling 7-10 min overnight"}, {"text": "Explains it is a toxicoinfection: large numbers eaten, enterotoxin released when cells sporulate in the gut (not a preformed toxin)", "passed": true, "evidence": "Cells sporulate in the gut releasing enterotoxin; 'not a toxin already formed in the food'"}, {"text": "Uses onset time and symptoms to rule out alternatives such as S. aureus or emetic B. cereus (rapid vomiting) and Salmonella (fever)", "passed": true, "evidence": "Rules out S. aureus (2-6 h) and Salmonella/Campylobacter; notes diarrheal B. cereus as alternative"}, {"text": "Gives specific cooling controls: shallow containers/portioning, ice bath or fridge so food cools quickly through the danger zone", "passed": true, "evidence": "Shallow pans \u003c=2 in, slice roasts, ice-water bath, Food Code 2-stage cooling"}, {"text": "Gives holding/reheating controls: hot hold at or above about 140 F (60 C) and reheat to about 165 F (74 C)", "passed": true, "evidence": "Reheat to 165 F / rolling boil; hot hold >=135 F (notes the book cites 140 F)"}], "summary": {"passed": 6, "failed": 0, "total": 6, "pass_rate": 1.0}}}, {"id": "eval-1-fm-church-gravy-without_skill-run-1", "prompt": "We had a church dinner. The roast beef and gravy were cooked the day before, left to cool overnight in a big stock pot on the counter, then reheated before serving. About 10-12 hours after the meal around 30 of the 40 guests had bad cramps and diarrhea, but hardly anyone vomited or had a fever. What most likely caused this and how do we stop it happening again?", "eval_id": 1, "outputs": [{"name": "response.md", "type": "text", "content": "# What most likely made your guests sick: *Clostridium perfringens*\n\n## Why this is the top suspect\n\nYour outbreak matches the textbook pattern for *Clostridium perfringens* food poisoning very closely:\n\n| Clue from your dinner | Why it points to *C. perfringens* |\n|---|---|\n| **Roast beef and gravy** | Meat, poultry and gravy are the classic foods. *C. perfringens* lives on raw meat and in the environment. |\n| **Cooked the day before** | Cooking kills the growing bacteria but **not their spores**. Heat also \"activates\" the spores and drives oxygen out of the food, which helps them germinate. |\n| **Cooled overnight in a big stock pot on the counter** | This is the main cause. A large, deep pot of hot food cools very slowly and sits for hours in the \"danger zone\" (roughly 10\u201352 \u00b0C / 50\u2013125 \u00b0F). *C. perfringens* can double about every 10 minutes at around 43\u201347 \u00b0C (109\u2013117 \u00b0F), so it can reach huge numbers overnight. The middle of a deep pot also has little oxygen, which this bacterium needs. |\n| **Reheated before serving** | Warming it up, or reheating it unevenly, often does not kill all the vegetative cells. Many people then swallow very large numbers of live bacteria. |\n| **Symptoms 10\u201312 hours after the meal** | The usual incubation period is **6\u201324 hours, most often 8\u201312**. In the gut the bacteria form spores and release an enterotoxin. |\n| **Cramps and diarrhea, little vomiting, no fever** | This is the classic picture. Vomiting and fever are uncommon. Illness usually lasts less than 24 hours. |\n| **High attack rate (30 of 40 people)** | Typical when one shared dish was heavily contaminated. |\n\n### What else it could be, and why it is less likely\n\n- ***Bacillus cereus* (diarrheal type):** a similar illness (cramps and watery diarrhea 6\u201315 hours after eating) and similar causes, including meats, gravies and foods cooled slowly. Only lab testing can reliably tell the two apart, and the prevention steps are the same. Its vomiting type is usually linked to rice and starchy foods and starts within 1\u20136 hours with a lot of vomiting, which does not match your outbreak.\n- ***Staphylococcus aureus*:** starts sooner (30 minutes to 8 hours) and causes a lot of vomiting. That does not match.\n- **Norovirus:** vomiting is prominent, it spreads from person to person, and it often causes a low fever. That does not match well.\n- ***Salmonella* / *Campylobacter*:** usually start 12\u201372 hours after eating, often with fever and sometimes bloody stools. That does not match well.\n\n## What to do now\n\n1. **Most people get better on their own within 24 hours.** Drink plenty of fluids, such as water, oral rehydration solutions or broth.\n2. **See a doctor** if someone has signs of dehydration (very little urine, dizziness, a dry mouth), bloody stools, a high fever, or symptoms lasting more than 2\u20133 days. Take extra care with elderly people, young children, pregnant people and anyone with a weakened immune system. Severe cases are rare, but they happen most often in older or frail people.\n3. **Report it to your local health department.** An illness affecting 30 people counts as an outbreak, and health departments want to hear about it. They may help test leftover food or stool samples to confirm the cause. If any leftovers remain, keep them refrigerated and labeled rather than throwing them out, so they can be tested. Do not eat them.\n\n## How to stop it happening again\n\nThe key idea is that **the spores survive cooking, so you have to stop them from multiplying afterward.** Getting the food cold quickly and reheating it hot enough are what matter most.\n\n### 1. Cool food fast, and never on the counter overnight\n- Follow the standard **two-stage cooling rule**:\n  - from **57 \u00b0C (135 \u00b0F) down to 21 \u00b0C (70 \u00b0F) within 2 hours**, then\n  - from **21 \u00b0C down to 5 \u00b0C (41 \u00b0F) or below within the next 4 hours**, for 6 hours in total at most.\n- **Split large batches.** Divide gravy and meat into **shallow pans, no more than about 5 cm (2 inches) deep**. Never cool food in a deep stock pot.\n- **Cut roasts into smaller pieces** (around 2\u20133 kg / 6 lb or less), or slice them before chilling.\n- **Speed up cooling** with an ice-water bath, by stirring the gravy, or with ice wands or \"cooling paddles\".\n- Put the food in the fridge **uncovered, or loosely covered, until it is cold**, and leave space between containers so air can move around them.\n- **Use a probe thermometer** to check, and write down the temperatures and times.\n\n### 2. Reheat thoroughly\n- Reheat leftovers quickly, within 2 hours, until **every part reaches at least 74 \u00b0C (165 \u00b0F)**. Bring gravy to a **rolling boil** and stir it.\n- Do not use slow cookers or warming trays to reheat food. They warm it too slowly and keep it in the danger zone.\n\n### 3. Hold food at a safe temperature while serving\n- Keep hot food at **57 \u00b0C (135 \u00b0F) or hotter** in chafing dishes, hot-holding units or a low oven, and check it with a thermometer.\n- Keep cold food at **5 \u00b0C (41 \u00b0F) or colder**.\n- Throw out food that has stayed at room temperature for more than 2 hours (1 hour in hot weather).\n\n### 4. Plan around the event\n- Where possible, **cook the meat on the day** and serve it straight away.\n- If you have to cook ahead, plan for fridge space, shallow pans and ice before you start cooking.\n- **Make gravy fresh** on the day, or bring cooled gravy back to a boil just before serving.\n- Do not save and reuse leftovers from the serving line.\n\n### 5. People and training\n- Have at least one volunteer complete a **food handler or food safety course**. Many health departments and extension services offer free or low-cost courses for community and church kitchens.\n- Put up a simple **\"Cool \u2013 Reheat \u2013 Hold\" temperature chart** in the church kitchen and keep a thermometer there.\n- Volunteers who have had vomiting or diarrhea should not cook for **at least 48 hours after their symptoms stop**. This is good practice in general, although it was not the likely cause here.\n\n## The short version\n\nThe spores in the beef and gravy survived cooking. Then the pot cooled slowly overnight, and they grew to huge numbers. Reheating did not kill them all. Next time, **chill food quickly in shallow containers in the fridge, reheat it to 74 \u00b0C (165 \u00b0F) or a boil, and keep it hot (57 \u00b0C / 135 \u00b0F or more) until you serve it.**\n"}], "grading": {"expectations": [{"text": "Identifies Clostridium perfringens as the most likely cause", "passed": true, "evidence": "Names C. perfringens as top suspect"}, {"text": "Explains that spores survive cooking and germinate/multiply rapidly during slow cooling or warm holding of the large pot", "passed": true, "evidence": "Spores survive cooking, slow cooling in deep pot, ~10 min doubling"}, {"text": "Explains it is a toxicoinfection: large numbers eaten, enterotoxin released when cells sporulate in the gut (not a preformed toxin)", "passed": true, "evidence": "'In the gut the bacteria form spores and release an enterotoxin'"}, {"text": "Uses onset time and symptoms to rule out alternatives such as S. aureus or emetic B. cereus (rapid vomiting) and Salmonella (fever)", "passed": true, "evidence": "Rules out S. aureus, emetic B. cereus, norovirus, Salmonella/Campylobacter"}, {"text": "Gives specific cooling controls: shallow containers/portioning, ice bath or fridge so food cools quickly through the danger zone", "passed": true, "evidence": "Two-stage cooling, shallow pans \u003c=2 in, ice bath, cut roasts"}, {"text": "Gives holding/reheating controls: hot hold at or above about 140 F (60 C) and reheat to about 165 F (74 C)", "passed": true, "evidence": "Reheat to 165 F; hot hold at 135 F or above"}], "summary": {"passed": 6, "failed": 0, "total": 6, "pass_rate": 1.0}}}, {"id": "eval-2-fm-retort-deviation-with_skill-run-1", "prompt": "I'm studying thermal processing. We can a low-acid vegetable with a scheduled process of 2.4 minutes at 250 F. Yesterday the retort only reached 240 F for the full 2.4 minutes. Can you explain D value, z value and the 12D concept, and tell me how many log reductions of C. botulinum spores that batch actually got? Is it safe?", "eval_id": 2, "outputs": [{"name": "response.md", "type": "text", "content": "# Retort Deviation: D, z, 12D and What Your 240 \u00b0F Batch Actually Got\n\n**Short answer:** At 240 \u00b0F instead of 250 \u00b0F, the batch got about **3.3 log reductions** of *C. botulinum* spores, not 12. That is roughly **8.7 logs short**, and the process delivered only about **28% of the lethality** it was designed for. The batch is **not safe to release as is.** Under the low-acid canned food rules it has to be held and evaluated by a process authority. In practice that usually means reprocessing or destroying it.\n\nThe rest of this explains the concepts and works through the numbers step by step.\n\n---\n\n## 1. The concepts\n\n### Thermal death is log-linear\nWhen you hold spores at a constant lethal temperature, the same *fraction* dies in each equal time interval. If you plot log(survivors) against time, you get a straight line. Because of this, we describe heat kill in **log reductions** (powers of ten).\n\n### D value (decimal reduction time)\n**D is the time at a given temperature needed to kill 90% of the population, which is a 1-log reduction.**\n\n- If D = 0.2 min, then every 0.2 min at that temperature cuts survivors 10-fold.\n- 1,000,000 spores \u2192 100,000 \u2192 10,000 \u2192 \u2026 for each D interval.\n- **Log reduction = time \u00f7 D.**\n- D always refers to a specific temperature, written as D\u2082\u2085\u2080\u00b0F or D\u2081\u2082\u2081\u00b0C. For *C. botulinum* types A and B spores (the proteolytic, most heat-resistant group), **D\u2082\u2085\u2080\u00b0F \u2248 0.2 min**.\n\n### z value\n**z is the temperature change needed to change D 10-fold.**\n\n- For *C. botulinum* spores, **z \u2248 18 \u00b0F (10 \u00b0C)**.\n- Raising the temperature by 18 \u00b0F makes D ten times smaller, so killing is ten times faster. Dropping it by 18 \u00b0F makes D ten times larger.\n- This gives the conversion formula:\n\n  **D_T = D_ref \u00d7 10^((T_ref \u2212 T) / z)**\n\n- A related idea is the **lethal rate**, L = 10^((T \u2212 T_ref)/z). It tells you how many \"minutes at 250 \u00b0F\" each minute at temperature T is worth. The **F value** (F\u2080 when the reference is 250 \u00b0F and z = 18 \u00b0F) adds up this lethality over the whole process.\n\n### The 12D concept (the \"botulinum cook\")\nLow-acid canned foods (pH > 4.6, a_w > 0.85) can support growth and toxin production by *C. botulinum* in the sealed, anaerobic can. They must be **commercially sterile**. The industry standard minimum is a **12-log reduction** of *C. botulinum* spores:\n\n- 12 \u00d7 D\u2082\u2085\u2080 = 12 \u00d7 0.2 min = **2.4 min at 250 \u00b0F** (F\u2080 \u2248 2.4, often rounded up to about 3 in practice).\n- In practical terms, if every can started with one spore, only one can in 10\u00b9\u00b2 would be expected to contain a survivor. That is a huge safety margin. It is built that large because botulism is so severe and because spore loads vary.\n- Any time and temperature combination that delivers the same lethality (the same F\u2080) is equivalent. A lower temperature is acceptable only if you hold it **much** longer.\n- Real scheduled processes are much longer than 2.4 min of retort time. They are set by heat-penetration studies so that the **cold spot** of the container accumulates the required F\u2080. Spoilage control (for example thermophilic spores such as *Geobacillus stearothermophilus*, which are more heat resistant than botulinum spores) often pushes them higher still. For this problem, we treat it the textbook way: 2.4 min actually experienced at the stated temperature.\n\n---\n\n## 2. Worked calculation for your batch\n\n**Given:** D\u2082\u2085\u2080 = 0.2 min, z = 18 \u00b0F, actual temperature = 240 \u00b0F, time = 2.4 min.\n\n**Step 1. Find D at 240 \u00b0F.**\nThe temperature is 10 \u00b0F below the reference.\n\nD\u2082\u2084\u2080 = 0.2 \u00d7 10^((250 \u2212 240)/18) = 0.2 \u00d7 10^(0.556) = 0.2 \u00d7 3.59 \u2248 **0.72 min**\n\nAt 240 \u00b0F, spores are about 3.6 times harder to kill than at 250 \u00b0F.\n\n**Step 2. Log reductions delivered.**\n\nLog reduction = 2.4 \u00f7 0.72 \u2248 **3.3 logs**\n\n**Step 3. Check with F\u2080.**\n\nLethal rate at 240 \u00b0F = 10^((240 \u2212 250)/18) = 10^(\u22120.556) \u2248 0.278\nF\u2080 = 2.4 min \u00d7 0.278 \u2248 **0.67 min equivalent at 250 \u00b0F**\n0.67 \u00f7 0.2 \u2248 **3.3 logs**. The two methods agree.\n\n| | Scheduled | Actual |\n|---|---|---|\n| Temperature | 250 \u00b0F | 240 \u00b0F |\n| Time | 2.4 min | 2.4 min |\n| D at that temperature | 0.20 min | 0.72 min |\n| F\u2080 (min at 250 \u00b0F) | 2.4 | 0.67 |\n| Log reduction | 12 | **\u2248 3.3** |\n| Shortfall | \u2014 | **\u2248 8.7 logs** |\n\n**Step 4. What it would have taken.**\nTo get 12D at 240 \u00b0F you would need 12 \u00d7 0.72 \u2248 **8.6 min**, about 3.6 times the scheduled time.\n\n### Why such a small temperature miss is such a big deal\nA 10 \u00b0F drop is only 4% of the temperature, but it cost about 72% of the lethality. This is because of the logarithmic z relationship. **Temperature deviations matter far more than time deviations.**\n\n- Compare: holding 250 \u00b0F for 10% less time (2.16 min) still delivers 10.8 logs.\n- Missing the temperature by 10 \u00b0F for the full time delivers only 3.3 logs.\n\nThis is why retort temperature (via the reference mercury-in-glass or RTD thermometer) and its recorder chart are critical limits that operators watch most closely.\n\n---\n\n## 3. Is it safe?\n\n**No. Treat it as under-processed and potentially hazardous.**\n\nWhat 3.3 logs means in practice:\n- With a load of 100 spores per can (10\u00b2 spores), survivors per can \u2248 10^(2 \u2212 3.3) \u2248 0.05. That is roughly **1 can in 20 with a surviving spore**.\n- With 1 spore per can, about 1 can in 2,000 could still carry a survivor. Compare that with the design target of 1 in a trillion.\n- Raw vegetables, especially soil-contact produce like potatoes, mushrooms and root crops, can carry high spore loads.\n\nA surviving spore in a sealed, low-acid, anaerobic can held at room temperature can germinate, grow and produce **botulinum neurotoxin**. The can may not swell or smell off, especially with proteolytic strains in some foods. You cannot inspect or test your way to safety here: a few cans testing negative says almost nothing about one in 20 or one in 2,000.\n\n### What has to happen (the regulatory and HACCP view)\nIn the US, low-acid canned foods fall under FDA 21 CFR Parts 108, 113 and 114 (or USDA-FSIS rules for meat and poultry products). A drop below the scheduled process temperature is a **process deviation**. In general terms:\n\n1. **Hold the entire lot.** Identify every container from the affected retort load(s), and do not ship.\n2. **Document it.** Keep the recorder chart, the thermometer readings, the time records and the cause, such as a steam supply, venting or controller problem.\n3. **Have a recognized process authority evaluate it.** They may calculate the delivered F\u2080 at the cold spot using the actual temperature history, including come-up and cooling. If the deviation cannot be shown to have delivered a safe process, the options are:\n   - **Reprocess** under a full scheduled process. This usually means a complete process, not just \"the missing part\", and it needs to be acceptable for the product and container.\n   - **Destroy** the lot.\n4. **Keep records** of the evaluation and disposition as required.\n5. **Correct the root cause** and verify the retort before running again. This is HACCP principle 5 (corrective action) in action.\n\nThe textbook calculation here (3.3 logs) is a strong indication of an unsafe product. However, the real disposition decision belongs to the process authority, who works from the actual heat-penetration data and records. Check the current FDA/FSIS regulations for compliance details.\n\n### Not for the home either\nIf this were a home canning situation, the same physics applies. Low-acid vegetables must be pressure-canned using a tested process (for example USDA or National Center for Home Food Preservation guidelines). An under-processed jar should not be eaten. Botulinum toxin itself is heat-labile, but \"boil it before serving\" is not a safe plan for a known under-processed low-acid product.\n\n---\n\n## 4. Key takeaways for your studies\n\n- **D** = time for a 1-log (90%) kill at one temperature. **Log reduction = time \u00f7 D.**\n- **z** = \u00b0F (or \u00b0C) to change D 10-fold. For *C. botulinum*, about 18 \u00b0F / 10 \u00b0C.\n- **D_T = D_ref \u00d7 10^((T_ref \u2212 T)/z)**; **F\u2080** = time \u00d7 10^((T \u2212 250)/18).\n- **12D botulinum cook** = 12 \u00d7 0.2 = 2.4 min at 250 \u00b0F.\n- **Your batch:** D\u2082\u2084\u2080 \u2248 0.72 min \u2192 2.4/0.72 \u2248 **3.3 logs** (F\u2080 \u2248 0.67). That is about 8.7 logs short. **Hold it, and have a process authority evaluate it; do not release it.**\n- Lesson: a small temperature drop wipes out most of the lethality. Time shortfalls are much more forgiving.\n\n*Educational content based on standard food microbiology principles (Matthews, Kniel & Montville, Food Microbiology: An Introduction, 4th ed.). This is not regulatory advice. Thermal process decisions must be made by a qualified process authority, following current FDA/USDA requirements.*\n"}], "grading": {"expectations": [{"text": "Defines D value as the time at a given temperature for a 1-log (90%) reduction", "passed": true, "evidence": "D = time for 90% / 1-log kill at a temperature"}, {"text": "Defines z value as the temperature change that changes D by 10-fold (about 18 F / 10 C for C. botulinum)", "passed": true, "evidence": "z ~18 F (10 C) for 10-fold change in D"}, {"text": "Explains the 12D botulinum cook with D250 of about 0.2 min giving 2.4 min", "passed": true, "evidence": "12 x 0.2 = 2.4 min at 250 F"}, {"text": "Calculates D240 = 0.2 x 10^(10/18) which is about 0.72 min, giving about 3.3 log reductions", "passed": true, "evidence": "D240 = 0.2 x 10^(10/18) ~ 0.72 min; 3.3 logs; cross-checked with F0 0.67"}, {"text": "Concludes the batch is under-processed and unsafe: hold, do not release, and reprocess or destroy with a process authority's evaluation", "passed": true, "evidence": "Not safe: hold lot, process authority, reprocess or destroy"}, {"text": "Mentions why low-acid foods matter (pH above 4.6 and water activity above 0.85, C. botulinum can grow)", "passed": true, "evidence": "Low-acid: pH > 4.6 and aw > 0.85"}], "summary": {"passed": 6, "failed": 0, "total": 6, "pass_rate": 1.0}}}, {"id": "eval-2-fm-retort-deviation-without_skill-run-1", "prompt": "I'm studying thermal processing. We can a low-acid vegetable with a scheduled process of 2.4 minutes at 250 F. Yesterday the retort only reached 240 F for the full 2.4 minutes. Can you explain D value, z value and the 12D concept, and tell me how many log reductions of C. botulinum spores that batch actually got? Is it safe?", "eval_id": 2, "outputs": [{"name": "response.md", "type": "text", "content": "# Retort Deviation: D Value, z Value, 12D, and What Your 240 \u00b0F Batch Received\n\n**Short answer:** The batch got about **3 log reductions** of *C. botulinum* spores instead of the roughly **12** it needed. It is **not safe**. Put it on hold right away. Do not release it.\n\n---\n\n## 1. The D value (decimal reduction time)\n\nThe **D value** is how long it takes, at one constant temperature, to kill 90% of a microbial population. That is a 1-log (10-fold) reduction.\n\n- It is written with the temperature as a subscript, for example **D\u2082\u2085\u2080 = 0.21 min**.\n- Microbial death under heat is roughly logarithmic: N = N\u2080 \u00d7 10^(\u2212t/D)\n- The number of log reductions you get = **time held \u00f7 D value**.\n\nFor proteolytic *C. botulinum* spores, the standard reference value is **D\u2082\u2085\u2080\u00b0F \u2248 0.21 min** (often rounded to 0.2 min).\n\n## 2. The z value (temperature sensitivity)\n\nThe **z value** is how many degrees the temperature must change to change the D value 10-fold.\n\n- For *C. botulinum*, **z = 18 \u00b0F (10 \u00b0C)**.\n- So each drop of 18 \u00b0F makes the spores 10 times harder to kill (D becomes 10 times longer).\n- This gives the **lethal rate**: L = 10^((T \u2212 250)/18). It tells you how much one minute at temperature T is worth compared with one minute at 250 \u00b0F.\n\n## 3. F\u2080 and the 12D concept\n\n- **F\u2080** is the total lethality of a process, expressed as equivalent minutes at 250 \u00b0F with z = 18 \u00b0F.\n- **12D (the \"botulinum cook\")** is the minimum process for low-acid canned foods (pH > 4.6, a_w > 0.85). It must reduce *C. botulinum* spores by 12 logs.\n  - 12 \u00d7 0.21 min \u2248 **2.5 min F\u2080**. Your scheduled 2.4 min at 250 \u00b0F is this classic minimum botulinum cook.\n  - In practical terms: if every can started with 1 spore, only 1 can in 10\u00b9\u00b2 would still contain a survivor. That is a vanishingly small risk.\n- In practice, commercial processes usually deliver F\u2080 values of about 3 to 6+ min or more. This covers mesophilic spoilage spore-formers, which are more heat-resistant than *C. botulinum*.\n\n## 4. Your batch: the calculation\n\n**Lethal rate at 240 \u00b0F:**\n\nL = 10^((240 \u2212 250)/18) = 10^(\u22120.556) \u2248 **0.278**\n\nSo 1 minute at 240 \u00b0F is worth only about 0.28 minutes at 250 \u00b0F.\n\n**Delivered lethality:**\n\nF = 2.4 min \u00d7 0.278 \u2248 **0.67 min** (equivalent at 250 \u00b0F)\n\n**Log reductions achieved:**\n\n0.67 \u00f7 0.21 \u2248 **3.2 log reductions**\n\n**Cross-check using D at 240 \u00b0F:**\n\nD\u2082\u2084\u2080 = 0.21 \u00d7 10^(10/18) \u2248 0.21 \u00d7 3.59 \u2248 0.75 min\n2.4 \u00f7 0.75 \u2248 **3.2 logs**, which matches.\n\n| | Scheduled (250 \u00b0F) | Actual (240 \u00b0F) |\n|---|---|---|\n| Lethality (F\u2080) | 2.4 min | ~0.67 min |\n| Log reductions of *C. botulinum* | ~11.4\u201312 | **~3.2** |\n| Survivor probability (1 spore/can start) | ~1 in 10\u00b9\u00b2 | **~1 in 1,500 cans** |\n\nA drop of only 10 \u00b0F cut the lethality by about **72%**. It removed roughly **8\u20139 logs** of safety margin. Under the 12D standard, the batch is short by a factor of about 10\u2078\u201310\u2079.\n\n## 5. Is it safe?\n\n**No.** Treat the batch as **under-processed and potentially hazardous**:\n\n1. **Hold the batch.** Do not ship or release it. Label and segregate it.\n2. **Document the deviation.** Record the retort charts, temperature and time records, and the batch and code identifiers. US regulations require this for low-acid canned foods (21 CFR 113.89, process deviations; also 21 CFR 108.35).\n3. **Have a qualified process authority evaluate it.** Only a process authority can decide whether any lot can be salvaged. They may use actual heat-penetration data, the cold-spot history, and come-up time contributions.\n4. **Choose a disposition.** The usual options are:\n   - **Reprocess** the full scheduled process, if product quality allows and the process authority approves.\n   - **Destroy** the batch.\n   - Release only if a documented evaluation by a process authority proves the process gave adequate lethality. With about 3 logs delivered, this is very unlikely.\n5. **Find and fix the root cause.** Check the steam supply, venting, controller and RTD/MIG calibration, and the recorder. Prevent a repeat.\n\nBotulinum toxin can be present in cans that look, smell and taste normal. Do not use \"no swelling\" as evidence of safety. And do not taste-test the product.\n\n---\n\n**Teaching note:** The real scheduled process time is much longer than the F\u2080 value. Cans need come-up time, and the cold spot heats slowly. Treating \"2.4 min at 250 \u00b0F\" as a constant-temperature hold is a textbook simplification. The z-value math above is still exactly how deviations are judged. A small temperature shortfall produces a large exponential loss of lethality.\n"}], "grading": {"expectations": [{"text": "Defines D value as the time at a given temperature for a 1-log (90%) reduction", "passed": true, "evidence": "D defined as time for 90% kill"}, {"text": "Defines z value as the temperature change that changes D by 10-fold (about 18 F / 10 C for C. botulinum)", "passed": true, "evidence": "z = 18 F (10 C)"}, {"text": "Explains the 12D botulinum cook with D250 of about 0.2 min giving 2.4 min", "passed": true, "evidence": "Uses D250 = 0.21 (12D ~2.5 min); notes 2.4 min is the classic botulinum cook"}, {"text": "Calculates D240 = 0.2 x 10^(10/18) which is about 0.72 min, giving about 3.3 log reductions", "passed": true, "evidence": "D240 ~0.75 min, ~3.2 logs (consistent with D=0.21)"}, {"text": "Concludes the batch is under-processed and unsafe: hold, do not release, and reprocess or destroy with a process authority's evaluation", "passed": true, "evidence": "Not safe: hold, document, process authority, reprocess or destroy"}, {"text": "Mentions why low-acid foods matter (pH above 4.6 and water activity above 0.85, C. botulinum can grow)", "passed": true, "evidence": "Low-acid canned foods pH > 4.6, aw > 0.85"}], "summary": {"passed": 6, "failed": 0, "total": 6, "pass_rate": 1.0}}}, {"id": "eval-3-fm-deli-listeria-with_skill-run-1", "prompt": "We're a small plant that cooks, chills and slices deli turkey breast for retail. How do we control Listeria monocytogenes? Outline the main hazards and the critical control points we should put in our HACCP / food safety plan.", "eval_id": 3, "outputs": [{"name": "response.md", "type": "text", "content": "# Controlling *Listeria monocytogenes* in Cooked, Chilled, Sliced Deli Turkey\n\n> **Scope note.** This is educational guidance drawn from food microbiology principles (Matthews, Kniel & Montville, *Food Microbiology: An Introduction*, 4th ed.) plus standard US regulatory reference points. Turkey breast is a poultry product, so in the US your plant falls under **USDA-FSIS**: mandatory HACCP (9 CFR 417), Sanitation SOPs (9 CFR 416), and the **Listeria Rule (9 CFR 430)** for post-lethality-exposed ready-to-eat (RTE) products. Numbers marked *(std)* are typical regulatory or industry values. **Before you finalize the plan, check each one against the current FSIS *Listeria* Compliance Guideline and the current FSIS Appendix A (lethality) and Appendix B (stabilization/cooling) guidance, and validate it for your own product and equipment.**\n\n---\n\n## 1. Why *Listeria* is *the* hazard for your product\n\nYour process makes cooked turkey exactly the kind of food *Listeria* causes trouble in:\n\n| Property of *L. monocytogenes* | Why it matters for sliced deli turkey |\n|---|---|\n| **Psychrotrophic.** Grows at refrigeration temperatures, slowly even near 0 \u00b0C (32 \u00b0F) *(std)*. | Refrigeration slows it but does not stop it. A few cells at packing can become many by the end of a 30\u201370-day shelf life. |\n| **Killed by normal cooking.** It is a vegetative, non-sporeforming cell. | The cook step isn't the main problem. The main risk is **recontamination after cooking**: during chilling, peeling, slicing and packing. |\n| **Salt-tolerant**, grows down to about a_w 0.92 and pH about 4.4 *(std)*. | Deli turkey (pH about 6\u20136.5, a_w about 0.97\u20130.98, modest salt) supports growth easily. |\n| **Forms biofilms and establishes \"harborage\" in plants** *(book)*. | It persists for months or years in drains, slicers, conveyors, hollow rollers, cracked floors and condensate. The same strain keeps coming back. |\n| **Fewer competitors in cooked product** *(book)*. | Cooking removes the background flora that might otherwise hold it back. Recontaminated cooked meat lets it grow with little competition. |\n| **Severe illness in high-risk people.** Pregnancy (miscarriage, stillbirth), newborns, the elderly and immunocompromised people; incubation from days up to about 70 days *(book/std)*. | Deli meats are a classic vehicle. Your retail customers include these groups, and the CDC tells them to avoid deli meat unless it is heated until steaming hot. |\n| **US regulatory status: zero tolerance in RTE foods** *(book)*. | Any detectable *L. monocytogenes* in product makes it adulterated, which means a hold, destruction or recall. |\n\n**The key idea.** You can't \"inspect safety in\" by testing finished product *(book)*. Control comes from four things working together: a validated **lethality** step, **cooling** that keeps sporeformers from growing, a strong **sanitation and environmental monitoring** program that stops post-cook recontamination, and ideally a **post-lethality treatment** and/or a **growth inhibitor** as extra hurdles.\n\n---\n\n## 2. Process flow (verify by walking your line)\n\n```\nReceiving raw turkey breasts (chilled/frozen) + non-meat ingredients + packaging\n  \u2192 Cold storage (\u2264 40 \u00b0F / 4.4 \u00b0C)\n  \u2192 Tempering/thawing (if frozen)\n  \u2192 Injection / tumbling (brine: salt, phosphate, \u00b1 lactate/diacetate or vinegar-based inhibitor)\n  \u2192 Forming / stuffing into casings or molds\n  \u2192 COOK (smokehouse / water cook)                          \u2190 CCP 1 (lethality)\n  \u2192 CHILL / STABILIZATION (shower, brine chill, blast cooler) \u2190 CCP 2 (cooling)\n  ===== product is now RTE and EXPOSED from here on =====\n  \u2192 Peel / unmold / remove casing\n  \u2192 Hold in RTE cooler (logs)\n  \u2192 SLICE (slicer, conveyors, interleaver, hand contact)\n  \u2192 Package (vacuum / MAP)\n  \u2192 [Post-packaging lethality: HPP or post-pack pasteurization] \u2190 CCP 3 (if used)\n  \u2192 Label (use-by date, safe-handling / \"keep refrigerated\")\n  \u2192 Cold storage and shipping (\u2264 40 \u00b0F)\n```\n\nDraw your own diagram, then **walk the line to confirm it**. Check rework routes, where people and carts cross from raw to RTE areas, where condensate drips, and where equipment was recently added *(book)*.\n\n---\n\n## 3. Hazard analysis (main hazards)\n\n| Step | Hazard | Type | Reasonably likely to occur? | Control |\n|---|---|---|---|---|\n| Receiving raw turkey | *Salmonella*, *Campylobacter*, *L. monocytogenes*, *C. perfringens* spores on raw poultry | Biological | **Yes**, raw poultry routinely carries them | Destroyed or controlled later at **cook (CCP 1)** and **cooling (CCP 2)**. Supplier specs and receiving temperature are prerequisite programs. |\n| Receiving ingredients | Allergens (e.g. dairy, soy in some marinades); undeclared nitrite in \"natural\" cures | Chemical | Depends on formula | Supplier letters, label review, allergen program |\n| Injection / tumbling | Cross-contamination from injector needles; growth if brine warms | Biological | Low, if product is kept cold | Sanitation SOPs, brine temperature, injector cleaning |\n| **Cook** | **Survival** of *Salmonella* and *L. monocytogenes* | Biological | **Yes** | **CCP 1: lethality** |\n| **Chill** | **Outgrowth** of *C. perfringens* and *B. cereus* spores that survive cooking; *C. botulinum* in uncured product | Biological | **Yes**, large logs cool slowly | **CCP 2: stabilization** |\n| Peeling, holding, **slicing**, packing | **Recontamination with *L. monocytogenes*** from food-contact surfaces, the environment, people, condensate | Biological | **Yes**. This is the single biggest risk in your plant. | Listeria Rule controls: **post-lethality treatment (CCP 3)** and/or **antimicrobial agent**, plus **Sanitation SOPs and environmental monitoring** |\n| Slicing / packing | *S. aureus* from handlers | Biological | Low with GMPs and cold product | Hygiene, gloves, temperature |\n| Slicing / packing | Metal fragments from slicer blades | Physical | Plant-specific | Metal detection (often a CCP), or a blade-inspection prerequisite program |\n| Storage and distribution | *Listeria* growth over shelf life if temperature is abused | Biological | Yes, if any cells are present | Cold chain \u2264 40 \u00b0F, a validated shelf life, growth inhibitors |\n| Labeling | Undeclared allergens; wrong use-by date | Chemical / biological | Plant-specific | Label control program |\n\n> **C. perfringens reminder:** cooking kills vegetative cells but leaves spores. Slow cooling of large cooked turkey logs is a textbook cause of *C. perfringens* outbreaks *(book)*. That makes cooling a CCP in its own right, alongside the cook.\n\n---\n\n## 4. The FSIS Listeria Rule: choose your Alternative\n\nUnder 9 CFR 430 every post-lethality-exposed RTE product must be produced under one of three Alternatives *(std)*:\n\n| Alternative | What you use | FSIS verification sampling | Practical meaning for a small plant |\n|---|---|---|---|\n| **Alt 1** | A **post-lethality treatment (PLT)** that reduces *Lm*, **plus** an **antimicrobial agent or process (AMAP)** that limits growth over shelf life | Lowest | Strongest protection. Example: **HPP** after packaging, **plus** a lactate/diacetate or buffered-vinegar inhibitor in the formula. |\n| **Alt 2** | **Either** a PLT **or** an AMAP, plus sanitation | Medium | 2a: PLT only. 2b: inhibitor only, and it needs a more intensive environmental testing program with hold-and-test. |\n| **Alt 3** | Sanitation program only | **Highest**. Deli meat under Alt 3 attracts the most FSIS attention. | Not recommended for sliced deli meat. If you must use it, your environmental monitoring has to be intensive, with hold-and-test after positives on food-contact surfaces. |\n\n**Recommendation:** aim for **Alternative 1**. Sliced deli meat is one of the highest-risk RTE categories because slicing spreads any contamination across many packages and the product is eaten without further cooking. Two independent hurdles, a kill step after packaging plus an inhibitor during shelf life, give you a safety margin that sanitation alone can't.\n\n---\n\n## 5. Critical control points\n\n### CCP 1: Cooking (lethality)\n\n- **Hazard controlled:** survival of *Salmonella* and *L. monocytogenes* (and other vegetative pathogens).\n- **Critical limit (example):** cook to a validated internal temperature at the slowest-heating point of the thickest log. A common approach is FSIS Appendix A for poultry: **\u2265 160 \u00b0F (71.1 \u00b0C) internal, held long enough to meet the required log reduction**, or an equivalent validated time\u2013temperature combination *(std)*. Appendix A also requires **humidity** during the cook so the product surface doesn't dry out. A dry surface lets *Salmonella* survive by evaporative cooling. *(std)*\n  - Why the numbers matter: thermal death is log-linear, and **temperature drives lethality far more than time** *(book)*. Product that hits only a few degrees below target gets far less kill than you'd expect.\n- **Monitoring:** a calibrated probe in the coldest (thickest) piece of each batch or smokehouse load, plus continuous chart recording of oven temperature and humidity.\n- **Corrective action:** if the limit isn't met, keep cooking, or hold the product and evaluate it. Find the cause (loading, oversized logs, oven fault). Don't release product until lethality is shown.\n- **Verification:** daily thermometer calibration checks, record review before shipment, periodic heat-distribution studies of the oven, and validation with Appendix A or a scientific support document.\n\n### CCP 2: Chilling / stabilization\n\n- **Hazard controlled:** outgrowth of *C. perfringens* (and *B. cereus*, *C. botulinum*) spores that survive cooking.\n- **Critical limit (example, FSIS Appendix B):** **130 \u00b0F \u2192 80 \u00b0F (54.4 \u2192 26.7 \u00b0C) in \u2264 1.5 h**, then **80 \u00b0F \u2192 40 \u00b0F (26.7 \u2192 4.4 \u00b0C) in \u2264 5 h** *(std)*. Some alternative options exist for cured products. Whatever you use, it has to be validated for **\u2264 1 log growth of *C. perfringens*** with no growth of *C. botulinum* *(std)*.\n- **Monitoring:** probe the slowest-cooling log (largest, centre of the rack) at defined times, or use a data logger.\n- **Corrective action:** if cooling is out of limits, hold the lot and evaluate it. Options are a predictive model (e.g. ComBase / Perfringens Predictor), sampling, recooking, or destruction. Fix the cause (overloaded cooler, refrigeration failure, logs too large).\n- **Verification:** record review, calibration, periodic re-validation when you change product size or equipment.\n\n> **Listeria note at the chill step:** brine and shower chill water is a well-known recontamination route. Cooling systems have spread microbes and caused outbreaks *(book)*. Keep chill brine at the correct temperature and antimicrobial level, and change and sanitize it on a schedule (prerequisite program or Sanitation SOP). Product in **intact, sealed** casings is protected. Once you peel, it is exposed.\n\n### CCP 3: Post-lethality treatment (if you use Alt 1 or 2a)\n\nPick one validated process applied **after final packaging**, so it kills anything picked up during slicing:\n\n| PLT option | Typical parameters *(std)* | Notes |\n|---|---|---|\n| **High pressure processing (HPP)** | About **600 MPa (87,000 psi) for about 3 min** at cold temperature | Kills vegetative cells, including *Listeria*, inside the sealed pack without cooking. Used for deli meats as a post-packaging *Listeria* step and a lower-nitrite option *(book)*. Needs flexible packaging *(book)*. Many small plants use **toll HPP** services instead of buying the equipment. |\n| **Post-package pasteurization** | Hot water or steam, e.g. about 185\u2013205 \u00b0F surface for a validated time | Works best on whole logs or chubs. Harder with shingled sliced packs. |\n| **Pre-package surface pasteurization** (infrared, steam) | Validated time\u2013temperature | Product can be recontaminated between treatment and packing. |\n\n- **Critical limits:** the validated pressure, hold time and temperature (HPP), or water temperature and time (pasteurization). Claims must be backed by validation, usually a **\u2265 1\u20132 log** reduction of *Lm* for FSIS purposes. Higher is better *(std)*.\n- **Monitoring:** HPP cycle printout for every batch (pressure, time), or a continuous temperature and time record.\n- **Corrective action:** re-run the cycle; hold and evaluate any product that missed it.\n- **Verification:** record review, calibration, supporting validation study for your product and pack format.\n\n### Optional CCP: Metal detection\n\nIf your hazard analysis finds slicer-blade or equipment fragments reasonably likely, make metal detection a CCP. The critical limit is test-wand sizes such as Fe 2.0 mm, non-Fe 2.5 mm and SS 3.0 mm *(std; set per your equipment)*, checked at defined intervals.\n\n---\n\n## 6. Antimicrobial agent or process (growth inhibitor)\n\nThese limit growth of any *Listeria* that gets in, over the product's shelf life:\n\n- **Sodium or potassium lactate plus sodium diacetate**, or **buffered vinegar / cultured sugar\u2013vinegar** blends, added to the brine. Typical use is at levels shown to allow **\u2264 2 logs of *Lm* growth over the labeled shelf life** *(std)*. Organic acids work best in their undissociated form, so their effect depends on product pH *(book)*.\n- **Bacteriophage preparations** sprayed on surfaces before packaging. They are approved processing aids for *Listeria* *(book)*.\n- **Bacteriocins**, e.g. nisin, or pediocin-like (class IIa) bacteriocins, which are strongly anti-*Listeria*, sometimes delivered by protective cultures *(book)*.\n- **Synergy with packaging and cold:** inhibitors plus MAP or vacuum plus \u2264 40 \u00b0F storage form a multi-hurdle system *(book)*.\n\nYou need a scientific basis, such as a challenge study or a validated predictive model (e.g. a lactate/diacetate calculator), for the inhibitor level, product formula and shelf life together. If you change the formula, for example lower salt or a \"clean-label\" cure, re-validate. Removing preservatives without a replacement can increase risk *(book)*.\n\n---\n\n## 7. Prerequisite programs that make or break *Listeria* control\n\nMost *Listeria* failures in deli plants happen **here**, not at a CCP.\n\n### 7.1 Hygienic zoning and plant design\n- **Physically separate raw and RTE areas**: walls, separate staff, separate tools, colour-coded gear, foot traffic patterns and positive air pressure in the RTE room.\n- RTE employees change smocks and gloves, wash hands, and use **foot baths or foamers** at entry. No raw-side tools, carts or pallets enter the RTE room.\n- Keep the RTE room **cold and dry**. Control **condensation**, with no drips onto exposed product or food-contact surfaces.\n- Floors and drains: no cracks or standing water. Drains flow away from RTE areas, and nobody clears drains with high-pressure hoses during production (it aerosolizes *Listeria*).\n\n### 7.2 Sanitation (Sanitation SOPs, required by FSIS)\n- **Clean, then sanitize.** Organic soil inactivates sanitizers *(book)*. The sequence is dry clean \u2192 pre-rinse \u2192 detergent \u2192 rinse \u2192 sanitize *(std)*.\n- **Take the slicer fully apart** every day, including blades, guards, conveyor belts, rollers, and the bearings and hollow framework where harborage hides.\n- **Rotate sanitizers** and include products that work against biofilms. Biofilm cells resist sanitizers mainly because they grow slowly *(book)*. Peracetic acid, quats (they leave residual activity on surfaces) and chlorine all have roles *(book)*.\n- Do periodic **deep cleaning** with heat or foam of hard-to-reach equipment.\n- Run **pre-operational inspection** before start-up.\n- Review **equipment design** before you buy. Choose sanitary designs with no hollow tubes or hard-to-reach crevices, and keep maintenance tools dedicated to the RTE area.\n\n### 7.3 Environmental monitoring program (EMP)\n\nThis is your early-warning system. Sample by zone:\n\n| Zone | Examples | Target organism / test | Typical frequency (small plant, adjust by Alternative) *(std)* |\n|---|---|---|---|\n| **Zone 1: product-contact surfaces** in the RTE area | Slicer blades, conveyor belts, peeling tables, interleaver, gloves, packaging film path | *Listeria* spp. (or *Lm*) | At least weekly or per FSIS frequency for your Alternative. Alt 3 deli meat requires the most. |\n| **Zone 2: near product contact** | Slicer frame, control panels, carts, scales | *Listeria* spp. | Weekly |\n| **Zone 3: further from product** | Floors, drains, walls, cooler fans, condensate pans, forklift wheels | *Listeria* spp. | Weekly / biweekly |\n| **Zone 4: outside the RTE room** | Raw area, locker rooms, hallways | *Listeria* spp. | Monthly |\n\n- Sample **during production** (several hours in), not only after cleaning. That's when harborage shows itself.\n- Test for ***Listeria* spp.** as an indicator. It is more sensitive than testing for *Lm* only and catches problems earlier.\n- **Respond to every positive:**\n  1. **Zone 1 positive:** intensified cleaning, re-sampling, and **hold-and-test** of the product lots made on that surface. Test those lots for *Lm* and **don't ship until results are negative**. Under Alt 2b and 3, consecutive Zone 1 positives trigger escalating actions defined in your plan *(std)*.\n  2. **Zones 2\u20134 positives:** \"seek and destroy.\" Do vector swabbing around the positive to find the harborage site, then fix it (repair, replace, redesign).\n  3. **Trend the data.** Repeated positives in the same place mean a harborage site. Subtyping isolates (WGS) can show that a resident strain is persisting *(book: PulseNet/WGS)*.\n- Keep **records** and review trends monthly.\n\n### 7.4 People, GMPs and other prerequisites\n- Training, hand washing, glove changes, illness exclusion, and dedicated RTE clothing *(book: GMPs)*.\n- **Temperature control** of the RTE room and coolers at \u2264 40 \u00b0F (4.4 \u00b0C). Keep product cold during slicing.\n- **Supplier control** for casings, packaging film and non-meat ingredients.\n- **Shelf-life and labeling:** a use-by date supported by challenge or predictive data, \"Keep refrigerated\" labeling, and safe-handling statements.\n- **Recall plan and lot coding** so you can trace one day's production.\n\n---\n\n## 8. Verification and validation summary\n\n| Activity | Frequency (example) |\n|---|---|\n| Thermometer calibration (cook, chill, cooler probes) | Daily check, documented calibration |\n| Pre-shipment record review (CCPs 1\u20133) | Every lot |\n| Environmental monitoring trend review | Weekly / monthly |\n| Finished-product *Lm* testing (verification, not control) | Per plan; required after Zone 1 positives under hold-and-test |\n| HACCP reassessment | **At least annually** and after any change in product, process, equipment or supplier, or after a positive or recall *(std: 9 CFR 417)* |\n| Validation | Supporting documents for lethality (Appendix A or a study), cooling (Appendix B or modelling), PLT (challenge study or vendor validation for your product), and inhibitor (challenge study or model) |\n\n---\n\n## 9. Quick summary: your *Listeria* defense in depth\n\n1. **Kill it**: validated cook (**CCP 1**) with humidity, measured at the cold spot.\n2. **Cool fast**: Appendix-B-style stabilization (**CCP 2**) to stop sporeformers.\n3. **Keep it out**: hygienic zoning, slicer sanitation, condensate and drain control, people flow.\n4. **Find it early**: a zone-based environmental monitoring program with hold-and-test and seek-and-destroy.\n5. **Kill it again after packing**: HPP or post-pack pasteurization (**CCP 3**).\n6. **Stop it growing**: lactate/diacetate or vinegar-based inhibitors, \u2264 40 \u00b0F cold chain, validated shelf life.\n7. **Prove it**: validation, verification, records, and annual reassessment.\n\nFollowing **Alternative 1** (items 5 and 6 together) is the most robust choice for sliced deli turkey, and it also lowers FSIS verification sampling.\n\n---\n\n### Where to confirm the numbers\n- USDA-FSIS **Compliance Guideline: Controlling *Listeria monocytogenes* in Post-lethality Exposed Ready-to-Eat Meat and Poultry Products** (current edition)\n- FSIS **Appendix A** (lethality) and **Appendix B** (stabilization) guidelines, as currently revised\n- 9 CFR 416 (Sanitation), 417 (HACCP), 430 (RTE / Listeria Rule)\n- Your FSIS District Office, a HACCP-trained consultant or process authority, and your state meat extension specialist. Many university extension programs help small plants with validation and challenge studies.\n\n*Educational content, not legal or regulatory advice. Regulatory values change. Your HACCP team must validate every critical limit for your specific products, equipment and plant.*\n"}], "grading": {"expectations": [{"text": "Notes Listeria grows at refrigeration temperatures and is a serious hazard for pregnant women, the elderly and the immunocompromised", "passed": true, "evidence": "Psychrotrophic table row; pregnant/elderly/immunocompromised mentioned"}, {"text": "Identifies post-cook recontamination from the plant environment (slicers, drains, biofilms) as the main risk for sliced RTE products", "passed": true, "evidence": "Recontamination after cooking during chilling, peeling, slicing, packing is the main risk; harborage, biofilms"}, {"text": "Recommends an environmental monitoring program (e.g. zone-based swabbing for Listeria spp.) and verification", "passed": true, "evidence": "Environmental monitoring with zones (9 mentions)"}, {"text": "Recommends post-lethality treatment and/or growth inhibitors (e.g. HPP or post-package pasteurization, lactate/diacetate, bacteriocins such as nisin/pediocin, or phage)", "passed": true, "evidence": "HPP / post-package pasteurization and lactate/diacetate, bacteriocins, phage"}, {"text": "Lists cooking (lethality) and chilling/cooling as CCPs with measurable critical limits, monitoring, corrective actions, verification and records (HACCP principles)", "passed": true, "evidence": "CCPs with critical limits, monitoring, corrective actions, verification, records"}, {"text": "Covers sanitation (clean before sanitize, SSOPs, equipment design) and GMPs/hygienic zoning", "passed": true, "evidence": "SSOPs, clean then sanitize, GMPs and hygienic zoning"}], "summary": {"passed": 6, "failed": 0, "total": 6, "pass_rate": 1.0}}}, {"id": "eval-3-fm-deli-listeria-without_skill-run-1", "prompt": "We're a small plant that cooks, chills and slices deli turkey breast for retail. How do we control Listeria monocytogenes? Outline the main hazards and the critical control points we should put in our HACCP / food safety plan.", "eval_id": 3, "outputs": [{"name": "response.md", "type": "text", "content": "# Controlling *Listeria monocytogenes* in Cooked, Chilled, Sliced Deli Turkey Breast\n\n## 1. Why Listeria is your biggest hazard\n\nDeli turkey breast carries more risk than almost any other ready-to-eat (RTE) meat:\n\n- **Cooking kills Listeria.** A properly cooked log is effectively free of it. Nearly every outbreak and recall involving deli meat comes from **post-lethality contamination**: the bacteria get onto the product after cooking, usually during bag stripping, slicing, conveying or packaging.\n- **It grows in the fridge.** *L. monocytogenes* grows at 0\u20134 \u00b0C, tolerates salt, and does well in moist, low-acid, high-pH turkey with little competing flora. That is especially true of uncured or \"natural\" turkey that has no nitrite.\n- **It settles into plants.** It forms harbourage sites in drains, slicer parts, conveyor belts, hollow rollers, cracked floors, condensate, door gaskets and cooling units. Once established it can persist for years.\n- **Your customers include vulnerable people.** Deli meat is eaten without further cooking by pregnant women, the elderly and immunocompromised people. Fatality rates in those groups are about 20\u201330%.\n- **Regulators have no tolerance for it.** In the US, *L. monocytogenes* in an RTE product makes it adulterated. USDA-FSIS sets specific requirements in **9 CFR 430 (the \"Listeria Rule\")**. Canada (Health Canada Listeria Policy, Category 1 vs 2) and the EU (Reg. 2073/2005: absence in 25 g at production for products that support growth, \u2264100 CFU/g through shelf life only if you can show it won't exceed that) have similar frameworks.\n\n**Bottom line:** the cook step makes the product safe. Everything between the cooker and the sealed package decides whether it stays safe.\n\n---\n\n## 2. Choose your Listeria control \"Alternative\" (US FSIS framework)\n\nUnder 9 CFR 430, every establishment making post-lethality-exposed RTE product must pick one of three Alternatives. This choice drives the rest of your plan.\n\n| Alternative | Controls | Sampling burden |\n|---|---|---|\n| **Alt 1** | Post-lethality treatment (PLT) **plus** antimicrobial agent/process (AMAP) that limits growth | Lowest |\n| **Alt 2a** | PLT only | Moderate |\n| **Alt 2b** | AMAP (e.g., lactate/diacetate, buffered vinegar) **plus** sanitation | Moderate\u2013higher |\n| **Alt 3** | Sanitation program only | Highest; most scrutiny, hold-and-test after repeat positives |\n\n**Recommendation for a small deli-turkey plant:** aim for **Alternative 1**. Put a validated growth inhibitor in the formulation, for example cultured sugar/vinegar, buffered vinegar, or potassium lactate plus sodium diacetate. Add a PLT on the final package, either **high-pressure processing (HPP)** or post-package pasteurization. If you can't fund HPP yet, Alt 2b with a validated inhibitor is a reasonable interim choice. Don't run sliced deli turkey under Alt 3 unless you have an exceptionally strong sanitation and testing program.\n\n---\n\n## 3. Hazard analysis: main hazards by process step\n\nTypical flow: Receive raw breast and ingredients \u2192 cold storage \u2192 injection/tumbling with brine \u2192 stuff/form into casings or cook-in bags \u2192 **cook** \u2192 **chill** \u2192 strip casing \u2192 **slice** \u2192 package \u2192 (PLT) \u2192 label \u2192 cold storage \u2192 ship.\n\n| Step | Biological hazards | Chemical hazards | Physical hazards |\n|---|---|---|---|\n| Receiving raw turkey | *Salmonella*, *Campylobacter*, *L. monocytogenes*, *C. perfringens* spores (reasonably likely; controlled later by cooking) | Drug residues (supplier-controlled) | Bone fragments, foreign material |\n| Receiving non-meat ingredients | Spore-formers in spices | **Allergens** (soy, milk, wheat in some brines/flavourings); sodium nitrite if cured | \u2014 |\n| Brine prep / injection / tumbling | Cross-contamination; injection needles can push surface bacteria inside | Over-addition of nitrite (if cured), phosphate limits | Broken injector needles (**metal**) |\n| **Cooking** | **Survival of *Salmonella*, *L. monocytogenes*** if undercooked | \u2014 | \u2014 |\n| **Chilling / stabilization** | **Outgrowth of *C. perfringens* and *C. botulinum*** spores during slow cooling; recontamination if brine/water chilled in permeable casings | \u2014 | \u2014 |\n| Casing stripping / peeling | **Recontamination with *L. monocytogenes*** (product first exposed here) | Sanitizer residues | \u2014 |\n| **Slicing / conveying / packaging** | **Recontamination with *L. monocytogenes*** from slicer blades, belts, hands, gloves, air, condensate | Sanitizer residues, lubricants | **Metal** from slicer blades, packaging equipment |\n| Post-lethality treatment (if used) | Insufficient Listeria reduction | \u2014 | \u2014 |\n| Labelling | \u2014 | **Undeclared allergens**, wrong product/label | \u2014 |\n| Cold storage / distribution | **Listeria growth** if temperature abused; growth over long shelf life | \u2014 | \u2014 |\n\n---\n\n## 4. Critical Control Points (CCPs)\n\nThe limits below are common, defensible starting values. **Validate each one against your own product, equipment and supporting documentation** (FSIS Appendix A/B as revised, peer-reviewed literature, or in-plant challenge studies).\n\n### CCP 1: Cooking (lethality)\n- **Hazard:** survival of *Salmonella* and *L. monocytogenes*.\n- **Critical limit:** a validated lethality for poultry (a **7-log *Salmonella* reduction**). The common simple limit is an internal temperature of **\u2265165 \u00b0F (73.9 \u00b0C) instantaneous**, measured in the coldest point of the thickest log. A validated time\u2013temperature combination at a lower temperature is also acceptable, provided you meet any humidity requirements in your support document.\n- **Monitoring:** calibrated probe in the slowest-heating log, or continuous data loggers, on every batch or oven load. Record the time and temperature.\n- **Corrective action:** extend the cook, or hold and evaluate the product, then recook or destroy it. Find the cause (oven load, log size, steam failure) and fix it.\n- **Verification:** daily thermometer calibration check (ice point), periodic oven heat-distribution study, and records review before shipment.\n\n### CCP 2: Chilling / stabilization\n- **Hazard:** germination and outgrowth of *C. perfringens* and *C. botulinum* spores that survive cooking.\n- **Critical limit:** for example, the FSIS stabilization guidance: **130 \u00b0F \u2192 80 \u00b0F (54.4 \u2192 26.7 \u00b0C) within 1.5 h, and 80 \u00b0F \u2192 40 \u00b0F (26.7 \u2192 4.4 \u00b0C) within 5 h**. The goal is \u22641-log *C. perfringens* growth and no *C. botulinum* growth. A different option, such as the longer cooling schedule allowed for cured products, needs its own validation.\n- **Monitoring:** core temperature of the largest log at set intervals, or continuous loggers.\n- **Corrective action:** model the deviation with a validated predictive tool (e.g., ComBase/PMP or a *C. perfringens* growth model), sample the product, then hold, rework, or destroy it.\n- **Note:** if you chill in **brine or chill water**, protect it from Listeria. Use impermeable casings, treat and replace the brine (UV, antimicrobial, scheduled changes), and treat the brine system as a known Listeria niche.\n\n### CCP 3: Post-lethality treatment (if you use one; required for Alt 1/2a)\nUse one of these validated options:\n- **High-pressure processing:** e.g., about **87,000 psi (\u2248600 MPa) for 3\u20134 min** at the validated hold time, often 3\u20135 log reduction. Monitor pressure, hold time and water temperature on every cycle.\n- **Post-package pasteurization (hot water/steam/infrared):** e.g., a validated surface temperature and time for your package size and shape. Monitor water temperature and dwell time.\n- **Surface antimicrobial spray/dip before final packaging** (e.g., lauric arginate, LAE). Monitor concentration, application volume and coverage.\n\n- **Critical limit:** the parameters your validation shows achieve **\u22651 log** (FSIS minimum to count as a PLT). In practice, target \u22652\u20133 log.\n- **Corrective action:** re-treat, or hold and test or destroy the product. Repair equipment before resuming.\n\n### CCP 4 (or a formulation control / prerequisite): Antimicrobial agent in the formulation\n- **Hazard:** Listeria growth during refrigerated shelf life if post-lethality contamination occurs.\n- **Critical limit:** the ingredient level shown in a challenge study or validated model to limit growth to **\u22642 log over the full shelf life** at the intended storage temperature (FSIS's AMAP expectation). For example, a minimum % of lactate/diacetate or cultured vinegar in the finished product.\n- **Monitoring:** weigh and record the inhibitor per batch; periodic analytical verification of finished product. Track pH, moisture and salt, since inhibitor efficacy depends on them.\n- Many plants manage this as a formulation control under a prerequisite program. If you claim it for your Alternative, it must be documented and verified.\n\n### CCP 5: Metal detection (physical hazard)\n- **Critical limit:** no metal \u2265 the validated test-piece size (e.g., Fe 2.0 mm, non-Fe 2.5 mm, SS 3.0 mm, adjusted for your detector and product).\n- **Monitoring:** test pieces at start-up, every set interval (e.g., hourly), at changeover and at the end of the shift; reject device verified working.\n- **Corrective action:** hold and re-screen everything since the last good check. Investigate the source, such as slicer blades or injector needles.\n\n### Allergen labelling: CCP or preventive control\nIf any formulation contains a major allergen, verify the label against the formula at every changeover and print run. Undeclared allergens are among the most common causes of meat recalls.\n\n---\n\n## 5. Prerequisite programs that actually control Listeria\n\nThe CCPs mostly control the cook. **Post-lethality Listeria control comes mainly from prerequisite programs and sanitation**, which in the US must be documented in your Sanitation SOPs and supported in your hazard analysis. These programs matter as much as the CCPs.\n\n### 5.1 Plant layout and hygienic zoning\n- **Physically separate raw and RTE areas**, with one-way flow of people, product, equipment, tools, pallets and waste.\n- Keep **positive air pressure** in the RTE slicing/packaging room relative to raw and outside areas, with filtered, dehumidified air.\n- Use dedicated, colour-coded tools, clothing and footwear for the RTE room. Put foot-baths, foamers or boot washers at RTE entrances, and handwash/glove stations at entry.\n- Don't let raw-side staff, maintenance or forklift traffic enter RTE without changing and sanitizing.\n\n### 5.2 Hygienic equipment design and maintenance\n- Choose slicers, conveyors and packaging machines that fully disassemble for cleaning: no hollow rollers, sealed bearings, no fabric belts.\n- Use a **\"seek and destroy\" mindset**: find and eliminate niches such as cracked welds, worn gaskets, loose screws, damaged plastic belts, insulation and overhead pipes.\n- After any maintenance or construction in the RTE room, clean and sanitize, and verify with swabs before production resumes.\n- Control **condensate** and keep overhead structures dry. Avoid high-pressure hoses during production, since they aerosolize Listeria from floors and drains.\n\n### 5.3 Sanitation (SSOPs)\n- Run a full daily wet clean on the RTE line: dry clean, pre-rinse, alkaline detergent, rinse, inspect, sanitize. Rotate or periodically use an alternative sanitizer (quats, peracetic acid, chlorine) to cover biofilms.\n- Schedule periodic **deep cleans**: full slicer teardown, conveyor belts removed, drains, cooling units and evaporator coils, and possibly heat treatment of slicer parts.\n- **Drain management:** never use high-pressure hoses on drains during production; use drain sanitizers and dedicated drain tools.\n- Pre-operational inspection, plus ATP swabs for cleaning verification. ATP is not a Listeria test.\n\n### 5.4 Employee practices\n- Training on Listeria, handwashing, glove changes, and \"nothing from the floor touches the product\" rules.\n- Make dropped product an automatic discard or rework through a validated step.\n- Use frequently sanitized gloves and aprons; frequent glove sanitizer dips during slicing.\n\n### 5.5 Temperature control\n- RTE room ambient air \u226410 \u00b0C (50 \u00b0F) where practical; product \u22644 \u00b0C (40 \u00b0F); storage and shipping coolers \u22644 \u00b0C, ideally \u22642 \u00b0C.\n- Monitor cold-chain temperatures with alarms.\n\n### 5.6 Supplier and ingredient controls\n- Approved suppliers, COAs for spices and antimicrobials, and allergen statements.\n- Supplier letters of guarantee for packaging materials.\n\n---\n\n## 6. Environmental monitoring program (EMP): your early warning system\n\nThe EMP is how you prove your post-lethality controls work. Design it on the **zone** concept:\n\n| Zone | Examples | What to test for |\n|---|---|---|\n| **Zone 1** (food-contact surfaces, post-lethality) | Slicer blades, slicer infeed, conveyor belts, packaging film-forming area, gloves, tables, peeler/stripping tables | *Listeria* spp. or *Listeria*-like organisms |\n| **Zone 2** (non-contact, close to product) | Slicer frames, motor housings, control panels, undersides of conveyors | *Listeria* spp. |\n| **Zone 3** (non-contact, in the RTE room) | Floors, drains, walls, cart wheels, forklifts, floor scrubbers | *Listeria* spp. |\n| **Zone 4** (outside RTE room) | Hallways, locker rooms, raw areas, dock | *Listeria* spp. |\n\n**Key practices:**\n- **Test for *Listeria* spp. (genus), not only *L. monocytogenes*.** A *Listeria* spp. positive is your signal that conditions allow Listeria to survive. Treat it as you would *L. monocytogenes* on a food-contact surface.\n- Swab **during production** (\u22653 h into the shift) as well as pre-op. Pre-op swabs only tell you sanitation looks good; mid-shift swabs find harbourage sites that seed the line.\n- Use large areas (e.g., sponges over ~1 ft\u00b2 / 30\u00d730 cm where possible) and rotate sites. Bias sampling toward hard-to-clean spots.\n- **Frequency:** at least as often as FSIS guidance recommends for your Alternative. These minimums rise from roughly semi-annual Zone 1 testing per line under Alt 1 to several times per month under Alt 3. A small plant would be wise to swab Zone 1 at least weekly and Zones 2\u20133 weekly too, regardless of Alternative.\n- **Positive-response plan (written in advance):**\n  1. **First Zone 1 positive:** clean and sanitize intensively, investigate the cause, re-swab the site and surrounding sites (vector swabbing). Consider holding the product made on that line since the last negative.\n  2. **Second consecutive Zone 1 positive:** hold and test affected lots (lot-based product testing for *L. monocytogenes*), carry out a root-cause investigation, possibly a full equipment teardown, and review the design. Under Alt 3 this hold-and-test is required.\n  3. **Zone 2/3 positives:** investigate and intensify cleaning, re-swab until 3 consecutive negatives, and look for traffic patterns that could carry contamination to Zone 1.\n- **Trend the data:** map positives on a floor plan. Repeated positives at the same site point to a harbourage niche. Consider whole-genome sequencing or subtyping of isolates to tell persistent strains from transient ones.\n\n### Product testing\n- Finished product testing for *L. monocytogenes* (e.g., 25 g composites) for verification and after Zone 1 positives.\n- **Only release product tested under hold-and-test once results are negative.** Shipping product before test results arrive is a common cause of recalls.\n\n---\n\n## 7. Shelf life and product-design decisions\n\n- **Uncured/\"natural\" turkey supports Listeria growth more readily than cured turkey.** A growth inhibitor becomes much more important.\n- Set the shelf life from a **challenge study** or a validated predictive model (e.g., the Listeria control model used by FSIS and industry). Do it for your actual formulation, pH, a_w/salt and storage temperature, including a realistic abuse temperature (e.g., 7 \u00b0C).\n- Consider shorter shelf life for sliced product versus whole logs. Consider whether retail customers re-slice (whole logs/chubs) or you sell pre-sliced: re-slicing at retail is a separate and well-known risk.\n- Labelling: \"Keep refrigerated\", use-by date, and consider \"Use within X days of opening\".\n\n---\n\n## 8. Verification, validation and records\n\n- **Validation:** keep scientific support for each CCP and each Listeria intervention: Appendix A/B or newer FSIS guidance, published studies, supplier validation data for antimicrobials/HPP, and in-plant challenge studies.\n- **Verification:** daily records review by a trained person before shipment; thermometer and metal-detector calibration; HPP cycle records; periodic product and environmental testing; annual HACCP reassessment, plus reassessment after any change in product, process, equipment or layout, or after any Listeria positive trend.\n- **Records:** cook and chill logs, PLT logs, inhibitor batch records, EMP results and corrective actions, sanitation records, training, pest control and maintenance logs.\n- **Recall readiness:** lot coding tied to production date and line, a written recall plan, and annual mock recall exercises.\n\n---\n\n## 9. Quick summary: the core controls\n\n1. **Cook** to a validated *Salmonella*/Listeria lethality (CCP).\n2. **Cool** fast enough to stop spore-former outgrowth (CCP).\n3. **Prevent recontamination** after cooking through hygienic zoning, equipment design, sanitation, employee practices and positive air pressure (prerequisite programs and SSOPs).\n4. **Inhibit growth** with a validated antimicrobial in the formulation and tight cold-chain control.\n5. **Kill post-package contamination** with HPP or post-package pasteurization where feasible (CCP).\n6. **Detect early** with an aggressive EMP for *Listeria* spp. (Zones 1\u20133), a written positive-response plan, and hold-and-test.\n7. **Control physical and allergen hazards** with metal detection (CCP) and label verification.\n8. **Validate, verify, reassess** the plan and keep the records that prove it.\n\n> **Note:** confirm current requirements with your regulator (USDA-FSIS inspector-in-charge, CFIA, or your national authority). The FSIS *Listeria* Compliance Guideline and the revised Appendix A/B guidance are the key US references. Consider having the plan reviewed by a HACCP-certified food safety professional or process authority before implementation.\n"}], "grading": {"expectations": [{"text": "Notes Listeria grows at refrigeration temperatures and is a serious hazard for pregnant women, the elderly and the immunocompromised", "passed": true, "evidence": "Grows at 0-4 C; vulnerable groups with 20-30% fatality"}, {"text": "Identifies post-cook recontamination from the plant environment (slicers, drains, biofilms) as the main risk for sliced RTE products", "passed": true, "evidence": "Post-lethality recontamination from slicers, belts, condensate"}, {"text": "Recommends an environmental monitoring program (e.g. zone-based swabbing for Listeria spp.) and verification", "passed": true, "evidence": "Environmental monitoring zones (7 mentions)"}, {"text": "Recommends post-lethality treatment and/or growth inhibitors (e.g. HPP or post-package pasteurization, lactate/diacetate, bacteriocins such as nisin/pediocin, or phage)", "passed": true, "evidence": "HPP/post-package pasteurization and lactate/diacetate antimicrobials"}, {"text": "Lists cooking (lethality) and chilling/cooling as CCPs with measurable critical limits, monitoring, corrective actions, verification and records (HACCP principles)", "passed": true, "evidence": "CCPs with critical limits, corrective actions, verification, records"}, {"text": "Covers sanitation (clean before sanitize, SSOPs, equipment design) and GMPs/hygienic zoning", "passed": true, "evidence": "Hygienic zoning, equipment design, full wet clean sequence then sanitize"}], "summary": {"passed": 6, "failed": 0, "total": 6, "pass_rate": 1.0}}}], "previous_feedback": {}, "previous_outputs": {}, "benchmark": {"metadata": {"skill_name": "food-microbiology", "skill_path": "\u003cpath/to/skill>", "executor_model": "\u003cmodel-name>", "analyzer_model": "\u003cmodel-name>", "timestamp": "2026-10-22T19:03:37Z", "evals_run": [1, 2, 3], "runs_per_configuration": 1}, "runs": [{"eval_id": 1, "eval_name": "fm-church-gravy", "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 6, "failed": 0, "total": 6, "time_seconds": 0.0, "tokens": 0, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Identifies Clostridium perfringens as the most likely cause", "passed": true, "evidence": "Names C. perfringens type A as most likely"}, {"text": "Explains that spores survive cooking and germinate/multiply rapidly during slow cooling or warm holding of the large pot", "passed": true, "evidence": "Spores survive cooking, activated; anaerobic deep pot; doubling 7-10 min overnight"}, {"text": "Explains it is a toxicoinfection: large numbers eaten, enterotoxin released when cells sporulate in the gut (not a preformed toxin)", "passed": true, "evidence": "Cells sporulate in the gut releasing enterotoxin; 'not a toxin already formed in the food'"}, {"text": "Uses onset time and symptoms to rule out alternatives such as S. aureus or emetic B. cereus (rapid vomiting) and Salmonella (fever)", "passed": true, "evidence": "Rules out S. aureus (2-6 h) and Salmonella/Campylobacter; notes diarrheal B. cereus as alternative"}, {"text": "Gives specific cooling controls: shallow containers/portioning, ice bath or fridge so food cools quickly through the danger zone", "passed": true, "evidence": "Shallow pans \u003c=2 in, slice roasts, ice-water bath, Food Code 2-stage cooling"}, {"text": "Gives holding/reheating controls: hot hold at or above about 140 F (60 C) and reheat to about 165 F (74 C)", "passed": true, "evidence": "Reheat to 165 F / rolling boil; hot hold >=135 F (notes the book cites 140 F)"}], "notes": []}, {"eval_id": 2, "eval_name": "fm-retort-deviation", "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 6, "failed": 0, "total": 6, "time_seconds": 0.0, "tokens": 0, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Defines D value as the time at a given temperature for a 1-log (90%) reduction", "passed": true, "evidence": "D = time for 90% / 1-log kill at a temperature"}, {"text": "Defines z value as the temperature change that changes D by 10-fold (about 18 F / 10 C for C. botulinum)", "passed": true, "evidence": "z ~18 F (10 C) for 10-fold change in D"}, {"text": "Explains the 12D botulinum cook with D250 of about 0.2 min giving 2.4 min", "passed": true, "evidence": "12 x 0.2 = 2.4 min at 250 F"}, {"text": "Calculates D240 = 0.2 x 10^(10/18) which is about 0.72 min, giving about 3.3 log reductions", "passed": true, "evidence": "D240 = 0.2 x 10^(10/18) ~ 0.72 min; 3.3 logs; cross-checked with F0 0.67"}, {"text": "Concludes the batch is under-processed and unsafe: hold, do not release, and reprocess or destroy with a process authority's evaluation", "passed": true, "evidence": "Not safe: hold lot, process authority, reprocess or destroy"}, {"text": "Mentions why low-acid foods matter (pH above 4.6 and water activity above 0.85, C. botulinum can grow)", "passed": true, "evidence": "Low-acid: pH > 4.6 and aw > 0.85"}], "notes": []}, {"eval_id": 3, "eval_name": "fm-deli-listeria", "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 6, "failed": 0, "total": 6, "time_seconds": 0.0, "tokens": 0, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Notes Listeria grows at refrigeration temperatures and is a serious hazard for pregnant women, the elderly and the immunocompromised", "passed": true, "evidence": "Psychrotrophic table row; pregnant/elderly/immunocompromised mentioned"}, {"text": "Identifies post-cook recontamination from the plant environment (slicers, drains, biofilms) as the main risk for sliced RTE products", "passed": true, "evidence": "Recontamination after cooking during chilling, peeling, slicing, packing is the main risk; harborage, biofilms"}, {"text": "Recommends an environmental monitoring program (e.g. zone-based swabbing for Listeria spp.) and verification", "passed": true, "evidence": "Environmental monitoring with zones (9 mentions)"}, {"text": "Recommends post-lethality treatment and/or growth inhibitors (e.g. HPP or post-package pasteurization, lactate/diacetate, bacteriocins such as nisin/pediocin, or phage)", "passed": true, "evidence": "HPP / post-package pasteurization and lactate/diacetate, bacteriocins, phage"}, {"text": "Lists cooking (lethality) and chilling/cooling as CCPs with measurable critical limits, monitoring, corrective actions, verification and records (HACCP principles)", "passed": true, "evidence": "CCPs with critical limits, monitoring, corrective actions, verification, records"}, {"text": "Covers sanitation (clean before sanitize, SSOPs, equipment design) and GMPs/hygienic zoning", "passed": true, "evidence": "SSOPs, clean then sanitize, GMPs and hygienic zoning"}], "notes": []}, {"eval_id": 1, "eval_name": "fm-church-gravy", "configuration": "without_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 6, "failed": 0, "total": 6, "time_seconds": 0.0, "tokens": 0, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Identifies Clostridium perfringens as the most likely cause", "passed": true, "evidence": "Names C. perfringens as top suspect"}, {"text": "Explains that spores survive cooking and germinate/multiply rapidly during slow cooling or warm holding of the large pot", "passed": true, "evidence": "Spores survive cooking, slow cooling in deep pot, ~10 min doubling"}, {"text": "Explains it is a toxicoinfection: large numbers eaten, enterotoxin released when cells sporulate in the gut (not a preformed toxin)", "passed": true, "evidence": "'In the gut the bacteria form spores and release an enterotoxin'"}, {"text": "Uses onset time and symptoms to rule out alternatives such as S. aureus or emetic B. cereus (rapid vomiting) and Salmonella (fever)", "passed": true, "evidence": "Rules out S. aureus, emetic B. cereus, norovirus, Salmonella/Campylobacter"}, {"text": "Gives specific cooling controls: shallow containers/portioning, ice bath or fridge so food cools quickly through the danger zone", "passed": true, "evidence": "Two-stage cooling, shallow pans \u003c=2 in, ice bath, cut roasts"}, {"text": "Gives holding/reheating controls: hot hold at or above about 140 F (60 C) and reheat to about 165 F (74 C)", "passed": true, "evidence": "Reheat to 165 F; hot hold at 135 F or above"}], "notes": []}, {"eval_id": 2, "eval_name": "fm-retort-deviation", "configuration": "without_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 6, "failed": 0, "total": 6, "time_seconds": 0.0, "tokens": 0, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Defines D value as the time at a given temperature for a 1-log (90%) reduction", "passed": true, "evidence": "D defined as time for 90% kill"}, {"text": "Defines z value as the temperature change that changes D by 10-fold (about 18 F / 10 C for C. botulinum)", "passed": true, "evidence": "z = 18 F (10 C)"}, {"text": "Explains the 12D botulinum cook with D250 of about 0.2 min giving 2.4 min", "passed": true, "evidence": "Uses D250 = 0.21 (12D ~2.5 min); notes 2.4 min is the classic botulinum cook"}, {"text": "Calculates D240 = 0.2 x 10^(10/18) which is about 0.72 min, giving about 3.3 log reductions", "passed": true, "evidence": "D240 ~0.75 min, ~3.2 logs (consistent with D=0.21)"}, {"text": "Concludes the batch is under-processed and unsafe: hold, do not release, and reprocess or destroy with a process authority's evaluation", "passed": true, "evidence": "Not safe: hold, document, process authority, reprocess or destroy"}, {"text": "Mentions why low-acid foods matter (pH above 4.6 and water activity above 0.85, C. botulinum can grow)", "passed": true, "evidence": "Low-acid canned foods pH > 4.6, aw > 0.85"}], "notes": []}, {"eval_id": 3, "eval_name": "fm-deli-listeria", "configuration": "without_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 6, "failed": 0, "total": 6, "time_seconds": 0.0, "tokens": 0, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Notes Listeria grows at refrigeration temperatures and is a serious hazard for pregnant women, the elderly and the immunocompromised", "passed": true, "evidence": "Grows at 0-4 C; vulnerable groups with 20-30% fatality"}, {"text": "Identifies post-cook recontamination from the plant environment (slicers, drains, biofilms) as the main risk for sliced RTE products", "passed": true, "evidence": "Post-lethality recontamination from slicers, belts, condensate"}, {"text": "Recommends an environmental monitoring program (e.g. zone-based swabbing for Listeria spp.) and verification", "passed": true, "evidence": "Environmental monitoring zones (7 mentions)"}, {"text": "Recommends post-lethality treatment and/or growth inhibitors (e.g. HPP or post-package pasteurization, lactate/diacetate, bacteriocins such as nisin/pediocin, or phage)", "passed": true, "evidence": "HPP/post-package pasteurization and lactate/diacetate antimicrobials"}, {"text": "Lists cooking (lethality) and chilling/cooling as CCPs with measurable critical limits, monitoring, corrective actions, verification and records (HACCP principles)", "passed": true, "evidence": "CCPs with critical limits, corrective actions, verification, records"}, {"text": "Covers sanitation (clean before sanitize, SSOPs, equipment design) and GMPs/hygienic zoning", "passed": true, "evidence": "Hygienic zoning, equipment design, full wet clean sequence then sanitize"}], "notes": []}], "run_summary": {"with_skill": {"pass_rate": {"mean": 1.0, "stddev": 0.0, "min": 1.0, "max": 1.0}, "time_seconds": {"mean": 0.0, "stddev": 0.0, "min": 0.0, "max": 0.0}, "tokens": {"mean": 0.0, "stddev": 0.0, "min": 0, "max": 0}}, "without_skill": {"pass_rate": {"mean": 1.0, "stddev": 0.0, "min": 1.0, "max": 1.0}, "time_seconds": {"mean": 0.0, "stddev": 0.0, "min": 0.0, "max": 0.0}, "tokens": {"mean": 0.0, "stddev": 0.0, "min": 0, "max": 0}}, "delta": {"pass_rate": "+0.00", "time_seconds": "+0.0", "tokens": "+0"}}, "notes": []}};
+
+    // ---- State ----
+    let feedbackMap = {};  // run_id -> feedback text
+    let currentIndex = 0;
+    let visitedRuns = new Set();
+
+    // ---- Init ----
+    async function init() {
+      // Load saved feedback from server — but only if this isn't a fresh
+      // iteration (indicated by previous_feedback being present). When
+      // previous feedback exists, the feedback.json on disk is stale from
+      // the prior iteration and should not pre-fill the textareas.
+      const hasPrevious = Object.keys(EMBEDDED_DATA.previous_feedback || {}).length > 0
+        || Object.keys(EMBEDDED_DATA.previous_outputs || {}).length > 0;
+      if (!hasPrevious) {
+        try {
+          const resp = await fetch("/api/feedback");
+          const data = await resp.json();
+          if (data.reviews) {
+            for (const r of data.reviews) feedbackMap[r.run_id] = r.feedback;
+          }
+        } catch { /* first run, no feedback yet */ }
+      }
+
+      document.getElementById("skill-name").textContent = EMBEDDED_DATA.skill_name;
+      showRun(0);
+
+      // Wire up feedback auto-save
+      const textarea = document.getElementById("feedback");
+      let saveTimeout = null;
+      textarea.addEventListener("input", () => {
+        clearTimeout(saveTimeout);
+        document.getElementById("feedback-status").textContent = "";
+        saveTimeout = setTimeout(() => saveCurrentFeedback(), 800);
+      });
+    }
+
+    // ---- Navigation ----
+    function navigate(delta) {
+      const newIndex = currentIndex + delta;
+      if (newIndex >= 0 && newIndex < EMBEDDED_DATA.runs.length) {
+        saveCurrentFeedback();
+        showRun(newIndex);
+      }
+    }
+
+    function updateNavButtons() {
+      document.getElementById("prev-btn").disabled = currentIndex === 0;
+      document.getElementById("next-btn").disabled =
+        currentIndex === EMBEDDED_DATA.runs.length - 1;
+    }
+
+    // ---- Show a run ----
+    function showRun(index) {
+      currentIndex = index;
+      const run = EMBEDDED_DATA.runs[index];
+
+      // Progress
+      document.getElementById("progress").textContent =
+        `${index + 1} of ${EMBEDDED_DATA.runs.length}`;
+
+      // Prompt
+      document.getElementById("prompt-text").textContent = run.prompt;
+
+      // Config badge
+      const badge = document.getElementById("config-badge");
+      const configMatch = run.id.match(/(with_skill|without_skill|new_skill|old_skill)/);
+      if (configMatch) {
+        const config = configMatch[1];
+        const isBaseline = config === "without_skill" || config === "old_skill";
+        badge.textContent = config.replace(/_/g, " ");
+        badge.className = "config-badge " + (isBaseline ? "config-baseline" : "config-primary");
+        badge.style.display = "inline-block";
+      } else {
+        badge.style.display = "none";
+      }
+
+      // Outputs
+      renderOutputs(run);
+
+      // Previous outputs
+      renderPrevOutputs(run);
+
+      // Grades
+      renderGrades(run);
+
+      // Previous feedback
+      const prevFb = (EMBEDDED_DATA.previous_feedback || {})[run.id];
+      const prevEl = document.getElementById("prev-feedback");
+      if (prevFb) {
+        document.getElementById("prev-feedback-text").textContent = prevFb;
+        prevEl.style.display = "block";
+      } else {
+        prevEl.style.display = "none";
+      }
+
+      // Feedback
+      document.getElementById("feedback").value = feedbackMap[run.id] || "";
+      document.getElementById("feedback-status").textContent = "";
+
+      updateNavButtons();
+
+      // Track visited runs and promote done button when all visited
+      visitedRuns.add(index);
+      const doneBtn = document.getElementById("done-btn");
+      if (visitedRuns.size >= EMBEDDED_DATA.runs.length) {
+        doneBtn.classList.add("ready");
+      }
+
+      // Scroll main content to top
+      document.querySelector(".main").scrollTop = 0;
+    }
+
+    // ---- Render outputs ----
+    function renderOutputs(run) {
+      const container = document.getElementById("outputs-body");
+      container.innerHTML = "";
+
+      const outputs = run.outputs || [];
+      if (outputs.length === 0) {
+        container.innerHTML = '<div class="empty-state">No output files</div>';
+        return;
+      }
+
+      for (const file of outputs) {
+        const fileDiv = document.createElement("div");
+        fileDiv.className = "output-file";
+
+        // Always show file header with download link
+        const header = document.createElement("div");
+        header.className = "output-file-header";
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = file.name;
+        header.appendChild(nameSpan);
+        const dlBtn = document.createElement("a");
+        dlBtn.className = "dl-btn";
+        dlBtn.textContent = "Download";
+        dlBtn.download = file.name;
+        dlBtn.href = getDownloadUri(file);
+        header.appendChild(dlBtn);
+        fileDiv.appendChild(header);
+
+        const content = document.createElement("div");
+        content.className = "output-file-content";
+
+        if (file.type === "text") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          content.appendChild(pre);
+        } else if (file.type === "image") {
+          const img = document.createElement("img");
+          img.src = file.data_uri;
+          img.alt = file.name;
+          content.appendChild(img);
+        } else if (file.type === "pdf") {
+          const iframe = document.createElement("iframe");
+          iframe.src = file.data_uri;
+          content.appendChild(iframe);
+        } else if (file.type === "xlsx") {
+          renderXlsx(content, file.data_b64);
+        } else if (file.type === "binary") {
+          const a = document.createElement("a");
+          a.className = "download-link";
+          a.href = file.data_uri;
+          a.download = file.name;
+          a.textContent = "Download " + file.name;
+          content.appendChild(a);
+        } else if (file.type === "error") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          pre.style.color = "var(--red)";
+          content.appendChild(pre);
+        }
+
+        fileDiv.appendChild(content);
+        container.appendChild(fileDiv);
+      }
+    }
+
+    // ---- XLSX rendering via SheetJS ----
+    function renderXlsx(container, b64Data) {
+      try {
+        const raw = Uint8Array.from(atob(b64Data), c => c.charCodeAt(0));
+        const wb = XLSX.read(raw, { type: "array" });
+
+        for (let i = 0; i < wb.SheetNames.length; i++) {
+          const sheetName = wb.SheetNames[i];
+          const ws = wb.Sheets[sheetName];
+
+          if (wb.SheetNames.length > 1) {
+            const sheetLabel = document.createElement("div");
+            sheetLabel.style.cssText =
+              "font-weight:600; font-size:0.8rem; color:#b0aea5; margin-top:0.5rem; margin-bottom:0.25rem;";
+            sheetLabel.textContent = "Sheet: " + sheetName;
+            container.appendChild(sheetLabel);
+          }
+
+          const htmlStr = XLSX.utils.sheet_to_html(ws, { editable: false });
+          const wrapper = document.createElement("div");
+          wrapper.innerHTML = htmlStr;
+          container.appendChild(wrapper);
+        }
+      } catch (err) {
+        container.textContent = "Error rendering spreadsheet: " + err.message;
+      }
+    }
+
+    // ---- Grades ----
+    function renderGrades(run) {
+      const section = document.getElementById("grades-section");
+      const content = document.getElementById("grades-content");
+
+      if (!run.grading) {
+        section.style.display = "none";
+        return;
+      }
+
+      const grading = run.grading;
+      section.style.display = "block";
+      // Reset to collapsed
+      content.classList.remove("open");
+      document.getElementById("grades-arrow").classList.remove("open");
+
+      const summary = grading.summary || {};
+      const expectations = grading.expectations || [];
+
+      let html = '<div style="padding: 1rem;">';
+
+      // Summary line
+      const passRate = summary.pass_rate != null
+        ? Math.round(summary.pass_rate * 100) + "%"
+        : "?";
+      const badgeClass = summary.pass_rate >= 0.8 ? "grade-pass" : summary.pass_rate >= 0.5 ? "" : "grade-fail";
+      html += '<div class="grades-summary">';
+      html += '<span class="grade-badge ' + badgeClass + '">' + passRate + '</span>';
+      html += '<span>' + escapeHtml(summary.passed || 0) + ' passed, ' + escapeHtml(summary.failed || 0) + ' failed of ' + escapeHtml(summary.total || 0) + '</span>';
+      html += '</div>';
+
+      // Assertions list
+      html += '<ul class="assertion-list">';
+      for (const exp of expectations) {
+        const statusClass = exp.passed ? "pass" : "fail";
+        const statusIcon = exp.passed ? "\u2713" : "\u2717";
+        html += '<li class="assertion-item">';
+        html += '<span class="assertion-status ' + statusClass + '">' + statusIcon + '</span>';
+        html += '<span>' + escapeHtml(exp.text) + '</span>';
+        if (exp.evidence) {
+          html += '<div class="assertion-evidence">' + escapeHtml(exp.evidence) + '</div>';
+        }
+        html += '</li>';
+      }
+      html += '</ul>';
+
+      html += '</div>';
+      content.innerHTML = html;
+    }
+
+    function toggleGrades() {
+      const content = document.getElementById("grades-content");
+      const arrow = document.getElementById("grades-arrow");
+      content.classList.toggle("open");
+      arrow.classList.toggle("open");
+    }
+
+    // ---- Previous outputs (collapsible) ----
+    function renderPrevOutputs(run) {
+      const section = document.getElementById("prev-outputs-section");
+      const content = document.getElementById("prev-outputs-content");
+      const prevOutputs = (EMBEDDED_DATA.previous_outputs || {})[run.id];
+
+      if (!prevOutputs || prevOutputs.length === 0) {
+        section.style.display = "none";
+        return;
+      }
+
+      section.style.display = "block";
+      // Reset to collapsed
+      content.classList.remove("open");
+      document.getElementById("prev-outputs-arrow").classList.remove("open");
+
+      // Render the files into the content area
+      content.innerHTML = "";
+      const wrapper = document.createElement("div");
+      wrapper.style.padding = "1rem";
+
+      for (const file of prevOutputs) {
+        const fileDiv = document.createElement("div");
+        fileDiv.className = "output-file";
+
+        const header = document.createElement("div");
+        header.className = "output-file-header";
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = file.name;
+        header.appendChild(nameSpan);
+        const dlBtn = document.createElement("a");
+        dlBtn.className = "dl-btn";
+        dlBtn.textContent = "Download";
+        dlBtn.download = file.name;
+        dlBtn.href = getDownloadUri(file);
+        header.appendChild(dlBtn);
+        fileDiv.appendChild(header);
+
+        const fc = document.createElement("div");
+        fc.className = "output-file-content";
+
+        if (file.type === "text") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          fc.appendChild(pre);
+        } else if (file.type === "image") {
+          const img = document.createElement("img");
+          img.src = file.data_uri;
+          img.alt = file.name;
+          fc.appendChild(img);
+        } else if (file.type === "pdf") {
+          const iframe = document.createElement("iframe");
+          iframe.src = file.data_uri;
+          fc.appendChild(iframe);
+        } else if (file.type === "xlsx") {
+          renderXlsx(fc, file.data_b64);
+        } else if (file.type === "binary") {
+          const a = document.createElement("a");
+          a.className = "download-link";
+          a.href = file.data_uri;
+          a.download = file.name;
+          a.textContent = "Download " + file.name;
+          fc.appendChild(a);
+        }
+
+        fileDiv.appendChild(fc);
+        wrapper.appendChild(fileDiv);
+      }
+
+      content.appendChild(wrapper);
+    }
+
+    function togglePrevOutputs() {
+      const content = document.getElementById("prev-outputs-content");
+      const arrow = document.getElementById("prev-outputs-arrow");
+      content.classList.toggle("open");
+      arrow.classList.toggle("open");
+    }
+
+    // ---- Feedback (saved to server -> feedback.json) ----
+    function saveCurrentFeedback() {
+      const run = EMBEDDED_DATA.runs[currentIndex];
+      const text = document.getElementById("feedback").value;
+
+      if (text.trim() === "") {
+        delete feedbackMap[run.id];
+      } else {
+        feedbackMap[run.id] = text;
+      }
+
+      // Build reviews array from map
+      const reviews = [];
+      for (const [run_id, feedback] of Object.entries(feedbackMap)) {
+        if (feedback.trim()) {
+          reviews.push({ run_id, feedback, timestamp: new Date().toISOString() });
+        }
+      }
+
+      fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reviews, status: "in_progress" }),
+      }).then(() => {
+        document.getElementById("feedback-status").textContent = "Saved";
+      }).catch(() => {
+        // Static mode or server unavailable — no-op on auto-save,
+        // feedback will be downloaded on final submit
+        document.getElementById("feedback-status").textContent = "Will download on submit";
+      });
+    }
+
+    // ---- Done ----
+    function showDoneDialog() {
+      // Save current textarea to feedbackMap (but don't POST yet)
+      const run = EMBEDDED_DATA.runs[currentIndex];
+      const text = document.getElementById("feedback").value;
+      if (text.trim() === "") {
+        delete feedbackMap[run.id];
+      } else {
+        feedbackMap[run.id] = text;
+      }
+
+      // POST once with status: complete — include ALL runs so the model
+      // can distinguish "no feedback" (looks good) from "not reviewed"
+      const reviews = [];
+      const ts = new Date().toISOString();
+      for (const r of EMBEDDED_DATA.runs) {
+        reviews.push({ run_id: r.id, feedback: feedbackMap[r.id] || "", timestamp: ts });
+      }
+      const payload = JSON.stringify({ reviews, status: "complete" }, null, 2);
+      fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: payload,
+      }).then(() => {
+        document.getElementById("done-overlay").classList.add("visible");
+      }).catch(() => {
+        // Server not available (static mode) — download as file
+        const blob = new Blob([payload], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "feedback.json";
+        a.click();
+        URL.revokeObjectURL(url);
+        document.getElementById("done-overlay").classList.add("visible");
+      });
+    }
+
+    function closeDoneDialog() {
+      // Reset status back to in_progress
+      saveCurrentFeedback();
+      document.getElementById("done-overlay").classList.remove("visible");
+    }
+
+    // ---- Toast ----
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("visible");
+      setTimeout(() => toast.classList.remove("visible"), 2000);
+    }
+
+    // ---- Keyboard nav ----
+    document.addEventListener("keydown", (e) => {
+      // Don't capture when typing in textarea
+      if (e.target.tagName === "TEXTAREA") return;
+
+      if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+        e.preventDefault();
+        navigate(-1);
+      } else if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+        e.preventDefault();
+        navigate(1);
+      }
+    });
+
+    // ---- Util ----
+    function getDownloadUri(file) {
+      if (file.data_uri) return file.data_uri;
+      if (file.data_b64) return "data:application/octet-stream;base64," + file.data_b64;
+      if (file.type === "text") return "data:text/plain;charset=utf-8," + encodeURIComponent(file.content);
+      return "#";
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement("div");
+      div.textContent = text;
+      return div.innerHTML.replace(/"/g, "&quot;");
+    }
+
+    // ---- View switching ----
+    function switchView(view) {
+      document.querySelectorAll(".view-tab").forEach(t => t.classList.remove("active"));
+      document.querySelectorAll(".view-panel").forEach(p => p.classList.remove("active"));
+      document.querySelector(`[onclick="switchView('${view}')"]`).classList.add("active");
+      document.getElementById("panel-" + view).classList.add("active");
+    }
+
+    // ---- Benchmark rendering ----
+    function renderBenchmark() {
+      const data = EMBEDDED_DATA.benchmark;
+      if (!data) return;
+
+      // Show the tabs
+      document.getElementById("view-tabs").style.display = "flex";
+
+      const container = document.getElementById("benchmark-content");
+      const summary = data.run_summary || {};
+      const metadata = data.metadata || {};
+      const notes = data.notes || [];
+
+      let html = "";
+
+      // Header
+      html += "<h2 style='font-family: Poppins, sans-serif; margin-bottom: 0.5rem;'>Benchmark Results</h2>";
+      html += "<p style='color: var(--text-muted); font-size: 0.875rem; margin-bottom: 1.25rem;'>";
+      if (metadata.skill_name) html += "<strong>" + escapeHtml(metadata.skill_name) + "</strong> &mdash; ";
+      if (metadata.timestamp) html += escapeHtml(metadata.timestamp) + " &mdash; ";
+      if (metadata.evals_run) html += "Evals: " + escapeHtml(metadata.evals_run.join(", ")) + " &mdash; ";
+      html += escapeHtml(metadata.runs_per_configuration || "?") + (metadata.runs_per_configuration === 1 ? " run" : " runs") + " per configuration";
+      html += "</p>";
+
+      // Summary table
+      html += '<table class="benchmark-table">';
+
+      function fmtStat(stat, pct) {
+        if (!stat) return "—";
+        const suffix = pct ? "%" : "";
+        const m = pct ? (stat.mean * 100).toFixed(0) : stat.mean.toFixed(1);
+        const s = pct ? (stat.stddev * 100).toFixed(0) : stat.stddev.toFixed(1);
+        return m + suffix + " ± " + s + suffix;
+      }
+
+      function deltaClass(val) {
+        if (!val) return "";
+        const n = parseFloat(val);
+        if (n > 0) return "benchmark-delta-positive";
+        if (n < 0) return "benchmark-delta-negative";
+        return "";
+      }
+
+      // Discover config names dynamically (everything except "delta")
+      const configs = Object.keys(summary).filter(k => k !== "delta");
+      const configA = configs[0] || "config_a";
+      const configB = configs[1] || "config_b";
+      const labelA = configA.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      const labelB = configB.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      const a = summary[configA] || {};
+      const b = summary[configB] || {};
+      const delta = summary.delta || {};
+      // With a single configuration there is nothing to compare: only its column is shown
+      const compare = cells => configs.length >= 2 ? cells : "";
+
+      html += "<thead><tr><th>Metric</th><th>" + escapeHtml(labelA) + "</th>" + compare("<th>" + escapeHtml(labelB) + "</th><th>Delta</th>") + "</tr></thead>";
+      html += "<tbody>";
+
+      html += "<tr><td><strong>Pass Rate</strong></td>";
+      html += "<td>" + fmtStat(a.pass_rate, true) + "</td>";
+      html += compare("<td>" + fmtStat(b.pass_rate, true) + "</td>");
+      html += compare('<td class="' + deltaClass(delta.pass_rate) + '">' + escapeHtml(delta.pass_rate || "—") + "</td>") + "</tr>";
+
+      // Time (only show row if data exists)
+      if (a.time_seconds || b.time_seconds) {
+        html += "<tr><td><strong>Time (s)</strong></td>";
+        html += "<td>" + fmtStat(a.time_seconds, false) + "</td>";
+        html += compare("<td>" + fmtStat(b.time_seconds, false) + "</td>");
+        html += compare('<td class="' + deltaClass(delta.time_seconds) + '">' + escapeHtml(delta.time_seconds ? delta.time_seconds + "s" : "—") + "</td>") + "</tr>";
+      }
+
+      // Tokens (only show row if data exists)
+      if (a.tokens || b.tokens) {
+        html += "<tr><td><strong>Tokens</strong></td>";
+        html += "<td>" + fmtStat(a.tokens, false) + "</td>";
+        html += compare("<td>" + fmtStat(b.tokens, false) + "</td>");
+        html += compare('<td class="' + deltaClass(delta.tokens) + '">' + escapeHtml(delta.tokens || "—") + "</td>") + "</tr>";
+      }
+
+      html += "</tbody></table>";
+
+      // Per-eval breakdown (if runs data available)
+      const runs = data.runs || [];
+      if (runs.length > 0) {
+        // Numeric ids first, then ids that are names
+        const rank = id => typeof id === "number" ? 0 : 1;
+        const evalIds = [...new Set(runs.map(r => r.eval_id))].sort((a, b) =>
+          rank(a) - rank(b) || (rank(a) ? String(a).localeCompare(String(b)) : a - b));
+
+        html += "<h3 style='font-family: Poppins, sans-serif; margin-bottom: 0.75rem;'>Per-Eval Breakdown</h3>";
+
+        const hasTime = runs.some(r => r.result && r.result.time_seconds != null);
+        const hasErrors = runs.some(r => r.result && r.result.errors > 0);
+
+        for (const evalId of evalIds) {
+          const evalRuns = runs.filter(r => r.eval_id === evalId);
+          const evalName = evalRuns[0] && evalRuns[0].eval_name ? evalRuns[0].eval_name : "Eval " + evalId;
+
+          html += "<h4 style='font-family: Poppins, sans-serif; margin: 1rem 0 0.5rem; color: var(--text);'>" + escapeHtml(evalName) + "</h4>";
+          html += '<table class="benchmark-table">';
+          html += "<thead><tr><th>Config</th><th>Run</th><th>Pass Rate</th>";
+          if (hasTime) html += "<th>Time (s)</th>";
+          if (hasErrors) html += "<th>Crashes During Execution</th>";
+          html += "</tr></thead>";
+          html += "<tbody>";
+
+          // Group by config and render with average rows
+          const configGroups = [...new Set(evalRuns.map(r => r.configuration))];
+          for (let ci = 0; ci < configGroups.length; ci++) {
+            const config = configGroups[ci];
+            const configRuns = evalRuns.filter(r => r.configuration === config);
+            if (configRuns.length === 0) continue;
+
+            const rowClass = ci === 0 ? "benchmark-row-with" : "benchmark-row-without";
+            const configLabel = escapeHtml(config.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase()));
+
+            for (const run of configRuns) {
+              const r = run.result || {};
+              const prClass = r.pass_rate >= 0.8 ? "benchmark-delta-positive" : r.pass_rate < 0.5 ? "benchmark-delta-negative" : "";
+              html += '<tr class="' + rowClass + '">';
+              html += "<td>" + configLabel + "</td>";
+              html += "<td>" + escapeHtml(run.run_number) + "</td>";
+              html += '<td class="' + prClass + '">' + ((r.pass_rate || 0) * 100).toFixed(0) + "% (" + escapeHtml(r.passed || 0) + "/" + escapeHtml(r.total || 0) + ")</td>";
+              if (hasTime) html += "<td>" + (r.time_seconds != null ? r.time_seconds.toFixed(1) : "—") + "</td>";
+              if (hasErrors) html += "<td>" + escapeHtml(r.errors || 0) + "</td>";
+              html += "</tr>";
+            }
+
+            // Average row
+            const rates = configRuns.map(r => (r.result || {}).pass_rate || 0);
+            const avgRate = rates.reduce((a, b) => a + b, 0) / rates.length;
+            const avgPrClass = avgRate >= 0.8 ? "benchmark-delta-positive" : avgRate < 0.5 ? "benchmark-delta-negative" : "";
+            html += '<tr class="benchmark-row-avg ' + rowClass + '">';
+            html += "<td>" + configLabel + "</td>";
+            html += "<td>Avg</td>";
+            html += '<td class="' + avgPrClass + '">' + (avgRate * 100).toFixed(0) + "%</td>";
+            if (hasTime) {
+              const times = configRuns.map(r => (r.result || {}).time_seconds).filter(t => t != null);
+              html += "<td>" + (times.length ? (times.reduce((a, b) => a + b, 0) / times.length).toFixed(1) : "—") + "</td>";
+            }
+            if (hasErrors) html += "<td></td>";
+            html += "</tr>";
+          }
+          html += "</tbody></table>";
+
+          // Per-assertion detail for this eval
+          const runsWithExpectations = {};
+          for (const config of configGroups) {
+            runsWithExpectations[config] = evalRuns.filter(r => r.configuration === config && r.expectations && r.expectations.length > 0);
+          }
+          const hasAnyExpectations = Object.values(runsWithExpectations).some(runs => runs.length > 0);
+          if (hasAnyExpectations) {
+            // Collect all unique assertion texts across all configs
+            const allAssertions = [];
+            const seen = new Set();
+            for (const config of configGroups) {
+              for (const run of runsWithExpectations[config]) {
+                for (const exp of (run.expectations || [])) {
+                  if (!seen.has(exp.text)) {
+                    seen.add(exp.text);
+                    allAssertions.push(exp.text);
+                  }
+                }
+              }
+            }
+
+            html += '<table class="benchmark-table" style="margin-top: 0.5rem;">';
+            html += "<thead><tr><th>Assertion</th>";
+            for (const config of configGroups) {
+              const label = config.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+              html += "<th>" + escapeHtml(label) + "</th>";
+            }
+            html += "</tr></thead><tbody>";
+
+            for (const assertionText of allAssertions) {
+              html += "<tr><td>" + escapeHtml(assertionText) + "</td>";
+
+              for (const config of configGroups) {
+                html += "<td>";
+                for (const run of runsWithExpectations[config]) {
+                  const exp = (run.expectations || []).find(e => e.text === assertionText);
+                  if (exp) {
+                    const cls = exp.passed ? "benchmark-delta-positive" : "benchmark-delta-negative";
+                    const icon = exp.passed ? "\u2713" : "\u2717";
+                    html += '<span class="' + cls + '" title="Run ' + escapeHtml(run.run_number) + ': ' + escapeHtml(exp.evidence || "") + '">' + icon + "</span> ";
+                  } else {
+                    html += "— ";
+                  }
+                }
+                html += "</td>";
+              }
+              html += "</tr>";
+            }
+            html += "</tbody></table>";
+          }
+        }
+      }
+
+      // Notes
+      if (notes.length > 0) {
+        html += '<div class="benchmark-notes">';
+        html += "<h3>Analysis Notes</h3>";
+        html += "<ul>";
+        for (const note of notes) {
+          html += "<li>" + escapeHtml(note) + "</li>";
+        }
+        html += "</ul></div>";
+      }
+
+      container.innerHTML = html;
+    }
+
+    // ---- Start ----
+    init();
+    renderBenchmark();
+  </script>
+</body>
+</html>

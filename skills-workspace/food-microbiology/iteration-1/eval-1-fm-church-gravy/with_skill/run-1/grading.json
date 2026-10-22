@@ -1,0 +1,40 @@
+{
+  "expectations": [
+    {
+      "text": "Identifies Clostridium perfringens as the most likely cause",
+      "passed": true,
+      "evidence": "Names C. perfringens type A as most likely"
+    },
+    {
+      "text": "Explains that spores survive cooking and germinate/multiply rapidly during slow cooling or warm holding of the large pot",
+      "passed": true,
+      "evidence": "Spores survive cooking, activated; anaerobic deep pot; doubling 7-10 min overnight"
+    },
+    {
+      "text": "Explains it is a toxicoinfection: large numbers eaten, enterotoxin released when cells sporulate in the gut (not a preformed toxin)",
+      "passed": true,
+      "evidence": "Cells sporulate in the gut releasing enterotoxin; 'not a toxin already formed in the food'"
+    },
+    {
+      "text": "Uses onset time and symptoms to rule out alternatives such as S. aureus or emetic B. cereus (rapid vomiting) and Salmonella (fever)",
+      "passed": true,
+      "evidence": "Rules out S. aureus (2-6 h) and Salmonella/Campylobacter; notes diarrheal B. cereus as alternative"
+    },
+    {
+      "text": "Gives specific cooling controls: shallow containers/portioning, ice bath or fridge so food cools quickly through the danger zone",
+      "passed": true,
+      "evidence": "Shallow pans <=2 in, slice roasts, ice-water bath, Food Code 2-stage cooling"
+    },
+    {
+      "text": "Gives holding/reheating controls: hot hold at or above about 140 F (60 C) and reheat to about 165 F (74 C)",
+      "passed": true,
+      "evidence": "Reheat to 165 F / rolling boil; hot hold >=135 F (notes the book cites 140 F)"
+    }
+  ],
+  "summary": {
+    "passed": 6,
+    "failed": 0,
+    "total": 6,
+    "pass_rate": 1.0
+  }
+}

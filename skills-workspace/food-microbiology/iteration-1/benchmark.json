@@ -1,0 +1,359 @@
+{
+  "metadata": {
+    "skill_name": "food-microbiology",
+    "skill_path": "<path/to/skill>",
+    "executor_model": "<model-name>",
+    "analyzer_model": "<model-name>",
+    "timestamp": "2026-10-22T19:03:37Z",
+    "evals_run": [
+      1,
+      2,
+      3
+    ],
+    "runs_per_configuration": 1
+  },
+  "runs": [
+    {
+      "eval_id": 1,
+      "eval_name": "fm-church-gravy",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": 0.0,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Identifies Clostridium perfringens as the most likely cause",
+          "passed": true,
+          "evidence": "Names C. perfringens type A as most likely"
+        },
+        {
+          "text": "Explains that spores survive cooking and germinate/multiply rapidly during slow cooling or warm holding of the large pot",
+          "passed": true,
+          "evidence": "Spores survive cooking, activated; anaerobic deep pot; doubling 7-10 min overnight"
+        },
+        {
+          "text": "Explains it is a toxicoinfection: large numbers eaten, enterotoxin released when cells sporulate in the gut (not a preformed toxin)",
+          "passed": true,
+          "evidence": "Cells sporulate in the gut releasing enterotoxin; 'not a toxin already formed in the food'"
+        },
+        {
+          "text": "Uses onset time and symptoms to rule out alternatives such as S. aureus or emetic B. cereus (rapid vomiting) and Salmonella (fever)",
+          "passed": true,
+          "evidence": "Rules out S. aureus (2-6 h) and Salmonella/Campylobacter; notes diarrheal B. cereus as alternative"
+        },
+        {
+          "text": "Gives specific cooling controls: shallow containers/portioning, ice bath or fridge so food cools quickly through the danger zone",
+          "passed": true,
+          "evidence": "Shallow pans <=2 in, slice roasts, ice-water bath, Food Code 2-stage cooling"
+        },
+        {
+          "text": "Gives holding/reheating controls: hot hold at or above about 140 F (60 C) and reheat to about 165 F (74 C)",
+          "passed": true,
+          "evidence": "Reheat to 165 F / rolling boil; hot hold >=135 F (notes the book cites 140 F)"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "fm-retort-deviation",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": 0.0,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Defines D value as the time at a given temperature for a 1-log (90%) reduction",
+          "passed": true,
+          "evidence": "D = time for 90% / 1-log kill at a temperature"
+        },
+        {
+          "text": "Defines z value as the temperature change that changes D by 10-fold (about 18 F / 10 C for C. botulinum)",
+          "passed": true,
+          "evidence": "z ~18 F (10 C) for 10-fold change in D"
+        },
+        {
+          "text": "Explains the 12D botulinum cook with D250 of about 0.2 min giving 2.4 min",
+          "passed": true,
+          "evidence": "12 x 0.2 = 2.4 min at 250 F"
+        },
+        {
+          "text": "Calculates D240 = 0.2 x 10^(10/18) which is about 0.72 min, giving about 3.3 log reductions",
+          "passed": true,
+          "evidence": "D240 = 0.2 x 10^(10/18) ~ 0.72 min; 3.3 logs; cross-checked with F0 0.67"
+        },
+        {
+          "text": "Concludes the batch is under-processed and unsafe: hold, do not release, and reprocess or destroy with a process authority's evaluation",
+          "passed": true,
+          "evidence": "Not safe: hold lot, process authority, reprocess or destroy"
+        },
+        {
+          "text": "Mentions why low-acid foods matter (pH above 4.6 and water activity above 0.85, C. botulinum can grow)",
+          "passed": true,
+          "evidence": "Low-acid: pH > 4.6 and aw > 0.85"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 3,
+      "eval_name": "fm-deli-listeria",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": 0.0,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Notes Listeria grows at refrigeration temperatures and is a serious hazard for pregnant women, the elderly and the immunocompromised",
+          "passed": true,
+          "evidence": "Psychrotrophic table row; pregnant/elderly/immunocompromised mentioned"
+        },
+        {
+          "text": "Identifies post-cook recontamination from the plant environment (slicers, drains, biofilms) as the main risk for sliced RTE products",
+          "passed": true,
+          "evidence": "Recontamination after cooking during chilling, peeling, slicing, packing is the main risk; harborage, biofilms"
+        },
+        {
+          "text": "Recommends an environmental monitoring program (e.g. zone-based swabbing for Listeria spp.) and verification",
+          "passed": true,
+          "evidence": "Environmental monitoring with zones (9 mentions)"
+        },
+        {
+          "text": "Recommends post-lethality treatment and/or growth inhibitors (e.g. HPP or post-package pasteurization, lactate/diacetate, bacteriocins such as nisin/pediocin, or phage)",
+          "passed": true,
+          "evidence": "HPP / post-package pasteurization and lactate/diacetate, bacteriocins, phage"
+        },
+        {
+          "text": "Lists cooking (lethality) and chilling/cooling as CCPs with measurable critical limits, monitoring, corrective actions, verification and records (HACCP principles)",
+          "passed": true,
+          "evidence": "CCPs with critical limits, monitoring, corrective actions, verification, records"
+        },
+        {
+          "text": "Covers sanitation (clean before sanitize, SSOPs, equipment design) and GMPs/hygienic zoning",
+          "passed": true,
+          "evidence": "SSOPs, clean then sanitize, GMPs and hygienic zoning"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 1,
+      "eval_name": "fm-church-gravy",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": 0.0,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Identifies Clostridium perfringens as the most likely cause",
+          "passed": true,
+          "evidence": "Names C. perfringens as top suspect"
+        },
+        {
+          "text": "Explains that spores survive cooking and germinate/multiply rapidly during slow cooling or warm holding of the large pot",
+          "passed": true,
+          "evidence": "Spores survive cooking, slow cooling in deep pot, ~10 min doubling"
+        },
+        {
+          "text": "Explains it is a toxicoinfection: large numbers eaten, enterotoxin released when cells sporulate in the gut (not a preformed toxin)",
+          "passed": true,
+          "evidence": "'In the gut the bacteria form spores and release an enterotoxin'"
+        },
+        {
+          "text": "Uses onset time and symptoms to rule out alternatives such as S. aureus or emetic B. cereus (rapid vomiting) and Salmonella (fever)",
+          "passed": true,
+          "evidence": "Rules out S. aureus, emetic B. cereus, norovirus, Salmonella/Campylobacter"
+        },
+        {
+          "text": "Gives specific cooling controls: shallow containers/portioning, ice bath or fridge so food cools quickly through the danger zone",
+          "passed": true,
+          "evidence": "Two-stage cooling, shallow pans <=2 in, ice bath, cut roasts"
+        },
+        {
+          "text": "Gives holding/reheating controls: hot hold at or above about 140 F (60 C) and reheat to about 165 F (74 C)",
+          "passed": true,
+          "evidence": "Reheat to 165 F; hot hold at 135 F or above"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "fm-retort-deviation",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": 0.0,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Defines D value as the time at a given temperature for a 1-log (90%) reduction",
+          "passed": true,
+          "evidence": "D defined as time for 90% kill"
+        },
+        {
+          "text": "Defines z value as the temperature change that changes D by 10-fold (about 18 F / 10 C for C. botulinum)",
+          "passed": true,
+          "evidence": "z = 18 F (10 C)"
+        },
+        {
+          "text": "Explains the 12D botulinum cook with D250 of about 0.2 min giving 2.4 min",
+          "passed": true,
+          "evidence": "Uses D250 = 0.21 (12D ~2.5 min); notes 2.4 min is the classic botulinum cook"
+        },
+        {
+          "text": "Calculates D240 = 0.2 x 10^(10/18) which is about 0.72 min, giving about 3.3 log reductions",
+          "passed": true,
+          "evidence": "D240 ~0.75 min, ~3.2 logs (consistent with D=0.21)"
+        },
+        {
+          "text": "Concludes the batch is under-processed and unsafe: hold, do not release, and reprocess or destroy with a process authority's evaluation",
+          "passed": true,
+          "evidence": "Not safe: hold, document, process authority, reprocess or destroy"
+        },
+        {
+          "text": "Mentions why low-acid foods matter (pH above 4.6 and water activity above 0.85, C. botulinum can grow)",
+          "passed": true,
+          "evidence": "Low-acid canned foods pH > 4.6, aw > 0.85"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 3,
+      "eval_name": "fm-deli-listeria",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": 0.0,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Notes Listeria grows at refrigeration temperatures and is a serious hazard for pregnant women, the elderly and the immunocompromised",
+          "passed": true,
+          "evidence": "Grows at 0-4 C; vulnerable groups with 20-30% fatality"
+        },
+        {
+          "text": "Identifies post-cook recontamination from the plant environment (slicers, drains, biofilms) as the main risk for sliced RTE products",
+          "passed": true,
+          "evidence": "Post-lethality recontamination from slicers, belts, condensate"
+        },
+        {
+          "text": "Recommends an environmental monitoring program (e.g. zone-based swabbing for Listeria spp.) and verification",
+          "passed": true,
+          "evidence": "Environmental monitoring zones (7 mentions)"
+        },
+        {
+          "text": "Recommends post-lethality treatment and/or growth inhibitors (e.g. HPP or post-package pasteurization, lactate/diacetate, bacteriocins such as nisin/pediocin, or phage)",
+          "passed": true,
+          "evidence": "HPP/post-package pasteurization and lactate/diacetate antimicrobials"
+        },
+        {
+          "text": "Lists cooking (lethality) and chilling/cooling as CCPs with measurable critical limits, monitoring, corrective actions, verification and records (HACCP principles)",
+          "passed": true,
+          "evidence": "CCPs with critical limits, corrective actions, verification, records"
+        },
+        {
+          "text": "Covers sanitation (clean before sanitize, SSOPs, equipment design) and GMPs/hygienic zoning",
+          "passed": true,
+          "evidence": "Hygienic zoning, equipment design, full wet clean sequence then sanitize"
+        }
+      ],
+      "notes": []
+    }
+  ],
+  "run_summary": {
+    "with_skill": {
+      "pass_rate": {
+        "mean": 1.0,
+        "stddev": 0.0,
+        "min": 1.0,
+        "max": 1.0
+      },
+      "time_seconds": {
+        "mean": 0.0,
+        "stddev": 0.0,
+        "min": 0.0,
+        "max": 0.0
+      },
+      "tokens": {
+        "mean": 0.0,
+        "stddev": 0.0,
+        "min": 0,
+        "max": 0
+      }
+    },
+    "without_skill": {
+      "pass_rate": {
+        "mean": 1.0,
+        "stddev": 0.0,
+        "min": 1.0,
+        "max": 1.0
+      },
+      "time_seconds": {
+        "mean": 0.0,
+        "stddev": 0.0,
+        "min": 0.0,
+        "max": 0.0
+      },
+      "tokens": {
+        "mean": 0.0,
+        "stddev": 0.0,
+        "min": 0,
+        "max": 0
+      }
+    },
+    "delta": {
+      "pass_rate": "+0.00",
+      "time_seconds": "+0.0",
+      "tokens": "+0"
+    }
+  },
+  "notes": []
+}
