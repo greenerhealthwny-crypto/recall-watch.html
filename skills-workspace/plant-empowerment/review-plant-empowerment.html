@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eval Review</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&family=Lora:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js" integrity="sha384-EnyY0/GSHQGSxSgMwaIPzSESbqoOLSexfnSMN2AP+39Ckmn92stwABZynq1JyzdT" crossorigin="anonymous"></script>
+  <style>
+    :root {
+      --bg: #faf9f5;
+      --surface: #ffffff;
+      --border: #e8e6dc;
+      --text: #141413;
+      --text-muted: #b0aea5;
+      --accent: #d97757;
+      --accent-hover: #c4613f;
+      --green: #788c5d;
+      --green-bg: #eef2e8;
+      --red: #c44;
+      --red-bg: #fceaea;
+      --header-bg: #141413;
+      --header-text: #faf9f5;
+      --radius: 6px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Lora', Georgia, serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ---- Header ---- */
+    .header {
+      background: var(--header-bg);
+      color: var(--header-text);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .header h1 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+    .header .instructions {
+      font-size: 0.8rem;
+      opacity: 0.7;
+      margin-top: 0.25rem;
+    }
+    .header .progress {
+      font-size: 0.875rem;
+      opacity: 0.8;
+      text-align: right;
+    }
+
+    /* ---- Main content ---- */
+    .main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.5rem 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    /* ---- Sections ---- */
+    .section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      flex-shrink: 0;
+    }
+    .section-header {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.75rem 1rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+    }
+    .section-body {
+      padding: 1rem;
+    }
+
+    /* ---- Config badge ---- */
+    .config-badge {
+      display: inline-block;
+      padding: 0.2rem 0.625rem;
+      border-radius: 9999px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      margin-left: 0.75rem;
+      vertical-align: middle;
+    }
+    .config-badge.config-primary {
+      background: rgba(33, 150, 243, 0.12);
+      color: #1976d2;
+    }
+    .config-badge.config-baseline {
+      background: rgba(255, 193, 7, 0.15);
+      color: #f57f17;
+    }
+
+    /* ---- Prompt ---- */
+    .prompt-text {
+      white-space: pre-wrap;
+      font-size: 0.9375rem;
+      line-height: 1.6;
+    }
+
+    /* ---- Outputs ---- */
+    .output-file {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .output-file + .output-file {
+      margin-top: 1rem;
+    }
+    .output-file-header {
+      padding: 0.5rem 0.75rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .output-file-header .dl-btn {
+      font-size: 0.7rem;
+      color: var(--accent);
+      text-decoration: none;
+      cursor: pointer;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-weight: 500;
+      opacity: 0.8;
+    }
+    .output-file-header .dl-btn:hover {
+      opacity: 1;
+      text-decoration: underline;
+    }
+    .output-file-content {
+      padding: 0.75rem;
+      overflow-x: auto;
+    }
+    .output-file-content pre {
+      font-size: 0.8125rem;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+    }
+    .output-file-content img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 4px;
+    }
+    .output-file-content iframe {
+      width: 100%;
+      height: 600px;
+      border: none;
+    }
+    .output-file-content table {
+      border-collapse: collapse;
+      font-size: 0.8125rem;
+      width: 100%;
+    }
+    .output-file-content table td,
+    .output-file-content table th {
+      border: 1px solid var(--border);
+      padding: 0.375rem 0.5rem;
+      text-align: left;
+    }
+    .output-file-content table th {
+      background: var(--bg);
+      font-weight: 600;
+    }
+    .output-file-content .download-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 0.875rem;
+      cursor: pointer;
+    }
+    .output-file-content .download-link:hover {
+      background: var(--border);
+    }
+    .empty-state {
+      color: var(--text-muted);
+      font-style: italic;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    /* ---- Feedback ---- */
+    .prev-feedback {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.625rem 0.75rem;
+      margin-top: 0.75rem;
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+    .prev-feedback-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.25rem;
+      color: var(--text-muted);
+    }
+    .feedback-textarea {
+      width: 100%;
+      min-height: 100px;
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 0.9375rem;
+      line-height: 1.5;
+      resize: vertical;
+      color: var(--text);
+    }
+    .feedback-textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    .feedback-status {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.5rem;
+      min-height: 1.1em;
+    }
+
+    /* ---- Grades (collapsible) ---- */
+    .grades-toggle {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+    }
+    .grades-toggle:hover {
+      color: var(--accent);
+    }
+    .grades-toggle .arrow {
+      margin-right: 0.5rem;
+      transition: transform 0.15s;
+      font-size: 0.75rem;
+    }
+    .grades-toggle .arrow.open {
+      transform: rotate(90deg);
+    }
+    .grades-content {
+      display: none;
+      margin-top: 0.75rem;
+    }
+    .grades-content.open {
+      display: block;
+    }
+    .grades-summary {
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .grade-badge {
+      display: inline-block;
+      padding: 0.125rem 0.5rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .grade-pass { background: var(--green-bg); color: var(--green); }
+    .grade-fail { background: var(--red-bg); color: var(--red); }
+    .assertion-list {
+      list-style: none;
+    }
+    .assertion-item {
+      padding: 0.625rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.8125rem;
+    }
+    .assertion-item:last-child { border-bottom: none; }
+    .assertion-status {
+      font-weight: 600;
+      margin-right: 0.5rem;
+    }
+    .assertion-status.pass { color: var(--green); }
+    .assertion-status.fail { color: var(--red); }
+    .assertion-evidence {
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      margin-top: 0.25rem;
+      padding-left: 1.5rem;
+    }
+
+    /* ---- View tabs ---- */
+    .view-tabs {
+      display: flex;
+      gap: 0;
+      padding: 0 2rem;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .view-tab {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.625rem 1.25rem;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      background: none;
+      color: var(--text-muted);
+      border-bottom: 2px solid transparent;
+      transition: all 0.15s;
+    }
+    .view-tab:hover { color: var(--text); }
+    .view-tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+    .view-panel { display: none; }
+    .view-panel.active { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
+
+    /* ---- Benchmark view ---- */
+    .benchmark-view {
+      padding: 1.5rem 2rem;
+      overflow-y: auto;
+      flex: 1;
+    }
+    .benchmark-table {
+      border-collapse: collapse;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 0.8125rem;
+      width: 100%;
+      margin-bottom: 1.5rem;
+    }
+    .benchmark-table th, .benchmark-table td {
+      padding: 0.625rem 0.75rem;
+      text-align: left;
+      border: 1px solid var(--border);
+    }
+    .benchmark-table th {
+      font-family: 'Poppins', sans-serif;
+      background: var(--header-bg);
+      color: var(--header-text);
+      font-weight: 500;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .benchmark-table tr:hover { background: var(--bg); }
+    .benchmark-table tr.benchmark-row-with { background: rgba(33, 150, 243, 0.06); }
+    .benchmark-table tr.benchmark-row-without { background: rgba(255, 193, 7, 0.06); }
+    .benchmark-table tr.benchmark-row-with:hover { background: rgba(33, 150, 243, 0.12); }
+    .benchmark-table tr.benchmark-row-without:hover { background: rgba(255, 193, 7, 0.12); }
+    .benchmark-table tr.benchmark-row-avg { font-weight: 600; border-top: 2px solid var(--border); }
+    .benchmark-table tr.benchmark-row-avg.benchmark-row-with { background: rgba(33, 150, 243, 0.12); }
+    .benchmark-table tr.benchmark-row-avg.benchmark-row-without { background: rgba(255, 193, 7, 0.12); }
+    .benchmark-delta-positive { color: var(--green); font-weight: 600; }
+    .benchmark-delta-negative { color: var(--red); font-weight: 600; }
+    .benchmark-notes {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem;
+    }
+    .benchmark-notes h3 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+    }
+    .benchmark-notes ul {
+      list-style: disc;
+      padding-left: 1.25rem;
+    }
+    .benchmark-notes li {
+      font-size: 0.8125rem;
+      line-height: 1.6;
+      margin-bottom: 0.375rem;
+    }
+    .benchmark-empty {
+      color: var(--text-muted);
+      font-style: italic;
+      text-align: center;
+      padding: 3rem;
+    }
+
+    /* ---- Navigation ---- */
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+      flex-shrink: 0;
+    }
+    .nav-btn {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.5rem 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text);
+      transition: all 0.15s;
+    }
+    .nav-btn:hover:not(:disabled) {
+      background: var(--bg);
+      border-color: var(--text-muted);
+    }
+    .nav-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    .done-btn {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.5rem 1.5rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: all 0.15s;
+    }
+    .done-btn:hover {
+      background: var(--bg);
+      border-color: var(--text-muted);
+    }
+    .done-btn.ready {
+      border: none;
+      background: var(--accent);
+      color: white;
+      font-weight: 600;
+    }
+    .done-btn.ready:hover {
+      background: var(--accent-hover);
+    }
+    /* ---- Done overlay ---- */
+    .done-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 100;
+      justify-content: center;
+      align-items: center;
+    }
+    .done-overlay.visible {
+      display: flex;
+    }
+    .done-card {
+      background: var(--surface);
+      border-radius: 12px;
+      padding: 2rem 3rem;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      max-width: 500px;
+    }
+    .done-card h2 {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .done-card p {
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
+    }
+    .done-card .btn-row {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+    }
+    .done-card button {
+      padding: 0.5rem 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 0.875rem;
+    }
+    .done-card button:hover {
+      background: var(--bg);
+    }
+    /* ---- Toast ---- */
+    .toast {
+      position: fixed;
+      bottom: 5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--header-bg);
+      color: var(--header-text);
+      padding: 0.625rem 1.25rem;
+      border-radius: var(--radius);
+      font-size: 0.875rem;
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+      z-index: 200;
+    }
+    .toast.visible {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <div id="app" style="height:100vh; display:flex; flex-direction:column;">
+    <div class="header">
+      <div>
+        <h1>Eval Review: <span id="skill-name"></span></h1>
+        <div class="instructions">Review each output and leave feedback below. Navigate with arrow keys or buttons. When done, copy feedback and paste into Claude Code.</div>
+      </div>
+      <div class="progress" id="progress"></div>
+    </div>
+
+    <!-- View tabs (only shown when benchmark data exists) -->
+    <div class="view-tabs" id="view-tabs" style="display:none;">
+      <button class="view-tab active" onclick="switchView('outputs')">Outputs</button>
+      <button class="view-tab" onclick="switchView('benchmark')">Benchmark</button>
+    </div>
+
+    <!-- Outputs panel (qualitative review) -->
+    <div class="view-panel active" id="panel-outputs">
+    <div class="main">
+      <!-- Prompt -->
+      <div class="section">
+        <div class="section-header">Prompt <span class="config-badge" id="config-badge" style="display:none;"></span></div>
+        <div class="section-body">
+          <div class="prompt-text" id="prompt-text"></div>
+        </div>
+      </div>
+
+      <!-- Outputs -->
+      <div class="section">
+        <div class="section-header">Output</div>
+        <div class="section-body" id="outputs-body">
+          <div class="empty-state">No output files found</div>
+        </div>
+      </div>
+
+      <!-- Previous Output (collapsible) -->
+      <div class="section" id="prev-outputs-section" style="display:none;">
+        <div class="section-header">
+          <div class="grades-toggle" onclick="togglePrevOutputs()">
+            <span class="arrow" id="prev-outputs-arrow">&#9654;</span>
+            Previous Output
+          </div>
+        </div>
+        <div class="grades-content" id="prev-outputs-content"></div>
+      </div>
+
+      <!-- Grades (collapsible) -->
+      <div class="section" id="grades-section" style="display:none;">
+        <div class="section-header">
+          <div class="grades-toggle" onclick="toggleGrades()">
+            <span class="arrow" id="grades-arrow">&#9654;</span>
+            Formal Grades
+          </div>
+        </div>
+        <div class="grades-content" id="grades-content"></div>
+      </div>
+
+      <!-- Feedback -->
+      <div class="section">
+        <div class="section-header">Your Feedback</div>
+        <div class="section-body">
+          <textarea
+            class="feedback-textarea"
+            id="feedback"
+            placeholder="What do you think of this output? Any issues, suggestions, or things that look great?"
+          ></textarea>
+          <div class="feedback-status" id="feedback-status"></div>
+          <div class="prev-feedback" id="prev-feedback" style="display:none;">
+            <div class="prev-feedback-label">Previous feedback</div>
+            <div id="prev-feedback-text"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav" id="outputs-nav">
+      <button class="nav-btn" id="prev-btn" onclick="navigate(-1)">&#8592; Previous</button>
+      <button class="done-btn" id="done-btn" onclick="showDoneDialog()">Submit All Reviews</button>
+      <button class="nav-btn" id="next-btn" onclick="navigate(1)">Next &#8594;</button>
+    </div>
+    </div><!-- end panel-outputs -->
+
+    <!-- Benchmark panel (quantitative stats) -->
+    <div class="view-panel" id="panel-benchmark">
+      <div class="benchmark-view" id="benchmark-content">
+        <div class="benchmark-empty">No benchmark data available. Run a benchmark to see quantitative results here.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Done overlay -->
+  <div class="done-overlay" id="done-overlay">
+    <div class="done-card">
+      <h2>Review Complete</h2>
+      <p>Your feedback has been saved. Go back to your Claude Code session and tell Claude you're done reviewing.</p>
+      <div class="btn-row">
+        <button onclick="closeDoneDialog()">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ---- Embedded data (injected by generate_review.py) ----
+    const EMBEDDED_DATA = {"skill_name": "plant-empowerment", "runs": [{"id": "eval-1-pe-botrytis-night-with_skill-run-1", "prompt": "We grow tomatoes in a glass greenhouse in the Netherlands. It's March and we're getting Botrytis in the plant heads and water droplets on the lower fruits in the morning. At night we run a 45 C minimum pipe temperature and keep our energy screen 95% closed with a 5% gap to get rid of humidity. Night RH is around 90%. What should we change?", "eval_id": 1, "outputs": [{"name": "response.md", "type": "text", "content": "# Botrytis in the heads and wet lower fruits: what to change\n\n## Short answer\n\nYour night strategy is the classic \"active climate\": a high minimum pipe temperature plus a screen gap to dump humidity. It is probably *causing* the free water that Botrytis needs, not preventing it. Night RH of 90% is not the real problem. Botrytis needs **free water**, and free water only forms where a plant part is **colder than the dew point** of the air around it. Your two symptoms point to two cold spots:\n\n1. **Plant heads lose heat by radiation (heat emission) and get hit by cold air dropping through the 5% gap.** The heads are the part of the crop that \"sees\" the cold glass and the night sky. Under a gap they also get cold air falling from above the screen. They cool below dew point, so they get wet and weak, and Botrytis follows.\n2. **Lower fruits lag behind at sunrise.** Heavy fruits warm up slowly. In the morning the upper crop warms and starts to evaporate, which raises the absolute humidity (AH). The air's dew point then rises above the temperature of the cold fruits, so water condenses on them. Opening the screen in the morning drops cold air and makes this worse.\n\nThe Plant Empowerment (GPE) approach turns your setup around:\n- **Close the screen fully.**\n- **Remove moisture by ventilating above the screen**, not through a gap.\n- **Heat only when there is heat demand.**\n- **Make air movement with fans, not with pipe heat.**\n- **Manage the evening and the sunrise transitions slowly.**\n\n## Why the current settings work against you\n\n**45 \u00b0C minimum pipe.** It does create air movement. But it also forces extra evaporation from the crop all night, so you produce *more* moisture. Then you need the screen gap to get rid of that moisture. Heating that is not needed for temperature mainly feeds the humidity problem you are fighting.\n\n**The 5% screen gap.**\n- A gap sets up a circulation: cold air drops down near the walls and through the gap, and warm air rises out. Over a long bay this can give temperature differences of up to about 8 \u00b0C (the book's figure). Your aspirator box usually does not see the cold spots.\n- Even small gaps, under about 10 cm, still cause this circulation.\n- Wider gaps no longer save energy.\n- Crop under or near the gap loses the screen's protection against heat emission and \"sees\" the cold roof.\n- Clear March nights in the Netherlands are a high-risk time for heat emission. Under a clear sky the roof can lose around 150 W/m\u00b2. The book's rule of thumb is that a crop loses about **5 W/m\u00b2 per \u00b0C** it is warmer than what it \"sees\" overhead.\n\n**Moisture leaves by only two routes:** condensation on a cold surface (the roof) and ventilation driven by the AH difference between inside and outside. A **fully closed** screen makes the roof colder. More moisture then condenses on the glass above the screen, and AH above the screen drops toward outdoor levels. Moisture then moves from the crop side through the screen fabric, driven by the AH difference across it. You do not need a gap to get humidity out. You need a moisture-permeable screen, an AH difference across it, and some vent opening **above** the screen if the roof cannot take it all.\n\n## What to change (in this order, step by step)\n\n### 1. Cut unnecessary evaporation first\n- **Replace the fixed minimum pipe temperature** with heating driven by real heat demand, or by crop temperature getting close to dew point. Lower it in steps over a series of nights rather than all at once, and watch the effects described in the \"What to measure\" section below.\n- **Use vertical fans for air movement** in place of pipe heat, if you have them or can install them. Vertical fans push warm air down into the heads, even out the vertical temperature profile and carry moisture up toward the screen and roof. Horizontal fans do much less for this problem.\n- **Don't leave the crop or floor wet at the end of the day.** Avoid late irrigation and check your last irrigation timing and night drain.\n\n### 2. Close the screen fully, without a moisture gap\n- **Go from 95% to fully closed.** In GPE this is the main protection of the plant head against heat emission.\n- **Remove humidity by opening the vents a little *above* the closed screen.** Use small openings on **both leeside and windside**, not one side wide open. Control the vents on the AH difference, not on RH alone.\n- **If you have two screens:** keep both closed and ventilate above them. If you still must create a gap, gap the lower screen first. Don't open a gap in the single layer directly above the heads. On very cold nights the book prefers an airtight lower screen with any gap in the upper one, so that moisture does not condense on the colder upper screen.\n- **Check your seals** at the gutters, trusses and side walls. Cold air leaking in at the edges creates the same cold drop as a gap. Vertical screens (apex seals) above the screen help on long bays.\n\nThis departs from common Dutch practice. Many growers still believe the gap is what \"makes room\" for humidity. GPE argues that the gap's cold air drop and the heat emission it allows do more harm than good. The exception is when it is only a few degrees colder outside. Then a screen closed with a gap is still better than an open one.\n\n### 3. Fix the evening transition\n- **Close the energy screen about 1 hour earlier** than your outdoor-temperature rule says, and earlier still after a clear, sunny day.\n- **Close it fully while the greenhouse is still about 1 \u00b0C above the night set point.** Then let the temperature come down slowly.\n- **Avoid a fast temperature drop at dusk.** Cooling at constant AH sends RH straight up and brings the dew point close to crop temperature. Keep inside AH a few g/m\u00b3 above outdoor AH so that ventilation can still remove moisture. If RH climbs too far, raising the temperature slightly gives more exhaust capacity than opening a gap.\n- **Avoid the late-afternoon combination of warm, active roots and a sudden drop in evaporation.** This drives root pressure and guttation. Guttation means more free water and weaker cells, both of which feed Botrytis.\n\n### 4. Fix the sunrise transition (lower fruits)\n- **Raise the greenhouse temperature gradually, well before sunrise**, so heavy fruits warm up together with the air. A quick boost at sunrise does not help the fruits.\n- **Keep the screen closed longer in the morning.** Open it only when the air above the screen has been warmed by the sun. A net radiation sensor under the screen can help you time this. Then open in small steps.\n- **Start morning irrigation in step with rising radiation**, not before it. Cold, wet slabs at sunrise slow uptake.\n\n### 5. Check the crop balance (March)\nIn March light is rising quickly. A plant load that is too high, or a 24-hour temperature that does not match the light sum (RTR), gives weak, assimilate-short cells that Botrytis attacks easily. Plot 24-hour mean temperature against the daily light sum and keep each day near your target line. Check plant load against your plan for the expected light.\n\n## What to measure while you make the changes\n\n- **AH at three points:** below the screen, above the screen and outdoors. A flat AH trend below the screen means the moisture balance is in equilibrium, whatever the RH figure. The AH difference across the screen shows whether moisture can pass through it. If AH above the screen is already close to outdoor AH, opening the vents more above the screen won't help much.\n- **An aspirator box above the screen.** If you don't have one, this is the most useful addition for this problem.\n- **An IR leaf/head temperature sensor** compared with the dew point. This tells you directly whether the heads are condensing. Leaf temperature should stay above dew point. VPD (leaf to air) below about 0.2 kPa means almost no evaporation and a condensation risk.\n- **Fruit temperature at sunrise** compared with the dew point, measured on a few lower trusses with a probe or a thermal camera.\n- **A pyrgeometer, or at least a log of clear vs cloudy nights.** Botrytis outbreaks often follow clear, starry nights.\n- **Multiple or wireless sensors**, especially near walls, gables and spots that used to sit under the gap, to find cold spots your main box misses.\n\nWhat success looks like: Botrytis pressure falls, there are no droplets on the fruits in the morning, the heads stay warmer than dew point, and gas use goes down. The RH reading at night may stay around 90%, or even rise a little, under a fully closed screen. That is fine as long as the crop stays above dew point and the air keeps moving.\n\n## Caveats\n\n- **Make the changes stepwise.** Start with the screen closing time and the minimum pipe temperature, check your own data for a few nights, then take the next step. Every change also affects the other balances.\n- **Screens and greenhouses differ.** This advice assumes a moisture-permeable energy screen. A very airtight screen or a blackout screen needs more ventilation above it, or a screen with more permeability.\n- **For Botrytis control products, hygiene (removing infected tissue, clean stem wounds) and residue rules, follow your crop protection adviser.** Climate correction removes the cause but doesn't cure plants that are already infected.\n- The figures above (\u22488 \u00b0C gap effect, 5 W/m\u00b2\u00b7\u00b0C, \u2248150 W/m\u00b2 clear-sky loss, close 1 h earlier / 1 \u00b0C above set point) are rules of thumb from *Plant Empowerment: The Basic Principles*. Treat them as starting points, not guarantees.\n"}], "grading": {"expectations": [{"text": "Identifies heat emission / plant heads or fruits cooling below dew point as the cause of free water, not just high RH", "passed": true, "evidence": "Explains heat emission to the cold roof/sky and cold air drop cooling heads and lagging fruits below dew point; says RH 90% is not the real problem"}, {"text": "Recommends closing the screen fully (no moisture gap) or a double screen, explaining that gaps drop cold air and create cold spots", "passed": true, "evidence": "Step 2: go from 95% to fully closed; explains gap circulation up to ~8 C and cold spots"}, {"text": "Recommends removing moisture by condensation on the roof and/or ventilating above the closed screen instead of gapping", "passed": true, "evidence": "Moisture leaves by condensation on the roof and by opening vents a little above the closed screen"}, {"text": "Recommends replacing or lowering the minimum pipe temperature and using fans (preferably vertical) for air movement", "passed": true, "evidence": "Replace fixed minimum pipe with demand-driven heating; use vertical fans instead of pipe heat"}, {"text": "Addresses morning condensation on fruits: raise temperature gradually before sunrise and/or keep the screen closed until the air above it has warmed", "passed": true, "evidence": "Raise temperature gradually well before sunrise; keep screen closed until air above it has warmed"}, {"text": "Recommends monitoring absolute humidity / dew point versus crop temperature (e.g. aspirator box above the screen, leaf or fruit temperature)", "passed": true, "evidence": "AH at three points, aspirator box above the screen, IR head temperature vs dew point, fruit temperature at sunrise"}], "summary": {"passed": 6, "failed": 0, "total": 6, "pass_rate": 1.0}}}, {"id": "eval-1-pe-botrytis-night-without_skill-run-1", "prompt": "We grow tomatoes in a glass greenhouse in the Netherlands. It's March and we're getting Botrytis in the plant heads and water droplets on the lower fruits in the morning. At night we run a 45 C minimum pipe temperature and keep our energy screen 95% closed with a 5% gap to get rid of humidity. Night RH is around 90%. What should we change?", "eval_id": 1, "outputs": [{"name": "response.md", "type": "text", "content": "# Botrytis in the heads and wet lower fruits: what to change\n\nYour symptoms point to **cold, wet surfaces**: the plant heads at night and the lower fruits in the morning. The high pipe temperature and the screen gap are both well meant. In this setup, though, they probably cause the problem instead of fixing it.\n\n## What is probably happening\n\n1. **Cold air dropping through the 5% gap onto the heads.** With the screen 95% closed, the air above it is cold (often 5\u201310 \u00b0C colder than the crop). A gap that size lets a steady stream of cold, heavy air fall straight onto the heads under the gap. The heads cool below the dew point of the warm, humid air around them. Moisture condenses on them, and Botrytis follows. In the heads you typically see it in lines or patches that match where the gap is.\n2. **A 45 \u00b0C minimum pipe with a nearly closed screen sets up a strong convection loop.** Warm air rises fast from the pipes at the bottom, picks up moisture, meets the cold gap or screen, cools, and comes back down. You burn a lot of energy, but the heads (top) and the lower fruits (bottom) are the coldest parts of the crop, while the air in between is warm. Air RH of about 90% looks fine on paper, but the surfaces at the top and bottom are at or below the dew point.\n3. **Morning condensation on the fruit.** Fruits have a lot of thermal mass. When the air warms (setpoint rise, screen opening, sunrise) faster than the fruit can follow, the fruit surface stays below the dew point of the air and gets wet. Lower fruits in the shade of the canopy warm up last.\n4. **90% RH at night is simply too high in March.** That is a humidity deficit of only about 1.5\u20132 g/m\u00b3, or a VPD around 0.2 kPa. The crop barely transpires, the heads get soft, and any cold spot tips into condensation.\n\n## What to change\n\n### Night screen and gap\n- **Do not run a fixed 5% gap all night.** Close the screen fully, or nearly so, and open the gap **in small steps (for example 1\u20132%, maximum about 3%)**, controlled on humidity deficit, not on a fixed setting.\n- Open the gap **slowly** (ramp over 15\u201330 minutes) and keep the heating responding, so you don't create a cold-air waterfall.\n- If you have a stacked or double screen, or gap control per section, use it so the gap opens above the paths and not directly above the heads.\n- Better still: **remove moisture with windows above the closed screen** (the screen is permeable) or with **forced ventilation / an air treatment unit** (outside air blown in through hoses under the crop) if you have one. That takes out moisture without dropping cold air on the heads.\n\n### Heating\n- **Lower the minimum pipe from 45 \u00b0C to around 35\u201340 \u00b0C**, and use the pipe actively when you need moisture removal (for example together with a gap opening), instead of a high fixed minimum all night.\n- If you have a **growing pipe (heating pipe in the head area)**, use it at night (for example 35\u201345 \u00b0C). This is the most direct way to keep the heads a few tenths of a degree above air temperature, which keeps them dry and transpiring. A warm head is a dry head.\n- Aim for a **small vertical temperature difference** (\u003c 1\u20131.5 \u00b0C between top and bottom of the crop). Measure it with a second sensor box at head height, or with an IR or leaf-temperature sensor.\n\n### Humidity target\n- Steer on **humidity deficit / VPD**, not RH. At night aim for at least **2.5\u20133 g/m\u00b3 HD (about 0.3\u20130.4 kPa VPD, roughly 83\u201387% RH)**. Above about 92% RH, take action.\n- Use the extra air movement from a slightly open screen or vents to keep air moving. Vertical fans (if installed) help a lot in breaking stratification at a low energy cost.\n\n### Morning transition (against wet fruit)\n- **Pre-heat slowly**: start the temperature rise 1.5\u20132 hours before sunrise, at **no more than about 1 \u00b0C per hour**, so fruit temperature can follow air temperature.\n- Raise the pipe a little **before** you raise the air setpoint, so the crop warms by radiation from below and from the growing pipe.\n- **Open the screen in steps** in the morning (for example 2\u20135% steps with pauses), and don't open it all at once at sunrise. A sudden opening brings in cold air and makes the dew point jump around the cold fruit.\n- Keep an eye on fruit temperature compared with the air dew point. The fruit surface should stay at least about 1 \u00b0C above the dew point.\n\n### Water and plant management\n- **Avoid high root pressure at night**: stop irrigating earlier in the afternoon (1\u20133 h before sunset, depending on weather) and don't start too early in the morning. Excess water in the plant at night gives guttation drops and soft heads, which Botrytis loves.\n- Watch the EC. A slightly higher drip/slab EC in this period gives firmer, less susceptible tissue.\n\n### Hygiene (fight what is already there)\n- Remove infected heads, stems and leaves daily, bag them and take them out of the greenhouse. Spores spread fast in humid air.\n- **Deleaf and harvest in the morning to midday**, with clean, flat cuts close to the stem, so wounds dry out before night. Avoid making wounds late in the day.\n- Treat stem lesions early with a registered paste or product, and consider preventive biologicals (for example *Bacillus* or *Trichoderma*-based products) in line with your crop advisor and local registrations.\n\n## In short\n\n| Now | Change to |\n|---|---|\n| Screen 95% closed + fixed 5% gap all night | Screen (almost) closed, gap 1\u20133% opened in small steps on humidity deficit; remove moisture through vents above the screen or forced ventilation |\n| Fixed 45 \u00b0C minimum pipe | Minimum pipe about 35\u201340 \u00b0C, used actively; growing pipe on to keep heads warm |\n| Night RH about 90% | HD at least 2.5\u20133 g/m\u00b3 (about 83\u201387% RH) |\n| Fast morning warm-up / screen opening | Pre-dawn rise of about 1 \u00b0C/h, screen opened in steps |\n| Late irrigation | Stop earlier in the afternoon to limit root pressure |\n\nThe core idea: **don't just make the air warm and the RH acceptable. Keep the plant surfaces (heads and fruits) warmer than the dew point, with as little cold air falling on the crop as possible.** Measure the temperature at head height and at the lower trusses for a week after the changes, and fine-tune from there.\n"}], "grading": {"expectations": [{"text": "Identifies heat emission / plant heads or fruits cooling below dew point as the cause of free water, not just high RH", "passed": true, "evidence": "Cold surfaces (heads, fruits) below dew point via cold air drop and convection loop; frames RH 90% itself as too high too"}, {"text": "Recommends closing the screen fully (no moisture gap) or a double screen, explaining that gaps drop cold air and create cold spots", "passed": false, "evidence": "Still recommends a 1-3% gap controlled on HD rather than a fully closed screen"}, {"text": "Recommends removing moisture by condensation on the roof and/or ventilating above the closed screen instead of gapping", "passed": true, "evidence": "'Better still: remove moisture with windows above the closed screen' or forced ventilation"}, {"text": "Recommends replacing or lowering the minimum pipe temperature and using fans (preferably vertical) for air movement", "passed": true, "evidence": "Lower minimum pipe to 35-40 C; mentions vertical fans"}, {"text": "Addresses morning condensation on fruits: raise temperature gradually before sunrise and/or keep the screen closed until the air above it has warmed", "passed": true, "evidence": "Pre-heat 1.5-2 h before sunrise at about 1 C/h; open screen in steps"}, {"text": "Recommends monitoring absolute humidity / dew point versus crop temperature (e.g. aspirator box above the screen, leaf or fruit temperature)", "passed": true, "evidence": "Measure temperature at head height and lower trusses; fruit surface vs dew point"}], "summary": {"passed": 5, "failed": 1, "total": 6, "pass_rate": 0.833}}}, {"id": "eval-2-pe-sunny-wilting-with_skill-run-1", "prompt": "Our cucumbers wilt around noon on sunny summer days. We open the roof vents wide once the greenhouse reaches 24 C and we dose CO2. Leaves feel warm to the touch and RH drops to about 50%. Should we put on whitewash or close the shade screen?", "eval_id": 2, "outputs": [{"name": "response.md", "type": "text", "content": "# Midday wilting in cucumber: fix the water balance before you take light away\n\n**Short answer:** I wouldn't start with whitewash or the shade screen. What you describe is a plant water-balance problem, and your ventilation strategy is making it worse. Shading treats the symptom, costs you light and photosynthesis, and often starts a negative spiral. Change how you ventilate and how you water first. Use shade only as a last resort, if the crop still wilts after those changes.\n\nThis follows the *Growing by Plant Empowerment* (GPE) approach. It differs from common practice, so the reasoning is set out below.\n\n---\n\n## What your symptoms are telling you\n\n| Observation | What it means physically |\n|---|---|\n| Wilting around solar noon on sunny days | Radiation, and so evaporation demand, peaks. Water uptake and transport can't keep up. |\n| **Leaves feel warm**, likely warmer than the air | Stomata are partly closing. A well-watered leaf with open stomata stays *colder* than the air. A leaf that stays above air temperature is short of water. |\n| RH drops to ~50% | Large ventilation openings are replacing greenhouse air with drier outside air. |\n| Vents go wide open at 24 \u00b0C, with CO2 dosing | You're ventilating on temperature alone, which also blows out the CO2 you're paying for. |\n\n### The negative spiral\n\nUnder strong sun, a plant evaporates roughly in proportion to the radiation it absorbs, whatever the air humidity. Low RH doesn't help it cool. It only dries the leaf boundary layer, and once water supply can't keep up, the stomata start to close. Then:\n\n1. Stomata pinch, and the leaf heats above air temperature (the warm leaves you feel).\n2. Less evaporation makes the greenhouse warmer, so the vents open further.\n3. Wider vents make RH fall further and push CO2 out, so you lose the dosed CO2.\n4. Lower RH and lower enthalpy mean you need still more ventilation, and stomatal closure deepens.\n5. The result is midday wilting, lost photosynthesis, and an ABA-driven stomatal closure that takes **hours** to recover. The afternoon is affected too, not only noon.\n\nAs an illustration: with air at ~28 \u00b0C and 50% RH and the leaf a degree warmer than the air, leaf-to-air VPD is roughly 2 kPa. GPE treats about **1.5 kPa** as the point where the stomata are closing and real water stress has begun. A healthy range under high light is roughly 0.3\u20131.5 kPa. Cucumber can evaporate a lot at low VPD as long as the stomata stay open.\n\n### Why shading is the wrong first step\n\n- Whitewash and shade screens reduce water stress by cutting light. They do little for greenhouse temperature, and they reduce photosynthesis and root growth.\n- Weaker roots mean the plant hits its water limit at an even *lower* light level next time, which calls for more shading. That is the shading spiral.\n- Whitewash is hard to take off on cloudy days, so you lose light in the dull spells too.\n\n---\n\n## What to do instead, in small steps\n\n### 1. Ventilate less, and ventilate differently (the biggest lever)\n- **Raise the ventilation temperature and open more gradually.** Wide-open vents at 24 \u00b0C is very early for a dosed cucumber crop under strong sun. Let the greenhouse run warmer. The book's example compares 28 \u00b0C/75% RH with 25 \u00b0C/75% RH: at the warmer, humid setting the crop lost about 10% less water, stomata stayed more open and photosynthesis was faster. Raise the set point a step at a time, for example 1 \u00b0C every few days, and watch the crop's response.\n- **Steer the vents on humidity, enthalpy and CO2 as well as temperature.** Single-factor temperature control is what drives the spiral. A practical way in is to switch to humidity-based vent control in the **late afternoon** first, when the risk of overheating is lowest, then move the start earlier day by day.\n- **Use windside and leeside vents together at small openings** rather than the leeside wide open. This gives a gentler, more even air exchange, with less dry air falling straight onto the heads. The old idea that windside ventilation harms the crop is largely outdated.\n- **Aim to keep RH higher as PAR rises**, mainly by restricting ventilation. Higher humidity under high light lets the stomata stay open with a slightly cooler leaf, which is better for CO2 uptake.\n\n### 2. Make the CO2 work for you\n- With less ventilation the same CO2 dose keeps a higher concentration, so you get temperature, CO2 and humidity working for photosynthesis together. Higher CO2 also raises the optimum temperature, which is another reason to accept a warmer midday.\n- Dose into the **upper, light-intercepting layer**, and check CO2 at crop height around noon. If it collapses when the vents open, you're paying for CO2 that goes straight out.\n\n### 3. Make sure water supply runs ahead of demand\n- **Start irrigating early and anticipate the sun.** From sunrise, raise slab water content ahead of evaporation with frequent short drip cycles. On sunny days a somewhat lower EC eases uptake. Even a short stress costs hours of photosynthesis.\n- **Irrigate on accumulated radiation** (pyranometer or PAR sum), not on fixed times.\n- **Check the roots and root temperature.** Cold slabs in the morning or few active white root tips limit uptake. Remember that slab weight and drain only show *supply*. The plant can still be stressed if root capacity or stem transport is the bottleneck.\n- **Keep fruit load and harvests regular.** Cucumber fruits are part of the plant's water buffer, and a heavy one-off harvest removes it.\n\n### 4. Get air moving around the leaves\n- Stomatal regulation only works with air movement. **Vertical fans** are effective under more-closed vents: they cool the heads and bring the vertical temperature and CO2 profile into line. Horizontal fans do much less.\n\n### 5. If you have misting or fogging, use it\n- Misting covers the gap between energy input and the roots' maximum uptake, and it lets you ventilate less. Control it on radiation, PAR and leaf temperature, not on RH alone. RH-only control tends to over-mist at the wrong moments.\n\n### 6. Shade only as a last resort, and the gentlest kind\nIf the crop still wilts after the steps above:\n- Prefer a **movable screen** used only briefly around peak radiation, so you keep the light the rest of the day. Prefer a **diffuse** screen or coating if possible: diffuse light reaches deeper into the canopy and causes less water stress in the head.\n- Avoid heavy whitewash for the whole summer. It takes light on every day, including the ones where the crop could have used it.\n\n---\n\n## What to measure so you can see if it's working\n\n- **Infrared leaf temperature vs air temperature.** This is the key signal. Leaves colder than air means the stomata are open and you're on track. Leaves staying above air means water stress.\n- **VPD calculated from leaf temperature.** Aim to keep it below about 1.5 kPa through midday.\n- **CO2 at crop height through the day.** It should hold up much better at noon with less ventilation.\n- **Absolute humidity (AH) trend and inside vs outside AH**, rather than RH alone. This shows whether you can still remove moisture when needed.\n- **Irrigation vs radiation sum, slab water content, drain and root temperature**, especially in the morning.\n- **Plant response:** less midday wilting, faster afternoon recovery, and head/tip vigour.\n\n## Things to keep an eye on\n\n- **Temperature balance (RTR):** a warmer day raises the 24-hour average. That's fine on bright days, because the plant makes more assimilates to burn. Keep the 24-hour average in line with the daily light sum, and lower the night temperature a little if needed. Too warm without enough light makes the plant weak and generative.\n- **Evening humidity:** when you ventilate less by day, cool down slowly in the evening so inside AH stays a few g/m\u00b3 above outside. This avoids condensation and guttation risk (for example Mycosphaerella) late in the day.\n- **Plant load:** a lower, steady fruit load makes high-light days easier for the crop to handle.\n\nThese are rules of thumb from GPE. Greenhouses, cultivars and climates differ, so make one change at a time, check it against your own leaf temperature, CO2 and humidity data, and adjust from there.\n"}], "grading": {"expectations": [{"text": "Warns that shading/whitewash cuts photosynthesis and can start a negative spiral, and advises trying humidity and water-supply measures first", "passed": true, "evidence": "Section 'Why shading is the wrong first step' describes the shading spiral; fix ventilation and watering first"}, {"text": "Recommends ventilating less / allowing a higher temperature (e.g. 26-28 C) to keep humidity and CO2 inside on sunny days", "passed": true, "evidence": "Raise vent temperature, cites 28 vs 25 C / 75% RH example, ventilate less"}, {"text": "Explains that evaporation is driven by absorbed energy (radiation) rather than by low RH, and that warm leaves indicate closing stomata / water stress", "passed": true, "evidence": "'a plant evaporates roughly in proportion to the radiation it absorbs, whatever the air humidity'; warm leaves = stomata closing"}, {"text": "Recommends measuring leaf temperature and/or VPD, with roughly 0.3-1.5 kPa as healthy and above ~1.5 kPa as stress", "passed": true, "evidence": "IR leaf temperature vs air; VPD from leaf temp, healthy 0.3-1.5 kPa, stress from ~1.5 kPa"}, {"text": "Addresses water supply or root uptake (e.g. irrigation based on radiation, ramping up in the morning, root health)", "passed": true, "evidence": "Irrigate on accumulated radiation, ramp from sunrise, check roots/root temperature, fruit buffer"}, {"text": "Mentions misting or another way to raise RH under high radiation, and/or the CO2 lost through wide-open vents", "passed": true, "evidence": "Misting controlled on radiation/PAR/leaf temp; CO2 blown out by wide vents"}], "summary": {"passed": 6, "failed": 0, "total": 6, "pass_rate": 1.0}}}, {"id": "eval-2-pe-sunny-wilting-without_skill-run-1", "prompt": "Our cucumbers wilt around noon on sunny summer days. We open the roof vents wide once the greenhouse reaches 24 C and we dose CO2. Leaves feel warm to the touch and RH drops to about 50%. Should we put on whitewash or close the shade screen?", "eval_id": 2, "outputs": [{"name": "response.md", "type": "text", "content": "# Noon wilting in cucumbers on sunny days\n\n**Short answer:** Don't use whitewash yet. A movable shade screen is a reasonable short-term tool for the hottest hours. But your symptoms point to a water-balance problem: the plant loses water faster than the roots can supply it. Shading only hides that by cutting light, and light is what drives your yield. Fix the climate strategy and the root-zone supply first. Use the screen only when the sun is at its strongest.\n\n## What is happening\n\n- **Wilting at midday** means transpiration demand is greater than water uptake and transport. The plant protects itself by closing its stomata.\n- **Leaves that feel warm** confirm this. A leaf that is transpiring freely is usually 1 to 3 \u00b0C *cooler* than the air. A leaf at or above air temperature has partly closed its stomata and has lost its evaporative cooling.\n- **RH around 50%** at roughly 26 to 28 \u00b0C gives a vapour pressure deficit (VPD) of about 1.7 to 1.9 kPa. Cucumbers do best at about 0.8 to 1.2 kPa. The air is pulling water out of the leaves too fast.\n- **Opening the vents wide at 24 \u00b0C** causes most of this. Sunny summer air outside is dry, so venting hard exhausts your humidity, raises VPD sharply, and throws away the CO2 you are paying for. High CO2 also narrows the stomata a little. If you dose CO2 while venting hard, you get very little CO2 benefit and lower humidity.\n\n## What to do, in order of priority\n\n### 1. Change how you ventilate\n- Raise the venting setpoint. With CO2 enrichment, cucumbers handle 26 to 28 \u00b0C during the day in high light. A 24 \u00b0C vent temperature is a low-light or no-CO2 setting.\n- Open the vents **gradually and in proportion to need** instead of wide open at once. Limit the opening rate per minute, and favour the leeward side.\n- Add a **humidity-based limit** on vent opening, or use a VPD target of about 1.0 to 1.2 kPa, so the vents don't dry out the house.\n- Once the vents are well open, lower the CO2 setpoint, for example to about 400 to 500 ppm. Keep high dosing for periods when the vents are nearly closed.\n\n### 2. Add humidity at midday\n- If you have high-pressure fogging or misting, use it to hold RH at about 70 to 80% (VPD below about 1.2 kPa) from late morning to mid-afternoon. Fog also cools the air by evaporation, so you can keep the vents more closed.\n- Without fog, wetting the paths or floor helps a little. Overhead sprinkling helps a bit more, but watch for disease.\n\n### 3. Make sure the roots can keep up\n- **Irrigation timing:** start watering early enough that the substrate is fully rewetted before light builds. Then irrigate according to accumulated radiation, with frequent small doses that keep pace with the sun. Aim for some drain by late morning, about 20 to 30% over the day on sunny days.\n- **EC:** if the slab or substrate EC is high, for example above 3.5 to 4 mS/cm in the root zone, lower the dripper EC in summer. A high EC makes it harder for the roots to take up water.\n- **Root temperature and health:** check that the root zone isn't too cold early in the day or overheating in the afternoon. Pull a plant or two and look at the roots. Brown, sparse roots, or Pythium, will cause midday wilt no matter how good your climate is.\n- **Plant load:** a heavy fruit load and a big leaf area raise demand. Keep the leaf area balanced, but don't strip too many leaves at once.\n\n### 4. Use shade only when the sun is strongest\n- A **movable screen** is much better than whitewash. Close it partway, about 30 to 50%, only above a high radiation threshold, for example about 700 to 800 W/m\u00b2 outside, or when leaf temperature rises clearly above air temperature. Open it again as soon as conditions ease.\n- **Whitewash** cuts light all day, every day, including mornings, afternoons and cloudy days when the crop needs every bit of light. That costs you production for weeks. Use it only if the problem stays after the steps above *and* you have no screen. Use a light coat or a removable product, and remove it as autumn approaches.\n\n## How to check that it's working\n\n- Measure leaf temperature with an infrared thermometer at about 11:00, 13:00 and 15:00. You want the leaves 1 to 3 \u00b0C below air temperature during sunny hours.\n- Log RH or VPD, vent position, CO2 and irrigation or drain data together, and compare a wilting day with a recovered day.\n- Watch the head of the plant. Heads should stay turgid, and tendrils should stay fresh and curled rather than limp.\n\n**Bottom line:** keep the light, and stop drying out the greenhouse. Vent less aggressively with a higher setpoint, add humidity at midday, match irrigation to radiation, and check root health. Then use the movable screen only to cut the strongest midday sun. Whitewash is a last resort.\n"}], "grading": {"expectations": [{"text": "Warns that shading/whitewash cuts photosynthesis and can start a negative spiral, and advises trying humidity and water-supply measures first", "passed": false, "evidence": "Says whitewash costs production and to fix water balance first, but does not describe shading starting a negative spiral"}, {"text": "Recommends ventilating less / allowing a higher temperature (e.g. 26-28 C) to keep humidity and CO2 inside on sunny days", "passed": true, "evidence": "Raise vent setpoint to 26-28 C, open gradually with humidity limit"}, {"text": "Explains that evaporation is driven by absorbed energy (radiation) rather than by low RH, and that warm leaves indicate closing stomata / water stress", "passed": false, "evidence": "Frames low RH/high VPD as 'pulling water out of the leaves too fast' rather than energy-driven evaporation"}, {"text": "Recommends measuring leaf temperature and/or VPD, with roughly 0.3-1.5 kPa as healthy and above ~1.5 kPa as stress", "passed": true, "evidence": "IR leaf temperature 1-3 C below air; VPD estimate"}, {"text": "Addresses water supply or root uptake (e.g. irrigation based on radiation, ramping up in the morning, root health)", "passed": true, "evidence": "Irrigation on accumulated radiation, EC, root temperature and health"}, {"text": "Mentions misting or another way to raise RH under high radiation, and/or the CO2 lost through wide-open vents", "passed": true, "evidence": "High-pressure fogging/misting; CO2 wasted with wide vents"}], "summary": {"passed": 4, "failed": 2, "total": 6, "pass_rate": 0.667}}}, {"id": "eval-3-pe-rtr-setpoints-with_skill-run-1", "prompt": "Can you explain RTR and how we'd actually use it to set day and night temperatures for our tomato crop? We have outdoor radiation data in J/cm2 from our weather station.", "eval_id": 3, "outputs": [{"name": "response.md", "type": "text", "content": "# RTR for your tomatoes: what it is and how to set day and night temperatures with it\n\n## 1. What RTR is\n\n**RTR = Ratio of Temperature to Radiation.** It links the **24-hour average temperature** to the **daily light sum** that the crop received that day.\n\nIn the Plant Empowerment (GPE) approach, RTR is how you keep the **assimilates balance** steady:\n\n- **Light makes sugars (production).** Photosynthesis depends mainly on light, with CO2 and humidity helping.\n- **Temperature spends sugars (consumption).** Growth, respiration and transport to the fruits all speed up when it is warmer.\n\nIf the two stay in proportion every day, the plant uses what it makes and grows evenly. If they drift apart, you see it in the crop:\n\n| Situation | What happens to the tomato |\n|---|---|\n| More light, same temperature | Sugars pile up. The plant gets too strong, thick and vegetative, and the extra sugar is wasted as starch or thick cell walls. |\n| Higher temperature, no extra light | The plant burns more than it makes. It gets weak and too generative, short of assimilates, with poor fruit set and thin heads. |\n| Both raised in the right ratio | Development speeds up and the plant keeps a balanced shape. |\n\nA steady RTR also gives a steady rate of fruit set, flowering and ripening. That makes it a **plant-load tool** as well as a temperature tool. It also helps the secondary balances: regular root growth, less root pressure, and less glassiness and Botrytis risk.\n\nThe main point is that **a crop can be balanced \"on average\" over a week but out of balance on most individual days.** RTR control is about getting each day right.\n\n## 2. Use your J/cm\u00b2 data to find your RTR line\n\nYour weather station's daily radiation sum in J/cm\u00b2 is exactly what the book uses on the X-axis, so you can start now.\n\n**Step 1: Make a scatterplot from your history.**\n- X-axis: daily outside radiation sum (J/cm\u00b2).\n- Y-axis: 24-hour average greenhouse temperature (\u00b0C), from your aspirator box between the plant heads.\n- One dot per day. Use at least one full season if you have it.\n\n**Step 2: Fit the trend line.** This line is the RTR you have *actually* been growing at.\n\n**Step 3: Mark the periods when the crop looked best.** Look for regular fruit set, a good head thickness, a steady harvest and good quality. The days in those periods show you where your target line should be. Draw a **target line with a band around it**, for example \u00b10.5\u20131 \u00b0C. Choose the band width yourself; the book does not give one.\n\n**Step 4: Keep each new day's dot inside the band.** Points far above the line mean the plant was burning more than it made. Points far below mean it was \"overfed\" with light.\n\n**About the numbers:** the source I'm using does not give a fixed RTR value for tomato, so I won't invent one. Cultivar, plant load, CO2 level, glass transmission and your climate all shift the line. **Your own best weeks are the right reference.**\n\n**A better X-axis later.** Outside J/cm\u00b2 works, but the book prefers **PAR in mol/m\u00b2 measured at crop level**, because that includes losses from the cover, whitewash and screens. If you want to estimate it from your current data, use this standard physics approximation (it is not from the book):\n\n- 1 J/cm\u00b2 = 0.01 MJ/m\u00b2.\n- About 45\u201350% of solar energy is PAR, at about 4.6 \u00b5mol per joule.\n- The book's rule of thumb is that about 70% of outside radiation enters the greenhouse.\n- So **inside PAR (mol/m\u00b2/day) \u2248 outside J/cm\u00b2 \u00d7 0.015.** For example, 1500 J/cm\u00b2 outside \u2248 22 mol/m\u00b2 outside \u2248 15 mol/m\u00b2 at the crop.\n\nCheck this factor against a PAR sensor at crop level if you can. It changes with whitewash, screens and dirty glass. If you start whitewashing or shading, your outside-J/cm\u00b2 line must come down, because the crop gets less light for the same outside reading.\n\n## 3. Turn the 24-hour target into day and night setpoints\n\nRTR sets the **24-hour average**. How you split that between day and night is your choice. The basic arithmetic is:\n\n> **24-h average = (T_day \u00d7 day hours + T_night \u00d7 night hours) \u00f7 24**\n\n### Worked example (illustrative numbers only)\n\nSuppose your best weeks put the target line at about **18.5 \u00b0C at 500 J/cm\u00b2** and **22 \u00b0C at 2500 J/cm\u00b2**. That is about +0.175 \u00b0C for every extra 100 J/cm\u00b2.\n\n- Forecast for tomorrow: **1500 J/cm\u00b2**, so the 24-hour target is about **20.3 \u00b0C**.\n- Day period 14 h, night period 10 h. You want the night at 18 \u00b0C.\n- Required day average = (20.3 \u00d7 24 \u2212 18 \u00d7 10) \u00f7 14 = **about 21.9 \u00b0C**.\n\nIf the day ends up sunnier than forecast and the greenhouse ran warmer, the higher light sum also raises the 24-hour target. Recalculate with the **actual** light sum late in the afternoon and adjust the night setpoint to land on the line.\n\n### How to run it day to day\n\n1. **Morning:** take the radiation forecast and calculate the 24-hour target from your line.\n2. **Daytime:** let temperature follow light. Link the **ventilation setpoint to current radiation**: higher radiation means a higher vent setpoint. GPE prefers to keep vents more closed on sunny days. This keeps CO2 and humidity high, and you need that warmth anyway to use the extra sugars.\n3. **Late afternoon:** compare the radiation sum and day temperature so far with the target, and set the night to close the gap.\n4. **After a sunny day:** **postpone the day-to-night drop and keep the night warmer** so the extra sugars are transported out of the leaves to the fruits. Close the energy screen **before sunset** to hold solar heat. That makes the warmer evening cheap.\n5. **After a dark day:** **keep the night cooler.** There are few sugars to spend, and a warm night would weaken the plant.\n6. **Heat on the 24-hour average according to the light sum**, rather than to fixed day and night setpoints or a minimum pipe temperature.\n\n## 4. Things that move your target line\n\n- **CO2 or humidity limiting.** On days with heavy ventilation, the crop can't use all the light, so **lower the temperature target.** A related GPE rule of thumb: keep CO2 in ppm at least equal to outside radiation in W/m\u00b2 (for example, 600 W/m\u00b2 \u2192 at least 600 ppm).\n- **Shading or whitewash:** less light reaches the crop, so the target comes down.\n- **Plant load:**\n  - Sink strength = plant load \u00d7 temperature. A high load at low temperature acts like a low load at high temperature.\n  - With a **lower plant load**, you can **raise the RTR line** (more degrees per unit of light). With a **higher load**, the line has to come down.\n  - Plan fruits per m\u00b2 against a **10-year weekly average light curve**, and record fruit set, harvest and load weekly against that plan.\n  - **Watch late season.** Light falls quickly but outdoor temperatures stay high, and the load often ends up above plan. That is a classic way to slide into a weak, unbalanced crop.\n- **Young crop:** before the plant carries fruit, it can run warmer at the same light. **Start strict RTR control once fruit set and harvest are regular.**\n\n## 5. What to watch so you know it's working\n\n- **The scatterplot itself.** Each day's dot should sit inside your band. Review it weekly.\n- **Crop registration:** head thickness, truss development speed, fruit set and harvest rate. A steady RTR should make these steadier week to week.\n- **Vertical temperature profile.** RTR uses the head-level aspirator box, but fruit temperature drives how strongly the fruits pull assimilates. Warm, well-lit fruits pull hard (more generative). Cold fruits in a closed crop push the plant vegetative. If you have a second box lower in the crop, use it.\n- **Side effects of warmer nights after sunny days.** Keep the screen closed against heat emission and keep air moving with fans. This avoids cold plant heads and condensation, and keeps the absolute-humidity (AH) trend flat.\n\n## 6. Where RTR fits in the bigger picture\n\nGPE uses three levels to manage the assimilates balance. Each acts on a different time scale:\n\n| Level | What you adjust | Reaction time | Impact |\n|---|---|---|---|\n| Cultivation plan | Plant load vs expected light | Weeks | Biggest |\n| **RTR management** | **Daily temperature vs light sum** | **Days** | Large |\n| Photosynthesis management | PAR, CO2 and RH aligned | Minutes | Fine-tuning |\n\nGet the plant-load plan right first. Then use RTR to keep each day in line. Then fine-tune photosynthesis with CO2 and humidity.\n\n## Practical advice\n\n- Start by plotting what you already have: last season's daily J/cm\u00b2 against 24-hour average temperature. That shows your current RTR and how scattered your days are. This step alone usually tells you a lot.\n- Change one thing at a time, for example \"warmer nights after sunny days\", and check the effect against your own crop data for a couple of weeks before adding the next step.\n- Many climate computers can plot this scatterplot. LetsGrow.com (affiliated with the book's authors) has an RTR module with a target band. A spreadsheet works just as well.\n- These are rules of thumb from the Plant Empowerment approach, not guarantees. Cultivar, greenhouse and climate differ, so tune the line to your own results.\n"}], "grading": {"expectations": [{"text": "Defines RTR as the ratio of 24-hour average temperature to the daily light (radiation/PAR) sum", "passed": true, "evidence": "RTR links 24-hour average temperature to daily light sum"}, {"text": "Describes plotting each day as a point (light sum vs average temperature) and following a target line", "passed": true, "evidence": "Scatterplot one dot per day, fit trend line, target line with band"}, {"text": "Explains the too-strong/vegetative (more light, same temperature) vs too-weak/generative (higher temperature, little light) logic", "passed": true, "evidence": "Table: more light same temp = too strong/vegetative; higher temp no light = weak/generative"}, {"text": "Gives the day-to-day practice: after a sunny day keep the night warmer or postpone the drop, after a dark day keep the night cooler", "passed": true, "evidence": "After a sunny day postpone drop and keep night warmer; after a dark day keep night cooler"}, {"text": "Links RTR to plant load planned against the expected (long-term average) light curve, noting a lower load allows a higher temperature per unit light", "passed": true, "evidence": "Plant load vs 10-year weekly light curve; lower load allows raising the RTR line"}, {"text": "Notes preconditions or corrections: CO2/RH not limiting, and PAR at crop level is better than outdoor radiation when whitewash/screens cut light", "passed": true, "evidence": "Lower target when CO2/RH limiting or with whitewash; PAR at crop level preferred"}], "summary": {"passed": 6, "failed": 0, "total": 6, "pass_rate": 1.0}}}, {"id": "eval-3-pe-rtr-setpoints-without_skill-run-1", "prompt": "Can you explain RTR and how we'd actually use it to set day and night temperatures for our tomato crop? We have outdoor radiation data in J/cm2 from our weather station.", "eval_id": 3, "outputs": [{"name": "response.md", "type": "text", "content": "# RTR: Using Light to Set Day and Night Temperatures for Tomato\n\n## What RTR is\n\n**RTR (Ratio Temperature to Radiation)** sets how warm the crop should be over 24 hours based on how much light it received that day. The idea comes from Dutch \"Next Generation Growing\" / Plant Empowerment practice.\n\nThe reasoning:\n\n- **Light drives assimilate production.** Photosynthesis makes sugars. More light means more sugars.\n- **Temperature drives assimilate use.** It controls how fast the plant spends those sugars on respiration, growth, leaf and truss development, and fruit fill.\n- **The two need to stay in balance.**\n  - On a dark day with high temperature, the plant burns more sugar than it makes. The heads get thin, the plant turns weak and vegetative, flowers abort, and fruit gets small.\n  - On a bright day with low temperature, sugars build up unused. The plant gets too generative or \"stuck\", development slows, and some potential production is lost.\n\nRTR is the slope of a straight line linking the **24-hour average temperature** to the **daily light sum**:\n\n```\nT24 target = T_base + RTR \u00d7 Light_sum\n```\n\n- **T_base**: the 24-hour temperature you would aim for at (nearly) zero light. This is about 16.5\u201318 \u00b0C for tomato.\n- **RTR**: degrees of extra 24-hour temperature per unit of light.\n- **Light_sum**: the day's radiation total. In your case this is outside global radiation in J/cm\u00b2.\n\n## Working with J/cm\u00b2 from your weather station\n\nYour station gives outside global radiation. Dutch growers commonly use exactly this unit, so you can work in it directly:\n\n- Add up the day's radiation to get the daily total in J/cm\u00b2. Typical totals:\n  - Dark winter day: about 200\u2013400 J/cm\u00b2.\n  - Spring day: about 1000\u20131500 J/cm\u00b2.\n  - Bright summer day: about 2500\u20133000 J/cm\u00b2.\n- When the data is in J/cm\u00b2, RTR is usually written as **\u00b0C per 100 J/cm\u00b2**.\n\nIf you would rather work with light inside the greenhouse (mol PAR/m\u00b2/day), here is an approximate conversion:\n\n```\n1 J/cm\u00b2 = 10,000 J/m\u00b2 = 0.01 MJ/m\u00b2\nInside PAR (mol/m\u00b2) \u2248 outside global (MJ/m\u00b2) \u00d7 greenhouse transmission (~0.65\u20130.75) \u00d7 0.47 (PAR fraction) \u00d7 4.57 (mol per MJ PAR)\n```\n\nAt 70% transmission, **100 J/cm\u00b2 outside \u2248 1.5 mol PAR/m\u00b2 inside**. A slope of 0.2 \u00b0C per 100 J/cm\u00b2 is then about 0.13 \u00b0C per mol/m\u00b2.\n\nIf you use supplemental lighting, add the lamp light to the sum. As a rough guide for typical LED or HPS, 1 hour at 200 \u00b5mol/m\u00b2/s is about 0.72 mol/m\u00b2. Converting everything to inside PAR becomes the cleaner approach once lamps are involved.\n\n## Starting values for tomato\n\n| Parameter | Typical starting range | Notes |\n|---|---|---|\n| T_base (24 h temp at ~0 light) | 17\u201318 \u00b0C | Never let the 24 h average fall much below ~17 \u00b0C, or fruit set and development will suffer |\n| RTR slope | 0.15\u20130.25 \u00b0C per 100 J/cm\u00b2 outside | 0.2 is a common middle value |\n| Upper cap on 24 h temp | ~22\u201323 \u00b0C | Above this, more heat no longer pays off. Fruit gets small and the plant weakens |\n| Lower floor on 24 h temp | ~17 \u00b0C | Minimum needed for truss development and fruit set |\n\nUsing T_base = 17.5 \u00b0C and RTR = 0.2 \u00b0C per 100 J/cm\u00b2:\n\n| Outside light sum (J/cm\u00b2/day) | Target 24 h temp |\n|---|---|\n| 300 (dark winter) | 17.5 + 0.2 \u00d7 3 = **18.1 \u00b0C** |\n| 800 | 17.5 + 1.6 = **19.1 \u00b0C** |\n| 1500 | 17.5 + 3.0 = **20.5 \u00b0C** |\n| 2500 (bright summer) | 17.5 + 5.0 = **22.5 \u00b0C** |\n\nFine-tune the slope from how the crop responds (see the monitoring section below). Use a lower RTR for a more generative crop and a higher one when the crop can carry more temperature. Young crops, heavy fruit load and weak heads call for a lower slope. A strong, vegetative crop with thick heads can handle a higher one.\n\n## Turning the 24-hour target into day and night setpoints\n\nRTR gives you the **24-hour average**. You get there by splitting it into day and night temperatures. Use a time-weighted average:\n\n```\nT24 = (T_day \u00d7 h_day + T_night \u00d7 h_night) / 24\n```\n\nSolve for the day temperature:\n\n```\nT_day = (24 \u00d7 T24 \u2212 T_night \u00d7 h_night) / h_day\n```\n\n### Step by step\n\n1. **Get the expected light sum for the day** from the forecast or a recent average. During the day, update it with the radiation measured so far.\n2. **Calculate T24** from the RTR line, and clamp it between your floor and cap.\n3. **Choose a night temperature.** For tomato this is usually 16\u201318 \u00b0C. A lower night temperature saves energy and steers the crop generatively, but stay at or above about 15\u201316 \u00b0C.\n4. **Calculate the day temperature** needed to reach T24.\n5. **Make sure the result is realistic.** On sunny days, solar gain will push actual day temperatures above the setpoint anyway. That is fine: RTR tells you whether to cool the night down to compensate.\n\n### Example\n\nOn a spring day with a forecast of 1500 J/cm\u00b2, there are 14 hours of light and 10 hours of dark.\n\n- T24 = 17.5 + 0.2 \u00d7 15 = **20.5 \u00b0C**\n- Night setpoint: 17 \u00b0C\n- T_day = (24 \u00d7 20.5 \u2212 17 \u00d7 10) / 14 = (492 \u2212 170) / 14 = **23.0 \u00b0C**\n\nOn a dark winter day with 350 J/cm\u00b2, there are 9 hours of light and 15 hours of dark.\n\n- T24 = 17.5 + 0.2 \u00d7 3.5 = **18.2 \u00b0C**\n- Night setpoint: 17 \u00b0C\n- T_day = (24 \u00d7 18.2 \u2212 17 \u00d7 15) / 9 = (436.8 \u2212 255) / 9 = **20.2 \u00b0C**\n\nOn a dark day, keep the day temperature modest. Don't heat hard during the day when there is little light to fuel the extra growth.\n\n## Practical tips\n\n- **Integrate over several days.** Don't chase every single day. Most climate computers support temperature integration over a 3\u20136 day window. A day that ran too warm can be balanced by a cooler night or a cooler next day. This saves energy and smooths out forecast errors.\n- **Adjust in real time.** If the morning turns out darker than forecast, lower that evening's and night's setpoints, or start the pre-night drop earlier. If it turns out brighter, you can allow a slightly warmer night.\n- **Use the pre-night.** A temperature drop of 2\u20134 \u00b0C in the first 2\u20133 hours after sunset is an efficient way to pull down the 24-hour average. It also steers the crop generatively and helps move sugars to the fruit.\n- **Morning ramp.** Raise the temperature gradually before and after sunrise, about 1 \u00b0C per hour. This avoids condensation on cold fruit and gives a smooth start to transpiration.\n- **Don't break humidity and VPD limits for RTR.** If a cold night would give you too much humidity and disease pressure, accept a slightly higher 24-hour temperature or use a minimum pipe temperature or dehumidification.\n- **CO\u2082 interacts with the slope.** With high CO\u2082 (800\u20131000 ppm), each unit of light produces more sugar, so the crop can often take a slightly higher RTR.\n\n## Monitoring whether your RTR is right\n\nCheck the plant every week and adjust the slope in small steps of 0.02\u20130.05 \u00b0C per 100 J/cm\u00b2:\n\n| Observation | Meaning | Action |\n|---|---|---|\n| Head thickness decreasing (e.g., \u003c 9\u201310 mm, depending on cultivar), thin stems, pale heads | Too warm for the available light; sugar shortage | Lower RTR or T_base, or use a lower night/pre-night |\n| Very thick heads, curled tops, slow growth, flowers set very close to the head | Too cool for the available light; sugar surplus | Raise RTR slightly |\n| Flowering truss far from the head (> ~15\u201320 cm) | Vegetative | Lower 24 h temperature or increase DIF / pre-night drop |\n| Flowering truss very close to the head | Generative | Raise 24 h temperature slightly |\n| Truss development rate (trusses/week) | Should track the 24 h temperature | Compare with targets for your cultivar |\n\n## Summary\n\n1. Add up your outside radiation each day in J/cm\u00b2.\n2. Set the 24-hour temperature target with **T24 = 17.5 + 0.2 \u00d7 (J/cm\u00b2 \u00f7 100)**, clamped between about 17 and 23 \u00b0C.\n3. Choose a night temperature (16\u201318 \u00b0C) and work out the day temperature from the time-weighted average.\n4. Use multi-day temperature integration and real-time light updates rather than fixed setpoints.\n5. Check head thickness and flower position weekly, and adjust the RTR slope in small steps.\n\nThe numbers above are starting values. Cultivar, crop stage, greenhouse transmission and your CO\u2082 strategy all shift the ideal line. Treat the first few weeks as a calibration period, and record the light sums, realised 24-hour temperatures and crop measurements so you can fit the line to your own conditions.\n"}], "grading": {"expectations": [{"text": "Defines RTR as the ratio of 24-hour average temperature to the daily light (radiation/PAR) sum", "passed": true, "evidence": "T24 target linked to daily light sum (RTR slope)"}, {"text": "Describes plotting each day as a point (light sum vs average temperature) and following a target line", "passed": false, "evidence": "Gives a formula line but does not describe plotting each day as a point on a scatterplot"}, {"text": "Explains the too-strong/vegetative (more light, same temperature) vs too-weak/generative (higher temperature, little light) logic", "passed": false, "evidence": "States the direction reversed: dark+warm = 'weak and vegetative', bright+cool = 'too generative'"}, {"text": "Gives the day-to-day practice: after a sunny day keep the night warmer or postpone the drop, after a dark day keep the night cooler", "passed": true, "evidence": "Darker than forecast: lower evening/night; brighter: allow slightly warmer night"}, {"text": "Links RTR to plant load planned against the expected (long-term average) light curve, noting a lower load allows a higher temperature per unit light", "passed": false, "evidence": "Mentions fruit load affecting slope but no plant load planned against expected light curve"}, {"text": "Notes preconditions or corrections: CO2/RH not limiting, and PAR at crop level is better than outdoor radiation when whitewash/screens cut light", "passed": true, "evidence": "CO2 interacts with slope; humidity limits; converts outside J/cm2 to inside PAR with transmission"}], "summary": {"passed": 3, "failed": 3, "total": 6, "pass_rate": 0.5}}}], "previous_feedback": {}, "previous_outputs": {}, "benchmark": {"metadata": {"skill_name": "plant-empowerment", "skill_path": "\u003cpath/to/skill>", "executor_model": "\u003cmodel-name>", "analyzer_model": "\u003cmodel-name>", "timestamp": "2026-10-22T16:58:06Z", "evals_run": [1, 2, 3], "runs_per_configuration": 1}, "runs": [{"eval_id": 1, "eval_name": "pe-botrytis-night", "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 6, "failed": 0, "total": 6, "time_seconds": 0.0, "tokens": 0, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Identifies heat emission / plant heads or fruits cooling below dew point as the cause of free water, not just high RH", "passed": true, "evidence": "Explains heat emission to the cold roof/sky and cold air drop cooling heads and lagging fruits below dew point; says RH 90% is not the real problem"}, {"text": "Recommends closing the screen fully (no moisture gap) or a double screen, explaining that gaps drop cold air and create cold spots", "passed": true, "evidence": "Step 2: go from 95% to fully closed; explains gap circulation up to ~8 C and cold spots"}, {"text": "Recommends removing moisture by condensation on the roof and/or ventilating above the closed screen instead of gapping", "passed": true, "evidence": "Moisture leaves by condensation on the roof and by opening vents a little above the closed screen"}, {"text": "Recommends replacing or lowering the minimum pipe temperature and using fans (preferably vertical) for air movement", "passed": true, "evidence": "Replace fixed minimum pipe with demand-driven heating; use vertical fans instead of pipe heat"}, {"text": "Addresses morning condensation on fruits: raise temperature gradually before sunrise and/or keep the screen closed until the air above it has warmed", "passed": true, "evidence": "Raise temperature gradually well before sunrise; keep screen closed until air above it has warmed"}, {"text": "Recommends monitoring absolute humidity / dew point versus crop temperature (e.g. aspirator box above the screen, leaf or fruit temperature)", "passed": true, "evidence": "AH at three points, aspirator box above the screen, IR head temperature vs dew point, fruit temperature at sunrise"}], "notes": []}, {"eval_id": 2, "eval_name": "pe-sunny-wilting", "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 6, "failed": 0, "total": 6, "time_seconds": 0.0, "tokens": 0, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Warns that shading/whitewash cuts photosynthesis and can start a negative spiral, and advises trying humidity and water-supply measures first", "passed": true, "evidence": "Section 'Why shading is the wrong first step' describes the shading spiral; fix ventilation and watering first"}, {"text": "Recommends ventilating less / allowing a higher temperature (e.g. 26-28 C) to keep humidity and CO2 inside on sunny days", "passed": true, "evidence": "Raise vent temperature, cites 28 vs 25 C / 75% RH example, ventilate less"}, {"text": "Explains that evaporation is driven by absorbed energy (radiation) rather than by low RH, and that warm leaves indicate closing stomata / water stress", "passed": true, "evidence": "'a plant evaporates roughly in proportion to the radiation it absorbs, whatever the air humidity'; warm leaves = stomata closing"}, {"text": "Recommends measuring leaf temperature and/or VPD, with roughly 0.3-1.5 kPa as healthy and above ~1.5 kPa as stress", "passed": true, "evidence": "IR leaf temperature vs air; VPD from leaf temp, healthy 0.3-1.5 kPa, stress from ~1.5 kPa"}, {"text": "Addresses water supply or root uptake (e.g. irrigation based on radiation, ramping up in the morning, root health)", "passed": true, "evidence": "Irrigate on accumulated radiation, ramp from sunrise, check roots/root temperature, fruit buffer"}, {"text": "Mentions misting or another way to raise RH under high radiation, and/or the CO2 lost through wide-open vents", "passed": true, "evidence": "Misting controlled on radiation/PAR/leaf temp; CO2 blown out by wide vents"}], "notes": []}, {"eval_id": 3, "eval_name": "pe-rtr-setpoints", "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 6, "failed": 0, "total": 6, "time_seconds": 0.0, "tokens": 0, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Defines RTR as the ratio of 24-hour average temperature to the daily light (radiation/PAR) sum", "passed": true, "evidence": "RTR links 24-hour average temperature to daily light sum"}, {"text": "Describes plotting each day as a point (light sum vs average temperature) and following a target line", "passed": true, "evidence": "Scatterplot one dot per day, fit trend line, target line with band"}, {"text": "Explains the too-strong/vegetative (more light, same temperature) vs too-weak/generative (higher temperature, little light) logic", "passed": true, "evidence": "Table: more light same temp = too strong/vegetative; higher temp no light = weak/generative"}, {"text": "Gives the day-to-day practice: after a sunny day keep the night warmer or postpone the drop, after a dark day keep the night cooler", "passed": true, "evidence": "After a sunny day postpone drop and keep night warmer; after a dark day keep night cooler"}, {"text": "Links RTR to plant load planned against the expected (long-term average) light curve, noting a lower load allows a higher temperature per unit light", "passed": true, "evidence": "Plant load vs 10-year weekly light curve; lower load allows raising the RTR line"}, {"text": "Notes preconditions or corrections: CO2/RH not limiting, and PAR at crop level is better than outdoor radiation when whitewash/screens cut light", "passed": true, "evidence": "Lower target when CO2/RH limiting or with whitewash; PAR at crop level preferred"}], "notes": []}, {"eval_id": 1, "eval_name": "pe-botrytis-night", "configuration": "without_skill", "run_number": 1, "result": {"pass_rate": 0.833, "passed": 5, "failed": 1, "total": 6, "time_seconds": 0.0, "tokens": 0, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Identifies heat emission / plant heads or fruits cooling below dew point as the cause of free water, not just high RH", "passed": true, "evidence": "Cold surfaces (heads, fruits) below dew point via cold air drop and convection loop; frames RH 90% itself as too high too"}, {"text": "Recommends closing the screen fully (no moisture gap) or a double screen, explaining that gaps drop cold air and create cold spots", "passed": false, "evidence": "Still recommends a 1-3% gap controlled on HD rather than a fully closed screen"}, {"text": "Recommends removing moisture by condensation on the roof and/or ventilating above the closed screen instead of gapping", "passed": true, "evidence": "'Better still: remove moisture with windows above the closed screen' or forced ventilation"}, {"text": "Recommends replacing or lowering the minimum pipe temperature and using fans (preferably vertical) for air movement", "passed": true, "evidence": "Lower minimum pipe to 35-40 C; mentions vertical fans"}, {"text": "Addresses morning condensation on fruits: raise temperature gradually before sunrise and/or keep the screen closed until the air above it has warmed", "passed": true, "evidence": "Pre-heat 1.5-2 h before sunrise at about 1 C/h; open screen in steps"}, {"text": "Recommends monitoring absolute humidity / dew point versus crop temperature (e.g. aspirator box above the screen, leaf or fruit temperature)", "passed": true, "evidence": "Measure temperature at head height and lower trusses; fruit surface vs dew point"}], "notes": []}, {"eval_id": 2, "eval_name": "pe-sunny-wilting", "configuration": "without_skill", "run_number": 1, "result": {"pass_rate": 0.667, "passed": 4, "failed": 2, "total": 6, "time_seconds": 0.0, "tokens": 0, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Warns that shading/whitewash cuts photosynthesis and can start a negative spiral, and advises trying humidity and water-supply measures first", "passed": false, "evidence": "Says whitewash costs production and to fix water balance first, but does not describe shading starting a negative spiral"}, {"text": "Recommends ventilating less / allowing a higher temperature (e.g. 26-28 C) to keep humidity and CO2 inside on sunny days", "passed": true, "evidence": "Raise vent setpoint to 26-28 C, open gradually with humidity limit"}, {"text": "Explains that evaporation is driven by absorbed energy (radiation) rather than by low RH, and that warm leaves indicate closing stomata / water stress", "passed": false, "evidence": "Frames low RH/high VPD as 'pulling water out of the leaves too fast' rather than energy-driven evaporation"}, {"text": "Recommends measuring leaf temperature and/or VPD, with roughly 0.3-1.5 kPa as healthy and above ~1.5 kPa as stress", "passed": true, "evidence": "IR leaf temperature 1-3 C below air; VPD estimate"}, {"text": "Addresses water supply or root uptake (e.g. irrigation based on radiation, ramping up in the morning, root health)", "passed": true, "evidence": "Irrigation on accumulated radiation, EC, root temperature and health"}, {"text": "Mentions misting or another way to raise RH under high radiation, and/or the CO2 lost through wide-open vents", "passed": true, "evidence": "High-pressure fogging/misting; CO2 wasted with wide vents"}], "notes": []}, {"eval_id": 3, "eval_name": "pe-rtr-setpoints", "configuration": "without_skill", "run_number": 1, "result": {"pass_rate": 0.5, "passed": 3, "failed": 3, "total": 6, "time_seconds": 0.0, "tokens": 0, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Defines RTR as the ratio of 24-hour average temperature to the daily light (radiation/PAR) sum", "passed": true, "evidence": "T24 target linked to daily light sum (RTR slope)"}, {"text": "Describes plotting each day as a point (light sum vs average temperature) and following a target line", "passed": false, "evidence": "Gives a formula line but does not describe plotting each day as a point on a scatterplot"}, {"text": "Explains the too-strong/vegetative (more light, same temperature) vs too-weak/generative (higher temperature, little light) logic", "passed": false, "evidence": "States the direction reversed: dark+warm = 'weak and vegetative', bright+cool = 'too generative'"}, {"text": "Gives the day-to-day practice: after a sunny day keep the night warmer or postpone the drop, after a dark day keep the night cooler", "passed": true, "evidence": "Darker than forecast: lower evening/night; brighter: allow slightly warmer night"}, {"text": "Links RTR to plant load planned against the expected (long-term average) light curve, noting a lower load allows a higher temperature per unit light", "passed": false, "evidence": "Mentions fruit load affecting slope but no plant load planned against expected light curve"}, {"text": "Notes preconditions or corrections: CO2/RH not limiting, and PAR at crop level is better than outdoor radiation when whitewash/screens cut light", "passed": true, "evidence": "CO2 interacts with slope; humidity limits; converts outside J/cm2 to inside PAR with transmission"}], "notes": []}], "run_summary": {"with_skill": {"pass_rate": {"mean": 1.0, "stddev": 0.0, "min": 1.0, "max": 1.0}, "time_seconds": {"mean": 0.0, "stddev": 0.0, "min": 0.0, "max": 0.0}, "tokens": {"mean": 0.0, "stddev": 0.0, "min": 0, "max": 0}}, "without_skill": {"pass_rate": {"mean": 0.6667, "stddev": 0.1665, "min": 0.5, "max": 0.833}, "time_seconds": {"mean": 0.0, "stddev": 0.0, "min": 0.0, "max": 0.0}, "tokens": {"mean": 0.0, "stddev": 0.0, "min": 0, "max": 0}}, "delta": {"pass_rate": "+0.33", "time_seconds": "+0.0", "tokens": "+0"}}, "notes": []}};
+
+    // ---- State ----
+    let feedbackMap = {};  // run_id -> feedback text
+    let currentIndex = 0;
+    let visitedRuns = new Set();
+
+    // ---- Init ----
+    async function init() {
+      // Load saved feedback from server — but only if this isn't a fresh
+      // iteration (indicated by previous_feedback being present). When
+      // previous feedback exists, the feedback.json on disk is stale from
+      // the prior iteration and should not pre-fill the textareas.
+      const hasPrevious = Object.keys(EMBEDDED_DATA.previous_feedback || {}).length > 0
+        || Object.keys(EMBEDDED_DATA.previous_outputs || {}).length > 0;
+      if (!hasPrevious) {
+        try {
+          const resp = await fetch("/api/feedback");
+          const data = await resp.json();
+          if (data.reviews) {
+            for (const r of data.reviews) feedbackMap[r.run_id] = r.feedback;
+          }
+        } catch { /* first run, no feedback yet */ }
+      }
+
+      document.getElementById("skill-name").textContent = EMBEDDED_DATA.skill_name;
+      showRun(0);
+
+      // Wire up feedback auto-save
+      const textarea = document.getElementById("feedback");
+      let saveTimeout = null;
+      textarea.addEventListener("input", () => {
+        clearTimeout(saveTimeout);
+        document.getElementById("feedback-status").textContent = "";
+        saveTimeout = setTimeout(() => saveCurrentFeedback(), 800);
+      });
+    }
+
+    // ---- Navigation ----
+    function navigate(delta) {
+      const newIndex = currentIndex + delta;
+      if (newIndex >= 0 && newIndex < EMBEDDED_DATA.runs.length) {
+        saveCurrentFeedback();
+        showRun(newIndex);
+      }
+    }
+
+    function updateNavButtons() {
+      document.getElementById("prev-btn").disabled = currentIndex === 0;
+      document.getElementById("next-btn").disabled =
+        currentIndex === EMBEDDED_DATA.runs.length - 1;
+    }
+
+    // ---- Show a run ----
+    function showRun(index) {
+      currentIndex = index;
+      const run = EMBEDDED_DATA.runs[index];
+
+      // Progress
+      document.getElementById("progress").textContent =
+        `${index + 1} of ${EMBEDDED_DATA.runs.length}`;
+
+      // Prompt
+      document.getElementById("prompt-text").textContent = run.prompt;
+
+      // Config badge
+      const badge = document.getElementById("config-badge");
+      const configMatch = run.id.match(/(with_skill|without_skill|new_skill|old_skill)/);
+      if (configMatch) {
+        const config = configMatch[1];
+        const isBaseline = config === "without_skill" || config === "old_skill";
+        badge.textContent = config.replace(/_/g, " ");
+        badge.className = "config-badge " + (isBaseline ? "config-baseline" : "config-primary");
+        badge.style.display = "inline-block";
+      } else {
+        badge.style.display = "none";
+      }
+
+      // Outputs
+      renderOutputs(run);
+
+      // Previous outputs
+      renderPrevOutputs(run);
+
+      // Grades
+      renderGrades(run);
+
+      // Previous feedback
+      const prevFb = (EMBEDDED_DATA.previous_feedback || {})[run.id];
+      const prevEl = document.getElementById("prev-feedback");
+      if (prevFb) {
+        document.getElementById("prev-feedback-text").textContent = prevFb;
+        prevEl.style.display = "block";
+      } else {
+        prevEl.style.display = "none";
+      }
+
+      // Feedback
+      document.getElementById("feedback").value = feedbackMap[run.id] || "";
+      document.getElementById("feedback-status").textContent = "";
+
+      updateNavButtons();
+
+      // Track visited runs and promote done button when all visited
+      visitedRuns.add(index);
+      const doneBtn = document.getElementById("done-btn");
+      if (visitedRuns.size >= EMBEDDED_DATA.runs.length) {
+        doneBtn.classList.add("ready");
+      }
+
+      // Scroll main content to top
+      document.querySelector(".main").scrollTop = 0;
+    }
+
+    // ---- Render outputs ----
+    function renderOutputs(run) {
+      const container = document.getElementById("outputs-body");
+      container.innerHTML = "";
+
+      const outputs = run.outputs || [];
+      if (outputs.length === 0) {
+        container.innerHTML = '<div class="empty-state">No output files</div>';
+        return;
+      }
+
+      for (const file of outputs) {
+        const fileDiv = document.createElement("div");
+        fileDiv.className = "output-file";
+
+        // Always show file header with download link
+        const header = document.createElement("div");
+        header.className = "output-file-header";
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = file.name;
+        header.appendChild(nameSpan);
+        const dlBtn = document.createElement("a");
+        dlBtn.className = "dl-btn";
+        dlBtn.textContent = "Download";
+        dlBtn.download = file.name;
+        dlBtn.href = getDownloadUri(file);
+        header.appendChild(dlBtn);
+        fileDiv.appendChild(header);
+
+        const content = document.createElement("div");
+        content.className = "output-file-content";
+
+        if (file.type === "text") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          content.appendChild(pre);
+        } else if (file.type === "image") {
+          const img = document.createElement("img");
+          img.src = file.data_uri;
+          img.alt = file.name;
+          content.appendChild(img);
+        } else if (file.type === "pdf") {
+          const iframe = document.createElement("iframe");
+          iframe.src = file.data_uri;
+          content.appendChild(iframe);
+        } else if (file.type === "xlsx") {
+          renderXlsx(content, file.data_b64);
+        } else if (file.type === "binary") {
+          const a = document.createElement("a");
+          a.className = "download-link";
+          a.href = file.data_uri;
+          a.download = file.name;
+          a.textContent = "Download " + file.name;
+          content.appendChild(a);
+        } else if (file.type === "error") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          pre.style.color = "var(--red)";
+          content.appendChild(pre);
+        }
+
+        fileDiv.appendChild(content);
+        container.appendChild(fileDiv);
+      }
+    }
+
+    // ---- XLSX rendering via SheetJS ----
+    function renderXlsx(container, b64Data) {
+      try {
+        const raw = Uint8Array.from(atob(b64Data), c => c.charCodeAt(0));
+        const wb = XLSX.read(raw, { type: "array" });
+
+        for (let i = 0; i < wb.SheetNames.length; i++) {
+          const sheetName = wb.SheetNames[i];
+          const ws = wb.Sheets[sheetName];
+
+          if (wb.SheetNames.length > 1) {
+            const sheetLabel = document.createElement("div");
+            sheetLabel.style.cssText =
+              "font-weight:600; font-size:0.8rem; color:#b0aea5; margin-top:0.5rem; margin-bottom:0.25rem;";
+            sheetLabel.textContent = "Sheet: " + sheetName;
+            container.appendChild(sheetLabel);
+          }
+
+          const htmlStr = XLSX.utils.sheet_to_html(ws, { editable: false });
+          const wrapper = document.createElement("div");
+          wrapper.innerHTML = htmlStr;
+          container.appendChild(wrapper);
+        }
+      } catch (err) {
+        container.textContent = "Error rendering spreadsheet: " + err.message;
+      }
+    }
+
+    // ---- Grades ----
+    function renderGrades(run) {
+      const section = document.getElementById("grades-section");
+      const content = document.getElementById("grades-content");
+
+      if (!run.grading) {
+        section.style.display = "none";
+        return;
+      }
+
+      const grading = run.grading;
+      section.style.display = "block";
+      // Reset to collapsed
+      content.classList.remove("open");
+      document.getElementById("grades-arrow").classList.remove("open");
+
+      const summary = grading.summary || {};
+      const expectations = grading.expectations || [];
+
+      let html = '<div style="padding: 1rem;">';
+
+      // Summary line
+      const passRate = summary.pass_rate != null
+        ? Math.round(summary.pass_rate * 100) + "%"
+        : "?";
+      const badgeClass = summary.pass_rate >= 0.8 ? "grade-pass" : summary.pass_rate >= 0.5 ? "" : "grade-fail";
+      html += '<div class="grades-summary">';
+      html += '<span class="grade-badge ' + badgeClass + '">' + passRate + '</span>';
+      html += '<span>' + escapeHtml(summary.passed || 0) + ' passed, ' + escapeHtml(summary.failed || 0) + ' failed of ' + escapeHtml(summary.total || 0) + '</span>';
+      html += '</div>';
+
+      // Assertions list
+      html += '<ul class="assertion-list">';
+      for (const exp of expectations) {
+        const statusClass = exp.passed ? "pass" : "fail";
+        const statusIcon = exp.passed ? "\u2713" : "\u2717";
+        html += '<li class="assertion-item">';
+        html += '<span class="assertion-status ' + statusClass + '">' + statusIcon + '</span>';
+        html += '<span>' + escapeHtml(exp.text) + '</span>';
+        if (exp.evidence) {
+          html += '<div class="assertion-evidence">' + escapeHtml(exp.evidence) + '</div>';
+        }
+        html += '</li>';
+      }
+      html += '</ul>';
+
+      html += '</div>';
+      content.innerHTML = html;
+    }
+
+    function toggleGrades() {
+      const content = document.getElementById("grades-content");
+      const arrow = document.getElementById("grades-arrow");
+      content.classList.toggle("open");
+      arrow.classList.toggle("open");
+    }
+
+    // ---- Previous outputs (collapsible) ----
+    function renderPrevOutputs(run) {
+      const section = document.getElementById("prev-outputs-section");
+      const content = document.getElementById("prev-outputs-content");
+      const prevOutputs = (EMBEDDED_DATA.previous_outputs || {})[run.id];
+
+      if (!prevOutputs || prevOutputs.length === 0) {
+        section.style.display = "none";
+        return;
+      }
+
+      section.style.display = "block";
+      // Reset to collapsed
+      content.classList.remove("open");
+      document.getElementById("prev-outputs-arrow").classList.remove("open");
+
+      // Render the files into the content area
+      content.innerHTML = "";
+      const wrapper = document.createElement("div");
+      wrapper.style.padding = "1rem";
+
+      for (const file of prevOutputs) {
+        const fileDiv = document.createElement("div");
+        fileDiv.className = "output-file";
+
+        const header = document.createElement("div");
+        header.className = "output-file-header";
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = file.name;
+        header.appendChild(nameSpan);
+        const dlBtn = document.createElement("a");
+        dlBtn.className = "dl-btn";
+        dlBtn.textContent = "Download";
+        dlBtn.download = file.name;
+        dlBtn.href = getDownloadUri(file);
+        header.appendChild(dlBtn);
+        fileDiv.appendChild(header);
+
+        const fc = document.createElement("div");
+        fc.className = "output-file-content";
+
+        if (file.type === "text") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          fc.appendChild(pre);
+        } else if (file.type === "image") {
+          const img = document.createElement("img");
+          img.src = file.data_uri;
+          img.alt = file.name;
+          fc.appendChild(img);
+        } else if (file.type === "pdf") {
+          const iframe = document.createElement("iframe");
+          iframe.src = file.data_uri;
+          fc.appendChild(iframe);
+        } else if (file.type === "xlsx") {
+          renderXlsx(fc, file.data_b64);
+        } else if (file.type === "binary") {
+          const a = document.createElement("a");
+          a.className = "download-link";
+          a.href = file.data_uri;
+          a.download = file.name;
+          a.textContent = "Download " + file.name;
+          fc.appendChild(a);
+        }
+
+        fileDiv.appendChild(fc);
+        wrapper.appendChild(fileDiv);
+      }
+
+      content.appendChild(wrapper);
+    }
+
+    function togglePrevOutputs() {
+      const content = document.getElementById("prev-outputs-content");
+      const arrow = document.getElementById("prev-outputs-arrow");
+      content.classList.toggle("open");
+      arrow.classList.toggle("open");
+    }
+
+    // ---- Feedback (saved to server -> feedback.json) ----
+    function saveCurrentFeedback() {
+      const run = EMBEDDED_DATA.runs[currentIndex];
+      const text = document.getElementById("feedback").value;
+
+      if (text.trim() === "") {
+        delete feedbackMap[run.id];
+      } else {
+        feedbackMap[run.id] = text;
+      }
+
+      // Build reviews array from map
+      const reviews = [];
+      for (const [run_id, feedback] of Object.entries(feedbackMap)) {
+        if (feedback.trim()) {
+          reviews.push({ run_id, feedback, timestamp: new Date().toISOString() });
+        }
+      }
+
+      fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reviews, status: "in_progress" }),
+      }).then(() => {
+        document.getElementById("feedback-status").textContent = "Saved";
+      }).catch(() => {
+        // Static mode or server unavailable — no-op on auto-save,
+        // feedback will be downloaded on final submit
+        document.getElementById("feedback-status").textContent = "Will download on submit";
+      });
+    }
+
+    // ---- Done ----
+    function showDoneDialog() {
+      // Save current textarea to feedbackMap (but don't POST yet)
+      const run = EMBEDDED_DATA.runs[currentIndex];
+      const text = document.getElementById("feedback").value;
+      if (text.trim() === "") {
+        delete feedbackMap[run.id];
+      } else {
+        feedbackMap[run.id] = text;
+      }
+
+      // POST once with status: complete — include ALL runs so the model
+      // can distinguish "no feedback" (looks good) from "not reviewed"
+      const reviews = [];
+      const ts = new Date().toISOString();
+      for (const r of EMBEDDED_DATA.runs) {
+        reviews.push({ run_id: r.id, feedback: feedbackMap[r.id] || "", timestamp: ts });
+      }
+      const payload = JSON.stringify({ reviews, status: "complete" }, null, 2);
+      fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: payload,
+      }).then(() => {
+        document.getElementById("done-overlay").classList.add("visible");
+      }).catch(() => {
+        // Server not available (static mode) — download as file
+        const blob = new Blob([payload], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "feedback.json";
+        a.click();
+        URL.revokeObjectURL(url);
+        document.getElementById("done-overlay").classList.add("visible");
+      });
+    }
+
+    function closeDoneDialog() {
+      // Reset status back to in_progress
+      saveCurrentFeedback();
+      document.getElementById("done-overlay").classList.remove("visible");
+    }
+
+    // ---- Toast ----
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("visible");
+      setTimeout(() => toast.classList.remove("visible"), 2000);
+    }
+
+    // ---- Keyboard nav ----
+    document.addEventListener("keydown", (e) => {
+      // Don't capture when typing in textarea
+      if (e.target.tagName === "TEXTAREA") return;
+
+      if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+        e.preventDefault();
+        navigate(-1);
+      } else if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+        e.preventDefault();
+        navigate(1);
+      }
+    });
+
+    // ---- Util ----
+    function getDownloadUri(file) {
+      if (file.data_uri) return file.data_uri;
+      if (file.data_b64) return "data:application/octet-stream;base64," + file.data_b64;
+      if (file.type === "text") return "data:text/plain;charset=utf-8," + encodeURIComponent(file.content);
+      return "#";
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement("div");
+      div.textContent = text;
+      return div.innerHTML.replace(/"/g, "&quot;");
+    }
+
+    // ---- View switching ----
+    function switchView(view) {
+      document.querySelectorAll(".view-tab").forEach(t => t.classList.remove("active"));
+      document.querySelectorAll(".view-panel").forEach(p => p.classList.remove("active"));
+      document.querySelector(`[onclick="switchView('${view}')"]`).classList.add("active");
+      document.getElementById("panel-" + view).classList.add("active");
+    }
+
+    // ---- Benchmark rendering ----
+    function renderBenchmark() {
+      const data = EMBEDDED_DATA.benchmark;
+      if (!data) return;
+
+      // Show the tabs
+      document.getElementById("view-tabs").style.display = "flex";
+
+      const container = document.getElementById("benchmark-content");
+      const summary = data.run_summary || {};
+      const metadata = data.metadata || {};
+      const notes = data.notes || [];
+
+      let html = "";
+
+      // Header
+      html += "<h2 style='font-family: Poppins, sans-serif; margin-bottom: 0.5rem;'>Benchmark Results</h2>";
+      html += "<p style='color: var(--text-muted); font-size: 0.875rem; margin-bottom: 1.25rem;'>";
+      if (metadata.skill_name) html += "<strong>" + escapeHtml(metadata.skill_name) + "</strong> &mdash; ";
+      if (metadata.timestamp) html += escapeHtml(metadata.timestamp) + " &mdash; ";
+      if (metadata.evals_run) html += "Evals: " + escapeHtml(metadata.evals_run.join(", ")) + " &mdash; ";
+      html += escapeHtml(metadata.runs_per_configuration || "?") + (metadata.runs_per_configuration === 1 ? " run" : " runs") + " per configuration";
+      html += "</p>";
+
+      // Summary table
+      html += '<table class="benchmark-table">';
+
+      function fmtStat(stat, pct) {
+        if (!stat) return "—";
+        const suffix = pct ? "%" : "";
+        const m = pct ? (stat.mean * 100).toFixed(0) : stat.mean.toFixed(1);
+        const s = pct ? (stat.stddev * 100).toFixed(0) : stat.stddev.toFixed(1);
+        return m + suffix + " ± " + s + suffix;
+      }
+
+      function deltaClass(val) {
+        if (!val) return "";
+        const n = parseFloat(val);
+        if (n > 0) return "benchmark-delta-positive";
+        if (n < 0) return "benchmark-delta-negative";
+        return "";
+      }
+
+      // Discover config names dynamically (everything except "delta")
+      const configs = Object.keys(summary).filter(k => k !== "delta");
+      const configA = configs[0] || "config_a";
+      const configB = configs[1] || "config_b";
+      const labelA = configA.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      const labelB = configB.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      const a = summary[configA] || {};
+      const b = summary[configB] || {};
+      const delta = summary.delta || {};
+      // With a single configuration there is nothing to compare: only its column is shown
+      const compare = cells => configs.length >= 2 ? cells : "";
+
+      html += "<thead><tr><th>Metric</th><th>" + escapeHtml(labelA) + "</th>" + compare("<th>" + escapeHtml(labelB) + "</th><th>Delta</th>") + "</tr></thead>";
+      html += "<tbody>";
+
+      html += "<tr><td><strong>Pass Rate</strong></td>";
+      html += "<td>" + fmtStat(a.pass_rate, true) + "</td>";
+      html += compare("<td>" + fmtStat(b.pass_rate, true) + "</td>");
+      html += compare('<td class="' + deltaClass(delta.pass_rate) + '">' + escapeHtml(delta.pass_rate || "—") + "</td>") + "</tr>";
+
+      // Time (only show row if data exists)
+      if (a.time_seconds || b.time_seconds) {
+        html += "<tr><td><strong>Time (s)</strong></td>";
+        html += "<td>" + fmtStat(a.time_seconds, false) + "</td>";
+        html += compare("<td>" + fmtStat(b.time_seconds, false) + "</td>");
+        html += compare('<td class="' + deltaClass(delta.time_seconds) + '">' + escapeHtml(delta.time_seconds ? delta.time_seconds + "s" : "—") + "</td>") + "</tr>";
+      }
+
+      // Tokens (only show row if data exists)
+      if (a.tokens || b.tokens) {
+        html += "<tr><td><strong>Tokens</strong></td>";
+        html += "<td>" + fmtStat(a.tokens, false) + "</td>";
+        html += compare("<td>" + fmtStat(b.tokens, false) + "</td>");
+        html += compare('<td class="' + deltaClass(delta.tokens) + '">' + escapeHtml(delta.tokens || "—") + "</td>") + "</tr>";
+      }
+
+      html += "</tbody></table>";
+
+      // Per-eval breakdown (if runs data available)
+      const runs = data.runs || [];
+      if (runs.length > 0) {
+        // Numeric ids first, then ids that are names
+        const rank = id => typeof id === "number" ? 0 : 1;
+        const evalIds = [...new Set(runs.map(r => r.eval_id))].sort((a, b) =>
+          rank(a) - rank(b) || (rank(a) ? String(a).localeCompare(String(b)) : a - b));
+
+        html += "<h3 style='font-family: Poppins, sans-serif; margin-bottom: 0.75rem;'>Per-Eval Breakdown</h3>";
+
+        const hasTime = runs.some(r => r.result && r.result.time_seconds != null);
+        const hasErrors = runs.some(r => r.result && r.result.errors > 0);
+
+        for (const evalId of evalIds) {
+          const evalRuns = runs.filter(r => r.eval_id === evalId);
+          const evalName = evalRuns[0] && evalRuns[0].eval_name ? evalRuns[0].eval_name : "Eval " + evalId;
+
+          html += "<h4 style='font-family: Poppins, sans-serif; margin: 1rem 0 0.5rem; color: var(--text);'>" + escapeHtml(evalName) + "</h4>";
+          html += '<table class="benchmark-table">';
+          html += "<thead><tr><th>Config</th><th>Run</th><th>Pass Rate</th>";
+          if (hasTime) html += "<th>Time (s)</th>";
+          if (hasErrors) html += "<th>Crashes During Execution</th>";
+          html += "</tr></thead>";
+          html += "<tbody>";
+
+          // Group by config and render with average rows
+          const configGroups = [...new Set(evalRuns.map(r => r.configuration))];
+          for (let ci = 0; ci < configGroups.length; ci++) {
+            const config = configGroups[ci];
+            const configRuns = evalRuns.filter(r => r.configuration === config);
+            if (configRuns.length === 0) continue;
+
+            const rowClass = ci === 0 ? "benchmark-row-with" : "benchmark-row-without";
+            const configLabel = escapeHtml(config.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase()));
+
+            for (const run of configRuns) {
+              const r = run.result || {};
+              const prClass = r.pass_rate >= 0.8 ? "benchmark-delta-positive" : r.pass_rate < 0.5 ? "benchmark-delta-negative" : "";
+              html += '<tr class="' + rowClass + '">';
+              html += "<td>" + configLabel + "</td>";
+              html += "<td>" + escapeHtml(run.run_number) + "</td>";
+              html += '<td class="' + prClass + '">' + ((r.pass_rate || 0) * 100).toFixed(0) + "% (" + escapeHtml(r.passed || 0) + "/" + escapeHtml(r.total || 0) + ")</td>";
+              if (hasTime) html += "<td>" + (r.time_seconds != null ? r.time_seconds.toFixed(1) : "—") + "</td>";
+              if (hasErrors) html += "<td>" + escapeHtml(r.errors || 0) + "</td>";
+              html += "</tr>";
+            }
+
+            // Average row
+            const rates = configRuns.map(r => (r.result || {}).pass_rate || 0);
+            const avgRate = rates.reduce((a, b) => a + b, 0) / rates.length;
+            const avgPrClass = avgRate >= 0.8 ? "benchmark-delta-positive" : avgRate < 0.5 ? "benchmark-delta-negative" : "";
+            html += '<tr class="benchmark-row-avg ' + rowClass + '">';
+            html += "<td>" + configLabel + "</td>";
+            html += "<td>Avg</td>";
+            html += '<td class="' + avgPrClass + '">' + (avgRate * 100).toFixed(0) + "%</td>";
+            if (hasTime) {
+              const times = configRuns.map(r => (r.result || {}).time_seconds).filter(t => t != null);
+              html += "<td>" + (times.length ? (times.reduce((a, b) => a + b, 0) / times.length).toFixed(1) : "—") + "</td>";
+            }
+            if (hasErrors) html += "<td></td>";
+            html += "</tr>";
+          }
+          html += "</tbody></table>";
+
+          // Per-assertion detail for this eval
+          const runsWithExpectations = {};
+          for (const config of configGroups) {
+            runsWithExpectations[config] = evalRuns.filter(r => r.configuration === config && r.expectations && r.expectations.length > 0);
+          }
+          const hasAnyExpectations = Object.values(runsWithExpectations).some(runs => runs.length > 0);
+          if (hasAnyExpectations) {
+            // Collect all unique assertion texts across all configs
+            const allAssertions = [];
+            const seen = new Set();
+            for (const config of configGroups) {
+              for (const run of runsWithExpectations[config]) {
+                for (const exp of (run.expectations || [])) {
+                  if (!seen.has(exp.text)) {
+                    seen.add(exp.text);
+                    allAssertions.push(exp.text);
+                  }
+                }
+              }
+            }
+
+            html += '<table class="benchmark-table" style="margin-top: 0.5rem;">';
+            html += "<thead><tr><th>Assertion</th>";
+            for (const config of configGroups) {
+              const label = config.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+              html += "<th>" + escapeHtml(label) + "</th>";
+            }
+            html += "</tr></thead><tbody>";
+
+            for (const assertionText of allAssertions) {
+              html += "<tr><td>" + escapeHtml(assertionText) + "</td>";
+
+              for (const config of configGroups) {
+                html += "<td>";
+                for (const run of runsWithExpectations[config]) {
+                  const exp = (run.expectations || []).find(e => e.text === assertionText);
+                  if (exp) {
+                    const cls = exp.passed ? "benchmark-delta-positive" : "benchmark-delta-negative";
+                    const icon = exp.passed ? "\u2713" : "\u2717";
+                    html += '<span class="' + cls + '" title="Run ' + escapeHtml(run.run_number) + ': ' + escapeHtml(exp.evidence || "") + '">' + icon + "</span> ";
+                  } else {
+                    html += "— ";
+                  }
+                }
+                html += "</td>";
+              }
+              html += "</tr>";
+            }
+            html += "</tbody></table>";
+          }
+        }
+      }
+
+      // Notes
+      if (notes.length > 0) {
+        html += '<div class="benchmark-notes">';
+        html += "<h3>Analysis Notes</h3>";
+        html += "<ul>";
+        for (const note of notes) {
+          html += "<li>" + escapeHtml(note) + "</li>";
+        }
+        html += "</ul></div>";
+      }
+
+      container.innerHTML = html;
+    }
+
+    // ---- Start ----
+    init();
+    renderBenchmark();
+  </script>
+</body>
+</html>

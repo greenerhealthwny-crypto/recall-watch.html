@@ -1,0 +1,359 @@
+{
+  "metadata": {
+    "skill_name": "plant-empowerment",
+    "skill_path": "<path/to/skill>",
+    "executor_model": "<model-name>",
+    "analyzer_model": "<model-name>",
+    "timestamp": "2026-10-22T16:58:06Z",
+    "evals_run": [
+      1,
+      2,
+      3
+    ],
+    "runs_per_configuration": 1
+  },
+  "runs": [
+    {
+      "eval_id": 1,
+      "eval_name": "pe-botrytis-night",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": 0.0,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Identifies heat emission / plant heads or fruits cooling below dew point as the cause of free water, not just high RH",
+          "passed": true,
+          "evidence": "Explains heat emission to the cold roof/sky and cold air drop cooling heads and lagging fruits below dew point; says RH 90% is not the real problem"
+        },
+        {
+          "text": "Recommends closing the screen fully (no moisture gap) or a double screen, explaining that gaps drop cold air and create cold spots",
+          "passed": true,
+          "evidence": "Step 2: go from 95% to fully closed; explains gap circulation up to ~8 C and cold spots"
+        },
+        {
+          "text": "Recommends removing moisture by condensation on the roof and/or ventilating above the closed screen instead of gapping",
+          "passed": true,
+          "evidence": "Moisture leaves by condensation on the roof and by opening vents a little above the closed screen"
+        },
+        {
+          "text": "Recommends replacing or lowering the minimum pipe temperature and using fans (preferably vertical) for air movement",
+          "passed": true,
+          "evidence": "Replace fixed minimum pipe with demand-driven heating; use vertical fans instead of pipe heat"
+        },
+        {
+          "text": "Addresses morning condensation on fruits: raise temperature gradually before sunrise and/or keep the screen closed until the air above it has warmed",
+          "passed": true,
+          "evidence": "Raise temperature gradually well before sunrise; keep screen closed until air above it has warmed"
+        },
+        {
+          "text": "Recommends monitoring absolute humidity / dew point versus crop temperature (e.g. aspirator box above the screen, leaf or fruit temperature)",
+          "passed": true,
+          "evidence": "AH at three points, aspirator box above the screen, IR head temperature vs dew point, fruit temperature at sunrise"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "pe-sunny-wilting",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": 0.0,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Warns that shading/whitewash cuts photosynthesis and can start a negative spiral, and advises trying humidity and water-supply measures first",
+          "passed": true,
+          "evidence": "Section 'Why shading is the wrong first step' describes the shading spiral; fix ventilation and watering first"
+        },
+        {
+          "text": "Recommends ventilating less / allowing a higher temperature (e.g. 26-28 C) to keep humidity and CO2 inside on sunny days",
+          "passed": true,
+          "evidence": "Raise vent temperature, cites 28 vs 25 C / 75% RH example, ventilate less"
+        },
+        {
+          "text": "Explains that evaporation is driven by absorbed energy (radiation) rather than by low RH, and that warm leaves indicate closing stomata / water stress",
+          "passed": true,
+          "evidence": "'a plant evaporates roughly in proportion to the radiation it absorbs, whatever the air humidity'; warm leaves = stomata closing"
+        },
+        {
+          "text": "Recommends measuring leaf temperature and/or VPD, with roughly 0.3-1.5 kPa as healthy and above ~1.5 kPa as stress",
+          "passed": true,
+          "evidence": "IR leaf temperature vs air; VPD from leaf temp, healthy 0.3-1.5 kPa, stress from ~1.5 kPa"
+        },
+        {
+          "text": "Addresses water supply or root uptake (e.g. irrigation based on radiation, ramping up in the morning, root health)",
+          "passed": true,
+          "evidence": "Irrigate on accumulated radiation, ramp from sunrise, check roots/root temperature, fruit buffer"
+        },
+        {
+          "text": "Mentions misting or another way to raise RH under high radiation, and/or the CO2 lost through wide-open vents",
+          "passed": true,
+          "evidence": "Misting controlled on radiation/PAR/leaf temp; CO2 blown out by wide vents"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 3,
+      "eval_name": "pe-rtr-setpoints",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": 0.0,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Defines RTR as the ratio of 24-hour average temperature to the daily light (radiation/PAR) sum",
+          "passed": true,
+          "evidence": "RTR links 24-hour average temperature to daily light sum"
+        },
+        {
+          "text": "Describes plotting each day as a point (light sum vs average temperature) and following a target line",
+          "passed": true,
+          "evidence": "Scatterplot one dot per day, fit trend line, target line with band"
+        },
+        {
+          "text": "Explains the too-strong/vegetative (more light, same temperature) vs too-weak/generative (higher temperature, little light) logic",
+          "passed": true,
+          "evidence": "Table: more light same temp = too strong/vegetative; higher temp no light = weak/generative"
+        },
+        {
+          "text": "Gives the day-to-day practice: after a sunny day keep the night warmer or postpone the drop, after a dark day keep the night cooler",
+          "passed": true,
+          "evidence": "After a sunny day postpone drop and keep night warmer; after a dark day keep night cooler"
+        },
+        {
+          "text": "Links RTR to plant load planned against the expected (long-term average) light curve, noting a lower load allows a higher temperature per unit light",
+          "passed": true,
+          "evidence": "Plant load vs 10-year weekly light curve; lower load allows raising the RTR line"
+        },
+        {
+          "text": "Notes preconditions or corrections: CO2/RH not limiting, and PAR at crop level is better than outdoor radiation when whitewash/screens cut light",
+          "passed": true,
+          "evidence": "Lower target when CO2/RH limiting or with whitewash; PAR at crop level preferred"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 1,
+      "eval_name": "pe-botrytis-night",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.833,
+        "passed": 5,
+        "failed": 1,
+        "total": 6,
+        "time_seconds": 0.0,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Identifies heat emission / plant heads or fruits cooling below dew point as the cause of free water, not just high RH",
+          "passed": true,
+          "evidence": "Cold surfaces (heads, fruits) below dew point via cold air drop and convection loop; frames RH 90% itself as too high too"
+        },
+        {
+          "text": "Recommends closing the screen fully (no moisture gap) or a double screen, explaining that gaps drop cold air and create cold spots",
+          "passed": false,
+          "evidence": "Still recommends a 1-3% gap controlled on HD rather than a fully closed screen"
+        },
+        {
+          "text": "Recommends removing moisture by condensation on the roof and/or ventilating above the closed screen instead of gapping",
+          "passed": true,
+          "evidence": "'Better still: remove moisture with windows above the closed screen' or forced ventilation"
+        },
+        {
+          "text": "Recommends replacing or lowering the minimum pipe temperature and using fans (preferably vertical) for air movement",
+          "passed": true,
+          "evidence": "Lower minimum pipe to 35-40 C; mentions vertical fans"
+        },
+        {
+          "text": "Addresses morning condensation on fruits: raise temperature gradually before sunrise and/or keep the screen closed until the air above it has warmed",
+          "passed": true,
+          "evidence": "Pre-heat 1.5-2 h before sunrise at about 1 C/h; open screen in steps"
+        },
+        {
+          "text": "Recommends monitoring absolute humidity / dew point versus crop temperature (e.g. aspirator box above the screen, leaf or fruit temperature)",
+          "passed": true,
+          "evidence": "Measure temperature at head height and lower trusses; fruit surface vs dew point"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "pe-sunny-wilting",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.667,
+        "passed": 4,
+        "failed": 2,
+        "total": 6,
+        "time_seconds": 0.0,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Warns that shading/whitewash cuts photosynthesis and can start a negative spiral, and advises trying humidity and water-supply measures first",
+          "passed": false,
+          "evidence": "Says whitewash costs production and to fix water balance first, but does not describe shading starting a negative spiral"
+        },
+        {
+          "text": "Recommends ventilating less / allowing a higher temperature (e.g. 26-28 C) to keep humidity and CO2 inside on sunny days",
+          "passed": true,
+          "evidence": "Raise vent setpoint to 26-28 C, open gradually with humidity limit"
+        },
+        {
+          "text": "Explains that evaporation is driven by absorbed energy (radiation) rather than by low RH, and that warm leaves indicate closing stomata / water stress",
+          "passed": false,
+          "evidence": "Frames low RH/high VPD as 'pulling water out of the leaves too fast' rather than energy-driven evaporation"
+        },
+        {
+          "text": "Recommends measuring leaf temperature and/or VPD, with roughly 0.3-1.5 kPa as healthy and above ~1.5 kPa as stress",
+          "passed": true,
+          "evidence": "IR leaf temperature 1-3 C below air; VPD estimate"
+        },
+        {
+          "text": "Addresses water supply or root uptake (e.g. irrigation based on radiation, ramping up in the morning, root health)",
+          "passed": true,
+          "evidence": "Irrigation on accumulated radiation, EC, root temperature and health"
+        },
+        {
+          "text": "Mentions misting or another way to raise RH under high radiation, and/or the CO2 lost through wide-open vents",
+          "passed": true,
+          "evidence": "High-pressure fogging/misting; CO2 wasted with wide vents"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 3,
+      "eval_name": "pe-rtr-setpoints",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.5,
+        "passed": 3,
+        "failed": 3,
+        "total": 6,
+        "time_seconds": 0.0,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Defines RTR as the ratio of 24-hour average temperature to the daily light (radiation/PAR) sum",
+          "passed": true,
+          "evidence": "T24 target linked to daily light sum (RTR slope)"
+        },
+        {
+          "text": "Describes plotting each day as a point (light sum vs average temperature) and following a target line",
+          "passed": false,
+          "evidence": "Gives a formula line but does not describe plotting each day as a point on a scatterplot"
+        },
+        {
+          "text": "Explains the too-strong/vegetative (more light, same temperature) vs too-weak/generative (higher temperature, little light) logic",
+          "passed": false,
+          "evidence": "States the direction reversed: dark+warm = 'weak and vegetative', bright+cool = 'too generative'"
+        },
+        {
+          "text": "Gives the day-to-day practice: after a sunny day keep the night warmer or postpone the drop, after a dark day keep the night cooler",
+          "passed": true,
+          "evidence": "Darker than forecast: lower evening/night; brighter: allow slightly warmer night"
+        },
+        {
+          "text": "Links RTR to plant load planned against the expected (long-term average) light curve, noting a lower load allows a higher temperature per unit light",
+          "passed": false,
+          "evidence": "Mentions fruit load affecting slope but no plant load planned against expected light curve"
+        },
+        {
+          "text": "Notes preconditions or corrections: CO2/RH not limiting, and PAR at crop level is better than outdoor radiation when whitewash/screens cut light",
+          "passed": true,
+          "evidence": "CO2 interacts with slope; humidity limits; converts outside J/cm2 to inside PAR with transmission"
+        }
+      ],
+      "notes": []
+    }
+  ],
+  "run_summary": {
+    "with_skill": {
+      "pass_rate": {
+        "mean": 1.0,
+        "stddev": 0.0,
+        "min": 1.0,
+        "max": 1.0
+      },
+      "time_seconds": {
+        "mean": 0.0,
+        "stddev": 0.0,
+        "min": 0.0,
+        "max": 0.0
+      },
+      "tokens": {
+        "mean": 0.0,
+        "stddev": 0.0,
+        "min": 0,
+        "max": 0
+      }
+    },
+    "without_skill": {
+      "pass_rate": {
+        "mean": 0.6667,
+        "stddev": 0.1665,
+        "min": 0.5,
+        "max": 0.833
+      },
+      "time_seconds": {
+        "mean": 0.0,
+        "stddev": 0.0,
+        "min": 0.0,
+        "max": 0.0
+      },
+      "tokens": {
+        "mean": 0.0,
+        "stddev": 0.0,
+        "min": 0,
+        "max": 0
+      }
+    },
+    "delta": {
+      "pass_rate": "+0.33",
+      "time_seconds": "+0.0",
+      "tokens": "+0"
+    }
+  },
+  "notes": []
+}

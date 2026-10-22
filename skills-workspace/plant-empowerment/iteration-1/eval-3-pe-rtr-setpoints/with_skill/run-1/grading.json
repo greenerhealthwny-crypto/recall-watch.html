@@ -1,0 +1,40 @@
+{
+  "expectations": [
+    {
+      "text": "Defines RTR as the ratio of 24-hour average temperature to the daily light (radiation/PAR) sum",
+      "passed": true,
+      "evidence": "RTR links 24-hour average temperature to daily light sum"
+    },
+    {
+      "text": "Describes plotting each day as a point (light sum vs average temperature) and following a target line",
+      "passed": true,
+      "evidence": "Scatterplot one dot per day, fit trend line, target line with band"
+    },
+    {
+      "text": "Explains the too-strong/vegetative (more light, same temperature) vs too-weak/generative (higher temperature, little light) logic",
+      "passed": true,
+      "evidence": "Table: more light same temp = too strong/vegetative; higher temp no light = weak/generative"
+    },
+    {
+      "text": "Gives the day-to-day practice: after a sunny day keep the night warmer or postpone the drop, after a dark day keep the night cooler",
+      "passed": true,
+      "evidence": "After a sunny day postpone drop and keep night warmer; after a dark day keep night cooler"
+    },
+    {
+      "text": "Links RTR to plant load planned against the expected (long-term average) light curve, noting a lower load allows a higher temperature per unit light",
+      "passed": true,
+      "evidence": "Plant load vs 10-year weekly light curve; lower load allows raising the RTR line"
+    },
+    {
+      "text": "Notes preconditions or corrections: CO2/RH not limiting, and PAR at crop level is better than outdoor radiation when whitewash/screens cut light",
+      "passed": true,
+      "evidence": "Lower target when CO2/RH limiting or with whitewash; PAR at crop level preferred"
+    }
+  ],
+  "summary": {
+    "passed": 6,
+    "failed": 0,
+    "total": 6,
+    "pass_rate": 1.0
+  }
+}

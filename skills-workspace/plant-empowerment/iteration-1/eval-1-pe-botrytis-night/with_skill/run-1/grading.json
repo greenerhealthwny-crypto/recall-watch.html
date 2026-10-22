@@ -1,0 +1,40 @@
+{
+  "expectations": [
+    {
+      "text": "Identifies heat emission / plant heads or fruits cooling below dew point as the cause of free water, not just high RH",
+      "passed": true,
+      "evidence": "Explains heat emission to the cold roof/sky and cold air drop cooling heads and lagging fruits below dew point; says RH 90% is not the real problem"
+    },
+    {
+      "text": "Recommends closing the screen fully (no moisture gap) or a double screen, explaining that gaps drop cold air and create cold spots",
+      "passed": true,
+      "evidence": "Step 2: go from 95% to fully closed; explains gap circulation up to ~8 C and cold spots"
+    },
+    {
+      "text": "Recommends removing moisture by condensation on the roof and/or ventilating above the closed screen instead of gapping",
+      "passed": true,
+      "evidence": "Moisture leaves by condensation on the roof and by opening vents a little above the closed screen"
+    },
+    {
+      "text": "Recommends replacing or lowering the minimum pipe temperature and using fans (preferably vertical) for air movement",
+      "passed": true,
+      "evidence": "Replace fixed minimum pipe with demand-driven heating; use vertical fans instead of pipe heat"
+    },
+    {
+      "text": "Addresses morning condensation on fruits: raise temperature gradually before sunrise and/or keep the screen closed until the air above it has warmed",
+      "passed": true,
+      "evidence": "Raise temperature gradually well before sunrise; keep screen closed until air above it has warmed"
+    },
+    {
+      "text": "Recommends monitoring absolute humidity / dew point versus crop temperature (e.g. aspirator box above the screen, leaf or fruit temperature)",
+      "passed": true,
+      "evidence": "AH at three points, aspirator box above the screen, IR head temperature vs dew point, fruit temperature at sunrise"
+    }
+  ],
+  "summary": {
+    "passed": 6,
+    "failed": 0,
+    "total": 6,
+    "pass_rate": 1.0
+  }
+}

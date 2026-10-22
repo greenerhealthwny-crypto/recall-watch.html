@@ -1,0 +1,40 @@
+{
+  "expectations": [
+    {
+      "text": "Warns that shading/whitewash cuts photosynthesis and can start a negative spiral, and advises trying humidity and water-supply measures first",
+      "passed": false,
+      "evidence": "Says whitewash costs production and to fix water balance first, but does not describe shading starting a negative spiral"
+    },
+    {
+      "text": "Recommends ventilating less / allowing a higher temperature (e.g. 26-28 C) to keep humidity and CO2 inside on sunny days",
+      "passed": true,
+      "evidence": "Raise vent setpoint to 26-28 C, open gradually with humidity limit"
+    },
+    {
+      "text": "Explains that evaporation is driven by absorbed energy (radiation) rather than by low RH, and that warm leaves indicate closing stomata / water stress",
+      "passed": false,
+      "evidence": "Frames low RH/high VPD as 'pulling water out of the leaves too fast' rather than energy-driven evaporation"
+    },
+    {
+      "text": "Recommends measuring leaf temperature and/or VPD, with roughly 0.3-1.5 kPa as healthy and above ~1.5 kPa as stress",
+      "passed": true,
+      "evidence": "IR leaf temperature 1-3 C below air; VPD estimate"
+    },
+    {
+      "text": "Addresses water supply or root uptake (e.g. irrigation based on radiation, ramping up in the morning, root health)",
+      "passed": true,
+      "evidence": "Irrigation on accumulated radiation, EC, root temperature and health"
+    },
+    {
+      "text": "Mentions misting or another way to raise RH under high radiation, and/or the CO2 lost through wide-open vents",
+      "passed": true,
+      "evidence": "High-pressure fogging/misting; CO2 wasted with wide vents"
+    }
+  ],
+  "summary": {
+    "passed": 4,
+    "failed": 2,
+    "total": 6,
+    "pass_rate": 0.667
+  }
+}
