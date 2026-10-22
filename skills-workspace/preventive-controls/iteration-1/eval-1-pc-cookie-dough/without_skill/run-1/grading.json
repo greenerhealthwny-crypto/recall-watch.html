@@ -1,0 +1,40 @@
+{
+  "expectations": [
+    {
+      "text": "Uses the hazard analysis structure: steps and ingredients, identify biological/chemical/physical hazards, decide whether each requires a preventive control, and justify each decision",
+      "passed": true,
+      "evidence": "Ingredient and step tables with hazard, 'reasonably foreseeable? justification', HRPC? and control columns"
+    },
+    {
+      "text": "Considers foreseeable use: consumers eating the dough raw, so pathogens in flour (E. coli/Salmonella) are a hazard needing control",
+      "passed": true,
+      "evidence": "'Reasonably foreseeable use: consumers, including children, eat the dough raw'"
+    },
+    {
+      "text": "Identifies a supply-chain preventive control for the supplier-applied heat treatment of flour (and/or pasteurized eggs), since there is no kill step in the facility",
+      "passed": true,
+      "evidence": "Flour and egg: 'Supply-chain-applied control', Subpart G program"
+    },
+    {
+      "text": "Identifies food allergen controls for milk, egg, wheat, tree nuts (walnut) and soy if present: labeling control and cross-contact controls",
+      "passed": true,
+      "evidence": "'Wheat, egg, milk, tree nuts (walnut), soy' allergen labeling and cross-contact controls"
+    },
+    {
+      "text": "Identifies a process control for refrigeration/temperature (time-temperature) or notes the environmental pathogen hazard for exposed RTE product with sanitation control and environmental monitoring",
+      "passed": true,
+      "evidence": "'Sanitation controls for RTE dough food-contact surfaces, plus environmental monitoring'; refrigeration process control if dough supports growth"
+    },
+    {
+      "text": "States a recall plan is required because hazards requiring preventive controls were identified",
+      "passed": true,
+      "evidence": "'Recall plan \u2014 Required, because you have HRPCs (117.139)'"
+    }
+  ],
+  "summary": {
+    "passed": 6,
+    "failed": 0,
+    "total": 6,
+    "pass_rate": 1.0
+  }
+}

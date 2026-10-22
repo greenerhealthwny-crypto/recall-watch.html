@@ -1,0 +1,40 @@
+{
+  "expectations": [
+    {
+      "text": "Says this is a deviation from a critical limit requiring a corrective action (not merely a correction)",
+      "passed": true,
+      "evidence": "'this calls for a corrective action. A simple correction is not enough'"
+    },
+    {
+      "text": "Lists corrective action elements: identify and correct the problem, reduce likelihood of recurrence, evaluate affected food for safety, prevent adulterated food entering commerce, document it",
+      "passed": true,
+      "evidence": "Bottom line lists identify/correct, reduce recurrence, evaluate food, keep out of commerce, document"
+    },
+    {
+      "text": "Defines a correction as a prompt action for a minor, isolated problem that does not directly affect product safety, with less documentation",
+      "passed": true,
+      "evidence": "Correction defined per 117.3; minor isolated problems not directly affecting safety; 'Document when appropriate'"
+    },
+    {
+      "text": "States monitoring and corrective action records must be reviewed by (or under oversight of) a PCQI within 7 working days",
+      "passed": true,
+      "evidence": "'Within 7 working days after the records are created'"
+    },
+    {
+      "text": "States validation of process controls is required (within 90 days of production or before implementation) and mentions calibration of the thermometer",
+      "passed": true,
+      "evidence": "Validation within 90 calendar days; calibration/accuracy check of thermometer"
+    },
+    {
+      "text": "States records must be kept at least 2 years, and mentions reanalysis if controls are found ineffective",
+      "passed": true,
+      "evidence": "'Keep records for at least 2 years'; reanalysis when control proves ineffective"
+    }
+  ],
+  "summary": {
+    "passed": 6,
+    "failed": 0,
+    "total": 6,
+    "pass_rate": 1.0
+  }
+}

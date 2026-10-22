@@ -1,0 +1,40 @@
+{
+  "expectations": [
+    {
+      "text": "States that Salmonella in eggs is a hazard that can cause serious adverse health consequences or death (SAHCODHA)",
+      "passed": true,
+      "evidence": "'a hazard where exposure can cause serious adverse health consequences or death (a SAHCODHA hazard)'"
+    },
+    {
+      "text": "States that for a SAHCODHA hazard the default verification is an onsite audit before using the supplier and at least annually, unless there is a written justification for other activities",
+      "passed": true,
+      "evidence": "'onsite audit by a qualified auditor before you first approve the supplier, and at least once a year after that (\u00a7117.430(b))' plus written determination"
+    },
+    {
+      "text": "States that a supplier's self-audit is not acceptable as supplier verification",
+      "passed": true,
+      "evidence": "'A supplier's audit of itself is not an acceptable verification activity'"
+    },
+    {
+      "text": "Explains a COA can support verification but is not a substitute for the required onsite audit by a qualified auditor",
+      "passed": true,
+      "evidence": "'A COA is useful supporting evidence, but it does not replace the audit'"
+    },
+    {
+      "text": "Lists supply-chain program elements: approved suppliers, written receiving procedures, determining and conducting verification activities, corrective action, records",
+      "passed": true,
+      "evidence": "Sections 1-8 cover approval, receiving procedures, evaluation, verification activities, corrective actions, records"
+    },
+    {
+      "text": "Mentions the onsite audit must be done by a qualified auditor (can be third party)",
+      "passed": true,
+      "evidence": "'qualified auditor... a third party with no financial conflict of interest'"
+    }
+  ],
+  "summary": {
+    "passed": 6,
+    "failed": 0,
+    "total": 6,
+    "pass_rate": 1.0
+  }
+}

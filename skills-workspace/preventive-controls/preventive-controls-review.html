@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eval Review</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&family=Lora:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js" integrity="sha384-EnyY0/GSHQGSxSgMwaIPzSESbqoOLSexfnSMN2AP+39Ckmn92stwABZynq1JyzdT" crossorigin="anonymous"></script>
+  <style>
+    :root {
+      --bg: #faf9f5;
+      --surface: #ffffff;
+      --border: #e8e6dc;
+      --text: #141413;
+      --text-muted: #b0aea5;
+      --accent: #d97757;
+      --accent-hover: #c4613f;
+      --green: #788c5d;
+      --green-bg: #eef2e8;
+      --red: #c44;
+      --red-bg: #fceaea;
+      --header-bg: #141413;
+      --header-text: #faf9f5;
+      --radius: 6px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Lora', Georgia, serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ---- Header ---- */
+    .header {
+      background: var(--header-bg);
+      color: var(--header-text);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .header h1 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+    .header .instructions {
+      font-size: 0.8rem;
+      opacity: 0.7;
+      margin-top: 0.25rem;
+    }
+    .header .progress {
+      font-size: 0.875rem;
+      opacity: 0.8;
+      text-align: right;
+    }
+
+    /* ---- Main content ---- */
+    .main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.5rem 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    /* ---- Sections ---- */
+    .section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      flex-shrink: 0;
+    }
+    .section-header {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.75rem 1rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+    }
+    .section-body {
+      padding: 1rem;
+    }
+
+    /* ---- Config badge ---- */
+    .config-badge {
+      display: inline-block;
+      padding: 0.2rem 0.625rem;
+      border-radius: 9999px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      margin-left: 0.75rem;
+      vertical-align: middle;
+    }
+    .config-badge.config-primary {
+      background: rgba(33, 150, 243, 0.12);
+      color: #1976d2;
+    }
+    .config-badge.config-baseline {
+      background: rgba(255, 193, 7, 0.15);
+      color: #f57f17;
+    }
+
+    /* ---- Prompt ---- */
+    .prompt-text {
+      white-space: pre-wrap;
+      font-size: 0.9375rem;
+      line-height: 1.6;
+    }
+
+    /* ---- Outputs ---- */
+    .output-file {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .output-file + .output-file {
+      margin-top: 1rem;
+    }
+    .output-file-header {
+      padding: 0.5rem 0.75rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .output-file-header .dl-btn {
+      font-size: 0.7rem;
+      color: var(--accent);
+      text-decoration: none;
+      cursor: pointer;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-weight: 500;
+      opacity: 0.8;
+    }
+    .output-file-header .dl-btn:hover {
+      opacity: 1;
+      text-decoration: underline;
+    }
+    .output-file-content {
+      padding: 0.75rem;
+      overflow-x: auto;
+    }
+    .output-file-content pre {
+      font-size: 0.8125rem;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+    }
+    .output-file-content img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 4px;
+    }
+    .output-file-content iframe {
+      width: 100%;
+      height: 600px;
+      border: none;
+    }
+    .output-file-content table {
+      border-collapse: collapse;
+      font-size: 0.8125rem;
+      width: 100%;
+    }
+    .output-file-content table td,
+    .output-file-content table th {
+      border: 1px solid var(--border);
+      padding: 0.375rem 0.5rem;
+      text-align: left;
+    }
+    .output-file-content table th {
+      background: var(--bg);
+      font-weight: 600;
+    }
+    .output-file-content .download-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 0.875rem;
+      cursor: pointer;
+    }
+    .output-file-content .download-link:hover {
+      background: var(--border);
+    }
+    .empty-state {
+      color: var(--text-muted);
+      font-style: italic;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    /* ---- Feedback ---- */
+    .prev-feedback {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.625rem 0.75rem;
+      margin-top: 0.75rem;
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+    .prev-feedback-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.25rem;
+      color: var(--text-muted);
+    }
+    .feedback-textarea {
+      width: 100%;
+      min-height: 100px;
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 0.9375rem;
+      line-height: 1.5;
+      resize: vertical;
+      color: var(--text);
+    }
+    .feedback-textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    .feedback-status {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.5rem;
+      min-height: 1.1em;
+    }
+
+    /* ---- Grades (collapsible) ---- */
+    .grades-toggle {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+    }
+    .grades-toggle:hover {
+      color: var(--accent);
+    }
+    .grades-toggle .arrow {
+      margin-right: 0.5rem;
+      transition: transform 0.15s;
+      font-size: 0.75rem;
+    }
+    .grades-toggle .arrow.open {
+      transform: rotate(90deg);
+    }
+    .grades-content {
+      display: none;
+      margin-top: 0.75rem;
+    }
+    .grades-content.open {
+      display: block;
+    }
+    .grades-summary {
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .grade-badge {
+      display: inline-block;
+      padding: 0.125rem 0.5rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .grade-pass { background: var(--green-bg); color: var(--green); }
+    .grade-fail { background: var(--red-bg); color: var(--red); }
+    .assertion-list {
+      list-style: none;
+    }
+    .assertion-item {
+      padding: 0.625rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.8125rem;
+    }
+    .assertion-item:last-child { border-bottom: none; }
+    .assertion-status {
+      font-weight: 600;
+      margin-right: 0.5rem;
+    }
+    .assertion-status.pass { color: var(--green); }
+    .assertion-status.fail { color: var(--red); }
+    .assertion-evidence {
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      margin-top: 0.25rem;
+      padding-left: 1.5rem;
+    }
+
+    /* ---- View tabs ---- */
+    .view-tabs {
+      display: flex;
+      gap: 0;
+      padding: 0 2rem;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .view-tab {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.625rem 1.25rem;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      background: none;
+      color: var(--text-muted);
+      border-bottom: 2px solid transparent;
+      transition: all 0.15s;
+    }
+    .view-tab:hover { color: var(--text); }
+    .view-tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+    .view-panel { display: none; }
+    .view-panel.active { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
+
+    /* ---- Benchmark view ---- */
+    .benchmark-view {
+      padding: 1.5rem 2rem;
+      overflow-y: auto;
+      flex: 1;
+    }
+    .benchmark-table {
+      border-collapse: collapse;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 0.8125rem;
+      width: 100%;
+      margin-bottom: 1.5rem;
+    }
+    .benchmark-table th, .benchmark-table td {
+      padding: 0.625rem 0.75rem;
+      text-align: left;
+      border: 1px solid var(--border);
+    }
+    .benchmark-table th {
+      font-family: 'Poppins', sans-serif;
+      background: var(--header-bg);
+      color: var(--header-text);
+      font-weight: 500;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .benchmark-table tr:hover { background: var(--bg); }
+    .benchmark-table tr.benchmark-row-with { background: rgba(33, 150, 243, 0.06); }
+    .benchmark-table tr.benchmark-row-without { background: rgba(255, 193, 7, 0.06); }
+    .benchmark-table tr.benchmark-row-with:hover { background: rgba(33, 150, 243, 0.12); }
+    .benchmark-table tr.benchmark-row-without:hover { background: rgba(255, 193, 7, 0.12); }
+    .benchmark-table tr.benchmark-row-avg { font-weight: 600; border-top: 2px solid var(--border); }
+    .benchmark-table tr.benchmark-row-avg.benchmark-row-with { background: rgba(33, 150, 243, 0.12); }
+    .benchmark-table tr.benchmark-row-avg.benchmark-row-without { background: rgba(255, 193, 7, 0.12); }
+    .benchmark-delta-positive { color: var(--green); font-weight: 600; }
+    .benchmark-delta-negative { color: var(--red); font-weight: 600; }
+    .benchmark-notes {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem;
+    }
+    .benchmark-notes h3 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+    }
+    .benchmark-notes ul {
+      list-style: disc;
+      padding-left: 1.25rem;
+    }
+    .benchmark-notes li {
+      font-size: 0.8125rem;
+      line-height: 1.6;
+      margin-bottom: 0.375rem;
+    }
+    .benchmark-empty {
+      color: var(--text-muted);
+      font-style: italic;
+      text-align: center;
+      padding: 3rem;
+    }
+
+    /* ---- Navigation ---- */
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+      flex-shrink: 0;
+    }
+    .nav-btn {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.5rem 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text);
+      transition: all 0.15s;
+    }
+    .nav-btn:hover:not(:disabled) {
+      background: var(--bg);
+      border-color: var(--text-muted);
+    }
+    .nav-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    .done-btn {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.5rem 1.5rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: all 0.15s;
+    }
+    .done-btn:hover {
+      background: var(--bg);
+      border-color: var(--text-muted);
+    }
+    .done-btn.ready {
+      border: none;
+      background: var(--accent);
+      color: white;
+      font-weight: 600;
+    }
+    .done-btn.ready:hover {
+      background: var(--accent-hover);
+    }
+    /* ---- Done overlay ---- */
+    .done-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 100;
+      justify-content: center;
+      align-items: center;
+    }
+    .done-overlay.visible {
+      display: flex;
+    }
+    .done-card {
+      background: var(--surface);
+      border-radius: 12px;
+      padding: 2rem 3rem;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      max-width: 500px;
+    }
+    .done-card h2 {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .done-card p {
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
+    }
+    .done-card .btn-row {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+    }
+    .done-card button {
+      padding: 0.5rem 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 0.875rem;
+    }
+    .done-card button:hover {
+      background: var(--bg);
+    }
+    /* ---- Toast ---- */
+    .toast {
+      position: fixed;
+      bottom: 5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--header-bg);
+      color: var(--header-text);
+      padding: 0.625rem 1.25rem;
+      border-radius: var(--radius);
+      font-size: 0.875rem;
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+      z-index: 200;
+    }
+    .toast.visible {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <div id="app" style="height:100vh; display:flex; flex-direction:column;">
+    <div class="header">
+      <div>
+        <h1>Eval Review: <span id="skill-name"></span></h1>
+        <div class="instructions">Review each output and leave feedback below. Navigate with arrow keys or buttons. When done, copy feedback and paste into Claude Code.</div>
+      </div>
+      <div class="progress" id="progress"></div>
+    </div>
+
+    <!-- View tabs (only shown when benchmark data exists) -->
+    <div class="view-tabs" id="view-tabs" style="display:none;">
+      <button class="view-tab active" onclick="switchView('outputs')">Outputs</button>
+      <button class="view-tab" onclick="switchView('benchmark')">Benchmark</button>
+    </div>
+
+    <!-- Outputs panel (qualitative review) -->
+    <div class="view-panel active" id="panel-outputs">
+    <div class="main">
+      <!-- Prompt -->
+      <div class="section">
+        <div class="section-header">Prompt <span class="config-badge" id="config-badge" style="display:none;"></span></div>
+        <div class="section-body">
+          <div class="prompt-text" id="prompt-text"></div>
+        </div>
+      </div>
+
+      <!-- Outputs -->
+      <div class="section">
+        <div class="section-header">Output</div>
+        <div class="section-body" id="outputs-body">
+          <div class="empty-state">No output files found</div>
+        </div>
+      </div>
+
+      <!-- Previous Output (collapsible) -->
+      <div class="section" id="prev-outputs-section" style="display:none;">
+        <div class="section-header">
+          <div class="grades-toggle" onclick="togglePrevOutputs()">
+            <span class="arrow" id="prev-outputs-arrow">&#9654;</span>
+            Previous Output
+          </div>
+        </div>
+        <div class="grades-content" id="prev-outputs-content"></div>
+      </div>
+
+      <!-- Grades (collapsible) -->
+      <div class="section" id="grades-section" style="display:none;">
+        <div class="section-header">
+          <div class="grades-toggle" onclick="toggleGrades()">
+            <span class="arrow" id="grades-arrow">&#9654;</span>
+            Formal Grades
+          </div>
+        </div>
+        <div class="grades-content" id="grades-content"></div>
+      </div>
+
+      <!-- Feedback -->
+      <div class="section">
+        <div class="section-header">Your Feedback</div>
+        <div class="section-body">
+          <textarea
+            class="feedback-textarea"
+            id="feedback"
+            placeholder="What do you think of this output? Any issues, suggestions, or things that look great?"
+          ></textarea>
+          <div class="feedback-status" id="feedback-status"></div>
+          <div class="prev-feedback" id="prev-feedback" style="display:none;">
+            <div class="prev-feedback-label">Previous feedback</div>
+            <div id="prev-feedback-text"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav" id="outputs-nav">
+      <button class="nav-btn" id="prev-btn" onclick="navigate(-1)">&#8592; Previous</button>
+      <button class="done-btn" id="done-btn" onclick="showDoneDialog()">Submit All Reviews</button>
+      <button class="nav-btn" id="next-btn" onclick="navigate(1)">Next &#8594;</button>
+    </div>
+    </div><!-- end panel-outputs -->
+
+    <!-- Benchmark panel (quantitative stats) -->
+    <div class="view-panel" id="panel-benchmark">
+      <div class="benchmark-view" id="benchmark-content">
+        <div class="benchmark-empty">No benchmark data available. Run a benchmark to see quantitative results here.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Done overlay -->
+  <div class="done-overlay" id="done-overlay">
+    <div class="done-card">
+      <h2>Review Complete</h2>
+      <p>Your feedback has been saved. Go back to your Claude Code session and tell Claude you're done reviewing.</p>
+      <div class="btn-row">
+        <button onclick="closeDoneDialog()">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ---- Embedded data (injected by generate_review.py) ----
+    const EMBEDDED_DATA = {"skill_name": "preventive-controls", "runs": [{"id": "eval-1-pc-cookie-dough-with_skill-run-1", "prompt": "I run a small bakery facility registered with FDA. We're adding a refrigerated ready-to-bake chocolate chip cookie dough with walnuts, sold in retail tubs. Ingredients: heat-treated flour from a supplier, liquid pasteurized eggs, butter, sugar, chocolate chips, walnuts. We mix, deposit into tubs, label and ship refrigerated. Do a hazard analysis for this under the FSMA Preventive Controls for Human Food rule and tell me which preventive controls I need.", "eval_id": 1, "outputs": [{"name": "response.md", "type": "text", "content": "# Hazard Analysis and Preventive Controls: Refrigerated Chocolate Chip Walnut Cookie Dough (Retail Tubs)\n\nThis is a working draft built on the FSPCA *Preventive Controls for Human Food* approach (21 CFR Part 117, Subpart C). Your PCQI needs to adapt it to your actual facility, suppliers, formula and data, then sign off on it. It is drafting help. It is not legal advice and does not replace a PCQI or FDA guidance.\n\n---\n\n## 0. Before you start: two threshold questions\n\n1. **Are you a \"qualified facility\"?** A very small business is one with under about $1 million a year in human food sales plus the market value of food held without sale. That figure is inflation-adjusted and averaged over the prior 3 years. If you qualify, you file an attestation and follow **modified requirements** instead of a full Food Safety Plan. A full hazard analysis is still good practice, and your customers may require one. The rest of this draft assumes full Subpart C applies.\n2. **Treat this dough as ready-to-eat for hazard analysis purposes.** The product is \"ready to bake\", but the hazard analysis must cover **intended and reasonably foreseeable use**. Consumers commonly eat cookie dough raw. Raw flour (*E. coli* O157:H7 and other STEC, *Salmonella*) and raw eggs (*Salmonella*) have caused outbreaks and recalls tied to exactly this habit. A \"cook before eating\" or \"do not eat raw\" label is good practice, but **it is not a preventive control**. Your facility has **no kill step**, so the safety of the dough depends on:\n   - the controls your suppliers apply (heat-treated flour, pasteurized eggs, treated walnuts);\n   - keeping the dough from being recontaminated in your plant;\n   - allergen and label control.\n\n---\n\n## 1. Preliminary steps\n\n### 1.1 Food safety team\n- PCQI (owner or QA lead, FSPCA-trained)\n- Production lead (mixing and depositing)\n- Sanitation lead\n- Maintenance (mixer, depositor, any metal detector)\n- Receiving and purchasing (supplier approval)\n- Optional outside help: process authority or lab for a_w and pH testing, and the FSPCA Technical Assistance Network\n\n### 1.2 Product description\n\n| Item | Description |\n|---|---|\n| Product name | Refrigerated ready-to-bake chocolate chip cookie dough with walnuts |\n| Ingredients | Heat-treated wheat flour (supplier), liquid pasteurized whole egg, butter, sugar(s), chocolate chips, walnuts (plus any leavening, salt or vanilla; list every sub-ingredient) |\n| Safety characteristics | **Measure them; don't assume.** Water activity is typically about 0.80\u20130.90 for cookie dough, depending on the sugar-to-water ratio. pH is near neutral (about 6\u20137), so it is not acid-controlled. No preservatives (confirm). |\n| Packaging | Plastic retail tub with lid (state whether it is sealed or modified atmosphere; it is likely not reduced oxygen packaging) |\n| Storage and distribution | Refrigerated, \u2264 41 \u00b0F (5 \u00b0C) |\n| Shelf life | Set by your studies (state the days refrigerated, and frozen if allowed) |\n| Labeling | Ingredient statement with allergen declaration; \"Keep refrigerated\"; baking instructions; \"Do not eat raw dough\" advisory (recommended, not a control); lot code and use-by date |\n| Intended use | Baked by the consumer |\n| **Foreseeable use** | **Eaten raw**, including by children |\n| Intended consumers | General public, **including vulnerable groups** (children, elderly, pregnant, immunocompromised) |\n\n### 1.3 Flow diagram (verify it by walking the line)\n\n```\nReceiving (refrigerated):         Receiving (dry/ambient):          Receiving: packaging\n  liquid pasteurized egg            heat-treated flour                 tubs, lids, labels\n  butter                            sugar, chocolate chips, walnuts\n      |                                     |                              |\nRefrigerated storage (\u226441\u00b0F)       Dry storage (allergen-segregated)   Packaging storage\n      |                                     |                              |\n      +-------------> Weighing / scaling \u003c--+                              |\n                            |                                              |\n                 Mixing (cream butter+sugar, add egg,                      |\n                 add flour, fold in chips + walnuts)                       |\n                            |                                              |\n           [Rework? - define or prohibit]                                  |\n                            |                                              |\n                  Depositing into tubs  \u003c----------------------------------+\n                            |\n                     Lidding / sealing\n                            |\n              Labeling + lot/date coding\n                            |\n             [Metal detection - if used]\n                            |\n          Refrigerated storage of finished goods (\u226441\u00b0F)\n                            |\n               Refrigerated shipping / distribution\n```\n\nShow every ingredient's receiving step, any rework, and any water or compressed air that touches food or food-contact surfaces. Then confirm the diagram onsite.\n\n---\n\n## 2. Hazard analysis (FSPCA six-column format)\n\nKey: **B** = biological, **C** = chemical (including allergens and radiological), **P** = physical. PC = preventive control.\n\n### 2.1 Incoming ingredients and packaging\n\n| (1) Ingredient / step | (2) Potential hazard | (3) Requires a PC? | (4) Justification | (5) Control measure | (6) Applied at this step? |\n|---|---|---|---|---|---|\n| **Heat-treated flour** (receiving) | **B:** STEC (*E. coli* O157:H7 and others), *Salmonella* | **Yes** | Raw flour is a recognized **sensitive ingredient**, with multiple outbreaks and recalls (including in raw cookie dough). Severity is high (HUS, death). There is no kill step in our process, and raw consumption is foreseeable. | **Supply-chain control**: the supplier's validated heat treatment, verified by us | No, controlled by the supplier; we verify at receiving |\n| | **C:** allergen (**wheat**) | Yes | Major food allergen | **Allergen control** (labeling, cross-contact) | No, at labeling and storage/production |\n| | C: pesticides, mycotoxins (DON) | No | Low likelihood at the levels in finished dough; handled by supplier specifications and GMPs | Supplier specs (prerequisite) | \u2014 |\n| | P: foreign material | No | Flour is sifted by the supplier; specs and COA cover it | Supplier spec; optional in-house sifter | \u2014 |\n| **Liquid pasteurized egg** | **B:** *Salmonella* | **Yes** | Eggs are a classic sensitive ingredient. The hazard is SAHCODHA, and no kill step follows. | **Supply-chain control**: the supplier's pasteurization. Liquid egg products are made under **USDA-FSIS** continuous inspection (Egg Products Inspection Act), which supports a lighter, justified verification. | No, supplier; we verify |\n| | B: *L. monocytogenes*, spoilage, growth if temperature-abused | Yes (as part of storage control) | Refrigerated perishable | Receiving temperature check; refrigerated storage \u2264 40\u201341 \u00b0F; use within code (see the process control in 2.2) | Receiving and storage |\n| | **C:** allergen (**egg**) | Yes | Major allergen | Allergen control | No |\n| **Butter** | B: *L. monocytogenes* | No | Made from pasteurized cream; low historical association in butter. Controlled by supplier specs and refrigerated storage (GMP). | Approved supplier spec; refrigeration (prerequisite) | \u2014 |\n| | **C:** allergen (**milk**) | Yes | Major allergen | Allergen control | No |\n| **Sugar** | B, C, P | No | Low-moisture ingredient with no meaningful pathogen history; foreign material is managed by spec and GMPs | Supplier spec | \u2014 |\n| **Chocolate chips** | B: *Salmonella* | No (document the reasoning) | There is a historical association with chocolate, but chips are made with roasting and conching steps and have a strong safety record. Use a supplier spec and COA. Change to **Yes / supply-chain control** if your supplier's process is unknown or unvalidated. | Approved supplier, spec, COA | \u2014 |\n| | **C:** allergens (**milk**, **soy** lecithin, possible \"may contain\" tree nut, peanut or **sesame**) | Yes | Sub-ingredient allergens are a frequent cause of undeclared-allergen recalls | Allergen control: capture every sub-ingredient allergen on the label | No |\n| **Walnuts** | **B:** *Salmonella*, STEC (*E. coli* O157:H7) | **Yes** | Tree nuts are a sensitive ingredient. Walnut recalls and outbreaks include *Salmonella*, and *E. coli* O157:H7 in 2024. Walnuts are folded in raw with no kill step. | **Supply-chain control**: buy walnuts that have had a **validated pathogen-reduction treatment** (e.g. pasteurization, steam or PPO treatment) and verify it. If you buy untreated walnuts you have no control, so don't. | No, supplier |\n| | **C:** allergen (**tree nut: walnut**) | Yes | Major allergen with a high risk of severe reactions | Allergen control | No |\n| | C: aflatoxin | No | Low likelihood in walnuts; supplier spec | Spec / COA | \u2014 |\n| | **P:** shell fragments (hard, sharp) | Yes or No, **your call** | Shell fragments can be hazardous (hard or sharp objects about 7\u201325 mm). Probability depends on the supplier's sorting. | Most bakeries handle this with a supplier spec (shell-fragment limit, optical and X-ray sorting) plus a **supply-chain control** if rated Yes | No, supplier |\n| **Tubs, lids** | C: migration | No | Food-grade packaging; letter of guarantee | Spec | \u2014 |\n| **Labels** | **C:** wrong label, undeclared allergen | Yes | Labeling errors drive about a third or more of FDA food safety recalls | Allergen control (label review at receipt) | Partly, at receipt |\n\n### 2.2 Processing steps\n\n| (1) Step | (2) Potential hazard | (3) PC? | (4) Justification | (5) Control | (6) Here? |\n|---|---|---|---|---|---|\n| **Receiving: refrigerated ingredients** | B: growth of pathogens in egg and butter if abused | No (separately) | Covered by receiving temperature checks (GMP) and the storage control below | GMP / receiving procedure | \u2014 |\n| **Receiving: flour, eggs, walnuts** | B: pathogens (supplier-controlled) | **Yes** | See 2.1 | **Supply-chain program**: approved supplier, COA or letter for each lot, records | **Yes** (verification activities) |\n| **Ingredient storage** | C: allergen cross-contact (walnut dust or pieces, open egg containers) | Yes | Walnuts are a high-risk allergen. Other bakery products that lack walnuts could be contaminated. | **Allergen control**: designated, labeled storage below other ingredients; sealed containers; no open containers returned to the cooler | Yes |\n| | B: growth in egg | Yes, as the refrigeration control | | Cooler \u2264 40\u201341 \u00b0F | Yes |\n| **Weighing / mixing** | **B:** recontamination with environmental pathogens (*Salmonella*, *L. monocytogenes*) | **Yes** | The dough is RTE in practice, exposed to the environment, and **no lethal step follows**. *Salmonella* survives well in low-a_w doughs; *L. monocytogenes* persists in cool, wet areas. | **Sanitation control** (food-contact surfaces, cleaning and sanitizing; hygienic zoning), **verified by environmental monitoring** | Yes |\n| | **B:** *S. aureus* growth or toxin; *B. cereus* growth if dough is held warm | Depends on a_w | If a_w is > ~0.86 and dough is held long at room temperature, *S. aureus* can grow. Mixing is usually short. | Time/temperature limit on dough before refrigeration (e.g. dough \u2264 50 \u00b0F, or a maximum time out of refrigeration, set from your data). The omelet batter model used \u2264 50 \u00b0F / \u2264 12 h. | Yes, if needed |\n| | **C:** allergen cross-contact (shared mixer with non-walnut or non-egg products) | **Yes**, if you make any product on the same equipment without these allergens | Shared equipment is the main route | **Allergen control** (scheduling: walnut product last; validated changeover cleaning) **and/or sanitation control** | Yes |\n| | **P:** metal (mixer paddle or bowl wear, depositor) | Yes or No, **your call** | It depends on equipment and the preventive maintenance record. The FSPCA notes two facilities can reasonably reach different conclusions. Dough is dense, and metal fragments are a real recall cause in doughs. | If Yes: **metal detection** as a process control after lidding; otherwise preventive maintenance and pre/post-shift equipment inspection (prerequisite) | Yes, at detection |\n| **Rework** (if any) | B, C: pathogens, allergen carry-over | Yes, if rework is used | Rework from a walnut product into a non-walnut product is an allergen hazard | Allergen control: like-into-like only, labeled and dated; or no rework | Yes |\n| **Depositing / lidding** | B: environmental pathogens | Yes | Exposed RTE dough | Sanitation control + EM (as above) | Yes |\n| **Labeling and coding** | **C:** undeclared allergens (wheat, egg, milk, walnut, soy; sesame if present) | **Yes** | Highest-probability allergen failure mode | **Allergen control (labeling)** | **Yes** |\n| **Metal detection** (if used) | P: metal | Yes, if chosen | \u2014 | **Process control** | Yes |\n| **Finished goods cold storage and shipping** | **B:** *L. monocytogenes* growth (grows at refrigeration temperatures if a_w allows); *S. aureus* and others with temperature abuse | **Depends on a_w, confirmed by testing** | If dough a_w \u2265 ~0.92, *L. monocytogenes* can grow, and refrigeration is essential to safety, so it is a **process control**. If a validated a_w is well below that (e.g. \u2264 0.85), refrigeration may be quality-driven and handled by GMPs. **Document whichever applies.** | **Process control: refrigeration \u2264 41 \u00b0F** (cooler temperature monitoring), or a documented justification that it is not needed | Yes |\n| | C/B: transportation temperature abuse | As above | | Sanitary transportation rule; carrier temperature agreements and records | \u2014 |\n\n---\n\n## 3. Preventive controls you need (summary)\n\n| # | Hazard requiring a preventive control | Control type | Where |\n|---|---|---|---|\n| 1 | STEC and *Salmonella* in flour | **Supply-chain control** | Receiving |\n| 2 | *Salmonella* in liquid egg | **Supply-chain control** (FSIS-inspected supplier, so lighter verification with a written justification) | Receiving |\n| 3 | *Salmonella* and STEC in walnuts | **Supply-chain control** | Receiving |\n| 4 | Undeclared allergens: wheat, egg, milk, **tree nut (walnut)**, soy (check chips), sesame if present | **Food allergen control: labeling** | Labeling |\n| 5 | Allergen cross-contact (walnut and egg into other bakery products, and the reverse) | **Food allergen control: cross-contact** (storage, scheduling, changeover cleaning, rework) | Storage, mixing, depositing |\n| 6 | Environmental pathogens (*Salmonella*, *L. monocytogenes*) contaminating exposed RTE dough | **Sanitation control**, **verified by environmental monitoring** | Mixing, depositing, lidding |\n| 7 | Pathogen growth in finished dough (*L. monocytogenes*, *S. aureus*) | **Process control: refrigeration \u2264 41 \u00b0F** (unless a_w data justify otherwise) | Cold storage |\n| 8 | Metal (optional, based on your equipment and PM history) | **Process control: metal detection** | After lidding |\n| 9 | Walnut shell (optional, based on supplier data) | Supply-chain control or supplier spec | Receiving |\n| \u2014 | **Recall plan** | **Required**, because hazards requiring preventive controls were identified | \u2014 |\n\nValidation is **required only for the process controls** (#7, #8). It is **not required** for the allergen, sanitation and supply-chain controls, though it is useful, e.g. allergen changeover cleaning.\n\n---\n\n## 4. Preventive control details\n\n### 4.1 Supply-chain program (flour, liquid egg, walnuts)\n\n| Element | Flour | Liquid pasteurized egg | Walnuts |\n|---|---|---|---|\n| Supplier-applied control | Validated heat treatment (log reduction for STEC/*Salmonella*, e.g. \u2265 5-log, per the supplier's validation) | Pasteurization under USDA-FSIS inspection | Validated pasteurization or pathogen-reduction treatment |\n| Approval before first use | Review the supplier's food safety plan, **validation study for the heat treatment**, and audit report | Confirm FSIS establishment number; spec sheet | Review the validation study, food safety plan and audit |\n| **Verification activity** | Hazard is SAHCODHA, so an **onsite audit before first use and at least annually** (a third-party audit by a qualified auditor is acceptable), **unless** a written justification supports another activity. Add a **COA for each lot** stating the treatment and pathogen test results. | Written justification that FSIS continuous inspection plus the spec and a letter of guarantee give adequate assurance; periodic review of supplier records | Annual onsite audit (third-party OK) plus a per-lot COA or certificate of treatment |\n| Receiving procedure | Check that the lot is from an approved supplier, the COA is present and says \"heat-treated\", and packaging is intact | Approved supplier; product temperature \u2264 41 \u00b0F (or the spec); code date | Approved supplier; certificate of treatment; packaging intact |\n| Corrective action | Lot without a COA or with an off-spec COA: **hold**; don't use until resolved; reject, or divert to a use with a kill step (e.g. baked products) | Temperature-abused: reject | Untreated or no certificate: reject or hold |\n| Records | Approved supplier list; audit reports; COAs; receiving logs; corrective actions; reviewed by the PCQI | Same | Same |\n\nNotes:\n- A supplier's **own self-audit is not acceptable** verification.\n- Watch for **temporary or unapproved suppliers**. Use them only with verification before use.\n- If you ever buy flour that is *not* heat-treated, you lose this control entirely. Lock \"heat-treated\" into the purchase spec.\n\n### 4.2 Food allergen preventive controls\n\n**Allergens present:** wheat, egg, milk, tree nut (walnut), and likely **soy** (lecithin in chips). Check every sub-ingredient for **sesame**. Sesame became the 9th major food allergen in 2023, after the FSPCA manual was published.\n\n**A. Labeling control**\n\n| Component | Procedure |\n|---|---|\n| Parameter | Each tub carries the correct label, with an ingredient statement declaring all major food allergens, including \"Contains: Wheat, Egg, Milk, Walnut, Soy\" |\n| Monitoring: what, how, when, who | The packing operator checks that the label matches the product and the label version **at start-up, at every label roll or changeover, and at the end of the run**, and initials the label-check log |\n| Label receipt | A knowledgeable person checks each new label print against the current formula and sub-ingredient specs |\n| Correction / corrective action | Wrong or missing label found: **hold** all product since the last good check, relabel, find the root cause (label storage, changeover), and record it |\n| Verification | PCQI reviews records within **7 working days**; label audits when formula or supplier changes; destroy obsolete labels |\n\n**B. Cross-contact control** (needed if the facility makes products without walnut, egg, etc.)\n- Designated, labeled storage for walnuts in sealed containers. Store them low so dust and pieces cannot fall onto other ingredients.\n- **Production scheduling:** run non-walnut and non-egg products first, then this product.\n- Dedicated or color-coded scoops and utensils for walnuts.\n- **Changeover cleaning** (wet clean the mixer, bowl, paddles and depositor) after this product. Do a visual inspection before the next product, and consider allergen-specific ELISA or lateral-flow swabs to verify.\n- Rework: like-into-like only, labeled and dated, or not at all.\n- \"May contain\" statements **do not replace** cross-contact controls.\n\n### 4.3 Sanitation preventive control and environmental monitoring\n\n**Why:** the dough is effectively RTE, exposed during mixing, depositing and lidding, and gets no lethal step afterwards. That makes **environmental pathogens** a hazard requiring a **sanitation control**, and **environmental monitoring (EM) is required** as verification.\n\n| Component | Procedure |\n|---|---|\n| Scope | Food-contact surfaces (mixer bowl and paddle, scrapers, scoops, depositor hopper and nozzles, tub-filling surfaces); cross-contamination from personnel; hygienic zoning |\n| Written cleaning procedure | Dry clean, pre-rinse, detergent wash, rinse, inspect, **sanitize at label concentration**, air dry. Dough is fatty and sugary, so specify detergent and water temperature. Minimize water in a dry bakery area, because wet areas favour *Listeria*. |\n| Monitoring | **Pre-operational inspection** of food-contact surfaces each day before production; **sanitizer concentration check** each time sanitizer is mixed; recorded on the sanitation log |\n| Correction | Surface found dirty before production: re-clean and re-inspect (a correction, with brief or no documentation) |\n| Corrective action | Product was made on an unclean surface: evaluate and hold product, root cause, record |\n| **Verification: EM** | Test for **Listeria spp.** (indicator) and consider ***Salmonella*** (relevant to dry and low-a_w dough). **Zones:** Zone 1 (food-contact surfaces) for Listeria spp. as verification of sanitation; Zones 2\u20133 (equipment frames, floors, drains, cooler) routinely. Set sites, number, frequency (e.g. weekly at first) and timing (several hours into production, not just after cleaning). **Corrective actions for positives:** intensified cleaning and vector swabbing; for a **Zone 1** positive, hold product, consider product testing, and do a root-cause investigation. |\n| Other verification | PCQI reviews records within 7 working days; optional ATP checks |\n| Prerequisites that support this | Hygienic zoning, traffic and personnel flow, hand washing, gowning, no raw (non-heat-treated) flour handled in the same area while this product is exposed |\n\n**Important:** if the bakery uses **ordinary raw flour** for other products in the same room, flour dust is a real cross-contamination route into this dough. Separate in time or space, clean between products, and include this in your zoning and EM.\n\n### 4.4 Process control: refrigeration (finished dough)\n\nFirst, **measure a_w and pH** of the finished dough, with a lab on several batches. Then decide:\n- **a_w high enough for pathogen growth** (e.g. *L. monocytogenes* above about 0.92, *S. aureus* above about 0.86): refrigeration is a **process control**.\n- **a_w well below those levels**, confirmed by testing: you may justify refrigeration as quality only. Record the data and the reasoning in the hazard analysis.\n\nIf it is a process control:\n\n| Component | Example (validate your own values) |\n|---|---|\n| Parameter / critical limit | Finished product cooler air temperature **\u2264 41 \u00b0F (5 \u00b0C)**; dough out of refrigeration (mixing to cooler) **\u2264 X hours**, set from your data and kept short |\n| Operating limit | Cooler set at \u2264 38 \u00b0F |\n| Monitoring | Continuous temperature recorder with alarm, **or** a manual check at least twice per shift, by a trained employee on the cooler log |\n| Corrective action | Above the limit: identify the cause, fix the cooler, **evaluate affected product** (time and temperature exposure against your validated growth data); hold, release or destroy; record |\n| Validation | Scientific basis for the limit (literature, predictive models such as ComBase or the Pathogen Modeling Program used with caution, or a challenge study for shelf life) |\n| Verification | Daily thermometer accuracy check; annual calibration; PCQI records review within 7 working days |\n| Records | Temperature log, corrective actions, calibration, validation file |\n\nKeep in mind that *L. monocytogenes* **grows at refrigeration temperatures**. Refrigeration slows it down; sanitation and EM keep it out. Shelf life should be backed by data.\n\n### 4.5 Process control: metal detection (if your hazard analysis says Yes)\n\n| Component | Example |\n|---|---|\n| Critical limit | A metal detector is present and working, and **rejects** test pieces (e.g. Fe 2.0 mm, non-Fe 2.5 mm, SS 3.0 mm; set for tub size and dough) |\n| Monitoring | Pass the test pieces at **start, middle and end of each shift**, and at product changeover; check that the reject works; operator logs it |\n| Corrective action | Detector fails: hold all product since the last good check, re-run it through a working detector, repair, root cause |\n| Validation | Detector manufacturer or setup validation for the product's effect |\n| Verification | Records review within 7 working days; periodic calibration and service |\n\nIf you decide **No**, document the justification: equipment design, preventive maintenance program, and a pre/post-shift inspection of mixer paddles and depositor parts for missing or damaged pieces.\n\n---\n\n## 5. Recall plan (required)\n\nBecause you have hazards requiring preventive controls, you need a written recall plan with assigned responsibilities for:\n1. **Notifying direct consignees** (distributors, retailers): what is recalled, and how to return or destroy it.\n2. **Notifying the public** when needed to protect health. Pathogen or undeclared-walnut recalls are typically **Class I**.\n3. **Effectiveness checks.**\n4. **Disposition** of recalled product (destroy, or divert where safe).\n\nSupporting items:\n- A recall team and contact list.\n- FDA recall coordinator contacts.\n- **Lot codes on every tub**.\n- Distribution records.\n- Trace capability one step back (flour, egg, walnut and chip lots by date) and one step forward.\n- **Reportable Food Registry** reporting when required.\n- At least an annual **mock recall**.\n\n---\n\n## 6. Verification, records and keeping the plan current\n\n- **Records review** (monitoring, corrective action, verification) by or under a PCQI within **7 working days**.\n- **Validate** the process controls before use, or within **90 days** of starting production.\n- **Calibrate** thermometers and the metal detector.\n- **Retain records** for at least **2 years**. Keep the Food Safety Plan **onsite**, and make offsite records retrievable within **24 hours**.\n- **Training:** food hygiene and safety training for all staff, plus a PCQI.\n- **Reanalyze** at least every **3 years**, or sooner if you:\n  - change suppliers (especially of flour, egg or walnuts);\n  - change the formula (which can affect a_w or allergens);\n  - add equipment;\n  - get EM positives or complaints.\n\n---\n\n## 7. Currency notes and things to confirm\n\n- **Sesame** is a major food allergen as of 1 January 2023, after the 2016 FSPCA manual was published. Check every sub-ingredient for it.\n- FDA's **hazard analysis draft guidance** (*Hazard Analysis and Risk-Based Preventive Controls for Human Food*), and its tables of ingredient- and process-related hazards, may have updated expectations. FDA has also issued consumer and industry messaging on raw flour and raw dough. Check the latest versions.\n- **FSMA 204 traceability rule:** liquid egg products, walnuts and cookie dough do not appear to be on the Food Traceability List (shell eggs and nut butters are). **Confirm against the current list** and against any ingredients you add.\n- **Liquid egg products** fall under **USDA-FSIS** for the supplier. Your dough falls under **FDA**. Your verification relies on the supplier's FSIS-inspected status.\n- **Sanitary Transportation rule:** refrigerated shipping needs temperature specifications agreed with carriers.\n\n**Next steps for your PCQI:**\n1. Get a_w and pH data on the finished dough.\n2. Walk the line to verify the flow diagram.\n3. Collect supplier validation studies and COAs for flour, egg and walnuts.\n4. Decide on metal detection and walnut shell control based on your own history.\n5. Write the EM program (sites and frequency).\n6. Sign and date the Food Safety Plan.\n"}], "grading": {"expectations": [{"text": "Uses the hazard analysis structure: steps and ingredients, identify biological/chemical/physical hazards, decide whether each requires a preventive control, and justify each decision", "passed": true, "evidence": "Hazard analysis tables per ingredient and step with B/C/P, 'requires PC?' and justification columns"}, {"text": "Considers foreseeable use: consumers eating the dough raw, so pathogens in flour (E. coli/Salmonella) are a hazard needing control", "passed": true, "evidence": "'Foreseeable use: Eaten raw, including by children'; flour STEC/Salmonella marked Yes"}, {"text": "Identifies a supply-chain preventive control for the supplier-applied heat treatment of flour (and/or pasteurized eggs), since there is no kill step in the facility", "passed": true, "evidence": "'Receiving: flour, eggs, walnuts \u2014 Supply-chain program: approved supplier, COA...'; egg 'Supply-chain control: the supplier's pasteurization'"}, {"text": "Identifies food allergen controls for milk, egg, wheat, tree nuts (walnut) and soy if present: labeling control and cross-contact controls", "passed": true, "evidence": "Allergen controls for wheat, egg, milk, soy lecithin, walnut; label review and cross-contact in storage and mixing"}, {"text": "Identifies a process control for refrigeration/temperature (time-temperature) or notes the environmental pathogen hazard for exposed RTE product with sanitation control and environmental monitoring", "passed": true, "evidence": "Weighing/mixing and depositing: 'Sanitation control + EM'; cold storage control for L. monocytogenes growth"}, {"text": "States a recall plan is required because hazards requiring preventive controls were identified", "passed": true, "evidence": "Section 5 'Recall plan (required) \u2014 Because you have hazards requiring preventive controls'"}], "summary": {"passed": 6, "failed": 0, "total": 6, "pass_rate": 1.0}}}, {"id": "eval-1-pc-cookie-dough-without_skill-run-1", "prompt": "I run a small bakery facility registered with FDA. We're adding a refrigerated ready-to-bake chocolate chip cookie dough with walnuts, sold in retail tubs. Ingredients: heat-treated flour from a supplier, liquid pasteurized eggs, butter, sugar, chocolate chips, walnuts. We mix, deposit into tubs, label and ship refrigerated. Do a hazard analysis for this under the FSMA Preventive Controls for Human Food rule and tell me which preventive controls I need.", "eval_id": 1, "outputs": [{"name": "response.md", "type": "text", "content": "# Hazard Analysis and Preventive Controls: Refrigerated Ready-to-Bake Chocolate Chip Walnut Cookie Dough\n\n**Rule:** FSMA Preventive Controls for Human Food (PCHF), 21 CFR Part 117, Subparts C (Hazard Analysis and Risk-Based Preventive Controls) and G (Supply-Chain Program)\n\n> This is a starting framework. Your Food Safety Plan has to be prepared, or overseen, by a **Preventive Controls Qualified Individual (PCQI)** (117.126(a)(2)). It also has to reflect your actual facility, equipment, suppliers, and product data. Treat the conclusions below as a well-reasoned draft for your PCQI to confirm, not as a final plan.\n\n---\n\n## 0. First, check whether full Subpart C applies to you\n\n- **Qualified facility (very small business):** If your business, including all subsidiaries and affiliates, averages less than about **$1 million per year** (inflation-adjusted; the current threshold is a little higher) in human food sales plus the market value of food held without sale, over the previous 3 years, you are a *qualified facility*. In that case you are **exempt from Subparts C and G**. You file the attestation on **Form FDA 3942a** (117.201) every 2 years. You then either attest that you identify and control hazards, or you comply with applicable state/local food safety law and put your name and address on the label or at the point of sale. CGMPs (Subpart B) still apply.\n- Even if you qualify, the analysis below is the right way to make this product safe. A raw-dough product with a nut allergen is high-risk for recalls.\n- The rest of this document assumes you are **not** a qualified facility and need a full Food Safety Plan.\n\n---\n\n## 1. Product Description (required context for hazard analysis)\n\n| Item | Description |\n|---|---|\n| Product | Refrigerated ready-to-bake chocolate chip cookie dough with walnuts |\n| Ingredients | Heat-treated wheat flour (supplier), liquid pasteurized whole egg (USDA-inspected egg product), butter, sugar(s), chocolate chips (likely contain milk and soy lecithin; confirm), walnuts |\n| Process | Receive \u2192 refrigerated/dry storage \u2192 weigh \u2192 mix \u2192 deposit into tubs \u2192 lid/seal \u2192 label \u2192 refrigerated storage \u2192 refrigerated distribution |\n| Packaging | Retail tubs, sealed lid |\n| Storage/distribution | Refrigerated (target \u226441\u00b0F / 5\u00b0C) |\n| Intended use | Labeled \"bake before eating.\" **Reasonably foreseeable use:** consumers, including children, eat the dough raw. |\n| Intended consumer | General public, including children, elderly, pregnant, and immunocompromised people |\n| Allergens | **Wheat, egg, milk** (butter, and probably the chips), **tree nuts (walnut)**, **soy** (if the chips contain soy lecithin). Check every sub-ingredient, including for sesame. |\n\n### The key judgment: treat this dough as ready-to-eat\n\nFDA's hazard analysis has to consider hazards that are **known or reasonably foreseeable**. That includes reasonably foreseeable consumer behavior. Raw cookie dough is widely eaten unbaked. Flour-related STEC and Salmonella outbreaks (2016, 2019, 2023) and the large raw-dough recalls happened because of this behavior. A \"do not eat raw\" statement is good practice, but FDA does not consider it a control you can rely on for a product this commonly eaten raw.\n\nUnder the Part 117 definition, a ready-to-eat (RTE) food includes food for which it is reasonably foreseeable that it will be eaten without further processing that would significantly minimize biological hazards. So **treat this dough as an RTE food.** That drives two results:\n\n1. Every ingredient that carries a pathogen hazard must arrive already treated (a supplier kill step), because **your facility has no kill step**.\n2. The dough is exposed to the environment between mixing and sealing, so **environmental pathogens (Listeria monocytogenes)** must be considered.\n\n---\n\n## 2. Hazard Analysis Worksheet\n\nKey: **HRPC** = hazard requiring a preventive control. \"Supply-chain\" = the hazard is controlled before you receive the ingredient, and you verify that through your supply-chain program (Subpart G).\n\n### 2a. Ingredients / Receiving\n\n| Ingredient | Potential hazard | Known or reasonably foreseeable? Justification | HRPC? | Control |\n|---|---|---|---|---|\n| **Heat-treated flour** | B: STEC (E. coli O157:H7, O121, O26), Salmonella | **Yes.** Raw flour is a recognized vehicle (multiple outbreaks and recalls). Illness is severe (HUS), so it is a SAHCODHA hazard. You have no kill step. | **Yes** | **Supply-chain-applied control:** supplier's validated heat treatment (typically \u22655-log reduction of Salmonella/STEC surrogates) |\n| | B: post-treatment recontamination at supplier | Possible | (covered above) | Supplier's post-lethality sanitation and EMP. Verify by audit. |\n| | C: mycotoxins (DON), pesticide residues | Low at levels that cause illness in US wheat. Controlled by the miller and FDA advisory levels. | No | Supplier specification (prerequisite program) |\n| | C: allergen (wheat) | Inherent, so it must be labeled | Handled under allergen controls (labeling) | Allergen control |\n| | P: foreign material | Low. Millers sift and use magnets. | No | Supplier specification |\n| **Liquid pasteurized egg** | B: Salmonella Enteritidis | **Yes.** Eggs are a known source. Pasteurization is required by law under USDA FSIS (Egg Products Inspection Act). | **Yes** | **Supply-chain-applied control:** supplier pasteurization. Verify with documentation: USDA inspection legend, letter of guarantee, COA if available. |\n| | B: growth after receipt (temperature abuse) | Yes, if not kept cold | Handled by receiving temperature check and storage \u226440\u00b0F (CGMP/prerequisite). Use within the supplier's open-container shelf life. | CGMP |\n| | C: allergen (egg) | Inherent | Allergen control | Allergen control |\n| **Butter** | B: Listeria, Salmonella | Low. Made from pasteurized cream under PMO/dairy oversight. Few outbreaks. | No (document justification) | Approved supplier, refrigerated receipt |\n| | C: allergen (milk) | Inherent | Allergen control | |\n| **Sugar** | B/C/P | Very low. Aw too low for pathogen growth. Refined. | No | Supplier specification |\n| **Chocolate chips** | B: Salmonella | Historically linked to chocolate outbreaks, but cocoa roasting and the manufacturer's PCs control it. Low risk from a reputable supplier that is itself under PCHF. | **Judgment call.** Most plans conclude **No** (supplier is a PCHF facility controlling the hazard and the hazard is rare). A conservative plan adds it to the supply-chain program. Document your reasoning. | Approved supplier + spec, or supply-chain control |\n| | C: allergens: milk, soy (lecithin), possibly tree nuts/peanuts from shared lines | **Yes.** Sub-ingredient allergens and \"may contain\" precautionary statements are a frequent cause of undeclared allergen recalls. | Yes, under allergen control (label review of incoming ingredient) | Allergen control (ingredient label/spec review at receiving) |\n| **Walnuts** | B: Salmonella, E. coli O157:H7 | **Yes.** Tree nuts have had repeated Salmonella and STEC recalls and outbreaks, including a 2024 E. coli O157:H7 outbreak tied to raw organic walnuts. Walnuts go into the dough **with no kill step**. SAHCODHA. | **Yes** | **Supply-chain-applied control:** buy **pasteurized/treated walnuts** (validated process, such as steam, PPO, or dry heat, targeting \u22654-5 log Salmonella). Do **not** use raw walnuts. Alternatively, roast them in-house with a validated process; that would become a **process control** at your facility. |\n| | C: aflatoxin | Low for walnuts compared with peanuts and pistachios | No (supplier specification) | Supplier spec |\n| | C: allergen (tree nut, walnut) | Inherent. Also a cross-contact hazard for your other products. | Yes | Allergen control |\n| | P: shell fragments, stones | **Yes.** Shell fragments are common in shelled nuts. Hard or sharp pieces 7-25 mm are a choking or injury hazard. | Generally **No** at your facility if the supplier sorts (optical/air) and gives a shell spec. Document why. Some plans make this a supply-chain control. | Supplier spec (e.g., max shell per lb) + visual inspection at weighing |\n| **Packaging (tubs, lids)** | C: migration of non-food-grade material | Low with food-contact-compliant packaging | No | Letter of guarantee (21 CFR 174-178 compliance) |\n\n### 2b. Processing steps\n\n| Step | Potential hazard | Reasonably foreseeable? Justification | HRPC? | Control |\n|---|---|---|---|---|\n| **Receiving** | B: temperature abuse of refrigerated ingredients | Yes | No (CGMP) | Receiving temperature check |\n| | C: receiving the wrong ingredient or one with an undeclared allergen (e.g., unpasteurized walnuts, chips with peanut) | Yes | Covered under the supply-chain program and allergen control | Check every lot against the approved spec/supplier list |\n| **Storage** | B: pathogen growth in eggs and butter | Yes, if refrigeration fails | No (CGMP) | Cooler temperature monitoring |\n| | C: allergen cross-contact (walnut dust or pieces getting into other ingredients) | Yes | Yes | Allergen control: segregated, sealed, labeled storage, with walnuts stored below or apart from other ingredients |\n| **Weighing/scaling** | C: allergen cross-contact from shared scoops and scales | Yes | Yes | Allergen control: dedicated or cleaned utensils |\n| | P: foreign material | Low | No | CGMP |\n| **Mixing** | B: contamination from environment, equipment, or employees (Listeria, Salmonella) | **Yes.** RTE dough is exposed. Mixers, bowls, and depositors are wet-cleaned, and cooled areas support Listeria harborage. | **Yes** | **Sanitation control** + **environmental monitoring** |\n| | C: allergen cross-contact with other bakery products (walnut into non-nut products, or other allergens such as peanut and sesame into this dough) | **Yes**, if equipment is shared | **Yes** | **Allergen control** (scheduling, validated cleaning between allergen changeovers) + **sanitation control** |\n| | P: metal (mixer paddle or scraper wear, bowl contact, broken parts) | **Yes.** Mixers and depositors are known sources of metal fragments. | **Judgment call.** See Section 3.4. | Metal detection (process control) **or** equipment inspection program (CGMP) |\n| **Depositing into tubs** | B: environmental pathogen contamination (Listeria) from depositor, hoppers, and food-contact surfaces | **Yes.** Last exposure before sealing. | **Yes** | Sanitation control + EMP |\n| | P: metal from depositor (pistons, valves) | Yes | See Section 3.4 | |\n| **Lidding/sealing** | B: post-packaging contamination | Low once sealed | No | Seal integrity check (CGMP/quality) |\n| **Labeling** | C: **undeclared allergens** (wrong label, missing walnut/wheat/egg/milk/soy, label mix-up with a non-nut product) | **Yes.** This is the leading cause of FDA food recalls. | **Yes** | **Allergen control: label control** |\n| | B: missing \"keep refrigerated\" or baking instructions | Supports safe handling | Covered in label check | |\n| **Refrigerated storage and shipping** | B: growth of pathogens if temperature is abused (see Section 3.5) | Depends on the dough's water activity | **Depends on formulation.** See Section 3.5. | Refrigeration as a process control, or formulation (aw) as a process control, or no PC if validated to not support growth |\n| | | | | Also follow the Sanitary Transportation rule (21 CFR Part 1, Subpart O) |\n\n### 2c. Hazards considered and ruled out (document these too)\n\n- **Radiological:** not reasonably foreseeable.\n- **Economically motivated adulteration** (e.g., undeclared nut substitution): low for this supply chain. Note your reasoning.\n- **Cleaning chemical residues:** controlled by CGMPs (labeled, stored separately, used per directions). Not an HRPC.\n- **Staphylococcus aureus / B. cereus toxins:** low risk if formulation aw is low and the product is refrigerated. Employee hygiene (CGMP).\n- **Clostridium botulinum:** not a concern. The product is aerobic, and its aw and refrigeration prevent it. Do not vacuum-pack or modified-atmosphere-pack without re-evaluating.\n\n---\n\n## 3. Preventive Controls You Need\n\n### Summary\n\n| # | Preventive control | Type (117.135(c)) | Hazard(s) controlled |\n|---|---|---|---|\n| 1 | **Supply-chain program**: heat-treated flour, pasteurized eggs, pasteurized/treated walnuts (chocolate chips optional) | Supply-chain control (Subpart G) | STEC and Salmonella in flour; Salmonella in eggs; Salmonella and STEC in walnuts |\n| 2 | **Allergen controls**: label control + cross-contact control | Food allergen control | Undeclared wheat, egg, milk, soy, tree nut (walnut); cross-contact to and from other products |\n| 3 | **Sanitation controls** for RTE dough food-contact surfaces, plus **environmental monitoring** | Sanitation control (+ EMP verification, 117.165(a)(3)) | Listeria monocytogenes (and Salmonella) from the environment; allergen cross-contact |\n| 4 | **Metal detection** (recommended) or justified equipment controls | Process control (if adopted) | Metal fragments |\n| 5 | **Refrigeration and/or formulation (aw)** | Process control, *only if* the dough supports pathogen growth | Pathogen growth during shelf life |\n| 6 | **Recall plan** | Required, because you have HRPCs (117.139) | All |\n\n---\n\n### 3.1 Supply-Chain Program (21 CFR 117 Subpart G)\n\nYou are the **receiving facility**. Your **suppliers** control the pathogen hazards in flour, eggs, and walnuts. Under 117.410-117.475 you must:\n\n1. **Use approved suppliers** (117.410(d), 117.420). Approve each supplier in writing, considering: their hazard analysis, the controls they apply, their compliance history (FDA warning letters, import alerts, recalls), and their food safety performance.\n2. **Set appropriate verification activities** for each supplier (117.410(b), 117.430):\n   - **Flour, walnuts, eggs: Salmonella/STEC are SAHCODHA hazards.** The default is an **annual onsite audit** by a qualified auditor (117.430(b)(1)), unless you document a determination that other verification activities and/or less frequent auditing give adequate assurance. In practice, accept the supplier's **third-party audit report** (e.g., a GFSI-benchmarked scheme such as SQF or BRCGS), which must cover FDA requirements. You do not have to do the audit yourself.\n   - Add: **lot-specific Certificates of Analysis or Certificates of Treatment/Conformance** stating the heat treatment or pasteurization process was applied (e.g., \"heat-treated to achieve \u22655-log reduction of Salmonella,\" with lot number).\n   - Get the **supplier's process validation summary** (for example, the flour heat-treatment validation study or the walnut pasteurization validation) once at approval, then on change.\n   - **Eggs:** the supplier is a USDA FSIS-inspected establishment, and pasteurization is mandatory. Verification is typically documentation-based: the USDA inspection legend on the package, a letter of guarantee/continuing guarantee, and spec sheets. Record your justification for the verification you choose.\n   - **Optional periodic sampling and testing** (e.g., Salmonella on walnuts, or E. coli/Salmonella on flour) as a further check. Testing alone is not a kill step.\n3. **Receiving procedures:** before use, check every lot against the approved-supplier list and the required documentation (COA/certificate). Reject and hold lots without documentation.\n4. **Exceptions:** if a supplier is itself a **qualified facility**, or a small farm, the modified verification in 117.430(c)-(e) applies (written assurance plus attestation).\n5. **Records** (117.475): written supply-chain program, supplier approval, audit reports, COAs, corrective actions, and review of records.\n6. **Corrective actions:** if a supplier fails to control the hazard (failed audit, missing COA, a recall), stop using the supplier until it is resolved, and assess affected product.\n\n> **Specification wording matters.** \"Heat-treated flour\" must be specified as **validated for pathogen reduction** (not just \"heat-treated\" for functional or baking properties). \"Walnuts\" must be specified as **pasteurized/treated** with a validated log reduction. If you cannot get treated walnuts, you need your own validated roasting step (see 3.6).\n\n### 3.2 Food Allergen Controls (117.135(c)(2))\n\n**a. Label control (most important)**\n- **Monitoring:** at the start of each production run, at every label roll or lot change, and at the end of the run: confirm the label in use matches the product in the tubs. Confirm the ingredient statement and \"**Contains: Wheat, Egg, Milk, Walnut, Soy**\" (as applicable) match the current formula.\n- **Label design review:** whenever the formula, supplier, or label changes. The PCQI or a designee checks every sub-ingredient specification, especially the chocolate chips and any precautionary \"may contain\" statements. Tree nuts must be declared by the specific nut (\"walnuts\").\n- Keep labels for different products physically separated. Destroy obsolete labels.\n- **Corrective action:** if the label is wrong, hold the product back to the last good check, relabel or destroy, find the root cause, and retrain.\n- **Records:** label check log signed by the operator; review within 7 working days (117.165(a)(4)).\n\n**b. Allergen cross-contact control**\n- If you make other products **without walnuts** (or without any of these allergens) on the same mixer or depositor:\n  - **Production scheduling:** run walnut dough **last** before a full clean, or on dedicated days.\n  - **Validated allergen cleaning** between changeovers. Verify with visual inspection and allergen-specific test kits or protein swabs (ATP does **not** detect allergen protein).\n  - Dedicated or color-coded scoops, bins, and utensils for walnuts.\n  - Segregated storage of walnuts.\n  - Control airborne nut fines and flour dust.\n- Also consider allergens in **other** products (e.g., peanut, sesame) that could get into **this** dough.\n\n### 3.3 Sanitation Controls + Environmental Monitoring (117.135(c)(3); 117.165(a)(3))\n\nBecause the dough is RTE (reasonably foreseeable raw consumption), is exposed to the environment before sealing, and gets no lethality treatment after packaging:\n\n- **Sanitation PC:** written procedures for cleaning and sanitizing **food-contact surfaces** (mixer bowl, paddle, depositor hopper, pistons, nozzles, utensils, tub-filling area). Include frequency, method (disassembly, wash, rinse, sanitize, concentration), and who is responsible.\n  - **Monitoring:** pre-operational inspection (visual + sanitizer concentration), documented each production day.\n  - **Corrective action:** re-clean before starting. Evaluate any product made on inadequately cleaned equipment.\n  - Include **allergen cleaning** in these sanitation procedures.\n  - Dough equipment is often hard to clean (sugar and fat residue). **Minimize wet cleaning** where possible, and **dry the equipment** fully, because water is what lets Listeria establish.\n- **Environmental monitoring program (EMP), required verification:**\n  - Test for **Listeria spp.** (indicator organism) by zone:\n    - Zone 1 (food-contact surfaces after sanitation, or during production): mixer bowl, paddle, depositor\n    - Zone 2 (near food contact): equipment frames, control panels\n    - Zone 3: floors, drains, carts\n    - Zone 4: outside the processing area\n  - Write down the **number and locations of sites, timing, frequency** (e.g., weekly to start), test method, and laboratory.\n  - **Corrective actions for positives:** intensified cleaning, vector swabbing, and re-testing. For a **Zone 1 positive**, hold and test the product and do a root-cause investigation.\n  - Add Salmonella testing at a lower frequency if your hazard analysis (e.g., dry-ingredient handling) supports it.\n\n> Note: high sugar and low aw limit *growth* of Listeria in dough, but do not reliably *kill* it, and Listeria survives refrigeration. Contamination after mixing therefore stays a real risk.\n\n### 3.4 Metal: Process Control or Justified CGMP\n\nMixers and depositors are known sources of metal fragments (worn paddles and scrapers, pistons, broken screws). You have two defensible options:\n\n- **Option A (recommended): metal detector** on the filled tubs (most tubs are non-metallic, so in-line detection works well).\n  - **Process control** with parameters such as sensitivity standards (e.g., \u22652.0 mm ferrous, 2.5 mm non-ferrous, 3.0 mm stainless; set for your product).\n  - **Monitoring:** test with certified test pieces at start-up, at least every 2-4 hours, and at the end of the run.\n  - **Corrective action:** if a check fails, re-inspect all product back to the last good check.\n  - Reject mechanism or manual removal; investigate any rejects.\n  - FDA guidance treats hard or sharp foreign objects of 7-25 mm as a health hazard. Metal detection catches much smaller pieces.\n- **Option B:** conclude that metal is not an HRPC because of a **documented equipment inspection program** (pre-op and post-op inspection of paddles, scrapers, depositor parts, and screens, plus preventive maintenance). This is acceptable only if your hazard evaluation supports it: low-speed mixer, no metal-on-metal contact, and no history of incidents. **Write down the justification.**\n\n### 3.5 Refrigeration and/or Formulation: Decide with Data\n\nWhether temperature control is a **preventive control** or a CGMP depends on whether the dough supports pathogen growth:\n\n- **Measure the finished dough's water activity (aw)** (and pH) on several batches.\n  - Typical chocolate chip cookie dough has aw of about **0.80-0.90**, depending on the sugar-to-fat-to-egg ratio.\n  - Listeria minimum aw for growth is about 0.92; Salmonella about 0.94; S. aureus can grow down to about 0.83-0.86 (toxin production at about 0.86+, aerobic).\n- **If aw \u2264 ~0.85 (validated):** pathogen growth is not reasonably foreseeable. Refrigeration is mainly a quality and spoilage control (CGMP), and **formulation** (sugar level, aw) may be your **process control**. Monitor it by batch formulation checks or periodic aw testing, and verify it.\n- **If aw > ~0.86, or not validated:** make **refrigeration (\u226441\u00b0F) a process control** for the finished product in storage. Monitor cooler temperature continuously or at set intervals. Correct deviations (evaluate time and temperature exposure, hold the product). Shipping temperature is also covered by the Sanitary Transportation rule.\n- A **challenge study** by a process authority or university lab is the strongest support for your shelf-life claim and for the \"no growth\" conclusion.\n\n### 3.6 If You Change the Process (Optional Alternatives)\n\n- **In-house walnut roasting:** if you roast raw walnuts yourself to control Salmonella and STEC, that step becomes a **process control**. It needs a **validated** time and temperature (e.g., from a process authority or published data, with \u22654-5 log reduction of Salmonella), continuous monitoring, corrective actions, and validation records (117.160).\n- **Untreated flour + reliance on consumer baking:** FDA does **not** accept this for a product that is foreseeably eaten raw. 117.136 (relying on a customer to control a hazard) applies to downstream *manufacturers* who get a written assurance, not to retail consumers.\n\n---\n\n## 4. Other Required Food Safety Plan Elements (117.126)\n\nFor each preventive control (except where the rule says otherwise), you need:\n\n1. **Hazard analysis** (above), written. Include your justification for each \"No\" decision.\n2. **Preventive controls** with parameters and critical limits where applicable.\n3. **Monitoring procedures** and records (117.145).\n4. **Corrective action procedures** (117.150). Include unanticipated problems: if a hazard shows up that the plan did not foresee, reanalyze.\n5. **Verification** (117.155, 117.165):\n   - **Validation** of process controls (e.g., metal detector sensitivity, refrigeration/aw decision, any in-house roasting) by a PCQI. Allergen, sanitation, and supply-chain controls do not require validation.\n   - **Calibration** of thermometers, aw meter, metal detector.\n   - **Records review** by the PCQI or under PCQI oversight within 7 working days of record creation, for monitoring and corrective action records.\n   - **Environmental monitoring** (required here).\n   - **Product testing** (optional but useful: periodic Salmonella/E. coli/Listeria testing of finished dough).\n6. **Supply-chain program** (Section 3.1).\n7. **Recall plan** (117.139): required because you have HRPCs. Cover notifying consignees, public notification, effectiveness checks, and disposition. Lot coding on every tub and distribution records are essential.\n8. **Reanalysis:** at least every **3 years**, and whenever anything changes (new supplier, new product, new equipment, new hazard information, or a control failure).\n9. **Records** (Subpart F): kept for 2 years, signed by the PCQI, and available to FDA.\n10. **Training:** qualified individuals for each task (117.4), CGMP and food hygiene training, and PCQI training (e.g., FSPCA course or equivalent experience).\n\n---\n\n## 5. Practical Recommendations\n\n- **Label \"Bake before eating\" / \"Do not consume raw dough\"**, include baking instructions, and \"**Keep Refrigerated.**\" Do this as good practice and consumer safety messaging, even though your controls (treated flour, pasteurized eggs, treated walnuts) are designed to make the dough safe if eaten raw.\n- **Do not make a \"safe to eat raw\" claim** unless every ingredient is validated and verified for pathogen reduction, the EMP is mature, and you have finished-product testing data. If you plan to market it as edible raw, apply the same controls with more verification.\n- **Start with a strong EMP** and finished-product testing for the first several months, then adjust frequency based on data.\n- **Ask your flour supplier and walnut supplier for their validation reports now.** If they can't provide them, change suppliers.\n- **Get an allergen cross-contact map** of your bakery. If walnuts are new to the facility, they add a tree nut allergen risk to all your existing products. Re-evaluate those products' hazard analyses and labels too.\n- **Food Traceability Rule (FSMA 204):** walnuts, liquid egg products, flour, and finished cookie dough are not on the Food Traceability List. Lot coding and one-up/one-down records (Bioterrorism Act, 21 CFR 1 Subpart J) still apply.\n\n---\n\n## 6. Bottom Line\n\n**Hazards requiring a preventive control:**\n1. **Salmonella / STEC in flour**: supply-chain control (validated heat-treated flour).\n2. **Salmonella in eggs**: supply-chain control (USDA-pasteurized liquid egg).\n3. **Salmonella / E. coli O157:H7 in walnuts**: supply-chain control (pasteurized walnuts), or your own validated roast as a process control.\n4. **Undeclared allergens and allergen cross-contact** (wheat, egg, milk, soy, walnut): allergen controls (label control + cross-contact control).\n5. **Environmental pathogens (Listeria monocytogenes)** in RTE dough exposed before packaging: sanitation controls, verified by an environmental monitoring program.\n6. **Metal fragments**: metal detection as a process control (recommended), or a documented equipment-inspection justification.\n7. **Pathogen growth during refrigerated shelf life**: refrigeration or formulation (aw) as a process control, **if** aw testing shows the dough can support growth.\n\nPlus a **recall plan**, verification (including records review and calibration), and **reanalysis**, all managed by a PCQI.\n"}], "grading": {"expectations": [{"text": "Uses the hazard analysis structure: steps and ingredients, identify biological/chemical/physical hazards, decide whether each requires a preventive control, and justify each decision", "passed": true, "evidence": "Ingredient and step tables with hazard, 'reasonably foreseeable? justification', HRPC? and control columns"}, {"text": "Considers foreseeable use: consumers eating the dough raw, so pathogens in flour (E. coli/Salmonella) are a hazard needing control", "passed": true, "evidence": "'Reasonably foreseeable use: consumers, including children, eat the dough raw'"}, {"text": "Identifies a supply-chain preventive control for the supplier-applied heat treatment of flour (and/or pasteurized eggs), since there is no kill step in the facility", "passed": true, "evidence": "Flour and egg: 'Supply-chain-applied control', Subpart G program"}, {"text": "Identifies food allergen controls for milk, egg, wheat, tree nuts (walnut) and soy if present: labeling control and cross-contact controls", "passed": true, "evidence": "'Wheat, egg, milk, tree nuts (walnut), soy' allergen labeling and cross-contact controls"}, {"text": "Identifies a process control for refrigeration/temperature (time-temperature) or notes the environmental pathogen hazard for exposed RTE product with sanitation control and environmental monitoring", "passed": true, "evidence": "'Sanitation controls for RTE dough food-contact surfaces, plus environmental monitoring'; refrigeration process control if dough supports growth"}, {"text": "States a recall plan is required because hazards requiring preventive controls were identified", "passed": true, "evidence": "'Recall plan \u2014 Required, because you have HRPCs (117.139)'"}], "summary": {"passed": 6, "failed": 0, "total": 6, "pass_rate": 1.0}}}, {"id": "eval-2-pc-supplier-audit-with_skill-run-1", "prompt": "We buy pasteurized liquid egg from one supplier and use it in a ready-to-eat product with no further cook. Our QA lead wants to just accept the supplier's own annual self-audit and a certificate of analysis. Is that enough under the FSMA PCHF rule? What does our supply-chain program actually have to include?", "eval_id": 2, "outputs": [{"name": "response.md", "type": "text", "content": "# Is a supplier self-audit plus a COA enough for pasteurized liquid egg in an RTE product?\n\n**Short answer: No.** Under 21 CFR Part 117, Subpart G (the supply-chain program), a supplier's own audit does not count as supplier verification. Your situation is also the one where the rule asks the most: the hazard (*Salmonella*) can cause serious adverse health consequences or death (SAHCODHA), and **your facility has no kill step**. So the default requirement is an **onsite audit by a qualified auditor, before first use and at least once a year after that**. You can depart from that default only with a documented written justification. A COA can support your verification, but it cannot stand in for the audit.\n\n---\n\n## 1. Why you need a supply-chain-applied control at all\n\nWork this through your hazard analysis:\n\n| Ingredient | Hazard | Reasonably foreseeable? | Severity \u00d7 probability (without controls) | Requires a preventive control? | Where is it controlled? |\n|---|---|---|---|---|---|\n| Pasteurized liquid egg | Biological: *Salmonella* (and other vegetative pathogens) from shell eggs | Yes. Eggs and *Salmonella* are a classic pairing. | High severity; probable without pasteurization | **Yes** | **At the supplier** (pasteurization). You have no later lethal step. |\n| Pasteurized liquid egg | Chemical: egg allergen | Yes | High | Yes | **At your facility** (allergen control: labeling, cross-contact). This is not a supply-chain control. |\n\nThe rule calls a hazard controlled by your supplier a **\"supply-chain-applied control.\"** When you are the **receiving facility**, your hazard analysis identifies a hazard requiring a preventive control in a raw material, and the supplier controls it, you need a **supply-chain program**. That is your situation.\n\nFor comparison, the FSPCA course example (E.G. Food Company, frozen omelets) buys the same ingredient. It *chose* to control *Salmonella* with its own validated cook step (omelet surface \u2265 158 \u00b0F), which made a supply-chain control unnecessary for that hazard. You don't have that option, because your product gets no further cook. Everything rests on the supplier's pasteurization and your verification of it.\n\n## 2. Why the QA lead's plan falls short\n\n| Proposed element | Status under Subpart G |\n|---|---|\n| Supplier's own annual self-audit | **Not acceptable.** The rule says a supplier may not audit itself or review its own records as your verification activity. The audit has to be done by a **qualified auditor** who is independent of the supplier. That can be a third-party auditor or someone from your company who is qualified. |\n| COA with each lot | **Acceptable as a supporting activity**, but not on its own for a SAHCODHA hazard. A COA is a supplier record, so reviewing it counts as \"review of the supplier's food safety records.\" It is not an onsite audit. |\n| Approval, receiving procedures, corrective actions, records | **Missing from the proposal.** These are required program elements, covered below. |\n\n**Some limits of COAs to keep in mind:**\n- A COA only shows that the sampled units tested negative. Pathogens are spread unevenly in product, so a negative result does not prove the lot is free of *Salmonella*.\n- It tells you nothing about how the pasteurization process was validated or monitored, or whether post-pasteurization sanitation and environmental monitoring were done.\n- It must name the specific lot, the test method, the lab and the specification. A generic \"meets spec\" letter does not do the job.\n- You should check it periodically yourself, for example by occasional confirmatory testing at your own lab and by tracing COA results during the audit.\n\n## 3. What your supply-chain program has to include\n\nYour **PCQI** should perform or oversee writing these into the Food Safety Plan:\n\n1. **Approved supplier.** You must approve the egg supplier **before** you receive product from it, and document the approval. The basis can include its hazard analysis, pasteurization validation, regulatory standing and audit results. The supplier cannot approve itself. Only use an unapproved supplier temporarily, and only after verifying the product before use.\n2. **Written receiving procedures.** Say what is checked at the dock, how, how often and by whom. For example:\n   - Supplier is on the approved list.\n   - Lot-specific COA is present, reviewed and within spec.\n   - Product temperature is \u2264 40 \u00b0F (4.4 \u00b0C) or your spec.\n   - Packaging is intact and the code date is acceptable.\n   - Labeling says \"pasteurized,\" and the establishment number is present.\n   - Name what happens if any check fails: hold, reject, or contact the supplier.\n3. **Decide on verification activities, and write the reasons down.** Base the choice on:\n   - the hazard (*Salmonella*, SAHCODHA);\n   - where it is controlled (pasteurization at the supplier, plus the supplier's post-pasteurization sanitation and environmental monitoring);\n   - the supplier's performance: its procedures, processes and practices, its food safety history and test results, how it responds to problems, and its regulatory record (warning letters, recalls, import alerts).\n\n   Only you, the receiving facility, can make this decision.\n4. **Carry out and record the verification activities.** For this hazard:\n   - **Onsite audit by a qualified auditor before first use, then at least annually.** The audit should cover the pasteurization process and its validation, monitoring records and deviations, post-pasteurization handling, sanitation, and environmental monitoring. Choose an auditor who knows egg products. A GFSI-scheme certification audit (SQF, BRCGS, FSSC 22000) may count if the auditor is qualified and the audit covers the hazard. Check that the audit's scope includes this product and line.\n   - **Review of supplier records:** lot COAs, and periodically the pasteurization and environmental monitoring records.\n   - **Sampling and testing** where it adds assurance, for example periodic *Salmonella* testing of incoming lots at an accredited lab. The supplier may do the sampling and testing, but you must review the results.\n   - **Alternative to the annual audit:** you can do other activities, or audit less often, only if you **write a justification** showing they give adequate assurance that the hazard is controlled. The rule also lets you rely, under certain conditions, on a recent inspection of the supplier by a regulatory agency instead of an onsite audit *(standard regulatory knowledge, check 21 CFR 117.435 and current FDA guidance)*. A self-audit is never an alternative.\n5. **Corrective action.** Act promptly if you find the supplier is not controlling the hazard. Examples: a positive test, a failed audit, a recall, or a pasteurization deviation. Responses can include holding or rejecting lots, evaluating product you have already used, suspending approval, and checking that the supplier has fixed the root cause before you use it again. Document all of it.\n6. **Records.** Keep all of these for at least **2 years**:\n   - the written supply-chain program\n   - supplier approval documents\n   - receiving procedures and receiving records\n   - your documented determination of verification activities, including any written justification\n   - audit reports, which show the auditor, date, scope, conclusions and the supplier's corrective actions\n   - COA and test records, with your review of them\n   - corrective action records\n\n   Supplier records reviews should be reviewed by or under your PCQI's oversight as part of normal records verification.\n\n**Special case:** if the supplier were a **qualified facility** (a very small business), modified requirements would apply. You would confirm its status before approval and annually by 31 December, and get written assurance of compliance at least every 2 years. A commercial pasteurized-egg plant is unlikely to qualify, but check.\n\n## 4. Related things to check in your plan\n\n- **Who regulates the supplier.** Liquid egg pasteurization plants are regulated by **USDA-FSIS** under the Egg Products Inspection Act. FDA's PCHF rule still applies to **your** facility, so your supply-chain program for the egg is still needed. Check that the egg carries the USDA inspection mark, and ask for the supplier's pasteurization validation. FSIS sets the pasteurization requirements.\n- **Your own facility risks.** The supplier's pasteurization does nothing about *Salmonella* or *Listeria monocytogenes* that get into the egg or product **after** it arrives. These are environmental pathogens. Because your RTE product is exposed and gets no kill step, your hazard analysis probably needs:\n  - **sanitation preventive controls**, with **environmental monitoring** (zoned sampling, *Listeria* spp. as an indicator, and corrective actions for positives); and\n  - **process controls** for cold holding of the egg and finished product, if temperature abuse could allow growth.\n- **Egg allergen.** You control this yourself through labeling and cross-contact controls, not through the supplier.\n- **Recall plan.** Because you have hazards requiring preventive controls, you need a written recall plan. Make sure lot traceability for the egg works one step back and one step forward.\n- **Reanalysis.** Reanalyze the plan if you change egg suppliers, the supplier changes its process, or you change the product. Reanalyze it at least every 3 years in any case.\n\n## Bottom line for the QA lead\n\nKeep the COA review as part of the program. Replace the self-audit with an **independent onsite audit by a qualified auditor before first use and at least annually**, or with a documented, PCQI-approved written justification for an equivalent alternative. Then put the rest of the program around it: approval, receiving procedures, a documented choice of verification activities, corrective actions and records.\n\n---\n\n*This guidance comes from the FSPCA Preventive Controls for Human Food curriculum (2016) and 21 CFR Part 117, Subpart G. It is training and drafting help, not legal advice. Your PCQI should finalize the program, and you should check the specific citations (e.g. 117.405\u2013117.475) and current FDA supply-chain guidance before you rely on it for compliance.*\n"}], "grading": {"expectations": [{"text": "States that Salmonella in eggs is a hazard that can cause serious adverse health consequences or death (SAHCODHA)", "passed": true, "evidence": "'the hazard (Salmonella) can cause serious adverse health consequences or death (SAHCODHA)'"}, {"text": "States that for a SAHCODHA hazard the default verification is an onsite audit before using the supplier and at least annually, unless there is a written justification for other activities", "passed": true, "evidence": "'onsite audit by a qualified auditor, before first use and at least once a year... only with a documented written justification'"}, {"text": "States that a supplier's self-audit is not acceptable as supplier verification", "passed": true, "evidence": "Table: 'Supplier's own annual self-audit \u2014 Not acceptable'"}, {"text": "Explains a COA can support verification but is not a substitute for the required onsite audit by a qualified auditor", "passed": true, "evidence": "'A COA can support your verification, but it cannot stand in for the audit'"}, {"text": "Lists supply-chain program elements: approved suppliers, written receiving procedures, determining and conducting verification activities, corrective action, records", "passed": true, "evidence": "Section 3 lists approved supplier, receiving procedures, verification determination, conducting activities, corrective action, records"}, {"text": "Mentions the onsite audit must be done by a qualified auditor (can be third party)", "passed": true, "evidence": "'qualified auditor who is independent of the supplier... third-party auditor'"}], "summary": {"passed": 6, "failed": 0, "total": 6, "pass_rate": 1.0}}}, {"id": "eval-2-pc-supplier-audit-without_skill-run-1", "prompt": "We buy pasteurized liquid egg from one supplier and use it in a ready-to-eat product with no further cook. Our QA lead wants to just accept the supplier's own annual self-audit and a certificate of analysis. Is that enough under the FSMA PCHF rule? What does our supply-chain program actually have to include?", "eval_id": 2, "outputs": [{"name": "response.md", "type": "text", "content": "# Is a supplier self-audit plus a COA enough for pasteurized liquid egg in an RTE, no-cook product?\n\n## Short answer: No\n\nUnder the Preventive Controls for Human Food (PCHF) rule, 21 CFR Part 117, Subpart G (Supply-Chain Program, \u00a7\u00a7117.405\u2013117.475), your QA lead's plan does not meet the requirement, for two reasons:\n\n1. **A supplier's audit of itself is not an acceptable verification activity.** The rule says the receiving facility (you) cannot accept a supplier's own audit, or the supplier's own choice of how it should be verified, as supplier verification. An audit has to be done by a **qualified auditor** who is independent of the supplier. That means you, your own qualified auditor, or a third party with no financial conflict of interest.\n2. **A certificate of analysis on its own is not enough for this hazard.** *Salmonella* in egg products is a hazard where exposure can cause serious adverse health consequences or death (a \"SAHCODHA\" hazard). Your product has no kill step after the egg arrives, so the supplier's pasteurization is the only control. For a SAHCODHA hazard controlled by the supplier, the default verification activity is an **onsite audit by a qualified auditor before you first approve the supplier, and at least once a year after that** (\u00a7117.430(b)). A COA is useful supporting evidence, but it does not replace the audit unless you have a documented, defensible written determination (see below).\n\n## Why a supply-chain-applied control is required here\n\n- Your hazard analysis (\u00a7117.130) should identify *Salmonella*, the main biological hazard in shell egg and raw egg product, as a hazard requiring a preventive control.\n- You do not control that hazard in your own facility. There is no cook step after the egg arrives, and your product is ready-to-eat.\n- The supplier controls it, through pasteurization, before you receive the egg.\n- Under \u00a7117.410, when the supplier controls a hazard that requires a preventive control, you need a **supply-chain-applied control** and a written supply-chain program.\n- The exemptions in \u00a7117.405 do not apply. They cover cases where a **customer** further down the chain controls the hazard, or where you control it yourself. Neither is true here.\n\n## What the written supply-chain program must include (\u00a7117.410\u2013\u00a7117.475)\n\nThe program is part of your food safety plan and must be written. It must cover the following elements.\n\n### 1. Approved suppliers (\u00a7117.410(d), \u00a7117.420)\n- **You** (the receiving facility) must approve the supplier. This step cannot be handed to anyone else.\n- Approve the supplier **before** you receive the raw material, and document the approval.\n- Base the approval on the evaluation described in item 3.\n\n### 2. Written procedures for receiving raw materials (\u00a7117.420)\n- Written procedures that ensure you receive liquid egg **only from approved suppliers**. If you ever use an unapproved supplier, the procedures must cover temporary use, with verification before use.\n- Document that you follow these procedures. Examples are checking the supplier against the approved list at receiving, checking lot identification and paperwork, and checking temperature on arrival.\n\n### 3. Supplier evaluation: what to consider when approving the supplier and choosing verification activities (\u00a7117.410(d))\nDocument an evaluation that considers:\n- Your hazard analysis for this raw material: *Salmonella*, plus *Listeria monocytogenes* from contamination after pasteurization, because the product is RTE.\n- The entity that applies the control: the supplier's pasteurization process.\n- The supplier's **procedures, processes and practices**, including its pasteurization validation and its controls against contamination after pasteurization, such as packaging and environmental monitoring.\n- **Applicable FDA (and here, USDA FSIS) food safety regulations and the supplier's compliance history.** Check for warning letters, import alerts, recalls, and FSIS noncompliance records.\n- The supplier's **food safety performance history**: your own test results, earlier audit results, and how the supplier responded to problems.\n- Other relevant factors, such as storage and transport practices. Liquid egg is temperature-sensitive.\n- Re-evaluate the supplier periodically, and right away if you learn of new information such as a recall or a positive result.\n\n### 4. Appropriate supplier verification activities and frequency (\u00a7117.410(b), \u00a7117.430)\nThe allowed verification activities are:\n- **Onsite audits** (required by default for SAHCODHA hazards: before first use and at least annually)\n- Sampling and testing of the raw material (by you, or by the supplier if results are documented and reviewed)\n- Review of the supplier's relevant food safety records\n- Other appropriate activities based on supplier performance and the risk\n\n**For this case:**\n- **Annual onsite audit by a qualified auditor** (\u00a7117.430(b)(1)). It is not a self-audit.\n- **Alternative to the onsite audit:** instead of the audit, you may rely on the written results of an **inspection of the supplier by FDA, another federal agency such as USDA, or a state, local, tribal or territorial agency** (or a comparable foreign authority). The inspection must have been done within one year before the date the onsite audit would have been due (\u00a7117.430(e)). Egg products plants are under continuous USDA FSIS inspection, so this may be a workable route. You must actually **obtain and keep documentation** of that inspection and its results. Simply knowing that FSIS is present is not enough.\n- **Departing from the annual-audit default:** you may use other verification activities or a lower audit frequency **only if you make a written determination** that they give adequate assurance the hazard is controlled (\u00a7117.430(b)(2)). For a single-sourced SAHCODHA ingredient going into an RTE, no-cook product, that justification will be hard to defend. Expect inspectors to scrutinize it.\n- **Recommended additions to the audit:** lot-by-lot COAs with methods stated (for example, *Salmonella* negative, plus *Listeria* where relevant), periodic verification testing by you or an independent lab, and an annual review of the supplier's pasteurization and HACCP records.\n\n### 5. Who does what (\u00a7117.415)\n- **Only you** may approve suppliers.\n- You may let another entity, such as a broker, a consultant, or a corporate QA function that is not the supplier, determine or conduct verification activities. You must then **review and assess** that entity's documentation.\n- The **supplier may not** determine its own verification activities or audit itself for you.\n- The supplier **may** do sampling and testing of specific lots, and you must review the results.\n\n### 6. Onsite audit requirements (\u00a7117.435)\n- Conducted by a **qualified auditor** (\u00a7117.3; trained and experienced in auditing).\n- Considers the applicable FDA (and, for an FSIS-regulated egg products plant, the relevant FSIS) food safety regulations, and includes review of the supplier's written food safety plan (HACCP plan for an FSIS plant) and how it is carried out.\n- A third-party audit, such as a GFSI-benchmarked scheme, can be used **if** the auditor is qualified, independent, and the scope covers the hazard. You still have to review the report and any corrective actions.\n- **No financial conflicts of interest** that could influence the results (\u00a7117.430(f)). Payment by the supplier is not on its own a conflict, but the auditor must be independent of the supplier's operation.\n\n### 7. Corrective actions when the supplier does not control the hazard (\u00a7117.410(e))\n- Written procedures for what you will do if you learn the supplier is not controlling the hazard. Examples are an adverse audit, a positive *Salmonella* or *Listeria* result, or an FSIS action.\n- Possible actions include stopping use, putting affected product on hold, testing, recall evaluation, and suspending the supplier until it shows it has fixed the problem.\n- Document the actions you take.\n\n### 8. Records (\u00a7117.475)\nKeep these records, reviewed and maintained under Subpart F:\n- The written supply-chain program\n- Documentation of supplier approval\n- Written receiving procedures and evidence that they were followed\n- Documentation of the verification activities you determined, and the written justification for any alternative frequency or activity\n- **Onsite audit records**: the auditor's name and qualifications, audit date, procedures used, conclusions, and corrective actions. Or, if you use the alternative, the documentation of the regulatory inspection.\n- Sampling and testing records, such as COAs and your own test results, with the product, lot, method, test date, results, and corrective actions\n- Records of your review of the supplier's food safety records\n- Corrective action records\n- Records of any reliance on another entity, and your review of its work\n\n## Related controls in your own facility\n\nYour plant still needs controls beyond the supply-chain program:\n- **Receiving and storage temperature control** for the liquid egg, typically as a process or other preventive control, together with the CGMPs.\n- **Post-pasteurization contamination in your own plant.** Once the egg is opened and mixed into an RTE product with no kill step, your own **sanitation controls and environmental monitoring for *Listeria*** (\u00a7117.135, \u00a7117.165) are critical.\n- **Allergen controls.** Egg is a major allergen, so you need allergen labeling and cross-contact controls (\u00a7117.135(c)(2)).\n\n## Bottom line for your QA lead\n\n| Proposed element | Acceptable? |\n|---|---|\n| Supplier's own annual self-audit | **No.** A supplier's self-audit cannot be used as verification. |\n| Certificate of analysis alone | **Not on its own** for a SAHCODHA hazard with no further kill step. Use it as a receiving and supporting check. |\n| Annual onsite audit by an independent qualified auditor (or documented recent FDA, USDA or state inspection results) | **Yes.** This is the default requirement. |\n| Lot COAs plus periodic verification testing plus supplier record review | **Strongly recommended** in addition to the audit. |\n| Written program, approval, receiving procedures, corrective actions, records | **Required** |\n\n*Note: this is a general regulatory overview based on 21 CFR Part 117, Subpart G. Check the current text of the regulation and FDA's supply-chain program guidance, and confirm with your PCQI or regulatory counsel, especially before relying on FSIS inspection results or making a written determination that departs from the annual onsite audit.*\n"}], "grading": {"expectations": [{"text": "States that Salmonella in eggs is a hazard that can cause serious adverse health consequences or death (SAHCODHA)", "passed": true, "evidence": "'a hazard where exposure can cause serious adverse health consequences or death (a SAHCODHA hazard)'"}, {"text": "States that for a SAHCODHA hazard the default verification is an onsite audit before using the supplier and at least annually, unless there is a written justification for other activities", "passed": true, "evidence": "'onsite audit by a qualified auditor before you first approve the supplier, and at least once a year after that (\u00a7117.430(b))' plus written determination"}, {"text": "States that a supplier's self-audit is not acceptable as supplier verification", "passed": true, "evidence": "'A supplier's audit of itself is not an acceptable verification activity'"}, {"text": "Explains a COA can support verification but is not a substitute for the required onsite audit by a qualified auditor", "passed": true, "evidence": "'A COA is useful supporting evidence, but it does not replace the audit'"}, {"text": "Lists supply-chain program elements: approved suppliers, written receiving procedures, determining and conducting verification activities, corrective action, records", "passed": true, "evidence": "Sections 1-8 cover approval, receiving procedures, evaluation, verification activities, corrective actions, records"}, {"text": "Mentions the onsite audit must be done by a qualified auditor (can be third party)", "passed": true, "evidence": "'qualified auditor... a third party with no financial conflict of interest'"}], "summary": {"passed": 6, "failed": 0, "total": 6, "pass_rate": 1.0}}}, {"id": "eval-3-pc-cook-deviation-with_skill-run-1", "prompt": "Our cook step is a process preventive control with a critical limit of product surface temperature at or above 158 F. This morning the operator measured 152 F on one batch and it had already been moved to assembly. Walk me through what we have to do, the difference between a correction and a corrective action, and what verification and record timelines apply under 21 CFR 117.", "eval_id": 3, "outputs": [{"name": "response.md", "type": "text", "content": "# Cook-step deviation: 152 \u00b0F against a \u2265 158 \u00b0F critical limit\n\n**Short answer:** this needs a **corrective action**, not a correction. The product missed a critical limit at a process preventive control, and it has already moved to the next step. Under 21 CFR 117.150 you must find and fix the cause and reduce the chance it happens again. You must also evaluate every affected unit for safety, keep any food whose safety you can't ensure out of commerce, and document all of it. A PCQI (or someone working under PCQI oversight) then reviews that record within 7 working days.\n\n---\n\n## 1. What to do now (in order)\n\n### Step 1: Stop and contain (within minutes)\n- **Hold the affected batch where it is.** Tag it \"HOLD \u2013 cook deviation\", with the date, time and batch or lot code. Don't let it go on to freezing, packing or shipping until someone makes a documented disposition decision.\n- **Track down everything the batch touched in assembly:** partial assemblies, combined product, rework bins. If under-cooked product was mixed with other batches, the hold covers those batches too.\n- **Treat the assembly table as possibly contaminated.** Product that hasn't been cooked enough (e.g. egg that may carry *Salmonella*) can contaminate food-contact surfaces in the RTE assembly area. Clean and sanitize the assembly surfaces and utensils it touched before the line restarts, and record it.\n\n### Step 2: Establish the scope of the deviation\n- **Re-check the thermometer.** Do an accuracy check right away (ice point or a comparison against a reference). Two outcomes:\n  - The thermometer reads correctly: the 152 \u00b0F reading is real.\n  - The thermometer reads wrong: the problem may be larger. Every batch measured since the last good accuracy check is now suspect, including batches that \"passed\".\n- **Look back through the cook log.** Find the last batch that clearly met \u2265 158 \u00b0F. Every batch after it is in scope until you rule it out.\n- **Check the cook equipment.** Look at the burner or griddle setpoint, the cook time, the batch size and fill, the starting temperature of the batter, and any recent maintenance.\n\n### Step 3: Fix the cause and restart under control\n- **Fix the immediate cause.** Adjust the setpoint, repair the equipment, or retrain the operator.\n- **Before restarting, confirm the next batches meet \u2265 158 \u00b0F.** Consider measuring more often for a while (e.g. every batch plus a supervisor check measurement).\n- **Run a root-cause analysis** so it doesn't happen again. Ask:\n  - Was there an **operating limit** (e.g. 163 to 165 \u00b0F) that would have triggered an adjustment before the critical limit was missed?\n  - Was the measuring point the coldest spot or the thickest part?\n  - Was the batch size within the validated range?\n  - Was the operator trained?\n  - Should the plan say that product can't move to assembly until the cook-log reading is recorded? That last question matters most here: the batch shouldn't have reached assembly before the temperature reading was confirmed.\n\n### Step 4: Evaluate the product's safety and decide what happens to it\nEvaluate all affected food. Your options are listed from most to least protective:\n\n| Option | When it fits |\n|---|---|\n| **Re-cook** to the validated critical limit | Only if re-cooking assembled product is validated and practical, and doesn't create new hazards (e.g. scorched or uneven product, allergen cross-contact from mixed components). |\n| **Divert** to a use with a validated kill step | If such an outlet exists, with documentation. |\n| **Destroy** | When neither of the above is possible. This is usually the simplest and safest choice for a single batch. |\n| **Release** | Only with a scientific basis that the batch is safe. See the caution below. |\n\n> **Caution about releasing on test results.** The critical limit is the validated value for lethality against the target vegetative pathogens. 152 \u00b0F instantaneous is below it. You would need a process authority or validation data to show the process actually delivered enough lethality, e.g. that time at temperature was enough. A negative *Salmonella* test on a sample is **not** enough on its own to show a batch is safe, because pathogens are spread unevenly and sampling has limited statistical power. If the safety of the food can't be ensured, it can't go into commerce.\n\n- **If any affected product has already shipped**, activate your **recall plan**. Evaluate the health risk and decide whether to notify consignees. Also check whether a **Reportable Food Registry** report is required. It is required where there's a reasonable probability of serious adverse health consequences or death.\n\n### Step 5: Document it\nWrite a **corrective action record**. It should include:\n- product identity and lot or batch codes, and the quantity affected;\n- date and time, and who found the deviation;\n- the measured value (152 \u00b0F) against the critical limit (\u2265 158 \u00b0F);\n- the results of the thermometer check;\n- the actions taken to contain the product and fix the cause;\n- the root cause found and the steps taken to prevent it happening again;\n- the safety evaluation and disposition of the product, with its basis (e.g. destroyed, with quantity and method);\n- the signature or initials of the person who did each step.\n\n### Step 6: Decide whether reanalysis is needed\n- **If this deviation is a one-off and the corrective action procedure already in your plan covered it, a full reanalysis isn't automatically required.** Still, record that the PCQI considered the question.\n- **Reanalysis is required in these cases:**\n  - the problem was **unanticipated**, meaning your plan had no written corrective action procedure for it;\n  - deviations keep happening;\n  - the root cause shows the **control itself is ineffective**, e.g. the validated parameters don't work at your real batch sizes.\n\n  In those cases, apply the corrective action to the product **and** reanalyze the Food Safety Plan to decide whether you need to change it, e.g. new parameters, an operating limit, or a hold point before assembly (117.150(b)).\n\n---\n\n## 2. Correction vs. corrective action\n\n| | **Correction** | **Corrective action** |\n|---|---|---|\n| **What it is** | A quick action to find and fix a **minor, isolated** problem, without the full corrective action procedure. | The full, written procedure applied when a preventive control isn't properly implemented, e.g. a **critical limit is missed**. |\n| **Product impact** | **No direct impact on product safety.** Usually it's caught before the product is affected. | Product safety **may be affected**, so the affected food must be evaluated. |\n| **What it includes** | Fixing the condition (re-clean, re-gown, put the guard back). | (1) Find and fix the problem; (2) **reduce the likelihood of recurrence** (root cause); (3) **evaluate all affected food** for safety; (4) **prevent affected food from entering commerce** if its safety can't be ensured; (5) **document**. |\n| **Where it applies** | Mainly **sanitation and food allergen controls**, e.g. a food-contact surface found dirty at the pre-op inspection and re-cleaned **before production**; an employee told to gown properly. | Any preventive control where product may be affected, and **always for a missed process-control critical limit**. |\n| **Records** | Lighter. Document it when appropriate (117.150(d)). Many sanitation corrections need little or no documentation. | A **corrective action record** is required, and it's subject to verification and records review. |\n\n**How it applies to your case:** 152 \u00b0F against \u2265 158 \u00b0F at a validated cook step is a deviation from a critical limit, and the product has already moved downstream. That makes it a **corrective action** under 117.150(a). It isn't a correction. The correction exemption in 117.150(c) covers timely fixes to **sanitation and food allergen** conditions and practices, and minor, isolated problems that don't directly affect product safety. It doesn't cover an under-processed batch.\n\n> Tip: an **operating limit** set tighter than the critical limit (e.g. a 163 \u00b0F target against the 158 \u00b0F CL) lets the operator adjust the process (a correction, at most) before a critical-limit deviation happens. That keeps you out of corrective-action territory.\n\n---\n\n## 3. Verification and record timelines under Part 117\n\n| Activity | Requirement | Applied to this event |\n|---|---|---|\n| **Records review of monitoring and corrective action records** (117.165(a)(4)) | By, or under the oversight of, a **PCQI**, within **7 working days** of the record being created (or a reasonable timeframe justified in writing). | Review and sign the cook log for today and the corrective action record within 7 working days. Check that the actions were appropriate and complete. |\n| **Verification that corrective actions were taken** (117.165(a)(2)) | Required. | The PCQI confirms the disposition happened, e.g. destruction was witnessed or documented. Also confirm the root-cause fixes were put in place. |\n| **Calibration and accuracy checks** (117.165(a)(3)) | As your plan specifies. The FSPCA model uses a **daily accuracy check and annual calibration** of the cook thermometer. | Record today's extra accuracy check. If the thermometer was off, take it out of service, recalibrate or replace it, and widen the product evaluation. |\n| **Review of calibration, product testing and EM records** (117.165(a)(4)(ii)) | Within a **reasonable time** after the records are created. | Include any product or environmental test results from this event, e.g. extra *Listeria*/EM swabs of the assembly area if your EM program calls for them. |\n| **Validation** (117.160) | Required for process controls. Done before implementation, or within **90 days** of production starting. | If the root cause raises doubt about the validated parameters, revalidate as part of reanalysis. |\n| **Reanalysis** (117.170) | At least every **3 years**. Also required after an unanticipated problem, when a control is found ineffective, or after a significant change. Complete it before the change takes effect, or within **90 days** of production with written justification. | Required if this was unanticipated or the control proved ineffective; otherwise the PCQI documents the decision. |\n| **Record content** (117.305) | Original records made at the time of observation. Each must include the facility name and location, the date (and time where appropriate), the signature or initials of the person doing the activity, and product identity and lot code where applicable. Records must be accurate and indelible. | Don't backfill or rewrite the cook log. Correct errors with a single line through them, plus initials and date. |\n| **Signature on records review** | The reviewer signs or initials and dates the review. | Required on today's cook log and the corrective action record. |\n| **Retention** (117.315) | At least **2 years** after the date the record was created. Validation and scientific studies are kept for 2 years after their use is discontinued. | Keep the corrective action record, cook log and verification records for at least 2 years. |\n| **Availability** (117.320) | The Food Safety Plan stays **onsite**. Other records can be offsite if they can be retrieved within **24 hours** of an official request. Records must be promptly available to FDA. | Keep the records ready for inspection, since FDA may ask about deviations. |\n\n---\n\n## 4. Quick checklist for today\n\n- [ ] Batch on hold, tagged, and quantity confirmed\n- [ ] Commingled or downstream product identified and held\n- [ ] Assembly surfaces cleaned and sanitized, and recorded\n- [ ] Thermometer accuracy check done and recorded\n- [ ] Cook log reviewed back to the last good reading\n- [ ] Equipment or process fixed, and the next batches confirmed \u2265 158 \u00b0F\n- [ ] Root cause identified, and recurrence prevention assigned\n- [ ] Product evaluated and disposition documented (destroy, divert, or validated re-cook)\n- [ ] Shipments checked. Recall plan or Reportable Food Registry triggered if needed\n- [ ] Corrective action record completed\n- [ ] PCQI review of the records within 7 working days\n- [ ] Reanalysis decision documented\n\n---\n\n**Caveats**\n- This is based on the FSPCA *Preventive Controls for Human Food* curriculum (2016) and 21 CFR Part 117. Your own written corrective action procedures and validation study govern the specifics.\n- Release decisions for under-processed product should be made by your PCQI with process authority or validation support. This guidance isn't legal advice.\n- If the product contains meat or poultry above USDA-FSIS thresholds, or is an egg product under FSIS jurisdiction, FSIS HACCP rules (9 CFR 417) apply instead.\n"}], "grading": {"expectations": [{"text": "Says this is a deviation from a critical limit requiring a corrective action (not merely a correction)", "passed": true, "evidence": "'this needs a corrective action, not a correction'"}, {"text": "Lists corrective action elements: identify and correct the problem, reduce likelihood of recurrence, evaluate affected food for safety, prevent adulterated food entering commerce, document it", "passed": true, "evidence": "Correction vs corrective action table lists all five elements (find/fix, recurrence, evaluate, prevent commerce, document)"}, {"text": "Defines a correction as a prompt action for a minor, isolated problem that does not directly affect product safety, with less documentation", "passed": true, "evidence": "'A quick action to find and fix a minor, isolated problem... No direct impact on product safety... Lighter' records"}, {"text": "States monitoring and corrective action records must be reviewed by (or under oversight of) a PCQI within 7 working days", "passed": true, "evidence": "'A PCQI (or someone working under PCQI oversight) then reviews that record within 7 working days'"}, {"text": "States validation of process controls is required (within 90 days of production or before implementation) and mentions calibration of the thermometer", "passed": true, "evidence": "Validation row: 'before implementation, or within 90 days'; 'daily accuracy check and annual calibration'"}, {"text": "States records must be kept at least 2 years, and mentions reanalysis if controls are found ineffective", "passed": true, "evidence": "'At least 2 years'; Step 6 reanalysis when control ineffective"}], "summary": {"passed": 6, "failed": 0, "total": 6, "pass_rate": 1.0}}}, {"id": "eval-3-pc-cook-deviation-without_skill-run-1", "prompt": "Our cook step is a process preventive control with a critical limit of product surface temperature at or above 158 F. This morning the operator measured 152 F on one batch and it had already been moved to assembly. Walk me through what we have to do, the difference between a correction and a corrective action, and what verification and record timelines apply under 21 CFR 117.", "eval_id": 3, "outputs": [{"name": "response.md", "type": "text", "content": "# Cook-Step Critical Limit Deviation (152 F vs. \u2265158 F) \u2014 What 21 CFR Part 117 Requires\n\n## Bottom line\n\nA monitoring reading of 152 F against a critical limit of \u2265158 F means the process preventive control was **not properly implemented** for that batch. Under 21 CFR 117.150(a) this calls for a **corrective action**. A simple \"correction\" is not enough, because the deviation hit a process control and product has already moved downstream. You must:\n\n1. Identify and correct the problem.\n2. Take steps to reduce the chance it happens again.\n3. Evaluate all affected food for safety.\n4. Keep affected food out of commerce unless you can show it is not adulterated.\n5. Document all of it, and have the records verified (reviewed) within **7 working days**.\n\n---\n\n## 1. Immediate steps (today)\n\n**a. Stop and contain**\n- Place the under-cooked batch on **hold**. Do the same for **everything it touched in assembly**: assembled product, partially assembled components, rework, and anything packed since the batch arrived.\n- Use tags or segregate the product physically, and lock it in your inventory system if you can.\n- Set boundaries using lot codes, timestamps, and line records. Ask what else went through assembly after this batch arrived. If under-cooked product could have contaminated food-contact surfaces, product from later batches on that line may also be implicated.\n- Check whether any affected product has **shipped**. If it has, go to step 1e.\n\n**b. Fix the process**\n- Find out why the cook fell short. Common causes are oven or fryer setpoint or belt speed, a loading or batch-size change, product going in colder or thicker than usual, burner or steam faults, a door left open, or a mis-set recipe.\n- Before the next batch, confirm the cook step consistently meets \u2265158 F, and keep monitoring frequency at or above normal until it is stable.\n- **Check the thermometer.** Do a calibration or accuracy check on the probe (ice point or against a reference). Also confirm the operator measured **surface** temperature the way your validated procedure says, since surface readings depend heavily on technique and timing. If the thermometer reads accurately, the reading stands. If it reads inaccurately, every recent reading taken with it is suspect, which can widen the scope rather than narrow it.\n\n**c. Clean and sanitize**\n- If under-cooked product went onto RTE or post-lethality assembly surfaces, clean and sanitize the assembly line and tools before you restart RTE production.\n- Consider extra environmental monitoring (e.g., *Listeria* spp. swabs on zones 1\u20133) if your hazard analysis identifies an environmental pathogen for this area.\n\n**d. Evaluate the affected food for safety (117.150(a)(2)(ii))**\nA Preventive Controls Qualified Individual (PCQI), or someone under their oversight, should make the disposition decision based on your validation and the hazard (e.g., *Salmonella*, *Listeria monocytogenes*, pathogenic *E. coli*). Options, roughly in order of preference:\n- **Reprocess**: re-cook to meet the critical limit, if the product form allows. Re-cooking a separated component may be possible. Assembled product often cannot be fully reprocessed.\n- **Divert** to a use where a later validated lethality step will occur. This must be documented and under control.\n- **Destroy or reject.**\n- **Release after a scientific evaluation**: only if a qualified person can show the food is not adulterated. Examples are a validated time-temperature equivalency showing the actual thermal history still gave the required log reduction, or input from a process authority. **Product testing alone is a weak basis for release.** Pathogens are unevenly distributed and a negative sample does not prove the lot is safe. If you use testing, use a statistically sound sampling plan, treat it as supporting evidence only, and hold product until results are in.\n\nDo not release product based only on \"it was close\" (152 vs. 158). The critical limit is the validated boundary. Being below it means you cannot rely on the validation.\n\n**e. If affected product has left your control**\n- Start your **recall plan** (21 CFR 117.139). Trace the product, notify consignees, and contact FDA as appropriate.\n- If there is a reasonable probability the food could cause serious adverse health consequences or death, you must submit a **Reportable Food Registry** report within **24 hours** (FD&C Act section 417).\n\n---\n\n## 2. Correction vs. corrective action\n\n| | **Correction** | **Corrective action** |\n|---|---|---|\n| Definition (117.3) | An action to identify and correct a problem that occurred during the production of food, **without** the other actions associated with a corrective action procedure. | The full set of actions in 117.150(a): identify and correct the problem, **reduce the likelihood of recurrence**, **evaluate all affected food for safety**, and **prevent affected food from entering commerce**. |\n| When it is enough | Only in the limited situations in 117.150(c): timely fixes of conditions or practices that don't match **food allergen controls** (e.g., product-contact surfaces not cleaned) or **sanitation controls** (food-contact surface cleanliness, cross-contact or cross-contamination prevention), and minor, isolated problems that do not directly affect product safety. | Required for a **process control** deviation, including any failure to meet a critical limit. |\n| Records | Document when appropriate (117.150(d)). | **Always** documented (117.150(d)). |\n\n**What this means for your case:** Re-cooking the next batch correctly is a correction. It is not the whole answer. Because the critical limit on a process control was missed and product moved on, you need the **full corrective action**: root cause, a fix that prevents recurrence, safety evaluation and disposition of all affected food (including assembled product), and documentation.\n\n**If the cause was unanticipated** (117.150(b)): suppose the deviation is not covered by your written corrective action procedures, or the problem shows a control is ineffective. Then you must also:\n- take corrective action to identify and correct the problem, reduce recurrence, evaluate affected food, and keep it out of commerce;\n- **decide whether the food safety plan needs reanalysis** (117.170) and, if it does, reanalyze and modify the plan. Examples include a new raw material size, a new oven profile, or a monitoring method that cannot reliably catch a low surface temperature.\n\n---\n\n## 3. Verification requirements (117.155 / 117.165)\n\n| Activity | Requirement | Timeline |\n|---|---|---|\n| **Records review: monitoring and corrective action records** | A PCQI, or someone under their oversight, reviews the cook monitoring records and the corrective action records for this event. The review confirms they are complete, the activities followed the written procedures, appropriate decisions were made about corrective actions, and the record is signed or initialed and dated. | **Within 7 working days** after the records are created. A longer interval is allowed only with a written justification in the food safety plan (117.165(a)(4)(i)). |\n| **Calibration / accuracy checks** of the thermometer used for monitoring | Calibrate or check accuracy, and record it (117.165(a)(1)). Do an extra check now because of the deviation. | At the frequency in your plan. Calibration records are reviewed **within a reasonable time** after creation (117.165(a)(4)(ii)). |\n| **Product testing / environmental monitoring** | As appropriate to the facility, food, and preventive control (117.165(a)(2)\u2013(3)). Relevant here if you test held product or swab assembly after a possible contamination event. | Per your written procedures. Review results within a reasonable time. |\n| **Validation** | If the root cause shows the cook step or critical limit is not adequate, or you change the process, revalidate (117.160). | Before the change is implemented, or within 90 calendar days of first production (or a justified longer period). |\n| **Reanalysis** | Required when a preventive control or combination of controls proves ineffective, when an unanticipated problem occurs, or when there is new information about hazards (117.170). | Complete **within 90 calendar days** after production of the food first begins (or with written justification), and before any change is implemented if practical. |\n\nThe verification review is not a rubber stamp. The reviewer should confirm that the disposition of the affected food was scientifically sound, that the root cause and recurrence prevention are reasonable, and that the scope (which lots and which product) was set correctly.\n\n---\n\n## 4. Records (117.190, 117.301\u2013117.335)\n\n**Records to create for this event:**\n- The **monitoring record** showing the 152 F reading, with date, time, product, lot, and operator initials. Never change or overwrite this entry.\n- The **corrective action record**: the problem, root cause, actions taken to fix it and prevent recurrence, affected lots and quantities, the safety evaluation and its basis, the final disposition (reprocess, divert, destroy, or release), and who decided.\n- **Calibration or accuracy check** records for the thermometer.\n- Any **product testing or environmental monitoring** results.\n- The **verification record**: the PCQI or designee's review, signed or initialed and dated.\n- If applicable, **reanalysis** documentation, an updated food safety plan signed and dated by the owner, operator, or agent in charge (117.310), any **validation** records, and **recall** records.\n- **Training** records showing the operator and the PCQI are qualified (117.4, 117.180).\n\n**Record requirements (117.305):**\n- Kept as original records, true copies, or electronic records (Part 11 does not apply to records required by Part 117; see 117.305(g)).\n- Contain **actual values and observations** from monitoring. Enter \"152 F\", not \"fail\" or \"OK\".\n- Accurate, indelible, and legible.\n- **Created at the time the activity is performed.**\n- As detailed as needed to show the history of the work.\n- Include the plant name and location, the date and time of the activity, the signature or initials of the person doing it, and, where appropriate, the product identity and lot code.\n\n**Retention and access (117.315, 117.320):**\n- Keep records for **at least 2 years** after the date they were prepared.\n- Records can be stored **offsite after 6 months** from preparation if they can be retrieved within **24 hours** of a request. The **food safety plan must stay onsite**. Electronic records accessible from an onsite location count as onsite.\n- Records must be available to FDA for **official review and copying on oral or written request**.\n\n---\n\n## 5. Quick checklist\n\n- [ ] Hold the batch plus all assembled or co-mingled product. Determine lot scope.\n- [ ] Confirm whether anything shipped. Recall plan and RFR (24 h) if needed.\n- [ ] Check thermometer calibration and the operator's measurement technique.\n- [ ] Root cause and fix. Confirm the cook meets \u2265158 F before restart.\n- [ ] Clean and sanitize assembly. Consider environmental monitoring.\n- [ ] PCQI safety evaluation and documented disposition (reprocess, divert, destroy, or justified release).\n- [ ] Measures to prevent recurrence (training, equipment, procedure, alarms).\n- [ ] Decide whether reanalysis or revalidation is needed (117.150(b), 117.170, 117.160).\n- [ ] Complete the corrective action record. Monitoring record shows the actual value.\n- [ ] Verification review of monitoring and corrective action records **within 7 working days**.\n- [ ] Retain records **2 years**. Keep them retrievable within 24 h.\n\n*This walkthrough reflects the general requirements of 21 CFR Part 117, Subpart C. Your written food safety plan's specific corrective action procedures, and your PCQI's judgment about the hazards you identified, should control the details. Consult FDA guidance or a process authority if you are unsure whether the product can be released.*\n"}], "grading": {"expectations": [{"text": "Says this is a deviation from a critical limit requiring a corrective action (not merely a correction)", "passed": true, "evidence": "'this calls for a corrective action. A simple correction is not enough'"}, {"text": "Lists corrective action elements: identify and correct the problem, reduce likelihood of recurrence, evaluate affected food for safety, prevent adulterated food entering commerce, document it", "passed": true, "evidence": "Bottom line lists identify/correct, reduce recurrence, evaluate food, keep out of commerce, document"}, {"text": "Defines a correction as a prompt action for a minor, isolated problem that does not directly affect product safety, with less documentation", "passed": true, "evidence": "Correction defined per 117.3; minor isolated problems not directly affecting safety; 'Document when appropriate'"}, {"text": "States monitoring and corrective action records must be reviewed by (or under oversight of) a PCQI within 7 working days", "passed": true, "evidence": "'Within 7 working days after the records are created'"}, {"text": "States validation of process controls is required (within 90 days of production or before implementation) and mentions calibration of the thermometer", "passed": true, "evidence": "Validation within 90 calendar days; calibration/accuracy check of thermometer"}, {"text": "States records must be kept at least 2 years, and mentions reanalysis if controls are found ineffective", "passed": true, "evidence": "'Keep records for at least 2 years'; reanalysis when control proves ineffective"}], "summary": {"passed": 6, "failed": 0, "total": 6, "pass_rate": 1.0}}}], "previous_feedback": {}, "previous_outputs": {}, "benchmark": {"metadata": {"skill_name": "preventive-controls", "skill_path": "\u003cpath/to/skill>", "executor_model": "\u003cmodel-name>", "analyzer_model": "\u003cmodel-name>", "timestamp": "2026-10-22T19:39:26Z", "evals_run": [1, 2, 3], "runs_per_configuration": 1}, "runs": [{"eval_id": 1, "eval_name": "pc-cookie-dough", "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 6, "failed": 0, "total": 6, "time_seconds": 0.0, "tokens": 0, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Uses the hazard analysis structure: steps and ingredients, identify biological/chemical/physical hazards, decide whether each requires a preventive control, and justify each decision", "passed": true, "evidence": "Hazard analysis tables per ingredient and step with B/C/P, 'requires PC?' and justification columns"}, {"text": "Considers foreseeable use: consumers eating the dough raw, so pathogens in flour (E. coli/Salmonella) are a hazard needing control", "passed": true, "evidence": "'Foreseeable use: Eaten raw, including by children'; flour STEC/Salmonella marked Yes"}, {"text": "Identifies a supply-chain preventive control for the supplier-applied heat treatment of flour (and/or pasteurized eggs), since there is no kill step in the facility", "passed": true, "evidence": "'Receiving: flour, eggs, walnuts \u2014 Supply-chain program: approved supplier, COA...'; egg 'Supply-chain control: the supplier's pasteurization'"}, {"text": "Identifies food allergen controls for milk, egg, wheat, tree nuts (walnut) and soy if present: labeling control and cross-contact controls", "passed": true, "evidence": "Allergen controls for wheat, egg, milk, soy lecithin, walnut; label review and cross-contact in storage and mixing"}, {"text": "Identifies a process control for refrigeration/temperature (time-temperature) or notes the environmental pathogen hazard for exposed RTE product with sanitation control and environmental monitoring", "passed": true, "evidence": "Weighing/mixing and depositing: 'Sanitation control + EM'; cold storage control for L. monocytogenes growth"}, {"text": "States a recall plan is required because hazards requiring preventive controls were identified", "passed": true, "evidence": "Section 5 'Recall plan (required) \u2014 Because you have hazards requiring preventive controls'"}], "notes": []}, {"eval_id": 2, "eval_name": "pc-supplier-audit", "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 6, "failed": 0, "total": 6, "time_seconds": 0.0, "tokens": 0, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "States that Salmonella in eggs is a hazard that can cause serious adverse health consequences or death (SAHCODHA)", "passed": true, "evidence": "'the hazard (Salmonella) can cause serious adverse health consequences or death (SAHCODHA)'"}, {"text": "States that for a SAHCODHA hazard the default verification is an onsite audit before using the supplier and at least annually, unless there is a written justification for other activities", "passed": true, "evidence": "'onsite audit by a qualified auditor, before first use and at least once a year... only with a documented written justification'"}, {"text": "States that a supplier's self-audit is not acceptable as supplier verification", "passed": true, "evidence": "Table: 'Supplier's own annual self-audit \u2014 Not acceptable'"}, {"text": "Explains a COA can support verification but is not a substitute for the required onsite audit by a qualified auditor", "passed": true, "evidence": "'A COA can support your verification, but it cannot stand in for the audit'"}, {"text": "Lists supply-chain program elements: approved suppliers, written receiving procedures, determining and conducting verification activities, corrective action, records", "passed": true, "evidence": "Section 3 lists approved supplier, receiving procedures, verification determination, conducting activities, corrective action, records"}, {"text": "Mentions the onsite audit must be done by a qualified auditor (can be third party)", "passed": true, "evidence": "'qualified auditor who is independent of the supplier... third-party auditor'"}], "notes": []}, {"eval_id": 3, "eval_name": "pc-cook-deviation", "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 6, "failed": 0, "total": 6, "time_seconds": 0.0, "tokens": 0, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Says this is a deviation from a critical limit requiring a corrective action (not merely a correction)", "passed": true, "evidence": "'this needs a corrective action, not a correction'"}, {"text": "Lists corrective action elements: identify and correct the problem, reduce likelihood of recurrence, evaluate affected food for safety, prevent adulterated food entering commerce, document it", "passed": true, "evidence": "Correction vs corrective action table lists all five elements (find/fix, recurrence, evaluate, prevent commerce, document)"}, {"text": "Defines a correction as a prompt action for a minor, isolated problem that does not directly affect product safety, with less documentation", "passed": true, "evidence": "'A quick action to find and fix a minor, isolated problem... No direct impact on product safety... Lighter' records"}, {"text": "States monitoring and corrective action records must be reviewed by (or under oversight of) a PCQI within 7 working days", "passed": true, "evidence": "'A PCQI (or someone working under PCQI oversight) then reviews that record within 7 working days'"}, {"text": "States validation of process controls is required (within 90 days of production or before implementation) and mentions calibration of the thermometer", "passed": true, "evidence": "Validation row: 'before implementation, or within 90 days'; 'daily accuracy check and annual calibration'"}, {"text": "States records must be kept at least 2 years, and mentions reanalysis if controls are found ineffective", "passed": true, "evidence": "'At least 2 years'; Step 6 reanalysis when control ineffective"}], "notes": []}, {"eval_id": 1, "eval_name": "pc-cookie-dough", "configuration": "without_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 6, "failed": 0, "total": 6, "time_seconds": 0.0, "tokens": 0, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Uses the hazard analysis structure: steps and ingredients, identify biological/chemical/physical hazards, decide whether each requires a preventive control, and justify each decision", "passed": true, "evidence": "Ingredient and step tables with hazard, 'reasonably foreseeable? justification', HRPC? and control columns"}, {"text": "Considers foreseeable use: consumers eating the dough raw, so pathogens in flour (E. coli/Salmonella) are a hazard needing control", "passed": true, "evidence": "'Reasonably foreseeable use: consumers, including children, eat the dough raw'"}, {"text": "Identifies a supply-chain preventive control for the supplier-applied heat treatment of flour (and/or pasteurized eggs), since there is no kill step in the facility", "passed": true, "evidence": "Flour and egg: 'Supply-chain-applied control', Subpart G program"}, {"text": "Identifies food allergen controls for milk, egg, wheat, tree nuts (walnut) and soy if present: labeling control and cross-contact controls", "passed": true, "evidence": "'Wheat, egg, milk, tree nuts (walnut), soy' allergen labeling and cross-contact controls"}, {"text": "Identifies a process control for refrigeration/temperature (time-temperature) or notes the environmental pathogen hazard for exposed RTE product with sanitation control and environmental monitoring", "passed": true, "evidence": "'Sanitation controls for RTE dough food-contact surfaces, plus environmental monitoring'; refrigeration process control if dough supports growth"}, {"text": "States a recall plan is required because hazards requiring preventive controls were identified", "passed": true, "evidence": "'Recall plan \u2014 Required, because you have HRPCs (117.139)'"}], "notes": []}, {"eval_id": 2, "eval_name": "pc-supplier-audit", "configuration": "without_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 6, "failed": 0, "total": 6, "time_seconds": 0.0, "tokens": 0, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "States that Salmonella in eggs is a hazard that can cause serious adverse health consequences or death (SAHCODHA)", "passed": true, "evidence": "'a hazard where exposure can cause serious adverse health consequences or death (a SAHCODHA hazard)'"}, {"text": "States that for a SAHCODHA hazard the default verification is an onsite audit before using the supplier and at least annually, unless there is a written justification for other activities", "passed": true, "evidence": "'onsite audit by a qualified auditor before you first approve the supplier, and at least once a year after that (\u00a7117.430(b))' plus written determination"}, {"text": "States that a supplier's self-audit is not acceptable as supplier verification", "passed": true, "evidence": "'A supplier's audit of itself is not an acceptable verification activity'"}, {"text": "Explains a COA can support verification but is not a substitute for the required onsite audit by a qualified auditor", "passed": true, "evidence": "'A COA is useful supporting evidence, but it does not replace the audit'"}, {"text": "Lists supply-chain program elements: approved suppliers, written receiving procedures, determining and conducting verification activities, corrective action, records", "passed": true, "evidence": "Sections 1-8 cover approval, receiving procedures, evaluation, verification activities, corrective actions, records"}, {"text": "Mentions the onsite audit must be done by a qualified auditor (can be third party)", "passed": true, "evidence": "'qualified auditor... a third party with no financial conflict of interest'"}], "notes": []}, {"eval_id": 3, "eval_name": "pc-cook-deviation", "configuration": "without_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 6, "failed": 0, "total": 6, "time_seconds": 0.0, "tokens": 0, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Says this is a deviation from a critical limit requiring a corrective action (not merely a correction)", "passed": true, "evidence": "'this calls for a corrective action. A simple correction is not enough'"}, {"text": "Lists corrective action elements: identify and correct the problem, reduce likelihood of recurrence, evaluate affected food for safety, prevent adulterated food entering commerce, document it", "passed": true, "evidence": "Bottom line lists identify/correct, reduce recurrence, evaluate food, keep out of commerce, document"}, {"text": "Defines a correction as a prompt action for a minor, isolated problem that does not directly affect product safety, with less documentation", "passed": true, "evidence": "Correction defined per 117.3; minor isolated problems not directly affecting safety; 'Document when appropriate'"}, {"text": "States monitoring and corrective action records must be reviewed by (or under oversight of) a PCQI within 7 working days", "passed": true, "evidence": "'Within 7 working days after the records are created'"}, {"text": "States validation of process controls is required (within 90 days of production or before implementation) and mentions calibration of the thermometer", "passed": true, "evidence": "Validation within 90 calendar days; calibration/accuracy check of thermometer"}, {"text": "States records must be kept at least 2 years, and mentions reanalysis if controls are found ineffective", "passed": true, "evidence": "'Keep records for at least 2 years'; reanalysis when control proves ineffective"}], "notes": []}], "run_summary": {"with_skill": {"pass_rate": {"mean": 1.0, "stddev": 0.0, "min": 1.0, "max": 1.0}, "time_seconds": {"mean": 0.0, "stddev": 0.0, "min": 0.0, "max": 0.0}, "tokens": {"mean": 0.0, "stddev": 0.0, "min": 0, "max": 0}}, "without_skill": {"pass_rate": {"mean": 1.0, "stddev": 0.0, "min": 1.0, "max": 1.0}, "time_seconds": {"mean": 0.0, "stddev": 0.0, "min": 0.0, "max": 0.0}, "tokens": {"mean": 0.0, "stddev": 0.0, "min": 0, "max": 0}}, "delta": {"pass_rate": "+0.00", "time_seconds": "+0.0", "tokens": "+0"}}, "notes": []}};
+
+    // ---- State ----
+    let feedbackMap = {};  // run_id -> feedback text
+    let currentIndex = 0;
+    let visitedRuns = new Set();
+
+    // ---- Init ----
+    async function init() {
+      // Load saved feedback from server — but only if this isn't a fresh
+      // iteration (indicated by previous_feedback being present). When
+      // previous feedback exists, the feedback.json on disk is stale from
+      // the prior iteration and should not pre-fill the textareas.
+      const hasPrevious = Object.keys(EMBEDDED_DATA.previous_feedback || {}).length > 0
+        || Object.keys(EMBEDDED_DATA.previous_outputs || {}).length > 0;
+      if (!hasPrevious) {
+        try {
+          const resp = await fetch("/api/feedback");
+          const data = await resp.json();
+          if (data.reviews) {
+            for (const r of data.reviews) feedbackMap[r.run_id] = r.feedback;
+          }
+        } catch { /* first run, no feedback yet */ }
+      }
+
+      document.getElementById("skill-name").textContent = EMBEDDED_DATA.skill_name;
+      showRun(0);
+
+      // Wire up feedback auto-save
+      const textarea = document.getElementById("feedback");
+      let saveTimeout = null;
+      textarea.addEventListener("input", () => {
+        clearTimeout(saveTimeout);
+        document.getElementById("feedback-status").textContent = "";
+        saveTimeout = setTimeout(() => saveCurrentFeedback(), 800);
+      });
+    }
+
+    // ---- Navigation ----
+    function navigate(delta) {
+      const newIndex = currentIndex + delta;
+      if (newIndex >= 0 && newIndex < EMBEDDED_DATA.runs.length) {
+        saveCurrentFeedback();
+        showRun(newIndex);
+      }
+    }
+
+    function updateNavButtons() {
+      document.getElementById("prev-btn").disabled = currentIndex === 0;
+      document.getElementById("next-btn").disabled =
+        currentIndex === EMBEDDED_DATA.runs.length - 1;
+    }
+
+    // ---- Show a run ----
+    function showRun(index) {
+      currentIndex = index;
+      const run = EMBEDDED_DATA.runs[index];
+
+      // Progress
+      document.getElementById("progress").textContent =
+        `${index + 1} of ${EMBEDDED_DATA.runs.length}`;
+
+      // Prompt
+      document.getElementById("prompt-text").textContent = run.prompt;
+
+      // Config badge
+      const badge = document.getElementById("config-badge");
+      const configMatch = run.id.match(/(with_skill|without_skill|new_skill|old_skill)/);
+      if (configMatch) {
+        const config = configMatch[1];
+        const isBaseline = config === "without_skill" || config === "old_skill";
+        badge.textContent = config.replace(/_/g, " ");
+        badge.className = "config-badge " + (isBaseline ? "config-baseline" : "config-primary");
+        badge.style.display = "inline-block";
+      } else {
+        badge.style.display = "none";
+      }
+
+      // Outputs
+      renderOutputs(run);
+
+      // Previous outputs
+      renderPrevOutputs(run);
+
+      // Grades
+      renderGrades(run);
+
+      // Previous feedback
+      const prevFb = (EMBEDDED_DATA.previous_feedback || {})[run.id];
+      const prevEl = document.getElementById("prev-feedback");
+      if (prevFb) {
+        document.getElementById("prev-feedback-text").textContent = prevFb;
+        prevEl.style.display = "block";
+      } else {
+        prevEl.style.display = "none";
+      }
+
+      // Feedback
+      document.getElementById("feedback").value = feedbackMap[run.id] || "";
+      document.getElementById("feedback-status").textContent = "";
+
+      updateNavButtons();
+
+      // Track visited runs and promote done button when all visited
+      visitedRuns.add(index);
+      const doneBtn = document.getElementById("done-btn");
+      if (visitedRuns.size >= EMBEDDED_DATA.runs.length) {
+        doneBtn.classList.add("ready");
+      }
+
+      // Scroll main content to top
+      document.querySelector(".main").scrollTop = 0;
+    }
+
+    // ---- Render outputs ----
+    function renderOutputs(run) {
+      const container = document.getElementById("outputs-body");
+      container.innerHTML = "";
+
+      const outputs = run.outputs || [];
+      if (outputs.length === 0) {
+        container.innerHTML = '<div class="empty-state">No output files</div>';
+        return;
+      }
+
+      for (const file of outputs) {
+        const fileDiv = document.createElement("div");
+        fileDiv.className = "output-file";
+
+        // Always show file header with download link
+        const header = document.createElement("div");
+        header.className = "output-file-header";
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = file.name;
+        header.appendChild(nameSpan);
+        const dlBtn = document.createElement("a");
+        dlBtn.className = "dl-btn";
+        dlBtn.textContent = "Download";
+        dlBtn.download = file.name;
+        dlBtn.href = getDownloadUri(file);
+        header.appendChild(dlBtn);
+        fileDiv.appendChild(header);
+
+        const content = document.createElement("div");
+        content.className = "output-file-content";
+
+        if (file.type === "text") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          content.appendChild(pre);
+        } else if (file.type === "image") {
+          const img = document.createElement("img");
+          img.src = file.data_uri;
+          img.alt = file.name;
+          content.appendChild(img);
+        } else if (file.type === "pdf") {
+          const iframe = document.createElement("iframe");
+          iframe.src = file.data_uri;
+          content.appendChild(iframe);
+        } else if (file.type === "xlsx") {
+          renderXlsx(content, file.data_b64);
+        } else if (file.type === "binary") {
+          const a = document.createElement("a");
+          a.className = "download-link";
+          a.href = file.data_uri;
+          a.download = file.name;
+          a.textContent = "Download " + file.name;
+          content.appendChild(a);
+        } else if (file.type === "error") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          pre.style.color = "var(--red)";
+          content.appendChild(pre);
+        }
+
+        fileDiv.appendChild(content);
+        container.appendChild(fileDiv);
+      }
+    }
+
+    // ---- XLSX rendering via SheetJS ----
+    function renderXlsx(container, b64Data) {
+      try {
+        const raw = Uint8Array.from(atob(b64Data), c => c.charCodeAt(0));
+        const wb = XLSX.read(raw, { type: "array" });
+
+        for (let i = 0; i < wb.SheetNames.length; i++) {
+          const sheetName = wb.SheetNames[i];
+          const ws = wb.Sheets[sheetName];
+
+          if (wb.SheetNames.length > 1) {
+            const sheetLabel = document.createElement("div");
+            sheetLabel.style.cssText =
+              "font-weight:600; font-size:0.8rem; color:#b0aea5; margin-top:0.5rem; margin-bottom:0.25rem;";
+            sheetLabel.textContent = "Sheet: " + sheetName;
+            container.appendChild(sheetLabel);
+          }
+
+          const htmlStr = XLSX.utils.sheet_to_html(ws, { editable: false });
+          const wrapper = document.createElement("div");
+          wrapper.innerHTML = htmlStr;
+          container.appendChild(wrapper);
+        }
+      } catch (err) {
+        container.textContent = "Error rendering spreadsheet: " + err.message;
+      }
+    }
+
+    // ---- Grades ----
+    function renderGrades(run) {
+      const section = document.getElementById("grades-section");
+      const content = document.getElementById("grades-content");
+
+      if (!run.grading) {
+        section.style.display = "none";
+        return;
+      }
+
+      const grading = run.grading;
+      section.style.display = "block";
+      // Reset to collapsed
+      content.classList.remove("open");
+      document.getElementById("grades-arrow").classList.remove("open");
+
+      const summary = grading.summary || {};
+      const expectations = grading.expectations || [];
+
+      let html = '<div style="padding: 1rem;">';
+
+      // Summary line
+      const passRate = summary.pass_rate != null
+        ? Math.round(summary.pass_rate * 100) + "%"
+        : "?";
+      const badgeClass = summary.pass_rate >= 0.8 ? "grade-pass" : summary.pass_rate >= 0.5 ? "" : "grade-fail";
+      html += '<div class="grades-summary">';
+      html += '<span class="grade-badge ' + badgeClass + '">' + passRate + '</span>';
+      html += '<span>' + escapeHtml(summary.passed || 0) + ' passed, ' + escapeHtml(summary.failed || 0) + ' failed of ' + escapeHtml(summary.total || 0) + '</span>';
+      html += '</div>';
+
+      // Assertions list
+      html += '<ul class="assertion-list">';
+      for (const exp of expectations) {
+        const statusClass = exp.passed ? "pass" : "fail";
+        const statusIcon = exp.passed ? "\u2713" : "\u2717";
+        html += '<li class="assertion-item">';
+        html += '<span class="assertion-status ' + statusClass + '">' + statusIcon + '</span>';
+        html += '<span>' + escapeHtml(exp.text) + '</span>';
+        if (exp.evidence) {
+          html += '<div class="assertion-evidence">' + escapeHtml(exp.evidence) + '</div>';
+        }
+        html += '</li>';
+      }
+      html += '</ul>';
+
+      html += '</div>';
+      content.innerHTML = html;
+    }
+
+    function toggleGrades() {
+      const content = document.getElementById("grades-content");
+      const arrow = document.getElementById("grades-arrow");
+      content.classList.toggle("open");
+      arrow.classList.toggle("open");
+    }
+
+    // ---- Previous outputs (collapsible) ----
+    function renderPrevOutputs(run) {
+      const section = document.getElementById("prev-outputs-section");
+      const content = document.getElementById("prev-outputs-content");
+      const prevOutputs = (EMBEDDED_DATA.previous_outputs || {})[run.id];
+
+      if (!prevOutputs || prevOutputs.length === 0) {
+        section.style.display = "none";
+        return;
+      }
+
+      section.style.display = "block";
+      // Reset to collapsed
+      content.classList.remove("open");
+      document.getElementById("prev-outputs-arrow").classList.remove("open");
+
+      // Render the files into the content area
+      content.innerHTML = "";
+      const wrapper = document.createElement("div");
+      wrapper.style.padding = "1rem";
+
+      for (const file of prevOutputs) {
+        const fileDiv = document.createElement("div");
+        fileDiv.className = "output-file";
+
+        const header = document.createElement("div");
+        header.className = "output-file-header";
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = file.name;
+        header.appendChild(nameSpan);
+        const dlBtn = document.createElement("a");
+        dlBtn.className = "dl-btn";
+        dlBtn.textContent = "Download";
+        dlBtn.download = file.name;
+        dlBtn.href = getDownloadUri(file);
+        header.appendChild(dlBtn);
+        fileDiv.appendChild(header);
+
+        const fc = document.createElement("div");
+        fc.className = "output-file-content";
+
+        if (file.type === "text") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          fc.appendChild(pre);
+        } else if (file.type === "image") {
+          const img = document.createElement("img");
+          img.src = file.data_uri;
+          img.alt = file.name;
+          fc.appendChild(img);
+        } else if (file.type === "pdf") {
+          const iframe = document.createElement("iframe");
+          iframe.src = file.data_uri;
+          fc.appendChild(iframe);
+        } else if (file.type === "xlsx") {
+          renderXlsx(fc, file.data_b64);
+        } else if (file.type === "binary") {
+          const a = document.createElement("a");
+          a.className = "download-link";
+          a.href = file.data_uri;
+          a.download = file.name;
+          a.textContent = "Download " + file.name;
+          fc.appendChild(a);
+        }
+
+        fileDiv.appendChild(fc);
+        wrapper.appendChild(fileDiv);
+      }
+
+      content.appendChild(wrapper);
+    }
+
+    function togglePrevOutputs() {
+      const content = document.getElementById("prev-outputs-content");
+      const arrow = document.getElementById("prev-outputs-arrow");
+      content.classList.toggle("open");
+      arrow.classList.toggle("open");
+    }
+
+    // ---- Feedback (saved to server -> feedback.json) ----
+    function saveCurrentFeedback() {
+      const run = EMBEDDED_DATA.runs[currentIndex];
+      const text = document.getElementById("feedback").value;
+
+      if (text.trim() === "") {
+        delete feedbackMap[run.id];
+      } else {
+        feedbackMap[run.id] = text;
+      }
+
+      // Build reviews array from map
+      const reviews = [];
+      for (const [run_id, feedback] of Object.entries(feedbackMap)) {
+        if (feedback.trim()) {
+          reviews.push({ run_id, feedback, timestamp: new Date().toISOString() });
+        }
+      }
+
+      fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reviews, status: "in_progress" }),
+      }).then(() => {
+        document.getElementById("feedback-status").textContent = "Saved";
+      }).catch(() => {
+        // Static mode or server unavailable — no-op on auto-save,
+        // feedback will be downloaded on final submit
+        document.getElementById("feedback-status").textContent = "Will download on submit";
+      });
+    }
+
+    // ---- Done ----
+    function showDoneDialog() {
+      // Save current textarea to feedbackMap (but don't POST yet)
+      const run = EMBEDDED_DATA.runs[currentIndex];
+      const text = document.getElementById("feedback").value;
+      if (text.trim() === "") {
+        delete feedbackMap[run.id];
+      } else {
+        feedbackMap[run.id] = text;
+      }
+
+      // POST once with status: complete — include ALL runs so the model
+      // can distinguish "no feedback" (looks good) from "not reviewed"
+      const reviews = [];
+      const ts = new Date().toISOString();
+      for (const r of EMBEDDED_DATA.runs) {
+        reviews.push({ run_id: r.id, feedback: feedbackMap[r.id] || "", timestamp: ts });
+      }
+      const payload = JSON.stringify({ reviews, status: "complete" }, null, 2);
+      fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: payload,
+      }).then(() => {
+        document.getElementById("done-overlay").classList.add("visible");
+      }).catch(() => {
+        // Server not available (static mode) — download as file
+        const blob = new Blob([payload], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "feedback.json";
+        a.click();
+        URL.revokeObjectURL(url);
+        document.getElementById("done-overlay").classList.add("visible");
+      });
+    }
+
+    function closeDoneDialog() {
+      // Reset status back to in_progress
+      saveCurrentFeedback();
+      document.getElementById("done-overlay").classList.remove("visible");
+    }
+
+    // ---- Toast ----
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("visible");
+      setTimeout(() => toast.classList.remove("visible"), 2000);
+    }
+
+    // ---- Keyboard nav ----
+    document.addEventListener("keydown", (e) => {
+      // Don't capture when typing in textarea
+      if (e.target.tagName === "TEXTAREA") return;
+
+      if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+        e.preventDefault();
+        navigate(-1);
+      } else if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+        e.preventDefault();
+        navigate(1);
+      }
+    });
+
+    // ---- Util ----
+    function getDownloadUri(file) {
+      if (file.data_uri) return file.data_uri;
+      if (file.data_b64) return "data:application/octet-stream;base64," + file.data_b64;
+      if (file.type === "text") return "data:text/plain;charset=utf-8," + encodeURIComponent(file.content);
+      return "#";
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement("div");
+      div.textContent = text;
+      return div.innerHTML.replace(/"/g, "&quot;");
+    }
+
+    // ---- View switching ----
+    function switchView(view) {
+      document.querySelectorAll(".view-tab").forEach(t => t.classList.remove("active"));
+      document.querySelectorAll(".view-panel").forEach(p => p.classList.remove("active"));
+      document.querySelector(`[onclick="switchView('${view}')"]`).classList.add("active");
+      document.getElementById("panel-" + view).classList.add("active");
+    }
+
+    // ---- Benchmark rendering ----
+    function renderBenchmark() {
+      const data = EMBEDDED_DATA.benchmark;
+      if (!data) return;
+
+      // Show the tabs
+      document.getElementById("view-tabs").style.display = "flex";
+
+      const container = document.getElementById("benchmark-content");
+      const summary = data.run_summary || {};
+      const metadata = data.metadata || {};
+      const notes = data.notes || [];
+
+      let html = "";
+
+      // Header
+      html += "<h2 style='font-family: Poppins, sans-serif; margin-bottom: 0.5rem;'>Benchmark Results</h2>";
+      html += "<p style='color: var(--text-muted); font-size: 0.875rem; margin-bottom: 1.25rem;'>";
+      if (metadata.skill_name) html += "<strong>" + escapeHtml(metadata.skill_name) + "</strong> &mdash; ";
+      if (metadata.timestamp) html += escapeHtml(metadata.timestamp) + " &mdash; ";
+      if (metadata.evals_run) html += "Evals: " + escapeHtml(metadata.evals_run.join(", ")) + " &mdash; ";
+      html += escapeHtml(metadata.runs_per_configuration || "?") + (metadata.runs_per_configuration === 1 ? " run" : " runs") + " per configuration";
+      html += "</p>";
+
+      // Summary table
+      html += '<table class="benchmark-table">';
+
+      function fmtStat(stat, pct) {
+        if (!stat) return "—";
+        const suffix = pct ? "%" : "";
+        const m = pct ? (stat.mean * 100).toFixed(0) : stat.mean.toFixed(1);
+        const s = pct ? (stat.stddev * 100).toFixed(0) : stat.stddev.toFixed(1);
+        return m + suffix + " ± " + s + suffix;
+      }
+
+      function deltaClass(val) {
+        if (!val) return "";
+        const n = parseFloat(val);
+        if (n > 0) return "benchmark-delta-positive";
+        if (n < 0) return "benchmark-delta-negative";
+        return "";
+      }
+
+      // Discover config names dynamically (everything except "delta")
+      const configs = Object.keys(summary).filter(k => k !== "delta");
+      const configA = configs[0] || "config_a";
+      const configB = configs[1] || "config_b";
+      const labelA = configA.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      const labelB = configB.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      const a = summary[configA] || {};
+      const b = summary[configB] || {};
+      const delta = summary.delta || {};
+      // With a single configuration there is nothing to compare: only its column is shown
+      const compare = cells => configs.length >= 2 ? cells : "";
+
+      html += "<thead><tr><th>Metric</th><th>" + escapeHtml(labelA) + "</th>" + compare("<th>" + escapeHtml(labelB) + "</th><th>Delta</th>") + "</tr></thead>";
+      html += "<tbody>";
+
+      html += "<tr><td><strong>Pass Rate</strong></td>";
+      html += "<td>" + fmtStat(a.pass_rate, true) + "</td>";
+      html += compare("<td>" + fmtStat(b.pass_rate, true) + "</td>");
+      html += compare('<td class="' + deltaClass(delta.pass_rate) + '">' + escapeHtml(delta.pass_rate || "—") + "</td>") + "</tr>";
+
+      // Time (only show row if data exists)
+      if (a.time_seconds || b.time_seconds) {
+        html += "<tr><td><strong>Time (s)</strong></td>";
+        html += "<td>" + fmtStat(a.time_seconds, false) + "</td>";
+        html += compare("<td>" + fmtStat(b.time_seconds, false) + "</td>");
+        html += compare('<td class="' + deltaClass(delta.time_seconds) + '">' + escapeHtml(delta.time_seconds ? delta.time_seconds + "s" : "—") + "</td>") + "</tr>";
+      }
+
+      // Tokens (only show row if data exists)
+      if (a.tokens || b.tokens) {
+        html += "<tr><td><strong>Tokens</strong></td>";
+        html += "<td>" + fmtStat(a.tokens, false) + "</td>";
+        html += compare("<td>" + fmtStat(b.tokens, false) + "</td>");
+        html += compare('<td class="' + deltaClass(delta.tokens) + '">' + escapeHtml(delta.tokens || "—") + "</td>") + "</tr>";
+      }
+
+      html += "</tbody></table>";
+
+      // Per-eval breakdown (if runs data available)
+      const runs = data.runs || [];
+      if (runs.length > 0) {
+        // Numeric ids first, then ids that are names
+        const rank = id => typeof id === "number" ? 0 : 1;
+        const evalIds = [...new Set(runs.map(r => r.eval_id))].sort((a, b) =>
+          rank(a) - rank(b) || (rank(a) ? String(a).localeCompare(String(b)) : a - b));
+
+        html += "<h3 style='font-family: Poppins, sans-serif; margin-bottom: 0.75rem;'>Per-Eval Breakdown</h3>";
+
+        const hasTime = runs.some(r => r.result && r.result.time_seconds != null);
+        const hasErrors = runs.some(r => r.result && r.result.errors > 0);
+
+        for (const evalId of evalIds) {
+          const evalRuns = runs.filter(r => r.eval_id === evalId);
+          const evalName = evalRuns[0] && evalRuns[0].eval_name ? evalRuns[0].eval_name : "Eval " + evalId;
+
+          html += "<h4 style='font-family: Poppins, sans-serif; margin: 1rem 0 0.5rem; color: var(--text);'>" + escapeHtml(evalName) + "</h4>";
+          html += '<table class="benchmark-table">';
+          html += "<thead><tr><th>Config</th><th>Run</th><th>Pass Rate</th>";
+          if (hasTime) html += "<th>Time (s)</th>";
+          if (hasErrors) html += "<th>Crashes During Execution</th>";
+          html += "</tr></thead>";
+          html += "<tbody>";
+
+          // Group by config and render with average rows
+          const configGroups = [...new Set(evalRuns.map(r => r.configuration))];
+          for (let ci = 0; ci < configGroups.length; ci++) {
+            const config = configGroups[ci];
+            const configRuns = evalRuns.filter(r => r.configuration === config);
+            if (configRuns.length === 0) continue;
+
+            const rowClass = ci === 0 ? "benchmark-row-with" : "benchmark-row-without";
+            const configLabel = escapeHtml(config.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase()));
+
+            for (const run of configRuns) {
+              const r = run.result || {};
+              const prClass = r.pass_rate >= 0.8 ? "benchmark-delta-positive" : r.pass_rate < 0.5 ? "benchmark-delta-negative" : "";
+              html += '<tr class="' + rowClass + '">';
+              html += "<td>" + configLabel + "</td>";
+              html += "<td>" + escapeHtml(run.run_number) + "</td>";
+              html += '<td class="' + prClass + '">' + ((r.pass_rate || 0) * 100).toFixed(0) + "% (" + escapeHtml(r.passed || 0) + "/" + escapeHtml(r.total || 0) + ")</td>";
+              if (hasTime) html += "<td>" + (r.time_seconds != null ? r.time_seconds.toFixed(1) : "—") + "</td>";
+              if (hasErrors) html += "<td>" + escapeHtml(r.errors || 0) + "</td>";
+              html += "</tr>";
+            }
+
+            // Average row
+            const rates = configRuns.map(r => (r.result || {}).pass_rate || 0);
+            const avgRate = rates.reduce((a, b) => a + b, 0) / rates.length;
+            const avgPrClass = avgRate >= 0.8 ? "benchmark-delta-positive" : avgRate < 0.5 ? "benchmark-delta-negative" : "";
+            html += '<tr class="benchmark-row-avg ' + rowClass + '">';
+            html += "<td>" + configLabel + "</td>";
+            html += "<td>Avg</td>";
+            html += '<td class="' + avgPrClass + '">' + (avgRate * 100).toFixed(0) + "%</td>";
+            if (hasTime) {
+              const times = configRuns.map(r => (r.result || {}).time_seconds).filter(t => t != null);
+              html += "<td>" + (times.length ? (times.reduce((a, b) => a + b, 0) / times.length).toFixed(1) : "—") + "</td>";
+            }
+            if (hasErrors) html += "<td></td>";
+            html += "</tr>";
+          }
+          html += "</tbody></table>";
+
+          // Per-assertion detail for this eval
+          const runsWithExpectations = {};
+          for (const config of configGroups) {
+            runsWithExpectations[config] = evalRuns.filter(r => r.configuration === config && r.expectations && r.expectations.length > 0);
+          }
+          const hasAnyExpectations = Object.values(runsWithExpectations).some(runs => runs.length > 0);
+          if (hasAnyExpectations) {
+            // Collect all unique assertion texts across all configs
+            const allAssertions = [];
+            const seen = new Set();
+            for (const config of configGroups) {
+              for (const run of runsWithExpectations[config]) {
+                for (const exp of (run.expectations || [])) {
+                  if (!seen.has(exp.text)) {
+                    seen.add(exp.text);
+                    allAssertions.push(exp.text);
+                  }
+                }
+              }
+            }
+
+            html += '<table class="benchmark-table" style="margin-top: 0.5rem;">';
+            html += "<thead><tr><th>Assertion</th>";
+            for (const config of configGroups) {
+              const label = config.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+              html += "<th>" + escapeHtml(label) + "</th>";
+            }
+            html += "</tr></thead><tbody>";
+
+            for (const assertionText of allAssertions) {
+              html += "<tr><td>" + escapeHtml(assertionText) + "</td>";
+
+              for (const config of configGroups) {
+                html += "<td>";
+                for (const run of runsWithExpectations[config]) {
+                  const exp = (run.expectations || []).find(e => e.text === assertionText);
+                  if (exp) {
+                    const cls = exp.passed ? "benchmark-delta-positive" : "benchmark-delta-negative";
+                    const icon = exp.passed ? "\u2713" : "\u2717";
+                    html += '<span class="' + cls + '" title="Run ' + escapeHtml(run.run_number) + ': ' + escapeHtml(exp.evidence || "") + '">' + icon + "</span> ";
+                  } else {
+                    html += "— ";
+                  }
+                }
+                html += "</td>";
+              }
+              html += "</tr>";
+            }
+            html += "</tbody></table>";
+          }
+        }
+      }
+
+      // Notes
+      if (notes.length > 0) {
+        html += '<div class="benchmark-notes">';
+        html += "<h3>Analysis Notes</h3>";
+        html += "<ul>";
+        for (const note of notes) {
+          html += "<li>" + escapeHtml(note) + "</li>";
+        }
+        html += "</ul></div>";
+      }
+
+      container.innerHTML = html;
+    }
+
+    // ---- Start ----
+    init();
+    renderBenchmark();
+  </script>
+</body>
+</html>

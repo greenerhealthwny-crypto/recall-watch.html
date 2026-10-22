@@ -1,0 +1,359 @@
+{
+  "metadata": {
+    "skill_name": "preventive-controls",
+    "skill_path": "<path/to/skill>",
+    "executor_model": "<model-name>",
+    "analyzer_model": "<model-name>",
+    "timestamp": "2026-10-22T19:39:26Z",
+    "evals_run": [
+      1,
+      2,
+      3
+    ],
+    "runs_per_configuration": 1
+  },
+  "runs": [
+    {
+      "eval_id": 1,
+      "eval_name": "pc-cookie-dough",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": 0.0,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Uses the hazard analysis structure: steps and ingredients, identify biological/chemical/physical hazards, decide whether each requires a preventive control, and justify each decision",
+          "passed": true,
+          "evidence": "Hazard analysis tables per ingredient and step with B/C/P, 'requires PC?' and justification columns"
+        },
+        {
+          "text": "Considers foreseeable use: consumers eating the dough raw, so pathogens in flour (E. coli/Salmonella) are a hazard needing control",
+          "passed": true,
+          "evidence": "'Foreseeable use: Eaten raw, including by children'; flour STEC/Salmonella marked Yes"
+        },
+        {
+          "text": "Identifies a supply-chain preventive control for the supplier-applied heat treatment of flour (and/or pasteurized eggs), since there is no kill step in the facility",
+          "passed": true,
+          "evidence": "'Receiving: flour, eggs, walnuts \u2014 Supply-chain program: approved supplier, COA...'; egg 'Supply-chain control: the supplier's pasteurization'"
+        },
+        {
+          "text": "Identifies food allergen controls for milk, egg, wheat, tree nuts (walnut) and soy if present: labeling control and cross-contact controls",
+          "passed": true,
+          "evidence": "Allergen controls for wheat, egg, milk, soy lecithin, walnut; label review and cross-contact in storage and mixing"
+        },
+        {
+          "text": "Identifies a process control for refrigeration/temperature (time-temperature) or notes the environmental pathogen hazard for exposed RTE product with sanitation control and environmental monitoring",
+          "passed": true,
+          "evidence": "Weighing/mixing and depositing: 'Sanitation control + EM'; cold storage control for L. monocytogenes growth"
+        },
+        {
+          "text": "States a recall plan is required because hazards requiring preventive controls were identified",
+          "passed": true,
+          "evidence": "Section 5 'Recall plan (required) \u2014 Because you have hazards requiring preventive controls'"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "pc-supplier-audit",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": 0.0,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "States that Salmonella in eggs is a hazard that can cause serious adverse health consequences or death (SAHCODHA)",
+          "passed": true,
+          "evidence": "'the hazard (Salmonella) can cause serious adverse health consequences or death (SAHCODHA)'"
+        },
+        {
+          "text": "States that for a SAHCODHA hazard the default verification is an onsite audit before using the supplier and at least annually, unless there is a written justification for other activities",
+          "passed": true,
+          "evidence": "'onsite audit by a qualified auditor, before first use and at least once a year... only with a documented written justification'"
+        },
+        {
+          "text": "States that a supplier's self-audit is not acceptable as supplier verification",
+          "passed": true,
+          "evidence": "Table: 'Supplier's own annual self-audit \u2014 Not acceptable'"
+        },
+        {
+          "text": "Explains a COA can support verification but is not a substitute for the required onsite audit by a qualified auditor",
+          "passed": true,
+          "evidence": "'A COA can support your verification, but it cannot stand in for the audit'"
+        },
+        {
+          "text": "Lists supply-chain program elements: approved suppliers, written receiving procedures, determining and conducting verification activities, corrective action, records",
+          "passed": true,
+          "evidence": "Section 3 lists approved supplier, receiving procedures, verification determination, conducting activities, corrective action, records"
+        },
+        {
+          "text": "Mentions the onsite audit must be done by a qualified auditor (can be third party)",
+          "passed": true,
+          "evidence": "'qualified auditor who is independent of the supplier... third-party auditor'"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 3,
+      "eval_name": "pc-cook-deviation",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": 0.0,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Says this is a deviation from a critical limit requiring a corrective action (not merely a correction)",
+          "passed": true,
+          "evidence": "'this needs a corrective action, not a correction'"
+        },
+        {
+          "text": "Lists corrective action elements: identify and correct the problem, reduce likelihood of recurrence, evaluate affected food for safety, prevent adulterated food entering commerce, document it",
+          "passed": true,
+          "evidence": "Correction vs corrective action table lists all five elements (find/fix, recurrence, evaluate, prevent commerce, document)"
+        },
+        {
+          "text": "Defines a correction as a prompt action for a minor, isolated problem that does not directly affect product safety, with less documentation",
+          "passed": true,
+          "evidence": "'A quick action to find and fix a minor, isolated problem... No direct impact on product safety... Lighter' records"
+        },
+        {
+          "text": "States monitoring and corrective action records must be reviewed by (or under oversight of) a PCQI within 7 working days",
+          "passed": true,
+          "evidence": "'A PCQI (or someone working under PCQI oversight) then reviews that record within 7 working days'"
+        },
+        {
+          "text": "States validation of process controls is required (within 90 days of production or before implementation) and mentions calibration of the thermometer",
+          "passed": true,
+          "evidence": "Validation row: 'before implementation, or within 90 days'; 'daily accuracy check and annual calibration'"
+        },
+        {
+          "text": "States records must be kept at least 2 years, and mentions reanalysis if controls are found ineffective",
+          "passed": true,
+          "evidence": "'At least 2 years'; Step 6 reanalysis when control ineffective"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 1,
+      "eval_name": "pc-cookie-dough",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": 0.0,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Uses the hazard analysis structure: steps and ingredients, identify biological/chemical/physical hazards, decide whether each requires a preventive control, and justify each decision",
+          "passed": true,
+          "evidence": "Ingredient and step tables with hazard, 'reasonably foreseeable? justification', HRPC? and control columns"
+        },
+        {
+          "text": "Considers foreseeable use: consumers eating the dough raw, so pathogens in flour (E. coli/Salmonella) are a hazard needing control",
+          "passed": true,
+          "evidence": "'Reasonably foreseeable use: consumers, including children, eat the dough raw'"
+        },
+        {
+          "text": "Identifies a supply-chain preventive control for the supplier-applied heat treatment of flour (and/or pasteurized eggs), since there is no kill step in the facility",
+          "passed": true,
+          "evidence": "Flour and egg: 'Supply-chain-applied control', Subpart G program"
+        },
+        {
+          "text": "Identifies food allergen controls for milk, egg, wheat, tree nuts (walnut) and soy if present: labeling control and cross-contact controls",
+          "passed": true,
+          "evidence": "'Wheat, egg, milk, tree nuts (walnut), soy' allergen labeling and cross-contact controls"
+        },
+        {
+          "text": "Identifies a process control for refrigeration/temperature (time-temperature) or notes the environmental pathogen hazard for exposed RTE product with sanitation control and environmental monitoring",
+          "passed": true,
+          "evidence": "'Sanitation controls for RTE dough food-contact surfaces, plus environmental monitoring'; refrigeration process control if dough supports growth"
+        },
+        {
+          "text": "States a recall plan is required because hazards requiring preventive controls were identified",
+          "passed": true,
+          "evidence": "'Recall plan \u2014 Required, because you have HRPCs (117.139)'"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "pc-supplier-audit",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": 0.0,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "States that Salmonella in eggs is a hazard that can cause serious adverse health consequences or death (SAHCODHA)",
+          "passed": true,
+          "evidence": "'a hazard where exposure can cause serious adverse health consequences or death (a SAHCODHA hazard)'"
+        },
+        {
+          "text": "States that for a SAHCODHA hazard the default verification is an onsite audit before using the supplier and at least annually, unless there is a written justification for other activities",
+          "passed": true,
+          "evidence": "'onsite audit by a qualified auditor before you first approve the supplier, and at least once a year after that (\u00a7117.430(b))' plus written determination"
+        },
+        {
+          "text": "States that a supplier's self-audit is not acceptable as supplier verification",
+          "passed": true,
+          "evidence": "'A supplier's audit of itself is not an acceptable verification activity'"
+        },
+        {
+          "text": "Explains a COA can support verification but is not a substitute for the required onsite audit by a qualified auditor",
+          "passed": true,
+          "evidence": "'A COA is useful supporting evidence, but it does not replace the audit'"
+        },
+        {
+          "text": "Lists supply-chain program elements: approved suppliers, written receiving procedures, determining and conducting verification activities, corrective action, records",
+          "passed": true,
+          "evidence": "Sections 1-8 cover approval, receiving procedures, evaluation, verification activities, corrective actions, records"
+        },
+        {
+          "text": "Mentions the onsite audit must be done by a qualified auditor (can be third party)",
+          "passed": true,
+          "evidence": "'qualified auditor... a third party with no financial conflict of interest'"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 3,
+      "eval_name": "pc-cook-deviation",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": 0.0,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Says this is a deviation from a critical limit requiring a corrective action (not merely a correction)",
+          "passed": true,
+          "evidence": "'this calls for a corrective action. A simple correction is not enough'"
+        },
+        {
+          "text": "Lists corrective action elements: identify and correct the problem, reduce likelihood of recurrence, evaluate affected food for safety, prevent adulterated food entering commerce, document it",
+          "passed": true,
+          "evidence": "Bottom line lists identify/correct, reduce recurrence, evaluate food, keep out of commerce, document"
+        },
+        {
+          "text": "Defines a correction as a prompt action for a minor, isolated problem that does not directly affect product safety, with less documentation",
+          "passed": true,
+          "evidence": "Correction defined per 117.3; minor isolated problems not directly affecting safety; 'Document when appropriate'"
+        },
+        {
+          "text": "States monitoring and corrective action records must be reviewed by (or under oversight of) a PCQI within 7 working days",
+          "passed": true,
+          "evidence": "'Within 7 working days after the records are created'"
+        },
+        {
+          "text": "States validation of process controls is required (within 90 days of production or before implementation) and mentions calibration of the thermometer",
+          "passed": true,
+          "evidence": "Validation within 90 calendar days; calibration/accuracy check of thermometer"
+        },
+        {
+          "text": "States records must be kept at least 2 years, and mentions reanalysis if controls are found ineffective",
+          "passed": true,
+          "evidence": "'Keep records for at least 2 years'; reanalysis when control proves ineffective"
+        }
+      ],
+      "notes": []
+    }
+  ],
+  "run_summary": {
+    "with_skill": {
+      "pass_rate": {
+        "mean": 1.0,
+        "stddev": 0.0,
+        "min": 1.0,
+        "max": 1.0
+      },
+      "time_seconds": {
+        "mean": 0.0,
+        "stddev": 0.0,
+        "min": 0.0,
+        "max": 0.0
+      },
+      "tokens": {
+        "mean": 0.0,
+        "stddev": 0.0,
+        "min": 0,
+        "max": 0
+      }
+    },
+    "without_skill": {
+      "pass_rate": {
+        "mean": 1.0,
+        "stddev": 0.0,
+        "min": 1.0,
+        "max": 1.0
+      },
+      "time_seconds": {
+        "mean": 0.0,
+        "stddev": 0.0,
+        "min": 0.0,
+        "max": 0.0
+      },
+      "tokens": {
+        "mean": 0.0,
+        "stddev": 0.0,
+        "min": 0,
+        "max": 0
+      }
+    },
+    "delta": {
+      "pass_rate": "+0.00",
+      "time_seconds": "+0.0",
+      "tokens": "+0"
+    }
+  },
+  "notes": []
+}

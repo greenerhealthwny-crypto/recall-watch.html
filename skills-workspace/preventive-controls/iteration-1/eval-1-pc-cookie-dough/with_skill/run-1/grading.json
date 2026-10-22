@@ -1,0 +1,40 @@
+{
+  "expectations": [
+    {
+      "text": "Uses the hazard analysis structure: steps and ingredients, identify biological/chemical/physical hazards, decide whether each requires a preventive control, and justify each decision",
+      "passed": true,
+      "evidence": "Hazard analysis tables per ingredient and step with B/C/P, 'requires PC?' and justification columns"
+    },
+    {
+      "text": "Considers foreseeable use: consumers eating the dough raw, so pathogens in flour (E. coli/Salmonella) are a hazard needing control",
+      "passed": true,
+      "evidence": "'Foreseeable use: Eaten raw, including by children'; flour STEC/Salmonella marked Yes"
+    },
+    {
+      "text": "Identifies a supply-chain preventive control for the supplier-applied heat treatment of flour (and/or pasteurized eggs), since there is no kill step in the facility",
+      "passed": true,
+      "evidence": "'Receiving: flour, eggs, walnuts \u2014 Supply-chain program: approved supplier, COA...'; egg 'Supply-chain control: the supplier's pasteurization'"
+    },
+    {
+      "text": "Identifies food allergen controls for milk, egg, wheat, tree nuts (walnut) and soy if present: labeling control and cross-contact controls",
+      "passed": true,
+      "evidence": "Allergen controls for wheat, egg, milk, soy lecithin, walnut; label review and cross-contact in storage and mixing"
+    },
+    {
+      "text": "Identifies a process control for refrigeration/temperature (time-temperature) or notes the environmental pathogen hazard for exposed RTE product with sanitation control and environmental monitoring",
+      "passed": true,
+      "evidence": "Weighing/mixing and depositing: 'Sanitation control + EM'; cold storage control for L. monocytogenes growth"
+    },
+    {
+      "text": "States a recall plan is required because hazards requiring preventive controls were identified",
+      "passed": true,
+      "evidence": "Section 5 'Recall plan (required) \u2014 Because you have hazards requiring preventive controls'"
+    }
+  ],
+  "summary": {
+    "passed": 6,
+    "failed": 0,
+    "total": 6,
+    "pass_rate": 1.0
+  }
+}
