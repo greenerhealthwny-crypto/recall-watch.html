@@ -1,0 +1,13 @@
+{
+  "eval_id": 2,
+  "eval_name": "pe-sunny-wilting",
+  "prompt": "Our cucumbers wilt around noon on sunny summer days. We open the roof vents wide once the greenhouse reaches 24 C and we dose CO2. Leaves feel warm to the touch and RH drops to about 50%. Should we put on whitewash or close the shade screen?",
+  "assertions": [
+    "Warns that shading/whitewash cuts photosynthesis and can start a negative spiral, and advises trying humidity and water-supply measures first",
+    "Recommends ventilating less / allowing a higher temperature (e.g. 26-28 C) to keep humidity and CO2 inside on sunny days",
+    "Explains that evaporation is driven by absorbed energy (radiation) rather than by low RH, and that warm leaves indicate closing stomata / water stress",
+    "Recommends measuring leaf temperature and/or VPD, with roughly 0.3-1.5 kPa as healthy and above ~1.5 kPa as stress",
+    "Addresses water supply or root uptake (e.g. irrigation based on radiation, ramping up in the morning, root health)",
+    "Mentions misting or another way to raise RH under high radiation, and/or the CO2 lost through wide-open vents"
+  ]
+}

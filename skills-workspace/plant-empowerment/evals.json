@@ -1,0 +1,44 @@
+{
+  "skill_name": "plant-empowerment",
+  "evals": [
+    {
+      "id": 1,
+      "name": "pe-botrytis-night",
+      "prompt": "We grow tomatoes in a glass greenhouse in the Netherlands. It's March and we're getting Botrytis in the plant heads and water droplets on the lower fruits in the morning. At night we run a 45 C minimum pipe temperature and keep our energy screen 95% closed with a 5% gap to get rid of humidity. Night RH is around 90%. What should we change?",
+      "assertions": [
+        "Identifies heat emission / plant heads or fruits cooling below dew point as the cause of free water, not just high RH",
+        "Recommends closing the screen fully (no moisture gap) or a double screen, explaining that gaps drop cold air and create cold spots",
+        "Recommends removing moisture by condensation on the roof and/or ventilating above the closed screen instead of gapping",
+        "Recommends replacing or lowering the minimum pipe temperature and using fans (preferably vertical) for air movement",
+        "Addresses morning condensation on fruits: raise temperature gradually before sunrise and/or keep the screen closed until the air above it has warmed",
+        "Recommends monitoring absolute humidity / dew point versus crop temperature (e.g. aspirator box above the screen, leaf or fruit temperature)"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "pe-sunny-wilting",
+      "prompt": "Our cucumbers wilt around noon on sunny summer days. We open the roof vents wide once the greenhouse reaches 24 C and we dose CO2. Leaves feel warm to the touch and RH drops to about 50%. Should we put on whitewash or close the shade screen?",
+      "assertions": [
+        "Warns that shading/whitewash cuts photosynthesis and can start a negative spiral, and advises trying humidity and water-supply measures first",
+        "Recommends ventilating less / allowing a higher temperature (e.g. 26-28 C) to keep humidity and CO2 inside on sunny days",
+        "Explains that evaporation is driven by absorbed energy (radiation) rather than by low RH, and that warm leaves indicate closing stomata / water stress",
+        "Recommends measuring leaf temperature and/or VPD, with roughly 0.3-1.5 kPa as healthy and above ~1.5 kPa as stress",
+        "Addresses water supply or root uptake (e.g. irrigation based on radiation, ramping up in the morning, root health)",
+        "Mentions misting or another way to raise RH under high radiation, and/or the CO2 lost through wide-open vents"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "pe-rtr-setpoints",
+      "prompt": "Can you explain RTR and how we'd actually use it to set day and night temperatures for our tomato crop? We have outdoor radiation data in J/cm2 from our weather station.",
+      "assertions": [
+        "Defines RTR as the ratio of 24-hour average temperature to the daily light (radiation/PAR) sum",
+        "Describes plotting each day as a point (light sum vs average temperature) and following a target line",
+        "Explains the too-strong/vegetative (more light, same temperature) vs too-weak/generative (higher temperature, little light) logic",
+        "Gives the day-to-day practice: after a sunny day keep the night warmer or postpone the drop, after a dark day keep the night cooler",
+        "Links RTR to plant load planned against the expected (long-term average) light curve, noting a lower load allows a higher temperature per unit light",
+        "Notes preconditions or corrections: CO2/RH not limiting, and PAR at crop level is better than outdoor radiation when whitewash/screens cut light"
+      ]
+    }
+  ]
+}

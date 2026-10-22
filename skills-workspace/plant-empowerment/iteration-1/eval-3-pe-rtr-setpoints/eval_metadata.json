@@ -1,0 +1,13 @@
+{
+  "eval_id": 3,
+  "eval_name": "pe-rtr-setpoints",
+  "prompt": "Can you explain RTR and how we'd actually use it to set day and night temperatures for our tomato crop? We have outdoor radiation data in J/cm2 from our weather station.",
+  "assertions": [
+    "Defines RTR as the ratio of 24-hour average temperature to the daily light (radiation/PAR) sum",
+    "Describes plotting each day as a point (light sum vs average temperature) and following a target line",
+    "Explains the too-strong/vegetative (more light, same temperature) vs too-weak/generative (higher temperature, little light) logic",
+    "Gives the day-to-day practice: after a sunny day keep the night warmer or postpone the drop, after a dark day keep the night cooler",
+    "Links RTR to plant load planned against the expected (long-term average) light curve, noting a lower load allows a higher temperature per unit light",
+    "Notes preconditions or corrections: CO2/RH not limiting, and PAR at crop level is better than outdoor radiation when whitewash/screens cut light"
+  ]
+}

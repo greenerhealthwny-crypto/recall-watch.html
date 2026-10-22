@@ -1,0 +1,13 @@
+{
+  "eval_id": 1,
+  "eval_name": "pe-botrytis-night",
+  "prompt": "We grow tomatoes in a glass greenhouse in the Netherlands. It's March and we're getting Botrytis in the plant heads and water droplets on the lower fruits in the morning. At night we run a 45 C minimum pipe temperature and keep our energy screen 95% closed with a 5% gap to get rid of humidity. Night RH is around 90%. What should we change?",
+  "assertions": [
+    "Identifies heat emission / plant heads or fruits cooling below dew point as the cause of free water, not just high RH",
+    "Recommends closing the screen fully (no moisture gap) or a double screen, explaining that gaps drop cold air and create cold spots",
+    "Recommends removing moisture by condensation on the roof and/or ventilating above the closed screen instead of gapping",
+    "Recommends replacing or lowering the minimum pipe temperature and using fans (preferably vertical) for air movement",
+    "Addresses morning condensation on fruits: raise temperature gradually before sunrise and/or keep the screen closed until the air above it has warmed",
+    "Recommends monitoring absolute humidity / dew point versus crop temperature (e.g. aspirator box above the screen, leaf or fruit temperature)"
+  ]
+}
