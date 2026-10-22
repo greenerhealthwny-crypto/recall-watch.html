@@ -1,0 +1,13 @@
+{
+  "eval_id": 2,
+  "eval_name": "pc-supplier-audit",
+  "prompt": "We buy pasteurized liquid egg from one supplier and use it in a ready-to-eat product with no further cook. Our QA lead wants to just accept the supplier's own annual self-audit and a certificate of analysis. Is that enough under the FSMA PCHF rule? What does our supply-chain program actually have to include?",
+  "assertions": [
+    "States that Salmonella in eggs is a hazard that can cause serious adverse health consequences or death (SAHCODHA)",
+    "States that for a SAHCODHA hazard the default verification is an onsite audit before using the supplier and at least annually, unless there is a written justification for other activities",
+    "States that a supplier's self-audit is not acceptable as supplier verification",
+    "Explains a COA can support verification but is not a substitute for the required onsite audit by a qualified auditor",
+    "Lists supply-chain program elements: approved suppliers, written receiving procedures, determining and conducting verification activities, corrective action, records",
+    "Mentions the onsite audit must be done by a qualified auditor (can be third party)"
+  ]
+}

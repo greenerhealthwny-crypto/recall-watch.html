@@ -1,0 +1,13 @@
+{
+  "eval_id": 1,
+  "eval_name": "pc-cookie-dough",
+  "prompt": "I run a small bakery facility registered with FDA. We're adding a refrigerated ready-to-bake chocolate chip cookie dough with walnuts, sold in retail tubs. Ingredients: heat-treated flour from a supplier, liquid pasteurized eggs, butter, sugar, chocolate chips, walnuts. We mix, deposit into tubs, label and ship refrigerated. Do a hazard analysis for this under the FSMA Preventive Controls for Human Food rule and tell me which preventive controls I need.",
+  "assertions": [
+    "Uses the hazard analysis structure: steps and ingredients, identify biological/chemical/physical hazards, decide whether each requires a preventive control, and justify each decision",
+    "Considers foreseeable use: consumers eating the dough raw, so pathogens in flour (E. coli/Salmonella) are a hazard needing control",
+    "Identifies a supply-chain preventive control for the supplier-applied heat treatment of flour (and/or pasteurized eggs), since there is no kill step in the facility",
+    "Identifies food allergen controls for milk, egg, wheat, tree nuts (walnut) and soy if present: labeling control and cross-contact controls",
+    "Identifies a process control for refrigeration/temperature (time-temperature) or notes the environmental pathogen hazard for exposed RTE product with sanitation control and environmental monitoring",
+    "States a recall plan is required because hazards requiring preventive controls were identified"
+  ]
+}
