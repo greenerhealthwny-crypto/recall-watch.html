@@ -1,0 +1,32 @@
+{
+  "skill_name": "managing-your-money",
+  "evals": [
+    {"id": 1, "name": "mym-budget-debt",
+     "prompt": "Using the Consumer Reports Complete Guide to Managing Your Money, help me set up a household budget. I have about $9,000 in credit card and car loan debt and no savings, and I want to start investing in stocks. What does the book say I should do, in what order?",
+     "assertions": [
+      "Describes the book's four budgeting steps: cash-flow analysis, setting budget goals, allocating resources, and a year-end review",
+      "Recommends building an emergency fund before investing",
+      "Cites the book's guideline that monthly debt payments excluding the mortgage should not exceed 15 percent of gross income",
+      "States the book says not to invest in stocks until debts are under control and insurance is adequate",
+      "Notes the book is from 1989 and flags that some figures/rules are outdated or should be verified",
+      "Gives a clear ordered action plan (track cash flow, pay high-interest debt, emergency fund, insurance, then invest)"]},
+    {"id": 2, "name": "mym-life-insurance",
+     "prompt": "I'm 34, married with two young kids. According to the Consumer Reports money guide, how should I figure out how much life insurance I need, and what kind should I buy? Is credit life insurance on my car loan worth it?",
+     "assertions": [
+      "Explains the book's three-step method: estimate family expenses if you die (immediate and future), subtract assets/income sources, insure the gap",
+      "Explains term versus cash-value (whole/universal) insurance",
+      "Says the book considers credit-life insurance usually not a good buy and that one larger policy beats several small ones",
+      "Mentions including Social Security survivor benefits, existing savings or spouse income as resources",
+      "Recommends or discusses low-cost term coverage for the years dependents need support",
+      "Flags that 1989 product details/prices are dated and suggests verifying current quotes"]},
+    {"id": 3, "name": "mym-credit-denied",
+     "prompt": "I was just turned down for a credit card. What does the Consumer Reports Complete Guide to Managing Your Money say about credit reports and what I should do now? Also, I'm married—does that affect my credit file?",
+     "assertions": [
+      "Explains you are entitled to see your credit bureau file, with the fee waived if denied credit recently (within 30 days per the book)",
+      "Advises reviewing the report and disputing errors",
+      "Mentions the Equal Credit Opportunity Act 'user' designation so a married person gets credit for accounts in the spouse's name",
+      "Notes many routine payments (rent, utilities, phone, medical) are not reported to credit bureaus",
+      "Mentions current free access via annualcreditreport.com and/or FCRA dispute rights as an update to the 1989 book",
+      "Mentions skepticism toward paid credit-repair or credit-credential services"]}
+  ]
+}

@@ -1,0 +1,342 @@
+{
+  "metadata": {
+    "skill_name": "managing-your-money",
+    "skill_path": "<path/to/skill>",
+    "executor_model": "<model-name>",
+    "analyzer_model": "<model-name>",
+    "timestamp": "2026-11-20T23:07:45Z",
+    "evals_run": [
+      1,
+      2,
+      3
+    ],
+    "runs_per_configuration": 1
+  },
+  "runs": [
+    {
+      "eval_id": 1,
+      "eval_name": "mym-budget-debt",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Describes the book's four budgeting steps: cash-flow analysis, setting budget goals, allocating resources, and a year-end review",
+          "passed": true,
+          "evidence": "cash-flow analysis, budget goals, allocate, year-end review"
+        },
+        {
+          "text": "Recommends building an emergency fund before investing",
+          "passed": true,
+          "evidence": "emergency fund before investing"
+        },
+        {
+          "text": "Cites the book's guideline that monthly debt payments excluding the mortgage should not exceed 15 percent of gross income",
+          "passed": true,
+          "evidence": "15% of gross excluding mortgage"
+        },
+        {
+          "text": "States the book says not to invest in stocks until debts are under control and insurance is adequate",
+          "passed": true,
+          "evidence": "debts under control and adequate insurance before stocks"
+        },
+        {
+          "text": "Notes the book is from 1989 and flags that some figures/rules are outdated or should be verified",
+          "passed": true,
+          "evidence": "flags 1989 edition"
+        },
+        {
+          "text": "Gives a clear ordered action plan (track cash flow, pay high-interest debt, emergency fund, insurance, then invest)",
+          "passed": true,
+          "evidence": "ordered plan"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "mym-life-insurance",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Explains the book's three-step method: estimate family expenses if you die (immediate and future), subtract assets/income sources, insure the gap",
+          "passed": true,
+          "evidence": "three-step method"
+        },
+        {
+          "text": "Explains term versus cash-value (whole/universal) insurance",
+          "passed": true,
+          "evidence": "term vs cash-value incl. universal"
+        },
+        {
+          "text": "Says the book considers credit-life insurance usually not a good buy and that one larger policy beats several small ones",
+          "passed": true,
+          "evidence": "credit-life not a good buy; one large policy"
+        },
+        {
+          "text": "Mentions including Social Security survivor benefits, existing savings or spouse income as resources",
+          "passed": true,
+          "evidence": "Social Security survivor benefits"
+        },
+        {
+          "text": "Recommends or discusses low-cost term coverage for the years dependents need support",
+          "passed": true,
+          "evidence": "recommends term"
+        },
+        {
+          "text": "Flags that 1989 product details/prices are dated and suggests verifying current quotes",
+          "passed": true,
+          "evidence": "flags 1989"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 3,
+      "eval_name": "mym-credit-denied",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Explains you are entitled to see your credit bureau file, with the fee waived if denied credit recently (within 30 days per the book)",
+          "passed": true,
+          "evidence": "fee waived if denied within 30 days"
+        },
+        {
+          "text": "Advises reviewing the report and disputing errors",
+          "passed": true,
+          "evidence": "dispute errors"
+        },
+        {
+          "text": "Mentions the Equal Credit Opportunity Act 'user' designation so a married person gets credit for accounts in the spouse's name",
+          "passed": true,
+          "evidence": "ECOA user designation"
+        },
+        {
+          "text": "Notes many routine payments (rent, utilities, phone, medical) are not reported to credit bureaus",
+          "passed": true,
+          "evidence": "rent/utilities not reported"
+        },
+        {
+          "text": "Mentions current free access via annualcreditreport.com and/or FCRA dispute rights as an update to the 1989 book",
+          "passed": true,
+          "evidence": "annualcreditreport, FCRA"
+        },
+        {
+          "text": "Mentions skepticism toward paid credit-repair or credit-credential services",
+          "passed": true,
+          "evidence": "skeptical of credit-repair/credential services"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 1,
+      "eval_name": "mym-budget-debt",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.33,
+        "passed": 2,
+        "failed": 4,
+        "total": 6,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Describes the book's four budgeting steps: cash-flow analysis, setting budget goals, allocating resources, and a year-end review",
+          "passed": false,
+          "evidence": "generic budget steps, not the book's four"
+        },
+        {
+          "text": "Recommends building an emergency fund before investing",
+          "passed": true,
+          "evidence": "emergency fund"
+        },
+        {
+          "text": "Cites the book's guideline that monthly debt payments excluding the mortgage should not exceed 15 percent of gross income",
+          "passed": false,
+          "evidence": "no 15% guideline"
+        },
+        {
+          "text": "States the book says not to invest in stocks until debts are under control and insurance is adequate",
+          "passed": false,
+          "evidence": "pay debt first but no insurance precondition from the book"
+        },
+        {
+          "text": "Notes the book is from 1989 and flags that some figures/rules are outdated or should be verified",
+          "passed": false,
+          "evidence": "says it doesn't have the text; no 1989 flag"
+        },
+        {
+          "text": "Gives a clear ordered action plan (track cash flow, pay high-interest debt, emergency fund, insurance, then invest)",
+          "passed": true,
+          "evidence": "clear 7-step order"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "mym-life-insurance",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.83,
+        "passed": 5,
+        "failed": 1,
+        "total": 6,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Explains the book's three-step method: estimate family expenses if you die (immediate and future), subtract assets/income sources, insure the gap",
+          "passed": true,
+          "evidence": "estimate needs then subtract savings and existing coverage"
+        },
+        {
+          "text": "Explains term versus cash-value (whole/universal) insurance",
+          "passed": true,
+          "evidence": "term vs cash value"
+        },
+        {
+          "text": "Says the book considers credit-life insurance usually not a good buy and that one larger policy beats several small ones",
+          "passed": true,
+          "evidence": "credit life 'worst deals'; size term policy to cover debt"
+        },
+        {
+          "text": "Mentions including Social Security survivor benefits, existing savings or spouse income as resources",
+          "passed": true,
+          "evidence": "Social Security survivor benefits"
+        },
+        {
+          "text": "Recommends or discusses low-cost term coverage for the years dependents need support",
+          "passed": true,
+          "evidence": "level term 20-30 years"
+        },
+        {
+          "text": "Flags that 1989 product details/prices are dated and suggests verifying current quotes",
+          "passed": false,
+          "evidence": "no note that the book's details are dated"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 3,
+      "eval_name": "mym-credit-denied",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.83,
+        "passed": 5,
+        "failed": 1,
+        "total": 6,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Explains you are entitled to see your credit bureau file, with the fee waived if denied credit recently (within 30 days per the book)",
+          "passed": true,
+          "evidence": "free report after denial (30 days mentioned)"
+        },
+        {
+          "text": "Advises reviewing the report and disputing errors",
+          "passed": true,
+          "evidence": "dispute"
+        },
+        {
+          "text": "Mentions the Equal Credit Opportunity Act 'user' designation so a married person gets credit for accounts in the spouse's name",
+          "passed": true,
+          "evidence": "ECOA, joint accounts reported in both names"
+        },
+        {
+          "text": "Notes many routine payments (rent, utilities, phone, medical) are not reported to credit bureaus",
+          "passed": false,
+          "evidence": "does not mention routine payments going unreported"
+        },
+        {
+          "text": "Mentions current free access via annualcreditreport.com and/or FCRA dispute rights as an update to the 1989 book",
+          "passed": true,
+          "evidence": "annualcreditreport.com"
+        },
+        {
+          "text": "Mentions skepticism toward paid credit-repair or credit-credential services",
+          "passed": true,
+          "evidence": "beware credit repair companies"
+        }
+      ],
+      "notes": []
+    }
+  ],
+  "run_summary": {
+    "with_skill": {
+      "pass_rate": {
+        "mean": 1.0,
+        "stddev": 0.0,
+        "min": 1.0,
+        "max": 1.0
+      },
+      "time_seconds": null,
+      "tokens": null
+    },
+    "without_skill": {
+      "pass_rate": {
+        "mean": 0.6633,
+        "stddev": 0.2887,
+        "min": 0.33,
+        "max": 0.83
+      },
+      "time_seconds": null,
+      "tokens": null
+    },
+    "delta": {
+      "pass_rate": "+0.34",
+      "time_seconds": null,
+      "tokens": null
+    }
+  },
+  "notes": [
+    "Time recorded for 0 of 3 with_skill runs, 0 of 3 without_skill runs, so there is no time delta.",
+    "Token count recorded for 0 of 3 with_skill runs, 0 of 3 without_skill runs, so there is no token count delta."
+  ]
+}

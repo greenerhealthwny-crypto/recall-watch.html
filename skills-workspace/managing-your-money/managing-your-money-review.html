@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eval Review</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&family=Lora:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js" integrity="sha384-EnyY0/GSHQGSxSgMwaIPzSESbqoOLSexfnSMN2AP+39Ckmn92stwABZynq1JyzdT" crossorigin="anonymous"></script>
+  <style>
+    :root {
+      --bg: #faf9f5;
+      --surface: #ffffff;
+      --border: #e8e6dc;
+      --text: #141413;
+      --text-muted: #b0aea5;
+      --accent: #d97757;
+      --accent-hover: #c4613f;
+      --green: #788c5d;
+      --green-bg: #eef2e8;
+      --red: #c44;
+      --red-bg: #fceaea;
+      --header-bg: #141413;
+      --header-text: #faf9f5;
+      --radius: 6px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Lora', Georgia, serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ---- Header ---- */
+    .header {
+      background: var(--header-bg);
+      color: var(--header-text);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .header h1 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+    .header .instructions {
+      font-size: 0.8rem;
+      opacity: 0.7;
+      margin-top: 0.25rem;
+    }
+    .header .progress {
+      font-size: 0.875rem;
+      opacity: 0.8;
+      text-align: right;
+    }
+
+    /* ---- Main content ---- */
+    .main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.5rem 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    /* ---- Sections ---- */
+    .section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      flex-shrink: 0;
+    }
+    .section-header {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.75rem 1rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+    }
+    .section-body {
+      padding: 1rem;
+    }
+
+    /* ---- Config badge ---- */
+    .config-badge {
+      display: inline-block;
+      padding: 0.2rem 0.625rem;
+      border-radius: 9999px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      margin-left: 0.75rem;
+      vertical-align: middle;
+    }
+    .config-badge.config-primary {
+      background: rgba(33, 150, 243, 0.12);
+      color: #1976d2;
+    }
+    .config-badge.config-baseline {
+      background: rgba(255, 193, 7, 0.15);
+      color: #f57f17;
+    }
+
+    /* ---- Prompt ---- */
+    .prompt-text {
+      white-space: pre-wrap;
+      font-size: 0.9375rem;
+      line-height: 1.6;
+    }
+
+    /* ---- Outputs ---- */
+    .output-file {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .output-file + .output-file {
+      margin-top: 1rem;
+    }
+    .output-file-header {
+      padding: 0.5rem 0.75rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .output-file-header .dl-btn {
+      font-size: 0.7rem;
+      color: var(--accent);
+      text-decoration: none;
+      cursor: pointer;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-weight: 500;
+      opacity: 0.8;
+    }
+    .output-file-header .dl-btn:hover {
+      opacity: 1;
+      text-decoration: underline;
+    }
+    .output-file-content {
+      padding: 0.75rem;
+      overflow-x: auto;
+    }
+    .output-file-content pre {
+      font-size: 0.8125rem;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+    }
+    .output-file-content img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 4px;
+    }
+    .output-file-content iframe {
+      width: 100%;
+      height: 600px;
+      border: none;
+    }
+    .output-file-content table {
+      border-collapse: collapse;
+      font-size: 0.8125rem;
+      width: 100%;
+    }
+    .output-file-content table td,
+    .output-file-content table th {
+      border: 1px solid var(--border);
+      padding: 0.375rem 0.5rem;
+      text-align: left;
+    }
+    .output-file-content table th {
+      background: var(--bg);
+      font-weight: 600;
+    }
+    .output-file-content .download-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 0.875rem;
+      cursor: pointer;
+    }
+    .output-file-content .download-link:hover {
+      background: var(--border);
+    }
+    .empty-state {
+      color: var(--text-muted);
+      font-style: italic;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    /* ---- Feedback ---- */
+    .prev-feedback {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.625rem 0.75rem;
+      margin-top: 0.75rem;
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+    .prev-feedback-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.25rem;
+      color: var(--text-muted);
+    }
+    .feedback-textarea {
+      width: 100%;
+      min-height: 100px;
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 0.9375rem;
+      line-height: 1.5;
+      resize: vertical;
+      color: var(--text);
+    }
+    .feedback-textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    .feedback-status {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.5rem;
+      min-height: 1.1em;
+    }
+
+    /* ---- Grades (collapsible) ---- */
+    .grades-toggle {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+    }
+    .grades-toggle:hover {
+      color: var(--accent);
+    }
+    .grades-toggle .arrow {
+      margin-right: 0.5rem;
+      transition: transform 0.15s;
+      font-size: 0.75rem;
+    }
+    .grades-toggle .arrow.open {
+      transform: rotate(90deg);
+    }
+    .grades-content {
+      display: none;
+      margin-top: 0.75rem;
+    }
+    .grades-content.open {
+      display: block;
+    }
+    .grades-summary {
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .grade-badge {
+      display: inline-block;
+      padding: 0.125rem 0.5rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .grade-pass { background: var(--green-bg); color: var(--green); }
+    .grade-fail { background: var(--red-bg); color: var(--red); }
+    .assertion-list {
+      list-style: none;
+    }
+    .assertion-item {
+      padding: 0.625rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.8125rem;
+    }
+    .assertion-item:last-child { border-bottom: none; }
+    .assertion-status {
+      font-weight: 600;
+      margin-right: 0.5rem;
+    }
+    .assertion-status.pass { color: var(--green); }
+    .assertion-status.fail { color: var(--red); }
+    .assertion-evidence {
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      margin-top: 0.25rem;
+      padding-left: 1.5rem;
+    }
+
+    /* ---- View tabs ---- */
+    .view-tabs {
+      display: flex;
+      gap: 0;
+      padding: 0 2rem;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .view-tab {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.625rem 1.25rem;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      background: none;
+      color: var(--text-muted);
+      border-bottom: 2px solid transparent;
+      transition: all 0.15s;
+    }
+    .view-tab:hover { color: var(--text); }
+    .view-tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+    .view-panel { display: none; }
+    .view-panel.active { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
+
+    /* ---- Benchmark view ---- */
+    .benchmark-view {
+      padding: 1.5rem 2rem;
+      overflow-y: auto;
+      flex: 1;
+    }
+    .benchmark-table {
+      border-collapse: collapse;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 0.8125rem;
+      width: 100%;
+      margin-bottom: 1.5rem;
+    }
+    .benchmark-table th, .benchmark-table td {
+      padding: 0.625rem 0.75rem;
+      text-align: left;
+      border: 1px solid var(--border);
+    }
+    .benchmark-table th {
+      font-family: 'Poppins', sans-serif;
+      background: var(--header-bg);
+      color: var(--header-text);
+      font-weight: 500;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .benchmark-table tr:hover { background: var(--bg); }
+    .benchmark-table tr.benchmark-row-with { background: rgba(33, 150, 243, 0.06); }
+    .benchmark-table tr.benchmark-row-without { background: rgba(255, 193, 7, 0.06); }
+    .benchmark-table tr.benchmark-row-with:hover { background: rgba(33, 150, 243, 0.12); }
+    .benchmark-table tr.benchmark-row-without:hover { background: rgba(255, 193, 7, 0.12); }
+    .benchmark-table tr.benchmark-row-avg { font-weight: 600; border-top: 2px solid var(--border); }
+    .benchmark-table tr.benchmark-row-avg.benchmark-row-with { background: rgba(33, 150, 243, 0.12); }
+    .benchmark-table tr.benchmark-row-avg.benchmark-row-without { background: rgba(255, 193, 7, 0.12); }
+    .benchmark-delta-positive { color: var(--green); font-weight: 600; }
+    .benchmark-delta-negative { color: var(--red); font-weight: 600; }
+    .benchmark-notes {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem;
+    }
+    .benchmark-notes h3 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+    }
+    .benchmark-notes ul {
+      list-style: disc;
+      padding-left: 1.25rem;
+    }
+    .benchmark-notes li {
+      font-size: 0.8125rem;
+      line-height: 1.6;
+      margin-bottom: 0.375rem;
+    }
+    .benchmark-empty {
+      color: var(--text-muted);
+      font-style: italic;
+      text-align: center;
+      padding: 3rem;
+    }
+
+    /* ---- Navigation ---- */
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+      flex-shrink: 0;
+    }
+    .nav-btn {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.5rem 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text);
+      transition: all 0.15s;
+    }
+    .nav-btn:hover:not(:disabled) {
+      background: var(--bg);
+      border-color: var(--text-muted);
+    }
+    .nav-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    .done-btn {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.5rem 1.5rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: all 0.15s;
+    }
+    .done-btn:hover {
+      background: var(--bg);
+      border-color: var(--text-muted);
+    }
+    .done-btn.ready {
+      border: none;
+      background: var(--accent);
+      color: white;
+      font-weight: 600;
+    }
+    .done-btn.ready:hover {
+      background: var(--accent-hover);
+    }
+    /* ---- Done overlay ---- */
+    .done-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 100;
+      justify-content: center;
+      align-items: center;
+    }
+    .done-overlay.visible {
+      display: flex;
+    }
+    .done-card {
+      background: var(--surface);
+      border-radius: 12px;
+      padding: 2rem 3rem;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      max-width: 500px;
+    }
+    .done-card h2 {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .done-card p {
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
+    }
+    .done-card .btn-row {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+    }
+    .done-card button {
+      padding: 0.5rem 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 0.875rem;
+    }
+    .done-card button:hover {
+      background: var(--bg);
+    }
+    /* ---- Toast ---- */
+    .toast {
+      position: fixed;
+      bottom: 5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--header-bg);
+      color: var(--header-text);
+      padding: 0.625rem 1.25rem;
+      border-radius: var(--radius);
+      font-size: 0.875rem;
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+      z-index: 200;
+    }
+    .toast.visible {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <div id="app" style="height:100vh; display:flex; flex-direction:column;">
+    <div class="header">
+      <div>
+        <h1>Eval Review: <span id="skill-name"></span></h1>
+        <div class="instructions">Review each output and leave feedback below. Navigate with arrow keys or buttons. When done, copy feedback and paste into Claude Code.</div>
+      </div>
+      <div class="progress" id="progress"></div>
+    </div>
+
+    <!-- View tabs (only shown when benchmark data exists) -->
+    <div class="view-tabs" id="view-tabs" style="display:none;">
+      <button class="view-tab active" onclick="switchView('outputs')">Outputs</button>
+      <button class="view-tab" onclick="switchView('benchmark')">Benchmark</button>
+    </div>
+
+    <!-- Outputs panel (qualitative review) -->
+    <div class="view-panel active" id="panel-outputs">
+    <div class="main">
+      <!-- Prompt -->
+      <div class="section">
+        <div class="section-header">Prompt <span class="config-badge" id="config-badge" style="display:none;"></span></div>
+        <div class="section-body">
+          <div class="prompt-text" id="prompt-text"></div>
+        </div>
+      </div>
+
+      <!-- Outputs -->
+      <div class="section">
+        <div class="section-header">Output</div>
+        <div class="section-body" id="outputs-body">
+          <div class="empty-state">No output files found</div>
+        </div>
+      </div>
+
+      <!-- Previous Output (collapsible) -->
+      <div class="section" id="prev-outputs-section" style="display:none;">
+        <div class="section-header">
+          <div class="grades-toggle" onclick="togglePrevOutputs()">
+            <span class="arrow" id="prev-outputs-arrow">&#9654;</span>
+            Previous Output
+          </div>
+        </div>
+        <div class="grades-content" id="prev-outputs-content"></div>
+      </div>
+
+      <!-- Grades (collapsible) -->
+      <div class="section" id="grades-section" style="display:none;">
+        <div class="section-header">
+          <div class="grades-toggle" onclick="toggleGrades()">
+            <span class="arrow" id="grades-arrow">&#9654;</span>
+            Formal Grades
+          </div>
+        </div>
+        <div class="grades-content" id="grades-content"></div>
+      </div>
+
+      <!-- Feedback -->
+      <div class="section">
+        <div class="section-header">Your Feedback</div>
+        <div class="section-body">
+          <textarea
+            class="feedback-textarea"
+            id="feedback"
+            placeholder="What do you think of this output? Any issues, suggestions, or things that look great?"
+          ></textarea>
+          <div class="feedback-status" id="feedback-status"></div>
+          <div class="prev-feedback" id="prev-feedback" style="display:none;">
+            <div class="prev-feedback-label">Previous feedback</div>
+            <div id="prev-feedback-text"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav" id="outputs-nav">
+      <button class="nav-btn" id="prev-btn" onclick="navigate(-1)">&#8592; Previous</button>
+      <button class="done-btn" id="done-btn" onclick="showDoneDialog()">Submit All Reviews</button>
+      <button class="nav-btn" id="next-btn" onclick="navigate(1)">Next &#8594;</button>
+    </div>
+    </div><!-- end panel-outputs -->
+
+    <!-- Benchmark panel (quantitative stats) -->
+    <div class="view-panel" id="panel-benchmark">
+      <div class="benchmark-view" id="benchmark-content">
+        <div class="benchmark-empty">No benchmark data available. Run a benchmark to see quantitative results here.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Done overlay -->
+  <div class="done-overlay" id="done-overlay">
+    <div class="done-card">
+      <h2>Review Complete</h2>
+      <p>Your feedback has been saved. Go back to your Claude Code session and tell Claude you're done reviewing.</p>
+      <div class="btn-row">
+        <button onclick="closeDoneDialog()">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ---- Embedded data (injected by generate_review.py) ----
+    const EMBEDDED_DATA = {"skill_name": "managing-your-money", "runs": [{"id": "eval-1-mym-budget-debt-with_skill-run-1", "prompt": "Using the Consumer Reports Complete Guide to Managing Your Money, help me set up a household budget. I have about $9,000 in credit card and car loan debt and no savings, and I want to start investing in stocks. What does the book say I should do, in what order?", "eval_id": 1, "outputs": [{"name": "response.md", "type": "text", "content": "# Your plan, in the book's order: budget, cushion, debt, insurance, then stocks\n\nThe *Consumer Reports Complete Guide to Managing Your Money* (Consumers Union, 1989) answers your question directly. You **should not start buying stocks yet.** The book lists three things to have before you invest in stocks: your debts under control, adequate insurance, and an emergency fund. You have $9,000 of consumer debt and no savings, so you're at the start of that sequence. Starting there isn't a failure. It's simply where the plan begins.\n\n> **A note on dates:** the book was published in 1989. Its principles still hold. Its tax rules, interest rates and dollar figures are out of date. Below, **(book)** marks what the book says and **(today, verify)** marks current context you should check with official sources such as the CFPB, FDIC, IRS or annualcreditreport.com.\n\n---\n\n## Step 1: Build the budget with the book's four-step method (book)\n\nThe book's budgeting chapter uses four steps:\n\n1. **Cash-flow analysis: see where your money actually went.** This step isn't a budget yet. You're just recording what happened. Go through the last 3\u201312 months of bank and card statements and total your income and your spending by category, for example:\n   - Housing (rent or mortgage, utilities)\n   - Car loan payment, gas, car insurance, repairs\n   - Credit card payments\n   - Groceries and eating out\n   - Insurance (health, renters or homeowner's, life)\n   - Phone, internet, subscriptions\n   - Clothing, personal, entertainment\n   - Irregular items: gifts, medical, annual fees\n2. **Set budget goals.** For you the goals are already clear: (a) build a starter emergency cushion, (b) pay off the $9,000, (c) then save and invest.\n3. **Allocate resources.** Give each category a monthly dollar limit. Put the debt payments and the emergency-fund deposit into the budget as fixed lines, not as whatever is left over at the end of the month.\n4. **Year-end review.** Total each category and compare it with your budget and with the year before. Confirm that your income (not counting what you saved) was **more than your spending**. The book suggests charting progress, and your falling debt balance is the obvious thing to chart. Then set next year's goals.\n\nThe book's supporting advice for this chapter:\n- **Budget for the unexpected.** Car repairs, medical bills and annual premiums will come up, so set money aside for them.\n- **Keep good records.**\n- **Make the budget work.** Revise it when reality doesn't match the plan.\n\n### Run the book's debt test while you're doing this (book)\nThe book's rule is that monthly principal and interest on all debts **except a mortgage** shouldn't exceed **15% of your gross (pre-tax) income**.\n\n- *Example:* on a gross income of $4,000 a month, your car loan plus card payments should total **$600 or less**.\n- If you're over 15%, your debt is not \"under control\" by the book's standard, and paying it down is the top priority.\n- Lenders use a related **28%/36%** guideline: housing at about 28% of gross income, and all debt including housing at about 36%. That matters if you plan to buy a home later.\n\n---\n\n## Step 2: Start an emergency fund (book)\n\nThe book puts the emergency fund ahead of investing. It calls the right size \"a personal matter\":\n- Some experts quoted in the book suggest $10,000\u2013$15,000 (in 1989 dollars).\n- Others suggest a set number of months of expenses.\n- **(today, verify):** a common current guideline is **3\u20136 months of essential expenses**.\n\n**How to do this alongside the debt.** The book doesn't give a split between saving and paying down debt. A practical approach that fits its logic is to **build a small starter cushion first**, for example one month of essential expenses or $1,000\u2013$2,000. That way a flat tire doesn't go back on the credit card. Then send most of your extra money to the debt (Step 3). Once the high-interest debt is gone, finish the full emergency fund.\n\n**Where to keep it (book):** keep it liquid and safe. The book discusses savings accounts, money market deposit accounts, credit unions (which often pay better savings rates) and short-term CDs. Shop rates, and don't accept a poor return just out of habit. As the book puts it, \"recognize your value to the bank and expect adequate compensation in return.\"\n- **(today, verify):** an FDIC- or NCUA-insured high-yield savings account works well. Coverage is $250,000 per depositor, per bank, per ownership category.\n\n---\n\n## Step 3: Get the debt under control, credit cards first (book)\n\n- **Pay off the credit cards first.** The book's advice on charge cards is to pay them in full each month. It also noted that the 1986 tax law phased out the deduction for consumer interest, so card interest is pure cost.\n  - **(today, verify):** card interest is still not deductible, and card rates are usually far higher than car-loan rates. Each card dollar you pay off earns you that card's rate, risk-free, which is a better return than stocks can promise.\n- **Order of attack (practical application):** make the minimum payment on everything, then put every extra dollar on the **highest-interest card**. When that card is paid off, move its payment to the next one. The car loan, which usually has a lower rate, comes last.\n- **Stop adding to the balance.** While you're paying down the cards, use cash or a debit card for everyday spending.\n- **The car loan:** keep paying it as scheduled. If it has a high rate, check whether it allows prepayment without penalty, and compare refinancing offers by **APR** (the book's standard for comparing loans).\n- **Check your credit report (book).** The book's credit chapter suggests reviewing your file and disputing errors. **(today, verify):** free reports from all three bureaus are available at **annualcreditreport.com**.\n- **The book is wary of paying for help.** It questions paid \"credit credential\" and monitoring services. If you look for help with debt, **(today, verify)** use a nonprofit credit counselor and avoid debt-settlement companies that charge large fees.\n- **Bankruptcy is not your situation.** The book covers Chapter 7 and Chapter 13 for debt that can't be managed. $9,000 can be handled with a budget. (Bankruptcy law was rewritten in 2005, so the book's details are out of date anyway.)\n\n---\n\n## Step 4: Close any insurance gaps (book)\n\n\"Adequate insurance\" is one of the book's conditions for investing in stocks. Its principle is to insure against catastrophe and to calculate how much you need instead of buying whatever is pitched. Check these:\n- **Health insurance:** one big medical bill can undo everything above.\n- **Auto:** since you have a car loan, the lender almost certainly requires collision and comprehensive. Carry solid **liability** limits, and shop around, because premiums vary a lot.\n- **Renter's or homeowner's**, including liability.\n- **Disability:** first add up what you already have (an employer plan, Social Security disability) before buying more.\n- **Life insurance, only if someone depends on your income.** Use the book's three-step method: (1) estimate what your family would need, (2) subtract your assets and other income sources, (3) insure the gap. Most people are best served by low-cost **term** insurance.\n- **Skip** credit-life insurance on your loans, which the book says \"is usually not a good buy\", and dread-disease policies.\n\n---\n\n## Step 5: Start retirement saving (book + today)\n\nThe book tells readers to start retirement planning with their first job, even while career and family take most of their attention.\n- **(today, verify):** if your employer matches 401(k) contributions, many people contribute enough to get the full match even while paying off debt, since the match is an immediate return on your money. After the cards are paid off, increase your contributions. IRA and 401(k) limits are much higher than the book's 1989 figure of $2,000. Check IRS.gov for this year's limits.\n\n---\n\n## Step 6: Then invest in stocks, starting carefully (book)\n\nOnce the cards are paid, your non-mortgage debt is under 15% of gross income, your insurance is in place and your emergency fund is full, the book's advice for a new investor is:\n\n1. **Understand the trade-off.** Investments offer **liquidity, safety and total return.** \"Liquidity and safety usually go hand-in-hand, but for a higher return you generally have to sacrifice some liquidity or safety, or both.\"\n2. **Start in stages.** Until your surplus beyond your emergency and retirement funds reaches about **$10,000\u2013$20,000**, the book suggests short-term (6\u201312 month) CDs, Treasury bills, or a **low-minimum stock or bond mutual fund**, with staggered maturities.\n3. **Diversify.** Don't put your money into a single company. A fund gives you more diversification than most individuals can buy on their own.\n4. **Keep costs low.** Avoid **load** (sales-commission) funds and 12b-1 fees, which the book says \"do nothing\" for existing shareholders. Use discount brokers.\n5. **Invest regularly.** **Dollar-cost averaging** (investing a fixed amount on a schedule) and **dividend reinvestment** suit small investors.\n6. **Avoid speculation.** The book lists high-risk assets such as fledgling companies, commodity options, precious metals and collectibles.\n7. **Be skeptical of advisers.** \"Few people need a financial planner.\" The book warns about product sellers with \"misleading titles\".\n\n**(today, verify):** today the low-cost way to follow this advice is usually a broad **index fund or ETF**. Expense ratios are far below 1989 levels, and trading is often commission-free. If you hire an adviser, ask whether they are a **fee-only fiduciary** and look them up on FINRA BrokerCheck.\n\n---\n\n## Summary: your order of operations\n\n| # | Step | Done when\u2026 |\n|---|---|---|\n| 1 | Cash-flow analysis and budget (four steps) | You know where every dollar goes and have a monthly plan |\n| 2 | Starter emergency cushion | About one month of essentials (or $1,000\u2013$2,000) is saved |\n| 3 | Pay off credit cards (highest rate first), keep paying the car loan | Cards at $0, and non-mortgage debt payments \u2264 15% of gross income |\n| 4 | Insurance check-up | Health, auto liability, renter's or home, disability; life if you have dependents |\n| 5 | Full emergency fund and retirement saving | 3\u20136 months of expenses saved *(today)*; at least the employer match captured |\n| 6 | Begin investing | Diversified, low-cost funds, dollar-cost averaging; CDs, T-bills or a low-minimum fund until the surplus reaches about $10k\u2013$20k |\n| \u2014 | Every year | Year-end budget review: income above spending, debt chart, new goals |\n\nIf you share your monthly gross income, your take-home pay, and the interest rates and balances on each card and on the car loan, I can run the 15% test and sketch a month-by-month payoff and savings schedule.\n\n*This is educational information based on a 1989 consumer guide, not individualized financial advice. Check current rates, limits and rules with official sources or a qualified fiduciary professional.*\n"}], "grading": {"expectations": [{"text": "Describes the book's four budgeting steps: cash-flow analysis, setting budget goals, allocating resources, and a year-end review", "passed": true, "evidence": "cash-flow analysis, budget goals, allocate, year-end review"}, {"text": "Recommends building an emergency fund before investing", "passed": true, "evidence": "emergency fund before investing"}, {"text": "Cites the book's guideline that monthly debt payments excluding the mortgage should not exceed 15 percent of gross income", "passed": true, "evidence": "15% of gross excluding mortgage"}, {"text": "States the book says not to invest in stocks until debts are under control and insurance is adequate", "passed": true, "evidence": "debts under control and adequate insurance before stocks"}, {"text": "Notes the book is from 1989 and flags that some figures/rules are outdated or should be verified", "passed": true, "evidence": "flags 1989 edition"}, {"text": "Gives a clear ordered action plan (track cash flow, pay high-interest debt, emergency fund, insurance, then invest)", "passed": true, "evidence": "ordered plan"}], "summary": {"passed": 6, "failed": 0, "total": 6, "pass_rate": 1.0}}}, {"id": "eval-1-mym-budget-debt-without_skill-run-1", "prompt": "Using the Consumer Reports Complete Guide to Managing Your Money, help me set up a household budget. I have about $9,000 in credit card and car loan debt and no savings, and I want to start investing in stocks. What does the book say I should do, in what order?", "eval_id": 1, "outputs": [{"name": "response.md", "type": "text", "content": "# Budget, Debt, Then Investing: A Step-by-Step Order\n\n**A caveat first:** I don't have the text of the *Consumer Reports Complete Guide to Managing Your Money* in front of me. I can't quote its chapters, page numbers or exact figures, and I won't pretend to. What follows is the standard order of operations that consumer-finance guides like Consumer Reports generally recommend, applied to your situation. Before you rely on any specific number below, check it against your copy of the book.\n\n---\n\n## The short answer: the order\n\n1. **Track your spending and build a written budget** so you know where the money goes.\n2. **Build a small starter emergency fund** (around $1,000, or one month of bare-bones expenses). This keeps a car repair from going back on the credit card.\n3. **Pay down the high-interest credit card debt aggressively** while making the minimum payments on the car loan.\n4. **Grab any employer 401(k) match** if you have one, even while you're paying off debt. A match is an immediate, guaranteed return.\n5. **Finish building a full emergency fund** of 3 to 6 months of essential expenses, kept in a high-yield savings or money market account.\n6. **Decide what to do about the car loan.** Pay it off early if the rate is high. If it's low, keep paying it on schedule.\n7. **Then start investing in stocks**, preferably through tax-advantaged accounts and low-cost, diversified index funds rather than individual stocks.\n\n---\n\n## Step 1: Set up the household budget\n\n- **Gather 2 to 3 months of statements** (bank, credit card, pay stubs) and record your actual take-home income and every expense.\n- **Sort expenses into categories:**\n  - *Fixed:* rent or mortgage, car payment, insurance, phone, minimum debt payments\n  - *Variable necessities:* groceries, utilities, gas, medical\n  - *Discretionary:* dining out, entertainment, subscriptions, shopping\n  - *Irregular or annual:* car registration, gifts, holidays. Divide each by 12 and budget monthly.\n- **Pick a framework.** A common starting point is the 50/30/20 guideline: 50% needs, 30% wants, 20% savings and extra debt payments. While you're in debt, aim to shift more than 20% toward debt and savings by trimming \"wants.\"\n- **Find cuts.** Unused subscriptions, insurance re-shopping (Consumer Reports often stresses comparison shopping for insurance, phone and cable), cooking at home, and avoiding new credit purchases.\n- **Automate.** Schedule transfers to savings and debt payments right after payday so the budget runs itself.\n- **Review monthly** and adjust. A budget is a living document.\n\n## Step 2: Starter emergency fund\n\nWith no savings, any surprise expense goes straight onto a credit card and undoes your progress. Park $500 to $1,000 in a separate savings account before attacking debt hard.\n\n## Step 3: Attack the debt (about $9,000)\n\n- **List every debt** with its balance, interest rate (APR) and minimum payment.\n- **Pay minimums on everything, then put every extra dollar toward one target:**\n  - *Avalanche method* (highest APR first). This saves the most money and is usually the credit card.\n  - *Snowball method* (smallest balance first). This gives quick psychological wins.\n- **Lower the rate on the credit card debt:**\n  - Call the issuer and ask for a lower APR.\n  - Consider a 0% balance-transfer card. Watch the 3 to 5% transfer fee and pay the balance off before the promo period ends.\n  - Or consider a lower-rate personal or credit-union consolidation loan.\n- **Stop adding new charges.** Use debit or cash until the card balance is gone.\n- **Beware of debt-settlement companies.** If you need help, a nonprofit credit counselor (NFCC-affiliated) is the safer route.\n- **The car loan:** car loans usually carry lower rates than credit cards, so they typically come after the cards. If the rate is high, look into refinancing through a credit union.\n\n## Step 4: Employer retirement match\n\nIf your employer matches 401(k) contributions, contribute enough to get the full match even during debt payoff. Skipping it means turning down free money.\n\n## Step 5: Full emergency fund\n\nOnce the credit cards are paid off, redirect those payments into savings until you have **3 to 6 months of essential expenses**. Keep it safe and easy to reach in an FDIC-insured high-yield savings account or a money market account. It should not be in stocks.\n\n## Step 6: Start investing in stocks\n\nWhen high-interest debt is gone and the emergency fund is in place, here's how to begin:\n\n- **Use tax-advantaged accounts first:** 401(k) or 403(b) beyond the match, then a Roth or traditional IRA.\n- **Favor low-cost, broadly diversified index funds or ETFs** (for example, a total-market or S&P 500 fund) or a target-date fund over picking individual stocks. Fees compound against you, so compare expense ratios.\n- **Invest regularly** through automatic monthly contributions (dollar-cost averaging) rather than trying to time the market.\n- **Match your mix of investments to your time horizon and risk tolerance.** Money you'll need within about 5 years shouldn't be in stocks.\n- **Avoid high-commission products and hot tips.** Be cautious with advisers who earn commissions. A fee-only fiduciary is the safer choice if you want help.\n\n---\n\n## Why this order?\n\n- **Paying off credit card debt is a guaranteed return equal to its interest rate**, often 20% or more. That beats the long-run average stock market return of roughly 7 to 10%, which isn't guaranteed.\n- **Investing without an emergency fund is risky.** A job loss or big bill could force you to sell stocks at a loss or borrow on cards again.\n- **The budget comes first because it creates the surplus** that pays for every later step.\n\n---\n\n### A quick worksheet to start with\n\n| Item | Monthly amount |\n|---|---|\n| Take-home income | $ |\n| Fixed expenses | $ |\n| Variable necessities | $ |\n| Discretionary | $ |\n| Minimum debt payments | $ |\n| **Left over \u2192 starter fund, then extra debt payments** | $ |\n\nFill this in, and if you share your interest rates and monthly surplus, I can help you estimate how long the payoff will take. Again, check any specific figures or recommendations against your copy of the Consumer Reports guide, since I'm describing generally accepted practice rather than quoting the book.\n"}], "grading": {"expectations": [{"text": "Describes the book's four budgeting steps: cash-flow analysis, setting budget goals, allocating resources, and a year-end review", "passed": false, "evidence": "generic budget steps, not the book's four"}, {"text": "Recommends building an emergency fund before investing", "passed": true, "evidence": "emergency fund"}, {"text": "Cites the book's guideline that monthly debt payments excluding the mortgage should not exceed 15 percent of gross income", "passed": false, "evidence": "no 15% guideline"}, {"text": "States the book says not to invest in stocks until debts are under control and insurance is adequate", "passed": false, "evidence": "pay debt first but no insurance precondition from the book"}, {"text": "Notes the book is from 1989 and flags that some figures/rules are outdated or should be verified", "passed": false, "evidence": "says it doesn't have the text; no 1989 flag"}, {"text": "Gives a clear ordered action plan (track cash flow, pay high-interest debt, emergency fund, insurance, then invest)", "passed": true, "evidence": "clear 7-step order"}], "summary": {"passed": 2, "failed": 4, "total": 6, "pass_rate": 0.33}}}, {"id": "eval-2-mym-life-insurance-with_skill-run-1", "prompt": "I'm 34, married with two young kids. According to the Consumer Reports money guide, how should I figure out how much life insurance I need, and what kind should I buy? Is credit life insurance on my car loan worth it?", "eval_id": 2, "outputs": [{"name": "response.md", "type": "text", "content": "# Life insurance for a 34-year-old parent of two: what the Consumer Reports guide says\n\n*Source: Consumer Reports Complete Guide to Managing Your Money (Consumers Union, 1989), Chapter 13. The book's principles still hold up. Its prices, products and tax rules come from 1989, so check any numbers against current sources.*\n\n## 1. Do you need it? Yes.\n\nThe guide says life insurance is for people whose **dependents rely on their income**. A married parent of two young children fits that exactly. If both you and your spouse earn income or do unpaid work the family depends on, like childcare, **work out a need for each of you**.\n\n## 2. How much: the book's three-step method\n\nThe guide doesn't use a rule of thumb like \"10\u00d7 salary.\" It has you work out the actual gap.\n\n**Step 1: Add up what your family would need if you died.**\n- *Immediate costs:* funeral, probate and estate administration, any estate taxes, and any debts you'd want paid off at death.\n- *Future costs:* the family's living expenses for as many years as they'd need support. With young kids, that's at least until the youngest is self-supporting, often 18 to 20 years. Include **children's education** too.\n\n**Step 2: Subtract the resources they would already have.**\n- Savings and investments\n- **Social Security survivor benefits** for your spouse and the children\n- **Your spouse's income**\n- **Existing life insurance**, including any group policy through work\n\n**Step 3: Buy coverage for the gap.** Whatever is left from Step 1 after Step 2 is the amount of coverage to buy.\n\n**Worked shape (fill in your own numbers):**\n\n| Item | Your figure |\n|---|---|\n| Final and immediate costs (funeral, debts, estate costs) | $ |\n| Yearly living costs the family would need you to replace \u00d7 years until the youngest is independent | $ |\n| College or education fund for 2 children | $ |\n| **Total need** | $ |\n| \u2212 Savings and investments | $ |\n| \u2212 Social Security survivor benefits over that period | $ |\n| \u2212 Spouse's earnings available for these costs | $ |\n| \u2212 Existing coverage (group plan, other policies) | $ |\n| **= Coverage to buy** | $ |\n\nTips for filling it in:\n- **Survivor benefits:** get your estimate from your *my Social Security* account at ssa.gov. Don't use 1989 figures.\n- **Employer group life:** it usually ends when you leave the job, so don't count all of it as permanent coverage *(current practice, verify)*.\n- **Redo the numbers** when your life changes: a new child, a new home, a big raise, or the kids growing up. The guide's year-end review habit is a good time to do it.\n\n## 3. What kind to buy\n\nThe guide splits policies into two families:\n\n- **Term insurance** is \"pure protection.\" You pay for a death benefit for a set period and nothing else. It's simple and gives the most coverage per premium dollar.\n- **Cash-value insurance** combines protection with a savings feature. It includes:\n  - **Whole life**\n  - **Universal life** (introduced in 1979). The book notes it shows you how the cash value builds up, which traditional whole life keeps \"in the dark.\" Its charges can be front-loaded or back-loaded, so read the fine print.\n\nThe book also covers **converting** between the two types.\n\n**What this means for you:** your need is large and temporary. It peaks now, while the kids are small, and shrinks as they grow and your savings build. That matches **low-cost term insurance** well. A level term policy that runs until your youngest is independent, often 20 to 25 years at your age, fits that window. Save and invest separately, for example for retirement, rather than through the policy. This is the common approach for families like yours, and it follows from the book's framework. The guide's own wording on how strongly to prefer term is only partly captured in my source notes, so treat the specific recommendation as standard advice, not a direct quote.\n\nWhen you shop:\n- Compare quotes from several insurers for the same amount and term length.\n- Check that the policy is **convertible** to cash-value coverage without a new medical exam, in case your health changes.\n- Ask how premiums are guaranteed.\n- Check the insurer's financial strength rating, such as AM Best *(current, verify)*.\n\nThe guide also says **one large policy is better than several small ones**, since buying many small policies usually costs more per dollar of coverage.\n\n## 4. Credit life insurance on your car loan: usually not worth it\n\nThe guide is direct: credit-life insurance **\"is usually not a good buy.\"**\n\nWhy, briefly:\n- **It protects the lender, not your family.** The payout goes straight to the lender to pay off the loan.\n- **The coverage shrinks** as the loan balance goes down, but the cost is often fixed or built into the loan, so you pay interest on the premium too.\n- **It's poor value per dollar** next to ordinary term life.\n- **It's another small policy**, which goes against the book's advice to carry one large policy.\n\n**Better approach:** include the car loan balance in Step 1 of your needs calculation, under debts to pay off at death, and let your term policy cover it. If the dealer or lender added credit life, it's normally optional. You can usually decline it or cancel it and get a refund of the unused premium. Ask the lender, and check your state's rules *(verify)*.\n\n## 5. Related gaps the guide would have you check\n\n- **Disability insurance.** At 34, you're more likely to become disabled than to die before retirement *(standard actuarial point, verify)*. The guide says to add up the benefits you already have first: an employer group plan, Social Security disability and workers' comp. Then buy only to fill the gap.\n- **A will.** With minor children, this is as important as the insurance. The guide warns that dying without a will leaves your assets to be divided under state law. A will is also where you **name a guardian** for the kids.\n- **Beneficiary designations.** Make sure your policies name the right people. For minor children, it's usually better to leave the money to a trust or a custodian than to name the kids directly. Ask an estate attorney *(current practice, verify)*.\n- **Avoid \"dread disease\" policies.** The guide calls cancer-only and similar policies poor value. They're often sold with \"promotional fear tactics.\"\n\n---\n\n*This is educational guidance based on a 1989 consumer guide, not personal insurance or financial advice. Policy types, prices and Social Security rules have changed since then. Get current quotes, and use your state insurance department or a fee-only, fiduciary advisor if you want help.*\n"}], "grading": {"expectations": [{"text": "Explains the book's three-step method: estimate family expenses if you die (immediate and future), subtract assets/income sources, insure the gap", "passed": true, "evidence": "three-step method"}, {"text": "Explains term versus cash-value (whole/universal) insurance", "passed": true, "evidence": "term vs cash-value incl. universal"}, {"text": "Says the book considers credit-life insurance usually not a good buy and that one larger policy beats several small ones", "passed": true, "evidence": "credit-life not a good buy; one large policy"}, {"text": "Mentions including Social Security survivor benefits, existing savings or spouse income as resources", "passed": true, "evidence": "Social Security survivor benefits"}, {"text": "Recommends or discusses low-cost term coverage for the years dependents need support", "passed": true, "evidence": "recommends term"}, {"text": "Flags that 1989 product details/prices are dated and suggests verifying current quotes", "passed": true, "evidence": "flags 1989"}], "summary": {"passed": 6, "failed": 0, "total": 6, "pass_rate": 1.0}}}, {"id": "eval-2-mym-life-insurance-without_skill-run-1", "prompt": "I'm 34, married with two young kids. According to the Consumer Reports money guide, how should I figure out how much life insurance I need, and what kind should I buy? Is credit life insurance on my car loan worth it?", "eval_id": 2, "outputs": [{"name": "response.md", "type": "text", "content": "# Life Insurance at 34, Married, Two Young Kids\n\n*Note: This answer comes from general knowledge of Consumer Reports' long-standing consumer-finance advice. I'm not quoting the guide's exact text, so check specific figures against your copy.*\n\n## 1. Figuring out how much you need\n\nConsumer Reports' advice is to work out what your family would actually need. Rules of thumb like \"7\u201310 times your salary\" are a rough starting point at best. The question is: **if your income stopped tomorrow, how much money would your spouse and kids need, and for how long?**\n\nA needs-based worksheet looks like this:\n\n**Add up what your family would need:**\n- **Income replacement:** the yearly after-tax income your household would lose, times the number of years it's needed. With young kids, that usually means until the youngest is through school, about 18\u201322 years. You don't have to replace 100%, because one less person means somewhat lower expenses. A common target is 60\u201380% of take-home pay.\n- **Debts to pay off:** mortgage (or enough to keep making payments), car loans, credit cards, student loans.\n- **Future big costs:** college for two children, and child care if a stay-at-home parent dies or if the surviving parent must pay for care they now provide.\n- **Final expenses:** funeral, burial and estate settlement, often $10,000\u2013$20,000.\n- **An emergency cushion** for the adjustment period.\n\n**Subtract what's already there:**\n- Savings and investments (not counting retirement money you want kept for retirement).\n- Existing life insurance, including group coverage through work. Don't over-rely on it, since it usually ends when you leave the job.\n- **Social Security survivor benefits.** Your spouse and minor children may be eligible for monthly benefits, which can be substantial for a young family. Check your estimate at ssa.gov.\n\n**The gap is roughly how much coverage to buy.** For a 34-year-old with two small children, this often comes out in the high six figures to over $1 million.\n\n**Don't forget a stay-at-home or lower-earning spouse.** Their unpaid work, such as child care and running the household, would cost a lot to replace. They need coverage too.\n\n**Revisit the number** after major life events: a new child, a new home, a big raise, or debts paid off.\n\n## 2. What kind to buy: term life insurance\n\nConsumer Reports' consistent advice for most families: **buy term life insurance.**\n\n- **Term insurance** covers you for a set period, such as 20 or 30 years. It pays only if you die during that time and builds no cash value. That makes it far cheaper, often 10\u201315 times less than cash-value policies for the same death benefit. A healthy 34-year-old can typically get $1 million of 20- or 30-year coverage for a modest monthly premium.\n- **Choose level-premium term** so your premium stays fixed for the whole term.\n- **Match the term to the need.** A 20- to 30-year term gets your youngest child to adulthood and covers most of the mortgage. Many people would pick a 25- or 30-year term here.\n- **Look for a policy that's guaranteed renewable and convertible**, which lets you switch to permanent coverage later without a medical exam if your situation changes.\n\n**Why not whole life, universal life or variable life (cash-value policies)?**\n- They cost much more, so many families end up **underinsured** because they can only afford a small death benefit.\n- High commissions and fees, especially in the early years, eat into the cash value. Surrendering early often means losing money.\n- The \"investment\" part usually returns less than you could get on your own. That's the logic behind Consumer Reports' \"**buy term and invest the difference**\" advice: put the premium savings into a 401(k), IRA or 529 college plan.\n- Permanent insurance can make sense in narrow cases, such as estate-tax planning, a lifelong dependent or certain business needs. It rarely fits a typical young family.\n\n**Shopping tips:**\n- Compare quotes from several insurers, using online quote services or an independent agent. Prices vary a lot for the same coverage.\n- Check insurers' financial-strength ratings (A.M. Best, Standard & Poor's, Moody's).\n- Apply while you're young and healthy. Rates depend on age and health, and buying now locks in a low price.\n- Answer the application honestly. Misstatements can lead to a denied claim.\n- Don't rely only on your employer's group policy. Buy your own so coverage doesn't depend on your job.\n\n## 3. Credit life insurance on your car loan: generally not worth it\n\nConsumer Reports has long called credit life insurance one of the **worst deals in insurance**. It's the coverage sold with a car loan, mortgage or credit card that pays off the debt if you die.\n\n- **It's overpriced** compared with regular term life insurance, often by a wide margin. Insurers typically pay out only a small share of the premiums in claims.\n- **The payout shrinks while the price doesn't.** The benefit falls as you pay down the loan, but the premium usually stays the same.\n- **The lender is the beneficiary, not your family.** The money goes only to pay off the loan. Your spouse gets no choice about how to use it.\n- **Premiums are often rolled into the loan**, so you pay interest on the insurance too.\n- **It's optional.** A lender can't require credit life insurance as a condition of the loan. If a dealer suggests otherwise, push back, and check your contract for add-ons you didn't ask for.\n- **The same applies to credit disability and \"debt protection\" add-ons:** high cost, narrow benefits.\n\n**The better approach:** include your car loan and your other debts in your needs calculation, then buy enough term life insurance to cover them. Your family gets a bigger, cheaper and more flexible benefit they control.\n\nPossible exception: credit life can be worth considering if your health makes you uninsurable through regular underwriting, since it often requires no medical exam. Even then, compare it with guaranteed-issue or group coverage first.\n\n---\n\n### Bottom line\n1. Estimate your family's needs (income replacement until the kids are grown, debts, college, final expenses), then subtract savings, existing coverage and Social Security survivor benefits.\n2. Cover both spouses, including a stay-at-home parent.\n3. Buy level-premium **term** insurance for about 20\u201330 years from a highly rated insurer, after comparing quotes. Invest the money you save instead of buying cash-value insurance.\n4. **Say no to credit life insurance** on the car loan. Make your term policy big enough to cover that debt instead.\n"}], "grading": {"expectations": [{"text": "Explains the book's three-step method: estimate family expenses if you die (immediate and future), subtract assets/income sources, insure the gap", "passed": true, "evidence": "estimate needs then subtract savings and existing coverage"}, {"text": "Explains term versus cash-value (whole/universal) insurance", "passed": true, "evidence": "term vs cash value"}, {"text": "Says the book considers credit-life insurance usually not a good buy and that one larger policy beats several small ones", "passed": true, "evidence": "credit life 'worst deals'; size term policy to cover debt"}, {"text": "Mentions including Social Security survivor benefits, existing savings or spouse income as resources", "passed": true, "evidence": "Social Security survivor benefits"}, {"text": "Recommends or discusses low-cost term coverage for the years dependents need support", "passed": true, "evidence": "level term 20-30 years"}, {"text": "Flags that 1989 product details/prices are dated and suggests verifying current quotes", "passed": false, "evidence": "no note that the book's details are dated"}], "summary": {"passed": 5, "failed": 1, "total": 6, "pass_rate": 0.83}}}, {"id": "eval-3-mym-credit-denied-with_skill-run-1", "prompt": "I was just turned down for a credit card. What does the Consumer Reports Complete Guide to Managing Your Money say about credit reports and what I should do now? Also, I'm married\u2014does that affect my credit file?", "eval_id": 3, "outputs": [{"name": "response.md", "type": "text", "content": "# Turned Down for a Credit Card: What the Book Says and What to Do Now\n\nThe *Consumer Reports Complete Guide to Managing Your Money* covers this in Chapter 8, \"Credit rating.\" Keep in mind that the book came out in **1989**. Its advice on how to approach your credit file still holds up. The specific rights, fees and deadlines have changed since then, so I've flagged the parts you should check against current rules.\n\nLabels used below:\n- *(book)* means it comes from the 1989 text.\n- *(current, verify)* means it's today's general rule. Confirm it with the CFPB, FTC or the credit bureaus.\n\n---\n\n## 1. What the book says about credit reports\n\n**Your credit file doesn't show everything you pay.** The book points out that many routine bills are **never reported** to credit bureaus. That includes phone, utilities, rent and medical bills *(book)*. So you can pay every bill on time for years and still have a \"thin\" file that tells a lender very little. Being turned down doesn't always mean the lender saw something bad. Sometimes it saw almost nothing.\n\n**Lenders have to answer you.** A lender must respond to a credit application within **30 days** *(book)*.\n\n**If you're denied credit, the book says you have rights** *(book)*:\n- You can **see your credit bureau file**. In 1989 the bureau waived its fee if you'd been denied credit within the previous 30 days.\n- You can **review the file in person** and bring one other person with you.\n- You can **dispute errors** you find.\n\n**The book doesn't trust paid \"fixes.\"** It's skeptical of paid \"credit credential\" and monitoring services and asks whether they're worth what they cost *(book)*. That advice still applies to \"credit repair\" companies today. They can't legally do anything you can't do yourself for free.\n\n**The book's tools.** Chapter 8 ends with a sample consumer credit report and a **credit report checklist** *(book)*. You use them to go through every entry: personal details, accounts, payment history and inquiries.\n\n---\n\n## 2. What to do now: a step-by-step plan\n\nThese steps follow the book's approach, with current procedures added.\n\n1. **Read the denial notice.** Under today's law, a lender that turns you down must send an \"adverse action\" notice. It says which credit bureau it used and the main reasons for the denial, and it often shows the credit score it used *(current, verify)*. Those reasons tell you what to fix.\n\n2. **Get your credit reports from all three bureaus for free.** The book's fee waiver has been replaced by something better. You can get free reports from Equifax, Experian and TransUnion at **annualcreditreport.com**, the only official site *(current, verify)*. A denial also entitles you to a free report from the bureau the lender used if you ask within 60 days *(current, verify)*.\n\n3. **Check each report against the book's checklist.** Look for:\n   - accounts you don't recognize (a possible sign of identity theft or a mixed-up file);\n   - late payments you didn't make;\n   - debts shown as unpaid that you paid off;\n   - wrong personal details (name, address, Social Security number);\n   - old negative items that should have dropped off. Most negative items drop off after 7 years, and Chapter 7 bankruptcy after 10 *(current, verify)*.\n\n4. **Dispute errors in writing.** Dispute with the credit bureau and with the company that reported the item. The Fair Credit Reporting Act requires the bureau to investigate, usually within about 30 days *(current, verify)*. Keep copies of everything. The book stresses keeping good records throughout.\n\n5. **If the report is accurate, work on what it shows.**\n   - **Debt load:** the book says your monthly payments on all debts except the mortgage should stay **at or under 15% of your gross income** *(book)*. If you're above that, lenders may see you as overextended. Pay down high-interest balances first.\n   - **Thin file:** if you have little credit history, build some. Use one card lightly and pay it in full every month. The book also advises paying credit cards in full instead of carrying a balance *(book)*.\n   - **Recent applications:** don't apply for several more cards right away. Each application can add a hard inquiry.\n\n6. **Consider a credit freeze if anything looks like fraud.** Freezes are free at all three bureaus *(current, verify)*.\n\n7. **Skip paid credit-repair services.** That's the book's view *(book)*, and you can do all of the above yourself for free.\n\n---\n\n## 3. You're married: does that affect your credit file?\n\nYes, it can. The book covers this directly.\n\n**Each person has their own credit file.** Marriage doesn't merge your file with your spouse's *(current, verify)*. What matters is how each account is set up and reported.\n\n**The \"user\" designation.** The book explains that the **Equal Credit Opportunity Act (ECOA)** created a \"user\" designation. It lets a married person get credit history for accounts in the spouse's name or held jointly *(book)*. The book says this mainly protected **women**. Many of them had paid household accounts for years, but the history built up only in the husband's file. That left them with no credit record of their own after divorce or widowhood.\n\n**What to check:**\n- **Look at every account you and your spouse share, or that you use, and make sure it appears on *your* report.** The book specifically advises checking that these accounts are reported under your name *(book)*. If a joint card or loan shows up only on your spouse's file, ask the lender to report it in your name too.\n- **Joint accounts work in both directions.** On a joint account, both of you are legally responsible. Late payments hurt both files.\n- **An authorized user on your spouse's card** may get the account's history, depending on the issuer's reporting. But you aren't responsible for the debt *(current, verify)*.\n- **Your spouse's own accounts** (in their name only) shouldn't appear on your file, and their problems shouldn't hurt your score.\n- **If you changed your name when you married,** make sure your report shows all your accounts under both names and nothing is split across two files.\n\n**Why this might matter for your denial.** If most of your household's credit is in your spouse's name, your own file may be thin. That could be why you were turned down. Getting shared accounts reported in your name, as the book advises, is one of the quickest legitimate ways to strengthen your file.\n\n**Your rights.** Under the ECOA, a lender can't deny you credit because of your sex or marital status *(book; current, verify)*. If you think that happened, you can file a complaint with the **CFPB** (consumerfinance.gov).\n\n---\n\n## Quick checklist\n\n- [ ] Read the denial notice for the bureau used and the reasons\n- [ ] Get free reports from all three bureaus at annualcreditreport.com\n- [ ] Go through each report entry by entry (the book's credit-report checklist)\n- [ ] Dispute errors in writing and keep copies\n- [ ] Confirm joint or spouse accounts appear on *your* report (ECOA)\n- [ ] Check that non-mortgage debt payments are at or under 15% of gross income\n- [ ] Hold off on new applications while you fix things\n- [ ] Skip paid credit-repair services\n\n---\n\n*This is general educational information based on a 1989 book, not personal financial or legal advice. Credit-reporting law (FCRA, ECOA) has been amended many times since 1989. Check current rules with the CFPB (consumerfinance.gov), the FTC (consumer.ftc.gov) or the credit bureaus.*\n"}], "grading": {"expectations": [{"text": "Explains you are entitled to see your credit bureau file, with the fee waived if denied credit recently (within 30 days per the book)", "passed": true, "evidence": "fee waived if denied within 30 days"}, {"text": "Advises reviewing the report and disputing errors", "passed": true, "evidence": "dispute errors"}, {"text": "Mentions the Equal Credit Opportunity Act 'user' designation so a married person gets credit for accounts in the spouse's name", "passed": true, "evidence": "ECOA user designation"}, {"text": "Notes many routine payments (rent, utilities, phone, medical) are not reported to credit bureaus", "passed": true, "evidence": "rent/utilities not reported"}, {"text": "Mentions current free access via annualcreditreport.com and/or FCRA dispute rights as an update to the 1989 book", "passed": true, "evidence": "annualcreditreport, FCRA"}, {"text": "Mentions skepticism toward paid credit-repair or credit-credential services", "passed": true, "evidence": "skeptical of credit-repair/credential services"}], "summary": {"passed": 6, "failed": 0, "total": 6, "pass_rate": 1.0}}}, {"id": "eval-3-mym-credit-denied-without_skill-run-1", "prompt": "I was just turned down for a credit card. What does the Consumer Reports Complete Guide to Managing Your Money say about credit reports and what I should do now? Also, I'm married\u2014does that affect my credit file?", "eval_id": 3, "outputs": [{"name": "response.md", "type": "text", "content": "# Turned Down for a Credit Card: Credit Reports, Your Rights, and Marriage\n\n> **A note on sources:** I don't have the text of the *Consumer Reports Complete Guide to Managing Your Money* in front of me, so I can't quote it or give page numbers. What follows is the standard consumer-credit guidance that Consumer Reports and similar personal-finance guides teach. It rests on federal law: the **Fair Credit Reporting Act (FCRA)** and the **Equal Credit Opportunity Act (ECOA)**. If you have the book, check its chapter on credit, and check current rules at consumerfinance.gov, because some details (such as how many free reports you get) have changed since older editions came out.\n\n---\n\n## 1. What a credit report is\n\nA credit report is a file kept by a credit bureau. The three national bureaus are **Equifax, Experian, and TransUnion**. A report usually contains:\n\n- **Identifying information:** your name and past names, current and past addresses, Social Security number, date of birth, and sometimes employers.\n- **Your credit accounts:** each credit card, loan, and mortgage, with the date it was opened, the credit limit or loan amount, the balance, and your payment history (on time, 30/60/90 days late, charged off).\n- **Public records and collections:** bankruptcies, and accounts sent to collection agencies.\n- **Inquiries:** who has pulled your report. \"Hard\" inquiries come from credit applications. \"Soft\" inquiries come from things like promotional offers or checking your own report.\n\nLenders use the report, and usually a **credit score** calculated from it, to decide whether to approve you and on what terms. The bureaus don't approve or deny anyone. The lender does.\n\nErrors are common. Accounts get mixed up with someone who has a similar name, debts you paid still show as unpaid, accounts are reported twice, or the account was opened by an identity thief. That's why the guides stress checking your report, and denial is the best time to do it.\n\n---\n\n## 2. What to do now that you've been denied\n\n### Step 1: Read the \"adverse action\" notice\nWhen a creditor turns you down, the law requires it to tell you:\n- the **specific reasons** for the denial, or that you can ask for them within 60 days (ECOA), and\n- if a credit report played a part, the **name, address, and phone number of the bureau** that supplied it, plus a statement that the bureau didn't make the decision (FCRA).\n\nCommon reasons include too little credit history, late payments, high balances compared with your limits, too many recent applications, or income that's too low or can't be verified.\n\n### Step 2: Get your free credit report\n- If a report was used against you, you can get a **free copy from that bureau within 60 days** of the denial notice.\n- You can also get free reports from all three bureaus at **AnnualCreditReport.com**, the only official site for this. Free weekly reports are now available permanently.\n- Older editions of personal-finance guides may say \"30 days\" or \"once a year.\" The rules have become more generous since then.\n\n### Step 3: Review it line by line\nLook for:\n- accounts you don't recognize (possible identity theft)\n- late payments that weren't late\n- debts you paid off that still show a balance\n- closed accounts still shown as open, or accounts closed by the creditor that you actually closed\n- negative items older than the reporting limit: most negative information drops off after **7 years**, and Chapter 7 bankruptcy after **10 years**\n- wrong personal information, which can be a sign of a mixed file\n\n### Step 4: Dispute any errors\n- File a dispute with the **bureau** online, or in writing by certified mail with a return receipt. Include copies of your supporting documents, not originals.\n- Also notify the **creditor** that supplied the wrong information.\n- The bureau generally has **30 days** to investigate. If it can't verify the item, the item must be corrected or removed.\n- If the dispute doesn't resolve the problem, you have the right to add a short **statement of explanation** (up to 100 words) to your file. You can also complain to the **Consumer Financial Protection Bureau**.\n- Once corrected, you can ask the bureau to send the corrected report to anyone who received it recently.\n\n### Step 5: If the report is accurate, fix the underlying problem\n- **Pay every bill on time.** Payment history matters most.\n- **Pay down revolving balances.** Try to keep balances well below your credit limits; under about 30% is the common rule of thumb.\n- **Don't apply for several cards right away.** Each application adds a hard inquiry and can look like financial distress.\n- **Build a thin file carefully.** A secured credit card, a credit-builder loan, or becoming an authorized user on a responsible person's account can help.\n- **Ask the creditor to reconsider.** If you can explain the problem (for example, income they didn't count), call and ask, or ask whether a different card would fit you better.\n- **Beware of \"credit repair\" companies** that promise to erase accurate negative information. They can't legally do that, and you can do everything legitimate yourself for free.\n\n---\n\n## 3. Does being married affect your credit file?\n\nThe short answer is that **your credit file stays your own.** Marriage doesn't merge your file with your spouse's, and you don't have a joint credit report or joint score. What matters is how each account is held.\n\n| Type of account | Appears on whose report? |\n|---|---|\n| Account in your name only | Yours only |\n| Account in your spouse's name only | Your spouse's only (unless you're an authorized user) |\n| **Joint account** (both of you applied and are liable) | **Both** reports. Good and bad payment history affects you both |\n| You're an **authorized user** on your spouse's card | Often appears on your report too, though you aren't legally liable |\n\nKey points, often stressed in older guides because historically it mostly affected married women:\n\n- **Under the ECOA, creditors can't discriminate based on marital status.** They can't deny you credit because you're married, single, divorced, or widowed. They also can't require your spouse to co-sign if you qualify on your own.\n- **Make sure joint accounts are reported in both names.** Since the ECOA rules took effect in the 1970s, accounts that both spouses use or are liable for must be reportable in both names. In the past, many married women ended up with no credit history of their own because every account was in the husband's name. If that happened to you, ask the creditors to report the shared accounts under your name as well.\n- **Keep some credit in your own name.** Credit in your own name gives you an independent history. That protects you if you divorce or your spouse dies, and it helps if your spouse's credit is poor.\n- **Your spouse's past credit problems don't transfer to you** just because you married. Debts you take on together, though, affect both of you. In **community-property states** (such as California, Texas, and Arizona), debts taken on during the marriage may be treated as shared, even when they don't appear on your credit report.\n- **If you changed your name,** check that your report correctly shows both your current and former names, so your history isn't split up or lost.\n\n### What this means for you\n1. Check whether the denial was based on **your** file. It should be, unless you applied jointly.\n2. If most of your household credit is in your spouse's name, you may simply have a **thin file**. Ask to be added to joint accounts, or open a starter or secured card in your own name.\n3. If you share accounts with your spouse, check that they appear on **your** report, and dispute them if they don't.\n4. If your spouse's poor credit appears on your report only because of joint accounts, those accounts are affecting you. Work together to bring them up to date.\n\n---\n\n## Quick checklist\n- [ ] Read the denial letter and note the reasons and the bureau named\n- [ ] Get your free report from that bureau, and from all three at AnnualCreditReport.com\n- [ ] Dispute any errors with both the bureau and the creditor, in writing\n- [ ] Check that joint accounts appear on your report, and that your name history is correct\n- [ ] Fix real problems: pay on time, lower balances, limit new applications\n- [ ] Build credit in your own name if your file is thin\n- [ ] Avoid paid \"credit repair\" schemes. Disputing errors yourself is free\n"}], "grading": {"expectations": [{"text": "Explains you are entitled to see your credit bureau file, with the fee waived if denied credit recently (within 30 days per the book)", "passed": true, "evidence": "free report after denial (30 days mentioned)"}, {"text": "Advises reviewing the report and disputing errors", "passed": true, "evidence": "dispute"}, {"text": "Mentions the Equal Credit Opportunity Act 'user' designation so a married person gets credit for accounts in the spouse's name", "passed": true, "evidence": "ECOA, joint accounts reported in both names"}, {"text": "Notes many routine payments (rent, utilities, phone, medical) are not reported to credit bureaus", "passed": false, "evidence": "does not mention routine payments going unreported"}, {"text": "Mentions current free access via annualcreditreport.com and/or FCRA dispute rights as an update to the 1989 book", "passed": true, "evidence": "annualcreditreport.com"}, {"text": "Mentions skepticism toward paid credit-repair or credit-credential services", "passed": true, "evidence": "beware credit repair companies"}], "summary": {"passed": 5, "failed": 1, "total": 6, "pass_rate": 0.83}}}], "previous_feedback": {}, "previous_outputs": {}, "benchmark": {"metadata": {"skill_name": "managing-your-money", "skill_path": "\u003cpath/to/skill>", "executor_model": "\u003cmodel-name>", "analyzer_model": "\u003cmodel-name>", "timestamp": "2026-11-20T23:07:45Z", "evals_run": [1, 2, 3], "runs_per_configuration": 1}, "runs": [{"eval_id": 1, "eval_name": "mym-budget-debt", "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 6, "failed": 0, "total": 6, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Describes the book's four budgeting steps: cash-flow analysis, setting budget goals, allocating resources, and a year-end review", "passed": true, "evidence": "cash-flow analysis, budget goals, allocate, year-end review"}, {"text": "Recommends building an emergency fund before investing", "passed": true, "evidence": "emergency fund before investing"}, {"text": "Cites the book's guideline that monthly debt payments excluding the mortgage should not exceed 15 percent of gross income", "passed": true, "evidence": "15% of gross excluding mortgage"}, {"text": "States the book says not to invest in stocks until debts are under control and insurance is adequate", "passed": true, "evidence": "debts under control and adequate insurance before stocks"}, {"text": "Notes the book is from 1989 and flags that some figures/rules are outdated or should be verified", "passed": true, "evidence": "flags 1989 edition"}, {"text": "Gives a clear ordered action plan (track cash flow, pay high-interest debt, emergency fund, insurance, then invest)", "passed": true, "evidence": "ordered plan"}], "notes": []}, {"eval_id": 2, "eval_name": "mym-life-insurance", "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 6, "failed": 0, "total": 6, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Explains the book's three-step method: estimate family expenses if you die (immediate and future), subtract assets/income sources, insure the gap", "passed": true, "evidence": "three-step method"}, {"text": "Explains term versus cash-value (whole/universal) insurance", "passed": true, "evidence": "term vs cash-value incl. universal"}, {"text": "Says the book considers credit-life insurance usually not a good buy and that one larger policy beats several small ones", "passed": true, "evidence": "credit-life not a good buy; one large policy"}, {"text": "Mentions including Social Security survivor benefits, existing savings or spouse income as resources", "passed": true, "evidence": "Social Security survivor benefits"}, {"text": "Recommends or discusses low-cost term coverage for the years dependents need support", "passed": true, "evidence": "recommends term"}, {"text": "Flags that 1989 product details/prices are dated and suggests verifying current quotes", "passed": true, "evidence": "flags 1989"}], "notes": []}, {"eval_id": 3, "eval_name": "mym-credit-denied", "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 6, "failed": 0, "total": 6, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Explains you are entitled to see your credit bureau file, with the fee waived if denied credit recently (within 30 days per the book)", "passed": true, "evidence": "fee waived if denied within 30 days"}, {"text": "Advises reviewing the report and disputing errors", "passed": true, "evidence": "dispute errors"}, {"text": "Mentions the Equal Credit Opportunity Act 'user' designation so a married person gets credit for accounts in the spouse's name", "passed": true, "evidence": "ECOA user designation"}, {"text": "Notes many routine payments (rent, utilities, phone, medical) are not reported to credit bureaus", "passed": true, "evidence": "rent/utilities not reported"}, {"text": "Mentions current free access via annualcreditreport.com and/or FCRA dispute rights as an update to the 1989 book", "passed": true, "evidence": "annualcreditreport, FCRA"}, {"text": "Mentions skepticism toward paid credit-repair or credit-credential services", "passed": true, "evidence": "skeptical of credit-repair/credential services"}], "notes": []}, {"eval_id": 1, "eval_name": "mym-budget-debt", "configuration": "without_skill", "run_number": 1, "result": {"pass_rate": 0.33, "passed": 2, "failed": 4, "total": 6, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Describes the book's four budgeting steps: cash-flow analysis, setting budget goals, allocating resources, and a year-end review", "passed": false, "evidence": "generic budget steps, not the book's four"}, {"text": "Recommends building an emergency fund before investing", "passed": true, "evidence": "emergency fund"}, {"text": "Cites the book's guideline that monthly debt payments excluding the mortgage should not exceed 15 percent of gross income", "passed": false, "evidence": "no 15% guideline"}, {"text": "States the book says not to invest in stocks until debts are under control and insurance is adequate", "passed": false, "evidence": "pay debt first but no insurance precondition from the book"}, {"text": "Notes the book is from 1989 and flags that some figures/rules are outdated or should be verified", "passed": false, "evidence": "says it doesn't have the text; no 1989 flag"}, {"text": "Gives a clear ordered action plan (track cash flow, pay high-interest debt, emergency fund, insurance, then invest)", "passed": true, "evidence": "clear 7-step order"}], "notes": []}, {"eval_id": 2, "eval_name": "mym-life-insurance", "configuration": "without_skill", "run_number": 1, "result": {"pass_rate": 0.83, "passed": 5, "failed": 1, "total": 6, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Explains the book's three-step method: estimate family expenses if you die (immediate and future), subtract assets/income sources, insure the gap", "passed": true, "evidence": "estimate needs then subtract savings and existing coverage"}, {"text": "Explains term versus cash-value (whole/universal) insurance", "passed": true, "evidence": "term vs cash value"}, {"text": "Says the book considers credit-life insurance usually not a good buy and that one larger policy beats several small ones", "passed": true, "evidence": "credit life 'worst deals'; size term policy to cover debt"}, {"text": "Mentions including Social Security survivor benefits, existing savings or spouse income as resources", "passed": true, "evidence": "Social Security survivor benefits"}, {"text": "Recommends or discusses low-cost term coverage for the years dependents need support", "passed": true, "evidence": "level term 20-30 years"}, {"text": "Flags that 1989 product details/prices are dated and suggests verifying current quotes", "passed": false, "evidence": "no note that the book's details are dated"}], "notes": []}, {"eval_id": 3, "eval_name": "mym-credit-denied", "configuration": "without_skill", "run_number": 1, "result": {"pass_rate": 0.83, "passed": 5, "failed": 1, "total": 6, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Explains you are entitled to see your credit bureau file, with the fee waived if denied credit recently (within 30 days per the book)", "passed": true, "evidence": "free report after denial (30 days mentioned)"}, {"text": "Advises reviewing the report and disputing errors", "passed": true, "evidence": "dispute"}, {"text": "Mentions the Equal Credit Opportunity Act 'user' designation so a married person gets credit for accounts in the spouse's name", "passed": true, "evidence": "ECOA, joint accounts reported in both names"}, {"text": "Notes many routine payments (rent, utilities, phone, medical) are not reported to credit bureaus", "passed": false, "evidence": "does not mention routine payments going unreported"}, {"text": "Mentions current free access via annualcreditreport.com and/or FCRA dispute rights as an update to the 1989 book", "passed": true, "evidence": "annualcreditreport.com"}, {"text": "Mentions skepticism toward paid credit-repair or credit-credential services", "passed": true, "evidence": "beware credit repair companies"}], "notes": []}], "run_summary": {"with_skill": {"pass_rate": {"mean": 1.0, "stddev": 0.0, "min": 1.0, "max": 1.0}, "time_seconds": null, "tokens": null}, "without_skill": {"pass_rate": {"mean": 0.6633, "stddev": 0.2887, "min": 0.33, "max": 0.83}, "time_seconds": null, "tokens": null}, "delta": {"pass_rate": "+0.34", "time_seconds": null, "tokens": null}}, "notes": ["Time recorded for 0 of 3 with_skill runs, 0 of 3 without_skill runs, so there is no time delta.", "Token count recorded for 0 of 3 with_skill runs, 0 of 3 without_skill runs, so there is no token count delta."]}};
+
+    // ---- State ----
+    let feedbackMap = {};  // run_id -> feedback text
+    let currentIndex = 0;
+    let visitedRuns = new Set();
+
+    // ---- Init ----
+    async function init() {
+      // Load saved feedback from server — but only if this isn't a fresh
+      // iteration (indicated by previous_feedback being present). When
+      // previous feedback exists, the feedback.json on disk is stale from
+      // the prior iteration and should not pre-fill the textareas.
+      const hasPrevious = Object.keys(EMBEDDED_DATA.previous_feedback || {}).length > 0
+        || Object.keys(EMBEDDED_DATA.previous_outputs || {}).length > 0;
+      if (!hasPrevious) {
+        try {
+          const resp = await fetch("/api/feedback");
+          const data = await resp.json();
+          if (data.reviews) {
+            for (const r of data.reviews) feedbackMap[r.run_id] = r.feedback;
+          }
+        } catch { /* first run, no feedback yet */ }
+      }
+
+      document.getElementById("skill-name").textContent = EMBEDDED_DATA.skill_name;
+      showRun(0);
+
+      // Wire up feedback auto-save
+      const textarea = document.getElementById("feedback");
+      let saveTimeout = null;
+      textarea.addEventListener("input", () => {
+        clearTimeout(saveTimeout);
+        document.getElementById("feedback-status").textContent = "";
+        saveTimeout = setTimeout(() => saveCurrentFeedback(), 800);
+      });
+    }
+
+    // ---- Navigation ----
+    function navigate(delta) {
+      const newIndex = currentIndex + delta;
+      if (newIndex >= 0 && newIndex < EMBEDDED_DATA.runs.length) {
+        saveCurrentFeedback();
+        showRun(newIndex);
+      }
+    }
+
+    function updateNavButtons() {
+      document.getElementById("prev-btn").disabled = currentIndex === 0;
+      document.getElementById("next-btn").disabled =
+        currentIndex === EMBEDDED_DATA.runs.length - 1;
+    }
+
+    // ---- Show a run ----
+    function showRun(index) {
+      currentIndex = index;
+      const run = EMBEDDED_DATA.runs[index];
+
+      // Progress
+      document.getElementById("progress").textContent =
+        `${index + 1} of ${EMBEDDED_DATA.runs.length}`;
+
+      // Prompt
+      document.getElementById("prompt-text").textContent = run.prompt;
+
+      // Config badge
+      const badge = document.getElementById("config-badge");
+      const configMatch = run.id.match(/(with_skill|without_skill|new_skill|old_skill)/);
+      if (configMatch) {
+        const config = configMatch[1];
+        const isBaseline = config === "without_skill" || config === "old_skill";
+        badge.textContent = config.replace(/_/g, " ");
+        badge.className = "config-badge " + (isBaseline ? "config-baseline" : "config-primary");
+        badge.style.display = "inline-block";
+      } else {
+        badge.style.display = "none";
+      }
+
+      // Outputs
+      renderOutputs(run);
+
+      // Previous outputs
+      renderPrevOutputs(run);
+
+      // Grades
+      renderGrades(run);
+
+      // Previous feedback
+      const prevFb = (EMBEDDED_DATA.previous_feedback || {})[run.id];
+      const prevEl = document.getElementById("prev-feedback");
+      if (prevFb) {
+        document.getElementById("prev-feedback-text").textContent = prevFb;
+        prevEl.style.display = "block";
+      } else {
+        prevEl.style.display = "none";
+      }
+
+      // Feedback
+      document.getElementById("feedback").value = feedbackMap[run.id] || "";
+      document.getElementById("feedback-status").textContent = "";
+
+      updateNavButtons();
+
+      // Track visited runs and promote done button when all visited
+      visitedRuns.add(index);
+      const doneBtn = document.getElementById("done-btn");
+      if (visitedRuns.size >= EMBEDDED_DATA.runs.length) {
+        doneBtn.classList.add("ready");
+      }
+
+      // Scroll main content to top
+      document.querySelector(".main").scrollTop = 0;
+    }
+
+    // ---- Render outputs ----
+    function renderOutputs(run) {
+      const container = document.getElementById("outputs-body");
+      container.innerHTML = "";
+
+      const outputs = run.outputs || [];
+      if (outputs.length === 0) {
+        container.innerHTML = '<div class="empty-state">No output files</div>';
+        return;
+      }
+
+      for (const file of outputs) {
+        const fileDiv = document.createElement("div");
+        fileDiv.className = "output-file";
+
+        // Always show file header with download link
+        const header = document.createElement("div");
+        header.className = "output-file-header";
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = file.name;
+        header.appendChild(nameSpan);
+        const dlBtn = document.createElement("a");
+        dlBtn.className = "dl-btn";
+        dlBtn.textContent = "Download";
+        dlBtn.download = file.name;
+        dlBtn.href = getDownloadUri(file);
+        header.appendChild(dlBtn);
+        fileDiv.appendChild(header);
+
+        const content = document.createElement("div");
+        content.className = "output-file-content";
+
+        if (file.type === "text") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          content.appendChild(pre);
+        } else if (file.type === "image") {
+          const img = document.createElement("img");
+          img.src = file.data_uri;
+          img.alt = file.name;
+          content.appendChild(img);
+        } else if (file.type === "pdf") {
+          const iframe = document.createElement("iframe");
+          iframe.src = file.data_uri;
+          content.appendChild(iframe);
+        } else if (file.type === "xlsx") {
+          renderXlsx(content, file.data_b64);
+        } else if (file.type === "binary") {
+          const a = document.createElement("a");
+          a.className = "download-link";
+          a.href = file.data_uri;
+          a.download = file.name;
+          a.textContent = "Download " + file.name;
+          content.appendChild(a);
+        } else if (file.type === "error") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          pre.style.color = "var(--red)";
+          content.appendChild(pre);
+        }
+
+        fileDiv.appendChild(content);
+        container.appendChild(fileDiv);
+      }
+    }
+
+    // ---- XLSX rendering via SheetJS ----
+    function renderXlsx(container, b64Data) {
+      try {
+        const raw = Uint8Array.from(atob(b64Data), c => c.charCodeAt(0));
+        const wb = XLSX.read(raw, { type: "array" });
+
+        for (let i = 0; i < wb.SheetNames.length; i++) {
+          const sheetName = wb.SheetNames[i];
+          const ws = wb.Sheets[sheetName];
+
+          if (wb.SheetNames.length > 1) {
+            const sheetLabel = document.createElement("div");
+            sheetLabel.style.cssText =
+              "font-weight:600; font-size:0.8rem; color:#b0aea5; margin-top:0.5rem; margin-bottom:0.25rem;";
+            sheetLabel.textContent = "Sheet: " + sheetName;
+            container.appendChild(sheetLabel);
+          }
+
+          const htmlStr = XLSX.utils.sheet_to_html(ws, { editable: false });
+          const wrapper = document.createElement("div");
+          wrapper.innerHTML = htmlStr;
+          container.appendChild(wrapper);
+        }
+      } catch (err) {
+        container.textContent = "Error rendering spreadsheet: " + err.message;
+      }
+    }
+
+    // ---- Grades ----
+    function renderGrades(run) {
+      const section = document.getElementById("grades-section");
+      const content = document.getElementById("grades-content");
+
+      if (!run.grading) {
+        section.style.display = "none";
+        return;
+      }
+
+      const grading = run.grading;
+      section.style.display = "block";
+      // Reset to collapsed
+      content.classList.remove("open");
+      document.getElementById("grades-arrow").classList.remove("open");
+
+      const summary = grading.summary || {};
+      const expectations = grading.expectations || [];
+
+      let html = '<div style="padding: 1rem;">';
+
+      // Summary line
+      const passRate = summary.pass_rate != null
+        ? Math.round(summary.pass_rate * 100) + "%"
+        : "?";
+      const badgeClass = summary.pass_rate >= 0.8 ? "grade-pass" : summary.pass_rate >= 0.5 ? "" : "grade-fail";
+      html += '<div class="grades-summary">';
+      html += '<span class="grade-badge ' + badgeClass + '">' + passRate + '</span>';
+      html += '<span>' + escapeHtml(summary.passed || 0) + ' passed, ' + escapeHtml(summary.failed || 0) + ' failed of ' + escapeHtml(summary.total || 0) + '</span>';
+      html += '</div>';
+
+      // Assertions list
+      html += '<ul class="assertion-list">';
+      for (const exp of expectations) {
+        const statusClass = exp.passed ? "pass" : "fail";
+        const statusIcon = exp.passed ? "\u2713" : "\u2717";
+        html += '<li class="assertion-item">';
+        html += '<span class="assertion-status ' + statusClass + '">' + statusIcon + '</span>';
+        html += '<span>' + escapeHtml(exp.text) + '</span>';
+        if (exp.evidence) {
+          html += '<div class="assertion-evidence">' + escapeHtml(exp.evidence) + '</div>';
+        }
+        html += '</li>';
+      }
+      html += '</ul>';
+
+      html += '</div>';
+      content.innerHTML = html;
+    }
+
+    function toggleGrades() {
+      const content = document.getElementById("grades-content");
+      const arrow = document.getElementById("grades-arrow");
+      content.classList.toggle("open");
+      arrow.classList.toggle("open");
+    }
+
+    // ---- Previous outputs (collapsible) ----
+    function renderPrevOutputs(run) {
+      const section = document.getElementById("prev-outputs-section");
+      const content = document.getElementById("prev-outputs-content");
+      const prevOutputs = (EMBEDDED_DATA.previous_outputs || {})[run.id];
+
+      if (!prevOutputs || prevOutputs.length === 0) {
+        section.style.display = "none";
+        return;
+      }
+
+      section.style.display = "block";
+      // Reset to collapsed
+      content.classList.remove("open");
+      document.getElementById("prev-outputs-arrow").classList.remove("open");
+
+      // Render the files into the content area
+      content.innerHTML = "";
+      const wrapper = document.createElement("div");
+      wrapper.style.padding = "1rem";
+
+      for (const file of prevOutputs) {
+        const fileDiv = document.createElement("div");
+        fileDiv.className = "output-file";
+
+        const header = document.createElement("div");
+        header.className = "output-file-header";
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = file.name;
+        header.appendChild(nameSpan);
+        const dlBtn = document.createElement("a");
+        dlBtn.className = "dl-btn";
+        dlBtn.textContent = "Download";
+        dlBtn.download = file.name;
+        dlBtn.href = getDownloadUri(file);
+        header.appendChild(dlBtn);
+        fileDiv.appendChild(header);
+
+        const fc = document.createElement("div");
+        fc.className = "output-file-content";
+
+        if (file.type === "text") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          fc.appendChild(pre);
+        } else if (file.type === "image") {
+          const img = document.createElement("img");
+          img.src = file.data_uri;
+          img.alt = file.name;
+          fc.appendChild(img);
+        } else if (file.type === "pdf") {
+          const iframe = document.createElement("iframe");
+          iframe.src = file.data_uri;
+          fc.appendChild(iframe);
+        } else if (file.type === "xlsx") {
+          renderXlsx(fc, file.data_b64);
+        } else if (file.type === "binary") {
+          const a = document.createElement("a");
+          a.className = "download-link";
+          a.href = file.data_uri;
+          a.download = file.name;
+          a.textContent = "Download " + file.name;
+          fc.appendChild(a);
+        }
+
+        fileDiv.appendChild(fc);
+        wrapper.appendChild(fileDiv);
+      }
+
+      content.appendChild(wrapper);
+    }
+
+    function togglePrevOutputs() {
+      const content = document.getElementById("prev-outputs-content");
+      const arrow = document.getElementById("prev-outputs-arrow");
+      content.classList.toggle("open");
+      arrow.classList.toggle("open");
+    }
+
+    // ---- Feedback (saved to server -> feedback.json) ----
+    function saveCurrentFeedback() {
+      const run = EMBEDDED_DATA.runs[currentIndex];
+      const text = document.getElementById("feedback").value;
+
+      if (text.trim() === "") {
+        delete feedbackMap[run.id];
+      } else {
+        feedbackMap[run.id] = text;
+      }
+
+      // Build reviews array from map
+      const reviews = [];
+      for (const [run_id, feedback] of Object.entries(feedbackMap)) {
+        if (feedback.trim()) {
+          reviews.push({ run_id, feedback, timestamp: new Date().toISOString() });
+        }
+      }
+
+      fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reviews, status: "in_progress" }),
+      }).then(() => {
+        document.getElementById("feedback-status").textContent = "Saved";
+      }).catch(() => {
+        // Static mode or server unavailable — no-op on auto-save,
+        // feedback will be downloaded on final submit
+        document.getElementById("feedback-status").textContent = "Will download on submit";
+      });
+    }
+
+    // ---- Done ----
+    function showDoneDialog() {
+      // Save current textarea to feedbackMap (but don't POST yet)
+      const run = EMBEDDED_DATA.runs[currentIndex];
+      const text = document.getElementById("feedback").value;
+      if (text.trim() === "") {
+        delete feedbackMap[run.id];
+      } else {
+        feedbackMap[run.id] = text;
+      }
+
+      // POST once with status: complete — include ALL runs so the model
+      // can distinguish "no feedback" (looks good) from "not reviewed"
+      const reviews = [];
+      const ts = new Date().toISOString();
+      for (const r of EMBEDDED_DATA.runs) {
+        reviews.push({ run_id: r.id, feedback: feedbackMap[r.id] || "", timestamp: ts });
+      }
+      const payload = JSON.stringify({ reviews, status: "complete" }, null, 2);
+      fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: payload,
+      }).then(() => {
+        document.getElementById("done-overlay").classList.add("visible");
+      }).catch(() => {
+        // Server not available (static mode) — download as file
+        const blob = new Blob([payload], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "feedback.json";
+        a.click();
+        URL.revokeObjectURL(url);
+        document.getElementById("done-overlay").classList.add("visible");
+      });
+    }
+
+    function closeDoneDialog() {
+      // Reset status back to in_progress
+      saveCurrentFeedback();
+      document.getElementById("done-overlay").classList.remove("visible");
+    }
+
+    // ---- Toast ----
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("visible");
+      setTimeout(() => toast.classList.remove("visible"), 2000);
+    }
+
+    // ---- Keyboard nav ----
+    document.addEventListener("keydown", (e) => {
+      // Don't capture when typing in textarea
+      if (e.target.tagName === "TEXTAREA") return;
+
+      if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+        e.preventDefault();
+        navigate(-1);
+      } else if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+        e.preventDefault();
+        navigate(1);
+      }
+    });
+
+    // ---- Util ----
+    function getDownloadUri(file) {
+      if (file.data_uri) return file.data_uri;
+      if (file.data_b64) return "data:application/octet-stream;base64," + file.data_b64;
+      if (file.type === "text") return "data:text/plain;charset=utf-8," + encodeURIComponent(file.content);
+      return "#";
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement("div");
+      div.textContent = text;
+      return div.innerHTML.replace(/"/g, "&quot;");
+    }
+
+    // ---- View switching ----
+    function switchView(view) {
+      document.querySelectorAll(".view-tab").forEach(t => t.classList.remove("active"));
+      document.querySelectorAll(".view-panel").forEach(p => p.classList.remove("active"));
+      document.querySelector(`[onclick="switchView('${view}')"]`).classList.add("active");
+      document.getElementById("panel-" + view).classList.add("active");
+    }
+
+    // ---- Benchmark rendering ----
+    function renderBenchmark() {
+      const data = EMBEDDED_DATA.benchmark;
+      if (!data) return;
+
+      // Show the tabs
+      document.getElementById("view-tabs").style.display = "flex";
+
+      const container = document.getElementById("benchmark-content");
+      const summary = data.run_summary || {};
+      const metadata = data.metadata || {};
+      const notes = data.notes || [];
+
+      let html = "";
+
+      // Header
+      html += "<h2 style='font-family: Poppins, sans-serif; margin-bottom: 0.5rem;'>Benchmark Results</h2>";
+      html += "<p style='color: var(--text-muted); font-size: 0.875rem; margin-bottom: 1.25rem;'>";
+      if (metadata.skill_name) html += "<strong>" + escapeHtml(metadata.skill_name) + "</strong> &mdash; ";
+      if (metadata.timestamp) html += escapeHtml(metadata.timestamp) + " &mdash; ";
+      if (metadata.evals_run) html += "Evals: " + escapeHtml(metadata.evals_run.join(", ")) + " &mdash; ";
+      html += escapeHtml(metadata.runs_per_configuration || "?") + (metadata.runs_per_configuration === 1 ? " run" : " runs") + " per configuration";
+      html += "</p>";
+
+      // Summary table
+      html += '<table class="benchmark-table">';
+
+      function fmtStat(stat, pct) {
+        if (!stat) return "—";
+        const suffix = pct ? "%" : "";
+        const m = pct ? (stat.mean * 100).toFixed(0) : stat.mean.toFixed(1);
+        const s = pct ? (stat.stddev * 100).toFixed(0) : stat.stddev.toFixed(1);
+        return m + suffix + " ± " + s + suffix;
+      }
+
+      function deltaClass(val) {
+        if (!val) return "";
+        const n = parseFloat(val);
+        if (n > 0) return "benchmark-delta-positive";
+        if (n < 0) return "benchmark-delta-negative";
+        return "";
+      }
+
+      // Discover config names dynamically (everything except "delta")
+      const configs = Object.keys(summary).filter(k => k !== "delta");
+      const configA = configs[0] || "config_a";
+      const configB = configs[1] || "config_b";
+      const labelA = configA.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      const labelB = configB.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      const a = summary[configA] || {};
+      const b = summary[configB] || {};
+      const delta = summary.delta || {};
+      // With a single configuration there is nothing to compare: only its column is shown
+      const compare = cells => configs.length >= 2 ? cells : "";
+
+      html += "<thead><tr><th>Metric</th><th>" + escapeHtml(labelA) + "</th>" + compare("<th>" + escapeHtml(labelB) + "</th><th>Delta</th>") + "</tr></thead>";
+      html += "<tbody>";
+
+      html += "<tr><td><strong>Pass Rate</strong></td>";
+      html += "<td>" + fmtStat(a.pass_rate, true) + "</td>";
+      html += compare("<td>" + fmtStat(b.pass_rate, true) + "</td>");
+      html += compare('<td class="' + deltaClass(delta.pass_rate) + '">' + escapeHtml(delta.pass_rate || "—") + "</td>") + "</tr>";
+
+      // Time (only show row if data exists)
+      if (a.time_seconds || b.time_seconds) {
+        html += "<tr><td><strong>Time (s)</strong></td>";
+        html += "<td>" + fmtStat(a.time_seconds, false) + "</td>";
+        html += compare("<td>" + fmtStat(b.time_seconds, false) + "</td>");
+        html += compare('<td class="' + deltaClass(delta.time_seconds) + '">' + escapeHtml(delta.time_seconds ? delta.time_seconds + "s" : "—") + "</td>") + "</tr>";
+      }
+
+      // Tokens (only show row if data exists)
+      if (a.tokens || b.tokens) {
+        html += "<tr><td><strong>Tokens</strong></td>";
+        html += "<td>" + fmtStat(a.tokens, false) + "</td>";
+        html += compare("<td>" + fmtStat(b.tokens, false) + "</td>");
+        html += compare('<td class="' + deltaClass(delta.tokens) + '">' + escapeHtml(delta.tokens || "—") + "</td>") + "</tr>";
+      }
+
+      html += "</tbody></table>";
+
+      // Per-eval breakdown (if runs data available)
+      const runs = data.runs || [];
+      if (runs.length > 0) {
+        // Numeric ids first, then ids that are names
+        const rank = id => typeof id === "number" ? 0 : 1;
+        const evalIds = [...new Set(runs.map(r => r.eval_id))].sort((a, b) =>
+          rank(a) - rank(b) || (rank(a) ? String(a).localeCompare(String(b)) : a - b));
+
+        html += "<h3 style='font-family: Poppins, sans-serif; margin-bottom: 0.75rem;'>Per-Eval Breakdown</h3>";
+
+        const hasTime = runs.some(r => r.result && r.result.time_seconds != null);
+        const hasErrors = runs.some(r => r.result && r.result.errors > 0);
+
+        for (const evalId of evalIds) {
+          const evalRuns = runs.filter(r => r.eval_id === evalId);
+          const evalName = evalRuns[0] && evalRuns[0].eval_name ? evalRuns[0].eval_name : "Eval " + evalId;
+
+          html += "<h4 style='font-family: Poppins, sans-serif; margin: 1rem 0 0.5rem; color: var(--text);'>" + escapeHtml(evalName) + "</h4>";
+          html += '<table class="benchmark-table">';
+          html += "<thead><tr><th>Config</th><th>Run</th><th>Pass Rate</th>";
+          if (hasTime) html += "<th>Time (s)</th>";
+          if (hasErrors) html += "<th>Crashes During Execution</th>";
+          html += "</tr></thead>";
+          html += "<tbody>";
+
+          // Group by config and render with average rows
+          const configGroups = [...new Set(evalRuns.map(r => r.configuration))];
+          for (let ci = 0; ci < configGroups.length; ci++) {
+            const config = configGroups[ci];
+            const configRuns = evalRuns.filter(r => r.configuration === config);
+            if (configRuns.length === 0) continue;
+
+            const rowClass = ci === 0 ? "benchmark-row-with" : "benchmark-row-without";
+            const configLabel = escapeHtml(config.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase()));
+
+            for (const run of configRuns) {
+              const r = run.result || {};
+              const prClass = r.pass_rate >= 0.8 ? "benchmark-delta-positive" : r.pass_rate < 0.5 ? "benchmark-delta-negative" : "";
+              html += '<tr class="' + rowClass + '">';
+              html += "<td>" + configLabel + "</td>";
+              html += "<td>" + escapeHtml(run.run_number) + "</td>";
+              html += '<td class="' + prClass + '">' + ((r.pass_rate || 0) * 100).toFixed(0) + "% (" + escapeHtml(r.passed || 0) + "/" + escapeHtml(r.total || 0) + ")</td>";
+              if (hasTime) html += "<td>" + (r.time_seconds != null ? r.time_seconds.toFixed(1) : "—") + "</td>";
+              if (hasErrors) html += "<td>" + escapeHtml(r.errors || 0) + "</td>";
+              html += "</tr>";
+            }
+
+            // Average row
+            const rates = configRuns.map(r => (r.result || {}).pass_rate || 0);
+            const avgRate = rates.reduce((a, b) => a + b, 0) / rates.length;
+            const avgPrClass = avgRate >= 0.8 ? "benchmark-delta-positive" : avgRate < 0.5 ? "benchmark-delta-negative" : "";
+            html += '<tr class="benchmark-row-avg ' + rowClass + '">';
+            html += "<td>" + configLabel + "</td>";
+            html += "<td>Avg</td>";
+            html += '<td class="' + avgPrClass + '">' + (avgRate * 100).toFixed(0) + "%</td>";
+            if (hasTime) {
+              const times = configRuns.map(r => (r.result || {}).time_seconds).filter(t => t != null);
+              html += "<td>" + (times.length ? (times.reduce((a, b) => a + b, 0) / times.length).toFixed(1) : "—") + "</td>";
+            }
+            if (hasErrors) html += "<td></td>";
+            html += "</tr>";
+          }
+          html += "</tbody></table>";
+
+          // Per-assertion detail for this eval
+          const runsWithExpectations = {};
+          for (const config of configGroups) {
+            runsWithExpectations[config] = evalRuns.filter(r => r.configuration === config && r.expectations && r.expectations.length > 0);
+          }
+          const hasAnyExpectations = Object.values(runsWithExpectations).some(runs => runs.length > 0);
+          if (hasAnyExpectations) {
+            // Collect all unique assertion texts across all configs
+            const allAssertions = [];
+            const seen = new Set();
+            for (const config of configGroups) {
+              for (const run of runsWithExpectations[config]) {
+                for (const exp of (run.expectations || [])) {
+                  if (!seen.has(exp.text)) {
+                    seen.add(exp.text);
+                    allAssertions.push(exp.text);
+                  }
+                }
+              }
+            }
+
+            html += '<table class="benchmark-table" style="margin-top: 0.5rem;">';
+            html += "<thead><tr><th>Assertion</th>";
+            for (const config of configGroups) {
+              const label = config.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+              html += "<th>" + escapeHtml(label) + "</th>";
+            }
+            html += "</tr></thead><tbody>";
+
+            for (const assertionText of allAssertions) {
+              html += "<tr><td>" + escapeHtml(assertionText) + "</td>";
+
+              for (const config of configGroups) {
+                html += "<td>";
+                for (const run of runsWithExpectations[config]) {
+                  const exp = (run.expectations || []).find(e => e.text === assertionText);
+                  if (exp) {
+                    const cls = exp.passed ? "benchmark-delta-positive" : "benchmark-delta-negative";
+                    const icon = exp.passed ? "\u2713" : "\u2717";
+                    html += '<span class="' + cls + '" title="Run ' + escapeHtml(run.run_number) + ': ' + escapeHtml(exp.evidence || "") + '">' + icon + "</span> ";
+                  } else {
+                    html += "— ";
+                  }
+                }
+                html += "</td>";
+              }
+              html += "</tr>";
+            }
+            html += "</tbody></table>";
+          }
+        }
+      }
+
+      // Notes
+      if (notes.length > 0) {
+        html += '<div class="benchmark-notes">';
+        html += "<h3>Analysis Notes</h3>";
+        html += "<ul>";
+        for (const note of notes) {
+          html += "<li>" + escapeHtml(note) + "</li>";
+        }
+        html += "</ul></div>";
+      }
+
+      container.innerHTML = html;
+    }
+
+    // ---- Start ----
+    init();
+    renderBenchmark();
+  </script>
+</body>
+</html>

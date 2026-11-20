@@ -1,0 +1,40 @@
+{
+  "expectations": [
+    {
+      "text": "Describes the book's four budgeting steps: cash-flow analysis, setting budget goals, allocating resources, and a year-end review",
+      "passed": false,
+      "evidence": "generic budget steps, not the book's four"
+    },
+    {
+      "text": "Recommends building an emergency fund before investing",
+      "passed": true,
+      "evidence": "emergency fund"
+    },
+    {
+      "text": "Cites the book's guideline that monthly debt payments excluding the mortgage should not exceed 15 percent of gross income",
+      "passed": false,
+      "evidence": "no 15% guideline"
+    },
+    {
+      "text": "States the book says not to invest in stocks until debts are under control and insurance is adequate",
+      "passed": false,
+      "evidence": "pay debt first but no insurance precondition from the book"
+    },
+    {
+      "text": "Notes the book is from 1989 and flags that some figures/rules are outdated or should be verified",
+      "passed": false,
+      "evidence": "says it doesn't have the text; no 1989 flag"
+    },
+    {
+      "text": "Gives a clear ordered action plan (track cash flow, pay high-interest debt, emergency fund, insurance, then invest)",
+      "passed": true,
+      "evidence": "clear 7-step order"
+    }
+  ],
+  "summary": {
+    "passed": 2,
+    "failed": 4,
+    "total": 6,
+    "pass_rate": 0.33
+  }
+}

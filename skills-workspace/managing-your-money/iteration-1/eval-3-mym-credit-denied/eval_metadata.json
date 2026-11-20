@@ -1,0 +1,13 @@
+{
+  "eval_id": 3,
+  "eval_name": "mym-credit-denied",
+  "prompt": "I was just turned down for a credit card. What does the Consumer Reports Complete Guide to Managing Your Money say about credit reports and what I should do now? Also, I'm married\u2014does that affect my credit file?",
+  "assertions": [
+    "Explains you are entitled to see your credit bureau file, with the fee waived if denied credit recently (within 30 days per the book)",
+    "Advises reviewing the report and disputing errors",
+    "Mentions the Equal Credit Opportunity Act 'user' designation so a married person gets credit for accounts in the spouse's name",
+    "Notes many routine payments (rent, utilities, phone, medical) are not reported to credit bureaus",
+    "Mentions current free access via annualcreditreport.com and/or FCRA dispute rights as an update to the 1989 book",
+    "Mentions skepticism toward paid credit-repair or credit-credential services"
+  ]
+}

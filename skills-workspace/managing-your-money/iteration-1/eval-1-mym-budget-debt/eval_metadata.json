@@ -1,0 +1,13 @@
+{
+  "eval_id": 1,
+  "eval_name": "mym-budget-debt",
+  "prompt": "Using the Consumer Reports Complete Guide to Managing Your Money, help me set up a household budget. I have about $9,000 in credit card and car loan debt and no savings, and I want to start investing in stocks. What does the book say I should do, in what order?",
+  "assertions": [
+    "Describes the book's four budgeting steps: cash-flow analysis, setting budget goals, allocating resources, and a year-end review",
+    "Recommends building an emergency fund before investing",
+    "Cites the book's guideline that monthly debt payments excluding the mortgage should not exceed 15 percent of gross income",
+    "States the book says not to invest in stocks until debts are under control and insurance is adequate",
+    "Notes the book is from 1989 and flags that some figures/rules are outdated or should be verified",
+    "Gives a clear ordered action plan (track cash flow, pay high-interest debt, emergency fund, insurance, then invest)"
+  ]
+}

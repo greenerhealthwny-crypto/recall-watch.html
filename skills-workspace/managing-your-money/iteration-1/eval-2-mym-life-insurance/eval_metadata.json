@@ -1,0 +1,13 @@
+{
+  "eval_id": 2,
+  "eval_name": "mym-life-insurance",
+  "prompt": "I'm 34, married with two young kids. According to the Consumer Reports money guide, how should I figure out how much life insurance I need, and what kind should I buy? Is credit life insurance on my car loan worth it?",
+  "assertions": [
+    "Explains the book's three-step method: estimate family expenses if you die (immediate and future), subtract assets/income sources, insure the gap",
+    "Explains term versus cash-value (whole/universal) insurance",
+    "Says the book considers credit-life insurance usually not a good buy and that one larger policy beats several small ones",
+    "Mentions including Social Security survivor benefits, existing savings or spouse income as resources",
+    "Recommends or discusses low-cost term coverage for the years dependents need support",
+    "Flags that 1989 product details/prices are dated and suggests verifying current quotes"
+  ]
+}

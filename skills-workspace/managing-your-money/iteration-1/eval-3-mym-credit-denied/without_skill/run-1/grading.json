@@ -1,0 +1,40 @@
+{
+  "expectations": [
+    {
+      "text": "Explains you are entitled to see your credit bureau file, with the fee waived if denied credit recently (within 30 days per the book)",
+      "passed": true,
+      "evidence": "free report after denial (30 days mentioned)"
+    },
+    {
+      "text": "Advises reviewing the report and disputing errors",
+      "passed": true,
+      "evidence": "dispute"
+    },
+    {
+      "text": "Mentions the Equal Credit Opportunity Act 'user' designation so a married person gets credit for accounts in the spouse's name",
+      "passed": true,
+      "evidence": "ECOA, joint accounts reported in both names"
+    },
+    {
+      "text": "Notes many routine payments (rent, utilities, phone, medical) are not reported to credit bureaus",
+      "passed": false,
+      "evidence": "does not mention routine payments going unreported"
+    },
+    {
+      "text": "Mentions current free access via annualcreditreport.com and/or FCRA dispute rights as an update to the 1989 book",
+      "passed": true,
+      "evidence": "annualcreditreport.com"
+    },
+    {
+      "text": "Mentions skepticism toward paid credit-repair or credit-credential services",
+      "passed": true,
+      "evidence": "beware credit repair companies"
+    }
+  ],
+  "summary": {
+    "passed": 5,
+    "failed": 1,
+    "total": 6,
+    "pass_rate": 0.83
+  }
+}

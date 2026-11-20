@@ -1,0 +1,40 @@
+{
+  "expectations": [
+    {
+      "text": "Explains the book's three-step method: estimate family expenses if you die (immediate and future), subtract assets/income sources, insure the gap",
+      "passed": true,
+      "evidence": "estimate needs then subtract savings and existing coverage"
+    },
+    {
+      "text": "Explains term versus cash-value (whole/universal) insurance",
+      "passed": true,
+      "evidence": "term vs cash value"
+    },
+    {
+      "text": "Says the book considers credit-life insurance usually not a good buy and that one larger policy beats several small ones",
+      "passed": true,
+      "evidence": "credit life 'worst deals'; size term policy to cover debt"
+    },
+    {
+      "text": "Mentions including Social Security survivor benefits, existing savings or spouse income as resources",
+      "passed": true,
+      "evidence": "Social Security survivor benefits"
+    },
+    {
+      "text": "Recommends or discusses low-cost term coverage for the years dependents need support",
+      "passed": true,
+      "evidence": "level term 20-30 years"
+    },
+    {
+      "text": "Flags that 1989 product details/prices are dated and suggests verifying current quotes",
+      "passed": false,
+      "evidence": "no note that the book's details are dated"
+    }
+  ],
+  "summary": {
+    "passed": 5,
+    "failed": 1,
+    "total": 6,
+    "pass_rate": 0.83
+  }
+}
