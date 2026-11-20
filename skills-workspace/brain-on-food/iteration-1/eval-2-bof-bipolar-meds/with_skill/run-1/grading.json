@@ -1,0 +1,40 @@
+{
+  "expectations": [
+    {
+      "text": "Says the book presents the ketogenic diet as a good whole-diet approach for bipolar disorder, ideally under medical supervision, and mentions keto side effects ('keto flu')",
+      "passed": true,
+      "evidence": "keto as whole-diet approach, keto flu, supervision"
+    },
+    {
+      "text": "Lists foods to embrace: omega-3 fatty fish, NAC/cysteine-rich foods, folate (B9), magnesium and zinc",
+      "passed": true,
+      "evidence": "omega-3, NAC/cysteine, folate, magnesium, zinc"
+    },
+    {
+      "text": "States that with lithium sodium intake should be kept constant",
+      "passed": true,
+      "evidence": "keep sodium constant with lithium"
+    },
+    {
+      "text": "Warns that grapefruit juice and tyramine-containing foods (aged cheese, cured meats, soy sauce, etc.) can interfere with some bipolar medications",
+      "passed": true,
+      "evidence": "grapefruit and tyramine foods"
+    },
+    {
+      "text": "Advises abstaining from or heavily restricting alcohol and limiting caffeine to under 400 mg/day",
+      "passed": true,
+      "evidence": "alcohol abstain/restrict; caffeine <400 mg"
+    },
+    {
+      "text": "Stresses that diet complements but does not replace medication and he should not change meds without his psychiatrist",
+      "passed": true,
+      "evidence": "don't change meds without psychiatrist"
+    }
+  ],
+  "summary": {
+    "passed": 6,
+    "failed": 0,
+    "total": 6,
+    "pass_rate": 1.0
+  }
+}

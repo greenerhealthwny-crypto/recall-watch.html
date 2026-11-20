@@ -1,0 +1,40 @@
+{
+  "expectations": [
+    {
+      "text": "Recommends high-fiber foods and aged/fermented/cultured foods (e.g. yogurt, kombucha, miso, tempeh, apple-cider vinegar, pickled vegetables)",
+      "passed": true,
+      "evidence": "fiber and fermented foods incl. kombucha, apple-cider vinegar"
+    },
+    {
+      "text": "Explains the tryptophan myth: tryptophan foods like turkey work better when combined with carbohydrates",
+      "passed": true,
+      "evidence": "tryptophan paired with carbohydrates"
+    },
+    {
+      "text": "Mentions herbs lavender, passionflower and chamomile and/or turmeric, with a caution about passionflower and blood thinners or MAOIs",
+      "passed": true,
+      "evidence": "lavender, passionflower, chamomile; passionflower caution with blood thinners/MAOIs"
+    },
+    {
+      "text": "Gives the caffeine limit of under 400 mg per day",
+      "passed": true,
+      "evidence": "400 mg caffeine"
+    },
+    {
+      "text": "Gives alcohol limits consistent with the book (men under 14 drinks/week and max 2/day; women under 7/week and max 1/day)",
+      "passed": true,
+      "evidence": "14 drinks / 7 drinks limits"
+    },
+    {
+      "text": "Advises avoiding Western diet components (bad fats, high-GI carbs) and artificial sweeteners like aspartame, and notes gluten only matters with celiac disease or gluten sensitivity",
+      "passed": true,
+      "evidence": "Western diet, aspartame, gluten only with celiac"
+    }
+  ],
+  "summary": {
+    "passed": 6,
+    "failed": 0,
+    "total": 6,
+    "pass_rate": 1.0
+  }
+}

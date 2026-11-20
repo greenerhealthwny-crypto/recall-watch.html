@@ -1,0 +1,13 @@
+{
+  "eval_id": 1,
+  "eval_name": "bof-anxiety-plan",
+  "prompt": "I've been dealing with constant anxiety and a nervous stomach. Based on Dr. Uma Naidoo's book This Is Your Brain on Food, what should I eat more of and what should I cut back on? Please be specific.",
+  "assertions": [
+    "Recommends high-fiber foods and aged/fermented/cultured foods (e.g. yogurt, kombucha, miso, tempeh, apple-cider vinegar, pickled vegetables)",
+    "Explains the tryptophan myth: tryptophan foods like turkey work better when combined with carbohydrates",
+    "Mentions herbs lavender, passionflower and chamomile and/or turmeric, with a caution about passionflower and blood thinners or MAOIs",
+    "Gives the caffeine limit of under 400 mg per day",
+    "Gives alcohol limits consistent with the book (men under 14 drinks/week and max 2/day; women under 7/week and max 1/day)",
+    "Advises avoiding Western diet components (bad fats, high-GI carbs) and artificial sweeteners like aspartame, and notes gluten only matters with celiac disease or gluten sensitivity"
+  ]
+}

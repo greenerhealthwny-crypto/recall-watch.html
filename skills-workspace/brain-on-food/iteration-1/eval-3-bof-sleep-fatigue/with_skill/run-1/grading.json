@@ -1,0 +1,40 @@
+{
+  "expectations": [
+    {
+      "text": "Lists melatonin-containing foods (e.g. tart cherry, eggs, fish, milk, oats, grapes, pomegranates, walnuts) and/or tryptophan with carbohydrates for sleep",
+      "passed": true,
+      "evidence": "melatonin foods incl. tart cherry; tryptophan with carbs"
+    },
+    {
+      "text": "Mentions chamomile tea and omega-3 fatty fish for sleep",
+      "passed": true,
+      "evidence": "chamomile and omega-3"
+    },
+    {
+      "text": "For fatigue, recommends anti-inflammatory foods/polyphenols, magnesium and zinc, B vitamins, and capsaicin-rich chili peppers",
+      "passed": true,
+      "evidence": "anti-inflammatory, magnesium/zinc, B vitamins, capsaicin chili peppers"
+    },
+    {
+      "text": "Advises keeping caffeine under 400 mg/day and no caffeine after 3 p.m.",
+      "passed": true,
+      "evidence": "400 mg and none after 3 p.m."
+    },
+    {
+      "text": "Notes that alcohol may help you fall asleep but disrupts sleep",
+      "passed": true,
+      "evidence": "alcohol disrupts sleep"
+    },
+    {
+      "text": "Explains the circadian rhythm / gut bacteria connection and how night shifts or jet lag disrupt it",
+      "passed": true,
+      "evidence": "gut bacteria daily cycles disrupted by jet lag/night shifts"
+    }
+  ],
+  "summary": {
+    "passed": 6,
+    "failed": 0,
+    "total": 6,
+    "pass_rate": 1.0
+  }
+}

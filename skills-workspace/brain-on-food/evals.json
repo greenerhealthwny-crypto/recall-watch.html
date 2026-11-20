@@ -1,0 +1,32 @@
+{
+  "skill_name": "brain-on-food",
+  "evals": [
+    {"id": 1, "name": "bof-anxiety-plan",
+     "prompt": "I've been dealing with constant anxiety and a nervous stomach. Based on Dr. Uma Naidoo's book This Is Your Brain on Food, what should I eat more of and what should I cut back on? Please be specific.",
+     "assertions": [
+      "Recommends high-fiber foods and aged/fermented/cultured foods (e.g. yogurt, kombucha, miso, tempeh, apple-cider vinegar, pickled vegetables)",
+      "Explains the tryptophan myth: tryptophan foods like turkey work better when combined with carbohydrates",
+      "Mentions herbs lavender, passionflower and chamomile and/or turmeric, with a caution about passionflower and blood thinners or MAOIs",
+      "Gives the caffeine limit of under 400 mg per day",
+      "Gives alcohol limits consistent with the book (men under 14 drinks/week and max 2/day; women under 7/week and max 1/day)",
+      "Advises avoiding Western diet components (bad fats, high-GI carbs) and artificial sweeteners like aspartame, and notes gluten only matters with celiac disease or gluten sensitivity"]},
+    {"id": 2, "name": "bof-bipolar-meds",
+     "prompt": "My brother has bipolar disorder and takes lithium. He read that diet can help. What does Naidoo's book say about eating for bipolar disorder, and is there anything he needs to be careful about with his medication?",
+     "assertions": [
+      "Says the book presents the ketogenic diet as a good whole-diet approach for bipolar disorder, ideally under medical supervision, and mentions keto side effects ('keto flu')",
+      "Lists foods to embrace: omega-3 fatty fish, NAC/cysteine-rich foods, folate (B9), magnesium and zinc",
+      "States that with lithium sodium intake should be kept constant",
+      "Warns that grapefruit juice and tyramine-containing foods (aged cheese, cured meats, soy sauce, etc.) can interfere with some bipolar medications",
+      "Advises abstaining from or heavily restricting alcohol and limiting caffeine to under 400 mg/day",
+      "Stresses that diet complements but does not replace medication and he should not change meds without his psychiatrist"]},
+    {"id": 3, "name": "bof-sleep-fatigue",
+     "prompt": "I work night shifts and I'm exhausted and can't sleep well. According to This Is Your Brain on Food, which foods help with sleep and with fatigue, and what should I avoid?",
+     "assertions": [
+      "Lists melatonin-containing foods (e.g. tart cherry, eggs, fish, milk, oats, grapes, pomegranates, walnuts) and/or tryptophan with carbohydrates for sleep",
+      "Mentions chamomile tea and omega-3 fatty fish for sleep",
+      "For fatigue, recommends anti-inflammatory foods/polyphenols, magnesium and zinc, B vitamins, and capsaicin-rich chili peppers",
+      "Advises keeping caffeine under 400 mg/day and no caffeine after 3 p.m.",
+      "Notes that alcohol may help you fall asleep but disrupts sleep",
+      "Explains the circadian rhythm / gut bacteria connection and how night shifts or jet lag disrupt it"]}
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "eval_id": 3,
+  "eval_name": "bof-sleep-fatigue",
+  "prompt": "I work night shifts and I'm exhausted and can't sleep well. According to This Is Your Brain on Food, which foods help with sleep and with fatigue, and what should I avoid?",
+  "assertions": [
+    "Lists melatonin-containing foods (e.g. tart cherry, eggs, fish, milk, oats, grapes, pomegranates, walnuts) and/or tryptophan with carbohydrates for sleep",
+    "Mentions chamomile tea and omega-3 fatty fish for sleep",
+    "For fatigue, recommends anti-inflammatory foods/polyphenols, magnesium and zinc, B vitamins, and capsaicin-rich chili peppers",
+    "Advises keeping caffeine under 400 mg/day and no caffeine after 3 p.m.",
+    "Notes that alcohol may help you fall asleep but disrupts sleep",
+    "Explains the circadian rhythm / gut bacteria connection and how night shifts or jet lag disrupt it"
+  ]
+}
