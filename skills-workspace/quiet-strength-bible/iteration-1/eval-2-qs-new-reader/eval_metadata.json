@@ -1,0 +1,13 @@
+{
+  "eval_id": 2,
+  "eval_name": "qs-new-reader",
+  "prompt": "I just got the Quiet Strength New Testament as a gift and I've never read the Bible. Where does it say I should start, and how should I study it?",
+  "assertions": [
+    "Says the edition recommends starting with Mark (short, fast-moving, by John Mark drawing on Peter) and then reading Acts",
+    "Explains the three steps: observation, interpretation, application",
+    "Mentions the Quiet Strength Verse Finder and/or the Overview of the New Testament Books as tools",
+    "Mentions Tony Dungy's letter comparing the Bible to a playbook and encouraging daily reading and prayer",
+    "Mentions Psalms and Proverbs are included (e.g., Psalms page 235, Proverbs page 301, or a proverb a day)",
+    "Does not reproduce long passages of scripture text"
+  ]
+}

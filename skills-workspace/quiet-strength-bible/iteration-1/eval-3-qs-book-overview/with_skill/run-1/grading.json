@@ -1,0 +1,40 @@
+{
+  "expectations": [
+    {
+      "text": "States Hebrews' author is uncertain (perhaps Paul, Barnabas, Apollos, Priscilla, or Luke), dated around AD 68",
+      "passed": true,
+      "evidence": "uncertain; Paul, Barnabas, Apollos, Priscilla, Luke; AD 68"
+    },
+    {
+      "text": "Summarizes Hebrews as written to Jewish believers in danger of slipping back into Judaism, showing Jesus as the Messiah/superior",
+      "passed": true,
+      "evidence": "Jewish believers slipping back; Jesus the Messiah"
+    },
+    {
+      "text": "States James was written by James, Jesus' half brother, around AD 49",
+      "passed": true,
+      "evidence": "James, half brother, AD 49"
+    },
+    {
+      "text": "Summarizes James as about faith with an emphasis on results/practical working faith",
+      "passed": true,
+      "evidence": "faith with emphasis on results"
+    },
+    {
+      "text": "Summarizes Galatians as foundational: Jesus' death was complete payment for salvation and nothing needs to be added, around AD 49 by Paul",
+      "passed": true,
+      "evidence": "complete payment, nothing needs adding"
+    },
+    {
+      "text": "Notes these are the edition's traditional views and/or that scholars debate dating/authorship",
+      "passed": true,
+      "evidence": "traditional views; scholars debate"
+    }
+  ],
+  "summary": {
+    "passed": 6,
+    "failed": 0,
+    "total": 6,
+    "pass_rate": 1.0
+  }
+}

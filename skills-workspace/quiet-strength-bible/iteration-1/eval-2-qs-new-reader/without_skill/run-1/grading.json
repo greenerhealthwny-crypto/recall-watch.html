@@ -1,0 +1,40 @@
+{
+  "expectations": [
+    {
+      "text": "Says the edition recommends starting with Mark (short, fast-moving, by John Mark drawing on Peter) and then reading Acts",
+      "passed": false,
+      "evidence": "suggests John or Mark generically, not the edition's Mark-then-Acts advice"
+    },
+    {
+      "text": "Explains the three steps: observation, interpretation, application",
+      "passed": false,
+      "evidence": "no observation/interpretation/application"
+    },
+    {
+      "text": "Mentions the Quiet Strength Verse Finder and/or the Overview of the New Testament Books as tools",
+      "passed": false,
+      "evidence": "no Verse Finder or Overview"
+    },
+    {
+      "text": "Mentions Tony Dungy's letter comparing the Bible to a playbook and encouraging daily reading and prayer",
+      "passed": false,
+      "evidence": "no Dungy letter/playbook"
+    },
+    {
+      "text": "Mentions Psalms and Proverbs are included (e.g., Psalms page 235, Proverbs page 301, or a proverb a day)",
+      "passed": true,
+      "evidence": "mentions Psalms and Proverbs (hedged)"
+    },
+    {
+      "text": "Does not reproduce long passages of scripture text",
+      "passed": true,
+      "evidence": "no long passages"
+    }
+  ],
+  "summary": {
+    "passed": 2,
+    "failed": 4,
+    "total": 6,
+    "pass_rate": 0.33
+  }
+}

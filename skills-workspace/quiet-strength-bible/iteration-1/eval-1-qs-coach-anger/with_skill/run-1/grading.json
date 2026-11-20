@@ -1,0 +1,40 @@
+{
+  "expectations": [
+    {
+      "text": "Uses the Verse Finder framing 'Anger must be handled wisely' and cites Ephesians 4:26-27 and/or James 1:19",
+      "passed": true,
+      "evidence": "'Anger must be handled wisely', Eph 4:26-27, James 1:19"
+    },
+    {
+      "text": "Uses the Verse Finder practice 'Leadership must be developed' (asking God to develop honesty, kindness, patience, purity, integrity) with Titus 2:7-8 and/or Hebrews 13:17",
+      "passed": true,
+      "evidence": "'Leadership must be developed', Titus 2:7-8, Heb 13:17"
+    },
+    {
+      "text": "Includes related practices such as self-control (1 Peter 1:13 / 2 Peter 1:5-6), humility or kindness",
+      "passed": true,
+      "evidence": "self-control 1 Pet 1:13, 2 Pet 1:5-6"
+    },
+    {
+      "text": "Mentions Dungy's framing of the Bible as God's playbook and/or the Principles, Practices and Priorities of a Winning Life",
+      "passed": true,
+      "evidence": "playbook; principles, practices, priorities"
+    },
+    {
+      "text": "Suggests the edition's three-step study method: observation, interpretation, application",
+      "passed": true,
+      "evidence": "observation, interpretation, application"
+    },
+    {
+      "text": "Gives a concrete practical plan (e.g., daily reading/prayer, one practice per week) rather than only a list",
+      "passed": true,
+      "evidence": "weekly/daily plan"
+    }
+  ],
+  "summary": {
+    "passed": 6,
+    "failed": 0,
+    "total": 6,
+    "pass_rate": 1.0
+  }
+}

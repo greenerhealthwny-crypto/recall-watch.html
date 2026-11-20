@@ -1,0 +1,13 @@
+{
+  "eval_id": 3,
+  "eval_name": "qs-book-overview",
+  "prompt": "Per the overview pages in my Quiet Strength NLT New Testament, who wrote Hebrews and James, when, and what are they about? And what does it say Galatians is about?",
+  "assertions": [
+    "States Hebrews' author is uncertain (perhaps Paul, Barnabas, Apollos, Priscilla, or Luke), dated around AD 68",
+    "Summarizes Hebrews as written to Jewish believers in danger of slipping back into Judaism, showing Jesus as the Messiah/superior",
+    "States James was written by James, Jesus' half brother, around AD 49",
+    "Summarizes James as about faith with an emphasis on results/practical working faith",
+    "Summarizes Galatians as foundational: Jesus' death was complete payment for salvation and nothing needs to be added, around AD 49 by Paul",
+    "Notes these are the edition's traditional views and/or that scholars debate dating/authorship"
+  ]
+}

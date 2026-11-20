@@ -1,0 +1,342 @@
+{
+  "metadata": {
+    "skill_name": "quiet-strength-bible",
+    "skill_path": "<path/to/skill>",
+    "executor_model": "<model-name>",
+    "analyzer_model": "<model-name>",
+    "timestamp": "2026-11-20T23:15:24Z",
+    "evals_run": [
+      1,
+      2,
+      3
+    ],
+    "runs_per_configuration": 1
+  },
+  "runs": [
+    {
+      "eval_id": 1,
+      "eval_name": "qs-coach-anger",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Uses the Verse Finder framing 'Anger must be handled wisely' and cites Ephesians 4:26-27 and/or James 1:19",
+          "passed": true,
+          "evidence": "'Anger must be handled wisely', Eph 4:26-27, James 1:19"
+        },
+        {
+          "text": "Uses the Verse Finder practice 'Leadership must be developed' (asking God to develop honesty, kindness, patience, purity, integrity) with Titus 2:7-8 and/or Hebrews 13:17",
+          "passed": true,
+          "evidence": "'Leadership must be developed', Titus 2:7-8, Heb 13:17"
+        },
+        {
+          "text": "Includes related practices such as self-control (1 Peter 1:13 / 2 Peter 1:5-6), humility or kindness",
+          "passed": true,
+          "evidence": "self-control 1 Pet 1:13, 2 Pet 1:5-6"
+        },
+        {
+          "text": "Mentions Dungy's framing of the Bible as God's playbook and/or the Principles, Practices and Priorities of a Winning Life",
+          "passed": true,
+          "evidence": "playbook; principles, practices, priorities"
+        },
+        {
+          "text": "Suggests the edition's three-step study method: observation, interpretation, application",
+          "passed": true,
+          "evidence": "observation, interpretation, application"
+        },
+        {
+          "text": "Gives a concrete practical plan (e.g., daily reading/prayer, one practice per week) rather than only a list",
+          "passed": true,
+          "evidence": "weekly/daily plan"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "qs-new-reader",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Says the edition recommends starting with Mark (short, fast-moving, by John Mark drawing on Peter) and then reading Acts",
+          "passed": true,
+          "evidence": "start with Mark, then Acts"
+        },
+        {
+          "text": "Explains the three steps: observation, interpretation, application",
+          "passed": true,
+          "evidence": "three steps"
+        },
+        {
+          "text": "Mentions the Quiet Strength Verse Finder and/or the Overview of the New Testament Books as tools",
+          "passed": true,
+          "evidence": "Verse Finder and Overview"
+        },
+        {
+          "text": "Mentions Tony Dungy's letter comparing the Bible to a playbook and encouraging daily reading and prayer",
+          "passed": true,
+          "evidence": "Dungy's playbook letter"
+        },
+        {
+          "text": "Mentions Psalms and Proverbs are included (e.g., Psalms page 235, Proverbs page 301, or a proverb a day)",
+          "passed": true,
+          "evidence": "Psalms p.235, Proverbs p.301"
+        },
+        {
+          "text": "Does not reproduce long passages of scripture text",
+          "passed": true,
+          "evidence": "no long passages"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 3,
+      "eval_name": "qs-book-overview",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "States Hebrews' author is uncertain (perhaps Paul, Barnabas, Apollos, Priscilla, or Luke), dated around AD 68",
+          "passed": true,
+          "evidence": "uncertain; Paul, Barnabas, Apollos, Priscilla, Luke; AD 68"
+        },
+        {
+          "text": "Summarizes Hebrews as written to Jewish believers in danger of slipping back into Judaism, showing Jesus as the Messiah/superior",
+          "passed": true,
+          "evidence": "Jewish believers slipping back; Jesus the Messiah"
+        },
+        {
+          "text": "States James was written by James, Jesus' half brother, around AD 49",
+          "passed": true,
+          "evidence": "James, half brother, AD 49"
+        },
+        {
+          "text": "Summarizes James as about faith with an emphasis on results/practical working faith",
+          "passed": true,
+          "evidence": "faith with emphasis on results"
+        },
+        {
+          "text": "Summarizes Galatians as foundational: Jesus' death was complete payment for salvation and nothing needs to be added, around AD 49 by Paul",
+          "passed": true,
+          "evidence": "complete payment, nothing needs adding"
+        },
+        {
+          "text": "Notes these are the edition's traditional views and/or that scholars debate dating/authorship",
+          "passed": true,
+          "evidence": "traditional views; scholars debate"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 1,
+      "eval_name": "qs-coach-anger",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.33,
+        "passed": 2,
+        "failed": 4,
+        "total": 6,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Uses the Verse Finder framing 'Anger must be handled wisely' and cites Ephesians 4:26-27 and/or James 1:19",
+          "passed": false,
+          "evidence": "cites Eph 4:26 and James 1:19 but not the Verse Finder framing"
+        },
+        {
+          "text": "Uses the Verse Finder practice 'Leadership must be developed' (asking God to develop honesty, kindness, patience, purity, integrity) with Titus 2:7-8 and/or Hebrews 13:17",
+          "passed": false,
+          "evidence": "leadership verses differ; no Verse Finder practice or Titus 2:7/Heb 13:17"
+        },
+        {
+          "text": "Includes related practices such as self-control (1 Peter 1:13 / 2 Peter 1:5-6), humility or kindness",
+          "passed": true,
+          "evidence": "self-control via Gal 5:22-23, Prov 16:32"
+        },
+        {
+          "text": "Mentions Dungy's framing of the Bible as God's playbook and/or the Principles, Practices and Priorities of a Winning Life",
+          "passed": false,
+          "evidence": "no playbook or three P's framing"
+        },
+        {
+          "text": "Suggests the edition's three-step study method: observation, interpretation, application",
+          "passed": false,
+          "evidence": "no three-step method"
+        },
+        {
+          "text": "Gives a concrete practical plan (e.g., daily reading/prayer, one practice per week) rather than only a list",
+          "passed": true,
+          "evidence": "practical study plan"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "qs-new-reader",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.33,
+        "passed": 2,
+        "failed": 4,
+        "total": 6,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Says the edition recommends starting with Mark (short, fast-moving, by John Mark drawing on Peter) and then reading Acts",
+          "passed": false,
+          "evidence": "suggests John or Mark generically, not the edition's Mark-then-Acts advice"
+        },
+        {
+          "text": "Explains the three steps: observation, interpretation, application",
+          "passed": false,
+          "evidence": "no observation/interpretation/application"
+        },
+        {
+          "text": "Mentions the Quiet Strength Verse Finder and/or the Overview of the New Testament Books as tools",
+          "passed": false,
+          "evidence": "no Verse Finder or Overview"
+        },
+        {
+          "text": "Mentions Tony Dungy's letter comparing the Bible to a playbook and encouraging daily reading and prayer",
+          "passed": false,
+          "evidence": "no Dungy letter/playbook"
+        },
+        {
+          "text": "Mentions Psalms and Proverbs are included (e.g., Psalms page 235, Proverbs page 301, or a proverb a day)",
+          "passed": true,
+          "evidence": "mentions Psalms and Proverbs (hedged)"
+        },
+        {
+          "text": "Does not reproduce long passages of scripture text",
+          "passed": true,
+          "evidence": "no long passages"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 3,
+      "eval_name": "qs-book-overview",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.83,
+        "passed": 5,
+        "failed": 1,
+        "total": 6,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "States Hebrews' author is uncertain (perhaps Paul, Barnabas, Apollos, Priscilla, or Luke), dated around AD 68",
+          "passed": true,
+          "evidence": "unknown author with same candidate list; before AD 70"
+        },
+        {
+          "text": "Summarizes Hebrews as written to Jewish believers in danger of slipping back into Judaism, showing Jesus as the Messiah/superior",
+          "passed": true,
+          "evidence": "Jewish Christians tempted to drift back; Jesus superior"
+        },
+        {
+          "text": "States James was written by James, Jesus' half brother, around AD 49",
+          "passed": false,
+          "evidence": "'brother of Jesus', dated mid-40s, not the edition's half brother / AD 49"
+        },
+        {
+          "text": "Summarizes James as about faith with an emphasis on results/practical working faith",
+          "passed": true,
+          "evidence": "faith shown in action"
+        },
+        {
+          "text": "Summarizes Galatians as foundational: Jesus' death was complete payment for salvation and nothing needs to be added, around AD 49 by Paul",
+          "passed": true,
+          "evidence": "grace through faith, not law; AD 48-49"
+        },
+        {
+          "text": "Notes these are the edition's traditional views and/or that scholars debate dating/authorship",
+          "passed": true,
+          "evidence": "notes it can't see the overview; alternatives noted"
+        }
+      ],
+      "notes": []
+    }
+  ],
+  "run_summary": {
+    "with_skill": {
+      "pass_rate": {
+        "mean": 1.0,
+        "stddev": 0.0,
+        "min": 1.0,
+        "max": 1.0
+      },
+      "time_seconds": null,
+      "tokens": null
+    },
+    "without_skill": {
+      "pass_rate": {
+        "mean": 0.4967,
+        "stddev": 0.2887,
+        "min": 0.33,
+        "max": 0.83
+      },
+      "time_seconds": null,
+      "tokens": null
+    },
+    "delta": {
+      "pass_rate": "+0.50",
+      "time_seconds": null,
+      "tokens": null
+    }
+  },
+  "notes": [
+    "Time recorded for 0 of 3 with_skill runs, 0 of 3 without_skill runs, so there is no time delta.",
+    "Token count recorded for 0 of 3 with_skill runs, 0 of 3 without_skill runs, so there is no token count delta."
+  ]
+}

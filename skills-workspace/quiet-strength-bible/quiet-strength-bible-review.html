@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eval Review</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&family=Lora:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js" integrity="sha384-EnyY0/GSHQGSxSgMwaIPzSESbqoOLSexfnSMN2AP+39Ckmn92stwABZynq1JyzdT" crossorigin="anonymous"></script>
+  <style>
+    :root {
+      --bg: #faf9f5;
+      --surface: #ffffff;
+      --border: #e8e6dc;
+      --text: #141413;
+      --text-muted: #b0aea5;
+      --accent: #d97757;
+      --accent-hover: #c4613f;
+      --green: #788c5d;
+      --green-bg: #eef2e8;
+      --red: #c44;
+      --red-bg: #fceaea;
+      --header-bg: #141413;
+      --header-text: #faf9f5;
+      --radius: 6px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Lora', Georgia, serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ---- Header ---- */
+    .header {
+      background: var(--header-bg);
+      color: var(--header-text);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .header h1 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+    .header .instructions {
+      font-size: 0.8rem;
+      opacity: 0.7;
+      margin-top: 0.25rem;
+    }
+    .header .progress {
+      font-size: 0.875rem;
+      opacity: 0.8;
+      text-align: right;
+    }
+
+    /* ---- Main content ---- */
+    .main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.5rem 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    /* ---- Sections ---- */
+    .section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      flex-shrink: 0;
+    }
+    .section-header {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.75rem 1rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+    }
+    .section-body {
+      padding: 1rem;
+    }
+
+    /* ---- Config badge ---- */
+    .config-badge {
+      display: inline-block;
+      padding: 0.2rem 0.625rem;
+      border-radius: 9999px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      margin-left: 0.75rem;
+      vertical-align: middle;
+    }
+    .config-badge.config-primary {
+      background: rgba(33, 150, 243, 0.12);
+      color: #1976d2;
+    }
+    .config-badge.config-baseline {
+      background: rgba(255, 193, 7, 0.15);
+      color: #f57f17;
+    }
+
+    /* ---- Prompt ---- */
+    .prompt-text {
+      white-space: pre-wrap;
+      font-size: 0.9375rem;
+      line-height: 1.6;
+    }
+
+    /* ---- Outputs ---- */
+    .output-file {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .output-file + .output-file {
+      margin-top: 1rem;
+    }
+    .output-file-header {
+      padding: 0.5rem 0.75rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .output-file-header .dl-btn {
+      font-size: 0.7rem;
+      color: var(--accent);
+      text-decoration: none;
+      cursor: pointer;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-weight: 500;
+      opacity: 0.8;
+    }
+    .output-file-header .dl-btn:hover {
+      opacity: 1;
+      text-decoration: underline;
+    }
+    .output-file-content {
+      padding: 0.75rem;
+      overflow-x: auto;
+    }
+    .output-file-content pre {
+      font-size: 0.8125rem;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+    }
+    .output-file-content img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 4px;
+    }
+    .output-file-content iframe {
+      width: 100%;
+      height: 600px;
+      border: none;
+    }
+    .output-file-content table {
+      border-collapse: collapse;
+      font-size: 0.8125rem;
+      width: 100%;
+    }
+    .output-file-content table td,
+    .output-file-content table th {
+      border: 1px solid var(--border);
+      padding: 0.375rem 0.5rem;
+      text-align: left;
+    }
+    .output-file-content table th {
+      background: var(--bg);
+      font-weight: 600;
+    }
+    .output-file-content .download-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 0.875rem;
+      cursor: pointer;
+    }
+    .output-file-content .download-link:hover {
+      background: var(--border);
+    }
+    .empty-state {
+      color: var(--text-muted);
+      font-style: italic;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    /* ---- Feedback ---- */
+    .prev-feedback {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.625rem 0.75rem;
+      margin-top: 0.75rem;
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+    .prev-feedback-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.25rem;
+      color: var(--text-muted);
+    }
+    .feedback-textarea {
+      width: 100%;
+      min-height: 100px;
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 0.9375rem;
+      line-height: 1.5;
+      resize: vertical;
+      color: var(--text);
+    }
+    .feedback-textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    .feedback-status {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.5rem;
+      min-height: 1.1em;
+    }
+
+    /* ---- Grades (collapsible) ---- */
+    .grades-toggle {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+    }
+    .grades-toggle:hover {
+      color: var(--accent);
+    }
+    .grades-toggle .arrow {
+      margin-right: 0.5rem;
+      transition: transform 0.15s;
+      font-size: 0.75rem;
+    }
+    .grades-toggle .arrow.open {
+      transform: rotate(90deg);
+    }
+    .grades-content {
+      display: none;
+      margin-top: 0.75rem;
+    }
+    .grades-content.open {
+      display: block;
+    }
+    .grades-summary {
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .grade-badge {
+      display: inline-block;
+      padding: 0.125rem 0.5rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .grade-pass { background: var(--green-bg); color: var(--green); }
+    .grade-fail { background: var(--red-bg); color: var(--red); }
+    .assertion-list {
+      list-style: none;
+    }
+    .assertion-item {
+      padding: 0.625rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.8125rem;
+    }
+    .assertion-item:last-child { border-bottom: none; }
+    .assertion-status {
+      font-weight: 600;
+      margin-right: 0.5rem;
+    }
+    .assertion-status.pass { color: var(--green); }
+    .assertion-status.fail { color: var(--red); }
+    .assertion-evidence {
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      margin-top: 0.25rem;
+      padding-left: 1.5rem;
+    }
+
+    /* ---- View tabs ---- */
+    .view-tabs {
+      display: flex;
+      gap: 0;
+      padding: 0 2rem;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .view-tab {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.625rem 1.25rem;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      background: none;
+      color: var(--text-muted);
+      border-bottom: 2px solid transparent;
+      transition: all 0.15s;
+    }
+    .view-tab:hover { color: var(--text); }
+    .view-tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+    .view-panel { display: none; }
+    .view-panel.active { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
+
+    /* ---- Benchmark view ---- */
+    .benchmark-view {
+      padding: 1.5rem 2rem;
+      overflow-y: auto;
+      flex: 1;
+    }
+    .benchmark-table {
+      border-collapse: collapse;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 0.8125rem;
+      width: 100%;
+      margin-bottom: 1.5rem;
+    }
+    .benchmark-table th, .benchmark-table td {
+      padding: 0.625rem 0.75rem;
+      text-align: left;
+      border: 1px solid var(--border);
+    }
+    .benchmark-table th {
+      font-family: 'Poppins', sans-serif;
+      background: var(--header-bg);
+      color: var(--header-text);
+      font-weight: 500;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .benchmark-table tr:hover { background: var(--bg); }
+    .benchmark-table tr.benchmark-row-with { background: rgba(33, 150, 243, 0.06); }
+    .benchmark-table tr.benchmark-row-without { background: rgba(255, 193, 7, 0.06); }
+    .benchmark-table tr.benchmark-row-with:hover { background: rgba(33, 150, 243, 0.12); }
+    .benchmark-table tr.benchmark-row-without:hover { background: rgba(255, 193, 7, 0.12); }
+    .benchmark-table tr.benchmark-row-avg { font-weight: 600; border-top: 2px solid var(--border); }
+    .benchmark-table tr.benchmark-row-avg.benchmark-row-with { background: rgba(33, 150, 243, 0.12); }
+    .benchmark-table tr.benchmark-row-avg.benchmark-row-without { background: rgba(255, 193, 7, 0.12); }
+    .benchmark-delta-positive { color: var(--green); font-weight: 600; }
+    .benchmark-delta-negative { color: var(--red); font-weight: 600; }
+    .benchmark-notes {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem;
+    }
+    .benchmark-notes h3 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+    }
+    .benchmark-notes ul {
+      list-style: disc;
+      padding-left: 1.25rem;
+    }
+    .benchmark-notes li {
+      font-size: 0.8125rem;
+      line-height: 1.6;
+      margin-bottom: 0.375rem;
+    }
+    .benchmark-empty {
+      color: var(--text-muted);
+      font-style: italic;
+      text-align: center;
+      padding: 3rem;
+    }
+
+    /* ---- Navigation ---- */
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+      flex-shrink: 0;
+    }
+    .nav-btn {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.5rem 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text);
+      transition: all 0.15s;
+    }
+    .nav-btn:hover:not(:disabled) {
+      background: var(--bg);
+      border-color: var(--text-muted);
+    }
+    .nav-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    .done-btn {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.5rem 1.5rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: all 0.15s;
+    }
+    .done-btn:hover {
+      background: var(--bg);
+      border-color: var(--text-muted);
+    }
+    .done-btn.ready {
+      border: none;
+      background: var(--accent);
+      color: white;
+      font-weight: 600;
+    }
+    .done-btn.ready:hover {
+      background: var(--accent-hover);
+    }
+    /* ---- Done overlay ---- */
+    .done-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 100;
+      justify-content: center;
+      align-items: center;
+    }
+    .done-overlay.visible {
+      display: flex;
+    }
+    .done-card {
+      background: var(--surface);
+      border-radius: 12px;
+      padding: 2rem 3rem;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      max-width: 500px;
+    }
+    .done-card h2 {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .done-card p {
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
+    }
+    .done-card .btn-row {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+    }
+    .done-card button {
+      padding: 0.5rem 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 0.875rem;
+    }
+    .done-card button:hover {
+      background: var(--bg);
+    }
+    /* ---- Toast ---- */
+    .toast {
+      position: fixed;
+      bottom: 5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--header-bg);
+      color: var(--header-text);
+      padding: 0.625rem 1.25rem;
+      border-radius: var(--radius);
+      font-size: 0.875rem;
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+      z-index: 200;
+    }
+    .toast.visible {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <div id="app" style="height:100vh; display:flex; flex-direction:column;">
+    <div class="header">
+      <div>
+        <h1>Eval Review: <span id="skill-name"></span></h1>
+        <div class="instructions">Review each output and leave feedback below. Navigate with arrow keys or buttons. When done, copy feedback and paste into Claude Code.</div>
+      </div>
+      <div class="progress" id="progress"></div>
+    </div>
+
+    <!-- View tabs (only shown when benchmark data exists) -->
+    <div class="view-tabs" id="view-tabs" style="display:none;">
+      <button class="view-tab active" onclick="switchView('outputs')">Outputs</button>
+      <button class="view-tab" onclick="switchView('benchmark')">Benchmark</button>
+    </div>
+
+    <!-- Outputs panel (qualitative review) -->
+    <div class="view-panel active" id="panel-outputs">
+    <div class="main">
+      <!-- Prompt -->
+      <div class="section">
+        <div class="section-header">Prompt <span class="config-badge" id="config-badge" style="display:none;"></span></div>
+        <div class="section-body">
+          <div class="prompt-text" id="prompt-text"></div>
+        </div>
+      </div>
+
+      <!-- Outputs -->
+      <div class="section">
+        <div class="section-header">Output</div>
+        <div class="section-body" id="outputs-body">
+          <div class="empty-state">No output files found</div>
+        </div>
+      </div>
+
+      <!-- Previous Output (collapsible) -->
+      <div class="section" id="prev-outputs-section" style="display:none;">
+        <div class="section-header">
+          <div class="grades-toggle" onclick="togglePrevOutputs()">
+            <span class="arrow" id="prev-outputs-arrow">&#9654;</span>
+            Previous Output
+          </div>
+        </div>
+        <div class="grades-content" id="prev-outputs-content"></div>
+      </div>
+
+      <!-- Grades (collapsible) -->
+      <div class="section" id="grades-section" style="display:none;">
+        <div class="section-header">
+          <div class="grades-toggle" onclick="toggleGrades()">
+            <span class="arrow" id="grades-arrow">&#9654;</span>
+            Formal Grades
+          </div>
+        </div>
+        <div class="grades-content" id="grades-content"></div>
+      </div>
+
+      <!-- Feedback -->
+      <div class="section">
+        <div class="section-header">Your Feedback</div>
+        <div class="section-body">
+          <textarea
+            class="feedback-textarea"
+            id="feedback"
+            placeholder="What do you think of this output? Any issues, suggestions, or things that look great?"
+          ></textarea>
+          <div class="feedback-status" id="feedback-status"></div>
+          <div class="prev-feedback" id="prev-feedback" style="display:none;">
+            <div class="prev-feedback-label">Previous feedback</div>
+            <div id="prev-feedback-text"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav" id="outputs-nav">
+      <button class="nav-btn" id="prev-btn" onclick="navigate(-1)">&#8592; Previous</button>
+      <button class="done-btn" id="done-btn" onclick="showDoneDialog()">Submit All Reviews</button>
+      <button class="nav-btn" id="next-btn" onclick="navigate(1)">Next &#8594;</button>
+    </div>
+    </div><!-- end panel-outputs -->
+
+    <!-- Benchmark panel (quantitative stats) -->
+    <div class="view-panel" id="panel-benchmark">
+      <div class="benchmark-view" id="benchmark-content">
+        <div class="benchmark-empty">No benchmark data available. Run a benchmark to see quantitative results here.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Done overlay -->
+  <div class="done-overlay" id="done-overlay">
+    <div class="done-card">
+      <h2>Review Complete</h2>
+      <p>Your feedback has been saved. Go back to your Claude Code session and tell Claude you're done reviewing.</p>
+      <div class="btn-row">
+        <button onclick="closeDoneDialog()">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ---- Embedded data (injected by generate_review.py) ----
+    const EMBEDDED_DATA = {"skill_name": "quiet-strength-bible", "runs": [{"id": "eval-1-qs-coach-anger-with_skill-run-1", "prompt": "I coach a high school basketball team and I've been losing my temper with the kids. Using the Quiet Strength New Testament (the NLT edition with Tony Dungy's features), what verses and principles should I study about anger and leadership?", "eval_id": 1, "outputs": [{"name": "response.md", "type": "text", "content": "# Anger and Leadership: A Coach's Study Plan from the Quiet Strength New Testament (NLT)\n\nYour Bible's front matter was written by a coach, with coaches in mind. In his letter (front matter, pp. A1\u2013A41), Tony Dungy calls the Bible **\"God's playbook for us.\"** Players are supposed to study the playbook *before* the game, not after they've fallen behind. A player who struggles on the floor usually isn't sure what to do, so the coach tells him to \"get in his book.\" Dungy's advice is to read the Bible and pray every day: \"that's the best way to be successful in the game of life.\"\n\nThat fits your situation well. The time to prepare for the moment you lose your temper is Monday morning, not the third quarter.\n\nBelow are the passages the edition's **Quiet Strength Verse Finder** (pp. A11\u2013A31) lists under anger and leadership, plus a few related practices, and a four-week plan for studying them.\n\n---\n\n## 1. Anger: \"Anger must be handled wisely\"\n\nThe Verse Finder lists anger under **Practices of a Winning Life**. Its principle statement says anger \"can be a destructive force and must be dealt with wisely. Don't let it get a foothold.\"\n\n| Reference | What to look for |\n|---|---|\n| **Ephesians 4:26\u201327** | Anger is not automatically sin, but it must not take over, and you deal with it the same day. Notice the \"foothold\" idea: unresolved anger gives the enemy room to work. |\n| **James 1:19** | The order matters: be quick to listen, slow to speak, slow to get angry. Try that as a sideline rule. Listen to the player's explanation before you react. |\n\nRead each passage in its full chapter. **Ephesians 4:29\u201332** goes on to talk about the words that come out of our mouths and ends with kindness and forgiveness. **James 1:20** says why it matters: human anger doesn't produce the righteousness God wants. Both apply directly to what you say in a huddle.\n\n## 2. Leadership: \"Leadership must be developed\"\n\nThe Verse Finder's leadership principle: if you want to be a leader, ask God to develop **honesty, kindness, patience, purity and integrity** in you. Patience and kindness are on that list. On this view, keeping your temper is part of leadership itself, not a side issue.\n\n| Reference | What to look for |\n|---|---|\n| **Titus 2:7\u20138** | Be an example of good works, and let your teaching show integrity and seriousness. Your players learn more from how you act than from what you say. |\n| **Hebrews 13:17** | This verse speaks to followers, but notice that leaders \"are accountable to God.\" You will answer for how you treat the kids in your care. |\n\nTitus was a young leader with a hard job. The edition's overview (p. 187) describes the letter as a set of challenges for an overseer: leadership qualifications, sound teaching and good works. **Titus 1:7** is worth adding here, since it lists \"not quick-tempered\" among the qualities of a leader.\n\n## 3. Related practices for a coach\n\nThe Verse Finder's quick-lookup table sends \"Leading a team\" to Leadership, Integrity, Humility, Service and Responsibility, and \"Anger or a conflict\" to Anger, Conflict, Reconciliation and Revenge. These are the most relevant for you:\n\n| Practice (Verse Finder wording) | Key references | Why it matters for you |\n|---|---|---|\n| **Self-control must be pursued.** Self-control brings honor to God, so ask him to help you | 1 Peter 1:13; 2 Peter 1:5\u20136 | Self-control is something you build over time, like conditioning. 2 Peter 1:5\u20136 shows it growing step by step. |\n| **Kindness must be demonstrated** | Ephesians 4:32; **2 Timothy 2:24** | 2 Timothy 2:24 describes a servant of the Lord who is kind to everyone, able to teach, and patient. It reads like a description of a good coach. |\n| **Humility must be pursued.** True greatness begins with humility | Matthew 20:26; Luke 9:48; Luke 14:7\u201311 | In Matthew 20:26 the greatest is the one who serves. You coach for the players' good, not for your pride or the scoreboard. |\n| **Reconciliation must be sought** | Matthew 18:15; Proverbs 14:9 | When you've blown up at a player, go and make it right with him. A sincere apology from a coach can teach more than a winning season. |\n| **Integrity must be protected** | Titus 2:7; Proverbs 10:9; 1 Timothy 3:7 | The coach in practice and the coach on Sunday should be the same person. |\n| **Responsibility must be accepted** | Matthew 25:23; Luke 16:10 | Being faithful with a gym full of teenagers is \"small things\" faithfulness that matters a lot. |\n| **Renewal must be pursued.** Depend on God to change your heart | Ephesians 4:22\u201324; Psalm 51:10 | Willpower alone usually doesn't change a temper. Psalm 51:10 (\"Create in me a clean heart\") is a good prayer to say before practice. |\n\n## 4. From Psalms and Proverbs (in the back of your edition)\n\nThe edition's overview (p. 301) describes Proverbs as practical wisdom for every area of life. The Verse Finder doesn't list these under anger, but they are classic verses on the subject and worth reading:\n\n- **Proverbs 15:1**: a gentle answer turns away wrath, and harsh words stir up anger.\n- **Proverbs 16:32**: someone who controls his temper is better than a mighty warrior.\n- **Proverbs 29:11**: fools vent their anger, and the wise quietly hold it back.\n- **Psalm 46:1\u20133**: the edition's opening verse for \"a life of quiet strength.\" God is our refuge and strength, ready to help in times of trouble, including a close game that's slipping away.\n\n---\n\n## 5. How to study it: the edition's three steps\n\nThe front-matter article \"A Life of Quiet Strength\" gives a simple method. Use it on each passage above:\n\n1. **Observation: what does it say?** Restate the verse in your own words, or underline the key phrase. For example, in James 1:19, *quick to listen, slow to speak, slow to anger*.\n2. **Interpretation: what did the author mean?** Look at why the book was written. Use the edition's book overviews, such as the one for Titus, or a commentary.\n3. **Application: \"So what?\"** What difference does this make at Tuesday's practice? Write one concrete action.\n\n## 6. A four-week plan\n\n| Week | Focus | Read | One action to try |\n|---|---|---|---|\n| 1 | Anger handled wisely | Ephesians 4 (whole chapter); James 1:19\u201327 | Decide on a reset routine before you speak: a breath, a step back, or a timeout. Settle every blow-up the same day (Ephesians 4:26). |\n| 2 | Self-control | 2 Peter 1:3\u201311; 1 Peter 1:13\u201316; Proverbs 16 | Ask an assistant coach or captain to signal you when you start to lose it. |\n| 3 | Leadership by example | Titus 1\u20132; 2 Timothy 2:22\u201326 | Correct the play, not the person. Name one player each day you'll encourage specifically. |\n| 4 | Humility and reconciliation | Matthew 18:15\u201335; Matthew 20:20\u201328; Psalm 51 | Apologize to any player or the team where you crossed a line. Ask God for a renewed heart (Psalm 51:10). |\n\nThe edition's tips: underline key statements, note the verses that mean the most to you, and study with others. Working through this with another coach or a men's Bible study can help keep you accountable.\n\n---\n\n## A word from Dungy's own example\n\nTony Dungy is widely known for coaching without screaming at or demeaning his players. He showed that a coach can be demanding and calm at the same time, and that's the \"quiet strength\" the book's title refers to. The edition puts it this way: if we line up with God's principles, practices and priorities, \"we will stand strong no matter what life throws at us.\" Wanting to change is a good start. Your players will notice the difference.\n\n---\n\n*Notes:*\n- *Some Verse Finder references were faint in the photographed pages, so treat a few as approximate. Read each passage in your NLT before teaching from it.*\n- *I've paraphrased the scripture rather than quoting it at length, because the NLT text is copyrighted. Read the full passages in your Quiet Strength edition or an authorized online NLT.*\n- *The Proverbs verses in section 4, Titus 1:7, and the extra context verses in Ephesians and James are standard references I added. They are not in the Verse Finder's anger and leadership entries.*\n- *If your anger ever goes beyond words, or you feel it's out of your control, talk to a pastor, counselor, or your athletic director. Getting help is a sign of strength.*\n"}], "grading": {"expectations": [{"text": "Uses the Verse Finder framing 'Anger must be handled wisely' and cites Ephesians 4:26-27 and/or James 1:19", "passed": true, "evidence": "'Anger must be handled wisely', Eph 4:26-27, James 1:19"}, {"text": "Uses the Verse Finder practice 'Leadership must be developed' (asking God to develop honesty, kindness, patience, purity, integrity) with Titus 2:7-8 and/or Hebrews 13:17", "passed": true, "evidence": "'Leadership must be developed', Titus 2:7-8, Heb 13:17"}, {"text": "Includes related practices such as self-control (1 Peter 1:13 / 2 Peter 1:5-6), humility or kindness", "passed": true, "evidence": "self-control 1 Pet 1:13, 2 Pet 1:5-6"}, {"text": "Mentions Dungy's framing of the Bible as God's playbook and/or the Principles, Practices and Priorities of a Winning Life", "passed": true, "evidence": "playbook; principles, practices, priorities"}, {"text": "Suggests the edition's three-step study method: observation, interpretation, application", "passed": true, "evidence": "observation, interpretation, application"}, {"text": "Gives a concrete practical plan (e.g., daily reading/prayer, one practice per week) rather than only a list", "passed": true, "evidence": "weekly/daily plan"}], "summary": {"passed": 6, "failed": 0, "total": 6, "pass_rate": 1.0}}}, {"id": "eval-1-qs-coach-anger-without_skill-run-1", "prompt": "I coach a high school basketball team and I've been losing my temper with the kids. Using the Quiet Strength New Testament (the NLT edition with Tony Dungy's features), what verses and principles should I study about anger and leadership?", "eval_id": 1, "outputs": [{"name": "response.md", "type": "text", "content": "# Anger and Leadership for a Coach: A Study Plan Using the Quiet Strength New Testament\n\nThank you for being honest about this. Seeing the problem and wanting to change it is where real change starts. Tony Dungy is a good guide for it. He is known as a coach who almost never yelled at his players. His view was that you can demand excellence and still treat people with respect, and that calm is a form of strength, not weakness.\n\n**A note on the edition:** The Quiet Strength New Testament (NLT, Tyndale) pairs the New Living Translation with devotional and character material drawn from Dungy's life and coaching. I can't reliably quote its exact feature titles, page numbers or note wording from memory. Use the book's own index, topical guide or reading plan to find the notes on **anger, self-control, patience, leadership, character and integrity**, and read them next to the passages below. All the Scripture references below are standard New Testament passages, so you can find them in any edition.\n\n---\n\n## 1. Core Verses on Anger\n\n| Passage | Key idea | Coaching application |\n|---|---|---|\n| **James 1:19\u201320** | \"Be quick to listen, slow to speak, and slow to get angry. Human anger does not produce the righteousness God desires.\" | Your outburst won't produce the player you want. Listen first: ask \"What did you see on that play?\" before you correct. |\n| **Ephesians 4:26\u201327** | \"Don't sin by letting anger control you. Don't let the sun go down while you are still angry\u2026 it gives a foothold to the devil.\" | Feeling angry is not the sin. Being *controlled* by it is. Settle things the same day, and never let a kid go home with a bad blowup left unresolved. |\n| **Ephesians 4:29\u201332** | Let no foul or abusive talk come out of your mouth, only what helps build others up. Get rid of bitterness, rage, anger, harsh words and slander. Be kind and forgiving. | Test every word you say at practice: does it build this player up or just let off my frustration? |\n| **Colossians 3:8, 12\u201313** | Get rid of anger, rage and dirty language. Put on compassion, kindness, humility, gentleness and patience. | Character is something you \"put on\" each day. Make it part of your pre-practice routine. |\n| **Galatians 5:22\u201323** | The fruit of the Spirit includes patience, gentleness and **self-control**. | Self-control is fruit that grows over time, not something you force by willpower alone. Pray for it before practices and games. |\n| **Matthew 5:21\u201322** | Jesus treats anger and contempt (\"you idiot!\") as serious, in the same family as murder. | Name-calling and belittling players is not \"just coaching.\" It is a heart issue. |\n| **1 Corinthians 13:4\u20135** | Love is patient and kind. It is not irritable and keeps no record of being wronged. | Don't hold a kid's past mistakes over him. Each practice is a fresh start. |\n| **Romans 12:17\u201321** | Don't repay evil with evil. Overcome evil with good. | When a player disrespects you, answer with firm, calm discipline, not retaliation. |\n\n## 2. Core Passages on Leadership\n\n| Passage | Key idea | Coaching application |\n|---|---|---|\n| **Mark 10:42\u201345** | Gentile rulers lord it over people. \"Whoever wants to be a leader among you must be your servant.\" | Your authority exists for your players' good, not for your ego or your record. |\n| **John 13:1\u201317** | Jesus washes the disciples' feet. | Servant leadership is hands-on: carry the water, stay late, know your players' lives. |\n| **Ephesians 6:4** | \"Do not provoke your children to anger by the way you treat them. Bring them up with the discipline and instruction that comes from the Lord.\" | This is written to fathers, but it fits you directly. Harsh coaching often makes teenagers angry, sullen or checked out. |\n| **Colossians 3:21** | Don't aggravate your children, \"or they will become discouraged.\" | Yelling often produces players who play scared, not players who play better. |\n| **1 Timothy 3:2\u20133** and **Titus 1:7\u20138** | A leader must be self-controlled, gentle, \"not quarrelsome,\" \"not quick-tempered or violent.\" | In Scripture, controlling your temper is a basic qualification for leading people. |\n| **2 Timothy 2:24\u201325** | The Lord's servant must be kind to everyone, able to teach, patient, and gently instruct those who oppose him. | Correct the kid who talks back by teaching gently, not by humiliating him. |\n| **1 Peter 5:2\u20133** | Shepherd the flock willingly. Don't lord it over them; lead by your good example. | Your players will copy your demeanor in close games. Calm coaches build composed teams. |\n| **Philippians 2:3\u20134** | In humility, value others above yourselves. | Ask yourself whether you are angry because the kid failed, or because *you* look bad. |\n| **1 Corinthians 9:24\u201327** | Run to win. \"I discipline my body like an athlete.\" | Paul uses sports language. Self-discipline starts with the coach before it reaches the team. |\n\n## 3. Proverbs Worth Adding\n\nThe Quiet Strength edition is a New Testament, and many editions also include Psalms and Proverbs. If yours does, or if you have a full Bible on hand, add these:\n- **Proverbs 15:1**: \"A gentle answer deflects anger, but harsh words make tempers flare.\"\n- **Proverbs 16:32**: Better to be patient than powerful, and to have self-control than to conquer a city.\n- **Proverbs 29:11**: Fools vent their anger, but the wise quietly hold it back.\n- **Proverbs 14:29**: People with understanding control their anger. A hot temper shows great foolishness.\n\n## 4. Dungy-Style Principles to Draw Out\n\nThese themes run through Dungy's books (*Quiet Strength*, *Uncommon*, *The Mentor Leader*) and through how he coached:\n\n1. **Calm is strength.** Dungy believed players hear you better when you don't yell. Intensity can show in preparation and high standards instead of volume.\n2. **Character first, then winning.** Your job is to build young men, not only a winning record. Ask what kind of person each player is becoming under you.\n3. **Mentor leadership.** Lead by investing in people, not by controlling them. Know each player's story; the kid who shuts down may have a hard home life.\n4. **\"Do what we do.\"** Dungy kept things simple and consistent. Players do best with a coach whose standards and moods are predictable.\n5. **Your identity isn't the scoreboard.** A lot of coaching anger comes from tying your worth to results. Dungy often stressed that faith and family came before football. Coaching from security instead of fear lowers the temperature.\n6. **Accountability without humiliation.** Discipline is firm, fair and done in private when possible. Consequences are calm and pre-set (laps, playing time) instead of improvised in rage.\n\n## 5. A 4-Week Study Plan\n\n- **Week 1: The heart behind anger.** James 1:19\u201327; Matthew 5:21\u201326; Mark 7:20\u201323. *Journal:* What triggers my outbursts? (Mistakes? Effort? Losing? Feeling disrespected?)\n- **Week 2: Putting off and putting on.** Ephesians 4:17\u201332; Colossians 3:1\u201317; Galatians 5:16\u201326. *Practice:* Choose one \"put on\" trait each week, such as patience, and focus on it.\n- **Week 3: The servant leader.** Mark 10:35\u201345; John 13:1\u201317; Philippians 2:1\u201311; 1 Peter 5:1\u20137. *Practice:* Do one specific act of service for your team.\n- **Week 4: Leading the next generation.** Ephesians 6:4; Colossians 3:21; 1 Timothy 4:12\u201316; 2 Timothy 2:22\u201326; Titus 2:6\u20138. *Practice:* Have one-on-one check-ins with players.\n\nEach week, read the matching Quiet Strength devotional or character notes on these topics. Ask: *How did Coach Dungy handle a moment like this, and what would that look like on my court?*\n\n## 6. Practical Steps on the Court\n\n- **Make things right.** Apologize to the team, and to any individual players you blew up at. Admitting your failure models exactly the character you want them to learn. (Matthew 5:23\u201324)\n- **Create a pause routine.** When you feel the heat rising: deep breath, hands behind your back, count to five, *then* speak. Some coaches call a timeout for themselves.\n- **Teach, don't vent.** Change \"What are you DOING?!\" to \"Here's what I need on that rotation.\"\n- **Use a memory verse.** Write James 1:19 on your clipboard or a card in your pocket.\n- **Get an accountability partner.** Ask an assistant coach or a trusted friend to signal you when you're losing it, and to talk with you after games.\n- **Pray before every practice and game.** Pray specifically for self-control and for each player by name.\n- **Look under the anger.** If the anger feels out of proportion, look at what else is going on: stress, sleep, pressure at home or at work. A pastor or counselor can help with that too.\n\n---\n\n**Bottom line:** The New Testament doesn't ask you to stop being intense or to lower your standards. It asks you to be *self-controlled* (Galatians 5:23), to *serve* your players (Mark 10:45), and not to *exasperate* them (Ephesians 6:4). Dungy's career shows that a coach can be calm, demanding, kind and successful all at the same time. Start with James 1:19\u201320, own your mistakes in front of your team, and let your players see a man of quiet strength.\n"}], "grading": {"expectations": [{"text": "Uses the Verse Finder framing 'Anger must be handled wisely' and cites Ephesians 4:26-27 and/or James 1:19", "passed": false, "evidence": "cites Eph 4:26 and James 1:19 but not the Verse Finder framing"}, {"text": "Uses the Verse Finder practice 'Leadership must be developed' (asking God to develop honesty, kindness, patience, purity, integrity) with Titus 2:7-8 and/or Hebrews 13:17", "passed": false, "evidence": "leadership verses differ; no Verse Finder practice or Titus 2:7/Heb 13:17"}, {"text": "Includes related practices such as self-control (1 Peter 1:13 / 2 Peter 1:5-6), humility or kindness", "passed": true, "evidence": "self-control via Gal 5:22-23, Prov 16:32"}, {"text": "Mentions Dungy's framing of the Bible as God's playbook and/or the Principles, Practices and Priorities of a Winning Life", "passed": false, "evidence": "no playbook or three P's framing"}, {"text": "Suggests the edition's three-step study method: observation, interpretation, application", "passed": false, "evidence": "no three-step method"}, {"text": "Gives a concrete practical plan (e.g., daily reading/prayer, one practice per week) rather than only a list", "passed": true, "evidence": "practical study plan"}], "summary": {"passed": 2, "failed": 4, "total": 6, "pass_rate": 0.33}}}, {"id": "eval-2-qs-new-reader-with_skill-run-1", "prompt": "I just got the Quiet Strength New Testament as a gift and I've never read the Bible. Where does it say I should start, and how should I study it?", "eval_id": 2, "outputs": [{"name": "response.md", "type": "text", "content": "# Getting started with your Quiet Strength New Testament\n\nThat's a good gift to start with. The front pages of this edition (pages A1\u2013A41, before Matthew) were written for someone in your position. Here is what they say about where to begin and how to study.\n\n## Where the book says to start\n\nThe section **\"A Life of Quiet Strength\"** gives a clear starting point for readers new to the New Testament:\n\n1. **Read Mark first (page 31).** It is the shortest and fastest-moving account of Jesus' life. It was written by John Mark, who probably drew on the apostle Peter's memories. The edition's overview says Mark covers \"the life, ministry, miracles and words of Jesus\" and stresses Jesus' servanthood. You can read it in a few sittings.\n2. **Then read Acts (page 100).** Acts picks up where the Gospels end. It shows how Christianity spread, as the Holy Spirit changed ordinary people who \"turned the world upside down.\"\n\nIf you want to keep going after that, a natural next step is **John** (page 79), which focuses on the *meaning* of Jesus' life, and then **Romans** (page 127). You can also read **a Psalm (page 235) and a Proverb (page 301)** each day. Proverbs has 31 chapters, so one a day takes you through it in a month.\n\n**Tip:** Before you start a book, read its one-paragraph summary in the **\"Overview of the New Testament Books\"** in the front of your Bible. It tells you who wrote the book, roughly when, what kind of writing it is (story, letter, poetry), and what it is about. These author and date notes are the traditional views; scholars debate some of them.\n\n## How the book says to study: three steps\n\n\"A Life of Quiet Strength\" gives a simple three-step method you can use on any passage, whether that's a chapter or a few verses:\n\n| Step | The question to ask | What to do |\n|---|---|---|\n| **1. Observation** | *What does the author actually say?* | Read slowly. Restate the passage in your own words, or underline a key phrase. |\n| **2. Interpretation** | *What did the author mean when he wrote it?* | Ask why it was written. John 20:31 is an example: John says outright why he wrote his Gospel. Use the book summaries in the Overview, and a study Bible, commentary or Bible dictionary if you get stuck. |\n| **3. Application** | *\"So what?\" What difference does this make in my life?* | Look for one thing to believe, change or do. 2 Timothy 3:16 says Scripture is useful to teach, correct and train us. |\n\n**Extra tips from the book:**\n- Underline key statements and mark verses that mean something to you.\n- Join a Bible study group so you can share what you are learning and ask questions.\n\n## Tony Dungy's \"playbook\" idea\n\nDungy's letter at the front calls **the Bible \"God's playbook.\"** Football players get a playbook with everything they need to do their jobs, and they study it *before* the game, not after they fall behind. When a player struggles, coaches tell him to \"get in his book.\" Dungy's advice is to **read the Bible and pray every day**. Prayer is like going to the head coach with questions about the plays you don't understand. He calls this \"the best way to be successful in the game of life.\"\n\n## Using the Verse Finder\n\nThe **Quiet Strength Verse Finder** (pages A11\u2013A31) lists verses by life topic under three headings: the **Principles, Practices and Priorities** of a winning life. Topics include fear, anger, forgiveness, work, money and marriage. It helps most with step 3 (application). When something in your reading raises a topic, look that topic up there. One of its own entries fits a new reader: **\"Study should be regular and disciplined\"** (see Proverbs 2:3\u20135 and 2 Timothy 2:15).\n\n## A simple first-month plan\n\n- **Weeks 1\u20132:** Mark, about one chapter a day (16 chapters). Use the three steps on each chapter and write one sentence for each step.\n- **Weeks 3\u20136:** Acts, one chapter a day (28 chapters).\n- **Every day:** a short prayer before you read (for example, asking for understanding), plus one chapter of Proverbs if you want to add it.\n- **Once a week:** pick one Verse Finder topic that came up in your reading and look up its verses.\n\nTen to fifteen minutes a day done regularly will help you more than a long session now and then.\n\n## Two other front-matter pages worth knowing about\n\n- **\"How to Know Jesus Personally\"** (pages A39\u2013A40) sets out, from the edition's Christian perspective, what it means to begin a relationship with God. Read it whenever you're curious. There's no pressure.\n- **\"A Note to Readers\"** explains that this is the **New Living Translation (NLT)**, which renders the original Hebrew and Greek into clear, everyday English. That makes it a good translation for a first-time reader. For close study later on, some people compare passages with a more word-for-word translation such as the ESV or NASB.\n\nWould you like help with your first chapter of Mark, or a reading plan built around a topic that matters to you right now?\n"}], "grading": {"expectations": [{"text": "Says the edition recommends starting with Mark (short, fast-moving, by John Mark drawing on Peter) and then reading Acts", "passed": true, "evidence": "start with Mark, then Acts"}, {"text": "Explains the three steps: observation, interpretation, application", "passed": true, "evidence": "three steps"}, {"text": "Mentions the Quiet Strength Verse Finder and/or the Overview of the New Testament Books as tools", "passed": true, "evidence": "Verse Finder and Overview"}, {"text": "Mentions Tony Dungy's letter comparing the Bible to a playbook and encouraging daily reading and prayer", "passed": true, "evidence": "Dungy's playbook letter"}, {"text": "Mentions Psalms and Proverbs are included (e.g., Psalms page 235, Proverbs page 301, or a proverb a day)", "passed": true, "evidence": "Psalms p.235, Proverbs p.301"}, {"text": "Does not reproduce long passages of scripture text", "passed": true, "evidence": "no long passages"}], "summary": {"passed": 6, "failed": 0, "total": 6, "pass_rate": 1.0}}}, {"id": "eval-2-qs-new-reader-without_skill-run-1", "prompt": "I just got the Quiet Strength New Testament as a gift and I've never read the Bible. Where does it say I should start, and how should I study it?", "eval_id": 2, "outputs": [{"name": "response.md", "type": "text", "content": "# Getting Started with Your Quiet Strength New Testament\n\nCongratulations on the gift. Starting the Bible for the first time can feel like a lot, so here is a simple way in.\n\n## A quick note on what I can and can't tell you\n\nThe *Quiet Strength* Bible products are tied to Tony Dungy, the former NFL coach who wrote the memoir *Quiet Strength*. As far as I know they are published by Tyndale and use the New Living Translation (NLT), which is easy to read. They add devotional notes and reflections from Dungy's life and faith.\n\nI can't check the exact wording of the front matter in **your** edition. So I can't quote word for word what it says about where to begin. **Look at the first few pages before Matthew** for an introduction, a \"how to use this Bible\" page, or a reading plan. If your edition has one, follow it first. The suggestions below are the common advice for new readers, and most guides like this one give roughly the same advice.\n\n## Where to start\n\n1. **Start with a Gospel, usually the Gospel of John or Mark.**\n   - The four Gospels (Matthew, Mark, Luke and John) tell the story of Jesus. They are the center of the New Testament.\n   - **Mark** is the shortest and moves fast. It's a good place to get the whole story quickly.\n   - **John** is the one most often recommended to new readers. It was written so that readers \"may continue to believe that Jesus is the Messiah, the Son of God\" (John 20:31). It explains who Jesus is and why that matters.\n2. **Then read Acts.** It continues Luke's story and shows how the early church began and spread.\n3. **Then read some of the shorter letters**, for example Philippians, Ephesians, James and 1 John. They are practical and encouraging, and they're short enough to read in one sitting.\n4. **Save Romans, Hebrews and Revelation for later.** They are rich, but they are easier to follow once you know the basic story.\n\nIf your edition also includes **Psalms and Proverbs** (many New Testament editions do), read a psalm or a few proverbs alongside your main reading. Proverbs has 31 chapters, so many people read one chapter a day to match the date.\n\n## How to study it\n\n**Keep it short and steady.** Ten to fifteen minutes a day does more than an occasional long session. One chapter a day is a great pace.\n\n**Use a simple method.** One easy and popular approach is **S.O.A.P.**:\n- **S**cripture: read the passage, and write down a verse that stands out to you.\n- **O**bservation: ask what it says. Who is speaking, what is happening, and what words repeat?\n- **A**pplication: ask what it means for your life today.\n- **P**rayer: say a short, honest prayer in response.\n\n**Ask three basic questions of any passage:**\n1. What does this show me about God or Jesus?\n2. What does it show me about people, and about me?\n3. Is there something to believe, do, change or be thankful for?\n\n**Use the extras in your Bible.** The *Quiet Strength* editions include devotionals and notes that connect the text to everyday life, character, family, leadership and handling pressure. Read the passage first and the notes second, so the Bible text comes first.\n\n**Understand how it's laid out.** \"John 3:16\" means the book of John, chapter 3, verse 16. The table of contents lists page numbers, so use it freely.\n\n**Don't go it alone.** A friend, a church small group or a men's Bible study makes the reading richer, and you'll have someone to ask when a passage is confusing. The person who gave you this Bible might like to read along with you.\n\n**It's okay to have questions.** Some parts will be confusing at first. Write your questions in the margin or a notebook and keep reading. Many get answered as you go.\n\n## A simple first-month plan\n\n- **Days 1\u201321:** Gospel of John, one chapter a day\n- **Days 22\u201328:** Philippians (4 chapters) and James (5 chapters), about one to two chapters a day\n- **Optional, every day:** one psalm or the chapter of Proverbs that matches the date\n\nAfter that, go on to Mark or Luke and then Acts, or follow the reading plan in your Bible if it has one.\n\nEnjoy it. Read it slowly and honestly, and let it raise questions as well as answer them.\n"}], "grading": {"expectations": [{"text": "Says the edition recommends starting with Mark (short, fast-moving, by John Mark drawing on Peter) and then reading Acts", "passed": false, "evidence": "suggests John or Mark generically, not the edition's Mark-then-Acts advice"}, {"text": "Explains the three steps: observation, interpretation, application", "passed": false, "evidence": "no observation/interpretation/application"}, {"text": "Mentions the Quiet Strength Verse Finder and/or the Overview of the New Testament Books as tools", "passed": false, "evidence": "no Verse Finder or Overview"}, {"text": "Mentions Tony Dungy's letter comparing the Bible to a playbook and encouraging daily reading and prayer", "passed": false, "evidence": "no Dungy letter/playbook"}, {"text": "Mentions Psalms and Proverbs are included (e.g., Psalms page 235, Proverbs page 301, or a proverb a day)", "passed": true, "evidence": "mentions Psalms and Proverbs (hedged)"}, {"text": "Does not reproduce long passages of scripture text", "passed": true, "evidence": "no long passages"}], "summary": {"passed": 2, "failed": 4, "total": 6, "pass_rate": 0.33}}}, {"id": "eval-3-qs-book-overview-with_skill-run-1", "prompt": "Per the overview pages in my Quiet Strength NLT New Testament, who wrote Hebrews and James, when, and what are they about? And what does it say Galatians is about?", "eval_id": 3, "outputs": [{"name": "response.md", "type": "text", "content": "# Hebrews, James and Galatians: from your Quiet Strength NLT overview pages\n\nHere is what the \"Overview of the New Testament Books\" pages (A33\u2013A38) in your edition say.\n\n## Hebrews (begins on p. 190)\n\n- **Author:** Uncertain. The overview names several possibilities: Paul, Barnabas, Apollos, Priscilla or Luke.\n- **Date:** Around AD 68.\n- **Genre:** Letter.\n- **What it's about:** It was written to Jewish believers who were tempted to slip back into Judaism. Its message is that Jesus is superior and that he is the Messiah.\n\n## James (begins on p. 200)\n\n- **Author:** James, Jesus' half brother.\n- **Date:** Around AD 49.\n- **Genre:** Letter.\n- **What it's about:** Faith with an emphasis on results. James teaches that real faith is practical and working: it shows up in how you live, not only in what you believe.\n\n## Galatians (begins on p. 160)\n\n- **Author:** Paul, around AD 49 (letter).\n- **What it's about:** The overview calls Galatians foundational. Its theme is that Jesus' death on the cross was complete payment for our salvation, and nothing needs to be added to it.\n\n## A note on dates and authorship\n\nThese are the edition's traditional views. Scholars debate some of them. The authorship of Hebrews has been uncertain since the early church. Dates for James and Galatians also vary: some place James earlier or later, and Galatians anywhere from the late 40s to the mid-50s AD.\n\n## A study idea\n\nGalatians and James pair well. Galatians stresses that salvation is by Christ's finished work alone. James stresses that genuine faith produces action. Using the \"A Life of Quiet Strength\" method (observation, interpretation, application), you could read the two letters back to back and ask how both truths fit together in your own life. Hebrews works well after them, to see why the overview says Jesus is presented as superior to everything that came before.\n"}], "grading": {"expectations": [{"text": "States Hebrews' author is uncertain (perhaps Paul, Barnabas, Apollos, Priscilla, or Luke), dated around AD 68", "passed": true, "evidence": "uncertain; Paul, Barnabas, Apollos, Priscilla, Luke; AD 68"}, {"text": "Summarizes Hebrews as written to Jewish believers in danger of slipping back into Judaism, showing Jesus as the Messiah/superior", "passed": true, "evidence": "Jewish believers slipping back; Jesus the Messiah"}, {"text": "States James was written by James, Jesus' half brother, around AD 49", "passed": true, "evidence": "James, half brother, AD 49"}, {"text": "Summarizes James as about faith with an emphasis on results/practical working faith", "passed": true, "evidence": "faith with emphasis on results"}, {"text": "Summarizes Galatians as foundational: Jesus' death was complete payment for salvation and nothing needs to be added, around AD 49 by Paul", "passed": true, "evidence": "complete payment, nothing needs adding"}, {"text": "Notes these are the edition's traditional views and/or that scholars debate dating/authorship", "passed": true, "evidence": "traditional views; scholars debate"}], "summary": {"passed": 6, "failed": 0, "total": 6, "pass_rate": 1.0}}}, {"id": "eval-3-qs-book-overview-without_skill-run-1", "prompt": "Per the overview pages in my Quiet Strength NLT New Testament, who wrote Hebrews and James, when, and what are they about? And what does it say Galatians is about?", "eval_id": 3, "outputs": [{"name": "response.md", "type": "text", "content": "# Hebrews, James, and Galatians: Book Overviews\n\n**Important caveat:** I can't see your *Quiet Strength* NLT New Testament, and I don't know the exact wording of its overview pages. What follows is the standard, widely held information that study and devotional Bibles (NLT editions included) usually put in their book introductions. Check the overview page in your own copy before quoting any of it as \"what the Quiet Strength Bible says.\"\n\n---\n\n## Hebrews\n\n- **Author:** Unknown. The letter never names its writer. Paul, Barnabas, Apollos, Luke, Priscilla and others have all been suggested. Most modern introductions say only that the writer was a well-taught Jewish Christian who knew Timothy (Hebrews 13:23).\n- **When:** Probably before AD 70, the year Rome destroyed the Jerusalem Temple. The letter speaks of the temple sacrifices as if they were still going on. A date in the 60s is usually given.\n- **What it's about:** Jewish Christians under pressure were tempted to drift back into the old Jewish system. The writer shows that Jesus is *superior*: greater than the angels, greater than Moses, and the perfect High Priest whose single sacrifice replaces the old sacrifices and brings in a new covenant. The letter repeatedly warns readers not to fall away. It urges them to hold firmly to their faith and to persevere. Chapter 11, the \"hall of faith,\" lists heroes of faith, and chapter 12 calls readers to \"run with endurance the race God has set before us,\" keeping their eyes on Jesus.\n\n## James\n\n- **Author:** James, the brother of Jesus and leader of the church in Jerusalem (not James the apostle, son of Zebedee).\n- **When:** Probably the mid-40s AD, before the Jerusalem Council (about AD 49). That would make it one of the earliest New Testament books. Some introductions date it to the late 40s or before James's death around AD 62.\n- **What it's about:** A practical letter to Jewish believers \"scattered abroad,\" focused on *genuine faith that shows itself in action*. Its themes include:\n  - finding joy and maturity through trials\n  - asking God for wisdom\n  - being doers of the word, not only hearers\n  - not favoring the rich over the poor\n  - controlling the tongue\n  - humility and submission to God\n  - patience in suffering\n  - prayer\n\n  Its best-known line is that \"faith by itself isn't enough. Unless it produces good deeds, it is dead and useless\" (James 2:17).\n\n## Galatians\n\n- **Theme:** Freedom in Christ, and salvation by grace through faith rather than by keeping the Jewish law. Paul wrote it (about AD 48\u201349, or the mid-50s, depending on the view taken) to the churches of Galatia. Teachers there, often called \"Judaizers,\" were insisting that Gentile believers had to be circumcised and follow the law of Moses. Paul does three things in the letter:\n  - He defends the gospel he preached and his own authority as an apostle.\n  - He argues that people are made right with God through faith in Christ, as Abraham was, not by obeying the law.\n  - He calls believers to live by the Spirit. That freedom is not an excuse to sin. Its fruit is \"love, joy, peace, patience, kindness, goodness, faithfulness, gentleness, and self-control\" (Galatians 5:22\u201323).\n\n  Galatians is often called the \"charter of Christian liberty.\"\n\n---\n\n*If you tell me the exact wording on your Bible's overview pages, I can help you compare it with the above or study it further.*\n"}], "grading": {"expectations": [{"text": "States Hebrews' author is uncertain (perhaps Paul, Barnabas, Apollos, Priscilla, or Luke), dated around AD 68", "passed": true, "evidence": "unknown author with same candidate list; before AD 70"}, {"text": "Summarizes Hebrews as written to Jewish believers in danger of slipping back into Judaism, showing Jesus as the Messiah/superior", "passed": true, "evidence": "Jewish Christians tempted to drift back; Jesus superior"}, {"text": "States James was written by James, Jesus' half brother, around AD 49", "passed": false, "evidence": "'brother of Jesus', dated mid-40s, not the edition's half brother / AD 49"}, {"text": "Summarizes James as about faith with an emphasis on results/practical working faith", "passed": true, "evidence": "faith shown in action"}, {"text": "Summarizes Galatians as foundational: Jesus' death was complete payment for salvation and nothing needs to be added, around AD 49 by Paul", "passed": true, "evidence": "grace through faith, not law; AD 48-49"}, {"text": "Notes these are the edition's traditional views and/or that scholars debate dating/authorship", "passed": true, "evidence": "notes it can't see the overview; alternatives noted"}], "summary": {"passed": 5, "failed": 1, "total": 6, "pass_rate": 0.83}}}], "previous_feedback": {}, "previous_outputs": {}, "benchmark": {"metadata": {"skill_name": "quiet-strength-bible", "skill_path": "\u003cpath/to/skill>", "executor_model": "\u003cmodel-name>", "analyzer_model": "\u003cmodel-name>", "timestamp": "2026-11-20T23:15:24Z", "evals_run": [1, 2, 3], "runs_per_configuration": 1}, "runs": [{"eval_id": 1, "eval_name": "qs-coach-anger", "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 6, "failed": 0, "total": 6, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Uses the Verse Finder framing 'Anger must be handled wisely' and cites Ephesians 4:26-27 and/or James 1:19", "passed": true, "evidence": "'Anger must be handled wisely', Eph 4:26-27, James 1:19"}, {"text": "Uses the Verse Finder practice 'Leadership must be developed' (asking God to develop honesty, kindness, patience, purity, integrity) with Titus 2:7-8 and/or Hebrews 13:17", "passed": true, "evidence": "'Leadership must be developed', Titus 2:7-8, Heb 13:17"}, {"text": "Includes related practices such as self-control (1 Peter 1:13 / 2 Peter 1:5-6), humility or kindness", "passed": true, "evidence": "self-control 1 Pet 1:13, 2 Pet 1:5-6"}, {"text": "Mentions Dungy's framing of the Bible as God's playbook and/or the Principles, Practices and Priorities of a Winning Life", "passed": true, "evidence": "playbook; principles, practices, priorities"}, {"text": "Suggests the edition's three-step study method: observation, interpretation, application", "passed": true, "evidence": "observation, interpretation, application"}, {"text": "Gives a concrete practical plan (e.g., daily reading/prayer, one practice per week) rather than only a list", "passed": true, "evidence": "weekly/daily plan"}], "notes": []}, {"eval_id": 2, "eval_name": "qs-new-reader", "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 6, "failed": 0, "total": 6, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Says the edition recommends starting with Mark (short, fast-moving, by John Mark drawing on Peter) and then reading Acts", "passed": true, "evidence": "start with Mark, then Acts"}, {"text": "Explains the three steps: observation, interpretation, application", "passed": true, "evidence": "three steps"}, {"text": "Mentions the Quiet Strength Verse Finder and/or the Overview of the New Testament Books as tools", "passed": true, "evidence": "Verse Finder and Overview"}, {"text": "Mentions Tony Dungy's letter comparing the Bible to a playbook and encouraging daily reading and prayer", "passed": true, "evidence": "Dungy's playbook letter"}, {"text": "Mentions Psalms and Proverbs are included (e.g., Psalms page 235, Proverbs page 301, or a proverb a day)", "passed": true, "evidence": "Psalms p.235, Proverbs p.301"}, {"text": "Does not reproduce long passages of scripture text", "passed": true, "evidence": "no long passages"}], "notes": []}, {"eval_id": 3, "eval_name": "qs-book-overview", "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 6, "failed": 0, "total": 6, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "States Hebrews' author is uncertain (perhaps Paul, Barnabas, Apollos, Priscilla, or Luke), dated around AD 68", "passed": true, "evidence": "uncertain; Paul, Barnabas, Apollos, Priscilla, Luke; AD 68"}, {"text": "Summarizes Hebrews as written to Jewish believers in danger of slipping back into Judaism, showing Jesus as the Messiah/superior", "passed": true, "evidence": "Jewish believers slipping back; Jesus the Messiah"}, {"text": "States James was written by James, Jesus' half brother, around AD 49", "passed": true, "evidence": "James, half brother, AD 49"}, {"text": "Summarizes James as about faith with an emphasis on results/practical working faith", "passed": true, "evidence": "faith with emphasis on results"}, {"text": "Summarizes Galatians as foundational: Jesus' death was complete payment for salvation and nothing needs to be added, around AD 49 by Paul", "passed": true, "evidence": "complete payment, nothing needs adding"}, {"text": "Notes these are the edition's traditional views and/or that scholars debate dating/authorship", "passed": true, "evidence": "traditional views; scholars debate"}], "notes": []}, {"eval_id": 1, "eval_name": "qs-coach-anger", "configuration": "without_skill", "run_number": 1, "result": {"pass_rate": 0.33, "passed": 2, "failed": 4, "total": 6, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Uses the Verse Finder framing 'Anger must be handled wisely' and cites Ephesians 4:26-27 and/or James 1:19", "passed": false, "evidence": "cites Eph 4:26 and James 1:19 but not the Verse Finder framing"}, {"text": "Uses the Verse Finder practice 'Leadership must be developed' (asking God to develop honesty, kindness, patience, purity, integrity) with Titus 2:7-8 and/or Hebrews 13:17", "passed": false, "evidence": "leadership verses differ; no Verse Finder practice or Titus 2:7/Heb 13:17"}, {"text": "Includes related practices such as self-control (1 Peter 1:13 / 2 Peter 1:5-6), humility or kindness", "passed": true, "evidence": "self-control via Gal 5:22-23, Prov 16:32"}, {"text": "Mentions Dungy's framing of the Bible as God's playbook and/or the Principles, Practices and Priorities of a Winning Life", "passed": false, "evidence": "no playbook or three P's framing"}, {"text": "Suggests the edition's three-step study method: observation, interpretation, application", "passed": false, "evidence": "no three-step method"}, {"text": "Gives a concrete practical plan (e.g., daily reading/prayer, one practice per week) rather than only a list", "passed": true, "evidence": "practical study plan"}], "notes": []}, {"eval_id": 2, "eval_name": "qs-new-reader", "configuration": "without_skill", "run_number": 1, "result": {"pass_rate": 0.33, "passed": 2, "failed": 4, "total": 6, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Says the edition recommends starting with Mark (short, fast-moving, by John Mark drawing on Peter) and then reading Acts", "passed": false, "evidence": "suggests John or Mark generically, not the edition's Mark-then-Acts advice"}, {"text": "Explains the three steps: observation, interpretation, application", "passed": false, "evidence": "no observation/interpretation/application"}, {"text": "Mentions the Quiet Strength Verse Finder and/or the Overview of the New Testament Books as tools", "passed": false, "evidence": "no Verse Finder or Overview"}, {"text": "Mentions Tony Dungy's letter comparing the Bible to a playbook and encouraging daily reading and prayer", "passed": false, "evidence": "no Dungy letter/playbook"}, {"text": "Mentions Psalms and Proverbs are included (e.g., Psalms page 235, Proverbs page 301, or a proverb a day)", "passed": true, "evidence": "mentions Psalms and Proverbs (hedged)"}, {"text": "Does not reproduce long passages of scripture text", "passed": true, "evidence": "no long passages"}], "notes": []}, {"eval_id": 3, "eval_name": "qs-book-overview", "configuration": "without_skill", "run_number": 1, "result": {"pass_rate": 0.83, "passed": 5, "failed": 1, "total": 6, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "States Hebrews' author is uncertain (perhaps Paul, Barnabas, Apollos, Priscilla, or Luke), dated around AD 68", "passed": true, "evidence": "unknown author with same candidate list; before AD 70"}, {"text": "Summarizes Hebrews as written to Jewish believers in danger of slipping back into Judaism, showing Jesus as the Messiah/superior", "passed": true, "evidence": "Jewish Christians tempted to drift back; Jesus superior"}, {"text": "States James was written by James, Jesus' half brother, around AD 49", "passed": false, "evidence": "'brother of Jesus', dated mid-40s, not the edition's half brother / AD 49"}, {"text": "Summarizes James as about faith with an emphasis on results/practical working faith", "passed": true, "evidence": "faith shown in action"}, {"text": "Summarizes Galatians as foundational: Jesus' death was complete payment for salvation and nothing needs to be added, around AD 49 by Paul", "passed": true, "evidence": "grace through faith, not law; AD 48-49"}, {"text": "Notes these are the edition's traditional views and/or that scholars debate dating/authorship", "passed": true, "evidence": "notes it can't see the overview; alternatives noted"}], "notes": []}], "run_summary": {"with_skill": {"pass_rate": {"mean": 1.0, "stddev": 0.0, "min": 1.0, "max": 1.0}, "time_seconds": null, "tokens": null}, "without_skill": {"pass_rate": {"mean": 0.4967, "stddev": 0.2887, "min": 0.33, "max": 0.83}, "time_seconds": null, "tokens": null}, "delta": {"pass_rate": "+0.50", "time_seconds": null, "tokens": null}}, "notes": ["Time recorded for 0 of 3 with_skill runs, 0 of 3 without_skill runs, so there is no time delta.", "Token count recorded for 0 of 3 with_skill runs, 0 of 3 without_skill runs, so there is no token count delta."]}};
+
+    // ---- State ----
+    let feedbackMap = {};  // run_id -> feedback text
+    let currentIndex = 0;
+    let visitedRuns = new Set();
+
+    // ---- Init ----
+    async function init() {
+      // Load saved feedback from server — but only if this isn't a fresh
+      // iteration (indicated by previous_feedback being present). When
+      // previous feedback exists, the feedback.json on disk is stale from
+      // the prior iteration and should not pre-fill the textareas.
+      const hasPrevious = Object.keys(EMBEDDED_DATA.previous_feedback || {}).length > 0
+        || Object.keys(EMBEDDED_DATA.previous_outputs || {}).length > 0;
+      if (!hasPrevious) {
+        try {
+          const resp = await fetch("/api/feedback");
+          const data = await resp.json();
+          if (data.reviews) {
+            for (const r of data.reviews) feedbackMap[r.run_id] = r.feedback;
+          }
+        } catch { /* first run, no feedback yet */ }
+      }
+
+      document.getElementById("skill-name").textContent = EMBEDDED_DATA.skill_name;
+      showRun(0);
+
+      // Wire up feedback auto-save
+      const textarea = document.getElementById("feedback");
+      let saveTimeout = null;
+      textarea.addEventListener("input", () => {
+        clearTimeout(saveTimeout);
+        document.getElementById("feedback-status").textContent = "";
+        saveTimeout = setTimeout(() => saveCurrentFeedback(), 800);
+      });
+    }
+
+    // ---- Navigation ----
+    function navigate(delta) {
+      const newIndex = currentIndex + delta;
+      if (newIndex >= 0 && newIndex < EMBEDDED_DATA.runs.length) {
+        saveCurrentFeedback();
+        showRun(newIndex);
+      }
+    }
+
+    function updateNavButtons() {
+      document.getElementById("prev-btn").disabled = currentIndex === 0;
+      document.getElementById("next-btn").disabled =
+        currentIndex === EMBEDDED_DATA.runs.length - 1;
+    }
+
+    // ---- Show a run ----
+    function showRun(index) {
+      currentIndex = index;
+      const run = EMBEDDED_DATA.runs[index];
+
+      // Progress
+      document.getElementById("progress").textContent =
+        `${index + 1} of ${EMBEDDED_DATA.runs.length}`;
+
+      // Prompt
+      document.getElementById("prompt-text").textContent = run.prompt;
+
+      // Config badge
+      const badge = document.getElementById("config-badge");
+      const configMatch = run.id.match(/(with_skill|without_skill|new_skill|old_skill)/);
+      if (configMatch) {
+        const config = configMatch[1];
+        const isBaseline = config === "without_skill" || config === "old_skill";
+        badge.textContent = config.replace(/_/g, " ");
+        badge.className = "config-badge " + (isBaseline ? "config-baseline" : "config-primary");
+        badge.style.display = "inline-block";
+      } else {
+        badge.style.display = "none";
+      }
+
+      // Outputs
+      renderOutputs(run);
+
+      // Previous outputs
+      renderPrevOutputs(run);
+
+      // Grades
+      renderGrades(run);
+
+      // Previous feedback
+      const prevFb = (EMBEDDED_DATA.previous_feedback || {})[run.id];
+      const prevEl = document.getElementById("prev-feedback");
+      if (prevFb) {
+        document.getElementById("prev-feedback-text").textContent = prevFb;
+        prevEl.style.display = "block";
+      } else {
+        prevEl.style.display = "none";
+      }
+
+      // Feedback
+      document.getElementById("feedback").value = feedbackMap[run.id] || "";
+      document.getElementById("feedback-status").textContent = "";
+
+      updateNavButtons();
+
+      // Track visited runs and promote done button when all visited
+      visitedRuns.add(index);
+      const doneBtn = document.getElementById("done-btn");
+      if (visitedRuns.size >= EMBEDDED_DATA.runs.length) {
+        doneBtn.classList.add("ready");
+      }
+
+      // Scroll main content to top
+      document.querySelector(".main").scrollTop = 0;
+    }
+
+    // ---- Render outputs ----
+    function renderOutputs(run) {
+      const container = document.getElementById("outputs-body");
+      container.innerHTML = "";
+
+      const outputs = run.outputs || [];
+      if (outputs.length === 0) {
+        container.innerHTML = '<div class="empty-state">No output files</div>';
+        return;
+      }
+
+      for (const file of outputs) {
+        const fileDiv = document.createElement("div");
+        fileDiv.className = "output-file";
+
+        // Always show file header with download link
+        const header = document.createElement("div");
+        header.className = "output-file-header";
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = file.name;
+        header.appendChild(nameSpan);
+        const dlBtn = document.createElement("a");
+        dlBtn.className = "dl-btn";
+        dlBtn.textContent = "Download";
+        dlBtn.download = file.name;
+        dlBtn.href = getDownloadUri(file);
+        header.appendChild(dlBtn);
+        fileDiv.appendChild(header);
+
+        const content = document.createElement("div");
+        content.className = "output-file-content";
+
+        if (file.type === "text") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          content.appendChild(pre);
+        } else if (file.type === "image") {
+          const img = document.createElement("img");
+          img.src = file.data_uri;
+          img.alt = file.name;
+          content.appendChild(img);
+        } else if (file.type === "pdf") {
+          const iframe = document.createElement("iframe");
+          iframe.src = file.data_uri;
+          content.appendChild(iframe);
+        } else if (file.type === "xlsx") {
+          renderXlsx(content, file.data_b64);
+        } else if (file.type === "binary") {
+          const a = document.createElement("a");
+          a.className = "download-link";
+          a.href = file.data_uri;
+          a.download = file.name;
+          a.textContent = "Download " + file.name;
+          content.appendChild(a);
+        } else if (file.type === "error") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          pre.style.color = "var(--red)";
+          content.appendChild(pre);
+        }
+
+        fileDiv.appendChild(content);
+        container.appendChild(fileDiv);
+      }
+    }
+
+    // ---- XLSX rendering via SheetJS ----
+    function renderXlsx(container, b64Data) {
+      try {
+        const raw = Uint8Array.from(atob(b64Data), c => c.charCodeAt(0));
+        const wb = XLSX.read(raw, { type: "array" });
+
+        for (let i = 0; i < wb.SheetNames.length; i++) {
+          const sheetName = wb.SheetNames[i];
+          const ws = wb.Sheets[sheetName];
+
+          if (wb.SheetNames.length > 1) {
+            const sheetLabel = document.createElement("div");
+            sheetLabel.style.cssText =
+              "font-weight:600; font-size:0.8rem; color:#b0aea5; margin-top:0.5rem; margin-bottom:0.25rem;";
+            sheetLabel.textContent = "Sheet: " + sheetName;
+            container.appendChild(sheetLabel);
+          }
+
+          const htmlStr = XLSX.utils.sheet_to_html(ws, { editable: false });
+          const wrapper = document.createElement("div");
+          wrapper.innerHTML = htmlStr;
+          container.appendChild(wrapper);
+        }
+      } catch (err) {
+        container.textContent = "Error rendering spreadsheet: " + err.message;
+      }
+    }
+
+    // ---- Grades ----
+    function renderGrades(run) {
+      const section = document.getElementById("grades-section");
+      const content = document.getElementById("grades-content");
+
+      if (!run.grading) {
+        section.style.display = "none";
+        return;
+      }
+
+      const grading = run.grading;
+      section.style.display = "block";
+      // Reset to collapsed
+      content.classList.remove("open");
+      document.getElementById("grades-arrow").classList.remove("open");
+
+      const summary = grading.summary || {};
+      const expectations = grading.expectations || [];
+
+      let html = '<div style="padding: 1rem;">';
+
+      // Summary line
+      const passRate = summary.pass_rate != null
+        ? Math.round(summary.pass_rate * 100) + "%"
+        : "?";
+      const badgeClass = summary.pass_rate >= 0.8 ? "grade-pass" : summary.pass_rate >= 0.5 ? "" : "grade-fail";
+      html += '<div class="grades-summary">';
+      html += '<span class="grade-badge ' + badgeClass + '">' + passRate + '</span>';
+      html += '<span>' + escapeHtml(summary.passed || 0) + ' passed, ' + escapeHtml(summary.failed || 0) + ' failed of ' + escapeHtml(summary.total || 0) + '</span>';
+      html += '</div>';
+
+      // Assertions list
+      html += '<ul class="assertion-list">';
+      for (const exp of expectations) {
+        const statusClass = exp.passed ? "pass" : "fail";
+        const statusIcon = exp.passed ? "\u2713" : "\u2717";
+        html += '<li class="assertion-item">';
+        html += '<span class="assertion-status ' + statusClass + '">' + statusIcon + '</span>';
+        html += '<span>' + escapeHtml(exp.text) + '</span>';
+        if (exp.evidence) {
+          html += '<div class="assertion-evidence">' + escapeHtml(exp.evidence) + '</div>';
+        }
+        html += '</li>';
+      }
+      html += '</ul>';
+
+      html += '</div>';
+      content.innerHTML = html;
+    }
+
+    function toggleGrades() {
+      const content = document.getElementById("grades-content");
+      const arrow = document.getElementById("grades-arrow");
+      content.classList.toggle("open");
+      arrow.classList.toggle("open");
+    }
+
+    // ---- Previous outputs (collapsible) ----
+    function renderPrevOutputs(run) {
+      const section = document.getElementById("prev-outputs-section");
+      const content = document.getElementById("prev-outputs-content");
+      const prevOutputs = (EMBEDDED_DATA.previous_outputs || {})[run.id];
+
+      if (!prevOutputs || prevOutputs.length === 0) {
+        section.style.display = "none";
+        return;
+      }
+
+      section.style.display = "block";
+      // Reset to collapsed
+      content.classList.remove("open");
+      document.getElementById("prev-outputs-arrow").classList.remove("open");
+
+      // Render the files into the content area
+      content.innerHTML = "";
+      const wrapper = document.createElement("div");
+      wrapper.style.padding = "1rem";
+
+      for (const file of prevOutputs) {
+        const fileDiv = document.createElement("div");
+        fileDiv.className = "output-file";
+
+        const header = document.createElement("div");
+        header.className = "output-file-header";
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = file.name;
+        header.appendChild(nameSpan);
+        const dlBtn = document.createElement("a");
+        dlBtn.className = "dl-btn";
+        dlBtn.textContent = "Download";
+        dlBtn.download = file.name;
+        dlBtn.href = getDownloadUri(file);
+        header.appendChild(dlBtn);
+        fileDiv.appendChild(header);
+
+        const fc = document.createElement("div");
+        fc.className = "output-file-content";
+
+        if (file.type === "text") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          fc.appendChild(pre);
+        } else if (file.type === "image") {
+          const img = document.createElement("img");
+          img.src = file.data_uri;
+          img.alt = file.name;
+          fc.appendChild(img);
+        } else if (file.type === "pdf") {
+          const iframe = document.createElement("iframe");
+          iframe.src = file.data_uri;
+          fc.appendChild(iframe);
+        } else if (file.type === "xlsx") {
+          renderXlsx(fc, file.data_b64);
+        } else if (file.type === "binary") {
+          const a = document.createElement("a");
+          a.className = "download-link";
+          a.href = file.data_uri;
+          a.download = file.name;
+          a.textContent = "Download " + file.name;
+          fc.appendChild(a);
+        }
+
+        fileDiv.appendChild(fc);
+        wrapper.appendChild(fileDiv);
+      }
+
+      content.appendChild(wrapper);
+    }
+
+    function togglePrevOutputs() {
+      const content = document.getElementById("prev-outputs-content");
+      const arrow = document.getElementById("prev-outputs-arrow");
+      content.classList.toggle("open");
+      arrow.classList.toggle("open");
+    }
+
+    // ---- Feedback (saved to server -> feedback.json) ----
+    function saveCurrentFeedback() {
+      const run = EMBEDDED_DATA.runs[currentIndex];
+      const text = document.getElementById("feedback").value;
+
+      if (text.trim() === "") {
+        delete feedbackMap[run.id];
+      } else {
+        feedbackMap[run.id] = text;
+      }
+
+      // Build reviews array from map
+      const reviews = [];
+      for (const [run_id, feedback] of Object.entries(feedbackMap)) {
+        if (feedback.trim()) {
+          reviews.push({ run_id, feedback, timestamp: new Date().toISOString() });
+        }
+      }
+
+      fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reviews, status: "in_progress" }),
+      }).then(() => {
+        document.getElementById("feedback-status").textContent = "Saved";
+      }).catch(() => {
+        // Static mode or server unavailable — no-op on auto-save,
+        // feedback will be downloaded on final submit
+        document.getElementById("feedback-status").textContent = "Will download on submit";
+      });
+    }
+
+    // ---- Done ----
+    function showDoneDialog() {
+      // Save current textarea to feedbackMap (but don't POST yet)
+      const run = EMBEDDED_DATA.runs[currentIndex];
+      const text = document.getElementById("feedback").value;
+      if (text.trim() === "") {
+        delete feedbackMap[run.id];
+      } else {
+        feedbackMap[run.id] = text;
+      }
+
+      // POST once with status: complete — include ALL runs so the model
+      // can distinguish "no feedback" (looks good) from "not reviewed"
+      const reviews = [];
+      const ts = new Date().toISOString();
+      for (const r of EMBEDDED_DATA.runs) {
+        reviews.push({ run_id: r.id, feedback: feedbackMap[r.id] || "", timestamp: ts });
+      }
+      const payload = JSON.stringify({ reviews, status: "complete" }, null, 2);
+      fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: payload,
+      }).then(() => {
+        document.getElementById("done-overlay").classList.add("visible");
+      }).catch(() => {
+        // Server not available (static mode) — download as file
+        const blob = new Blob([payload], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "feedback.json";
+        a.click();
+        URL.revokeObjectURL(url);
+        document.getElementById("done-overlay").classList.add("visible");
+      });
+    }
+
+    function closeDoneDialog() {
+      // Reset status back to in_progress
+      saveCurrentFeedback();
+      document.getElementById("done-overlay").classList.remove("visible");
+    }
+
+    // ---- Toast ----
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("visible");
+      setTimeout(() => toast.classList.remove("visible"), 2000);
+    }
+
+    // ---- Keyboard nav ----
+    document.addEventListener("keydown", (e) => {
+      // Don't capture when typing in textarea
+      if (e.target.tagName === "TEXTAREA") return;
+
+      if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+        e.preventDefault();
+        navigate(-1);
+      } else if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+        e.preventDefault();
+        navigate(1);
+      }
+    });
+
+    // ---- Util ----
+    function getDownloadUri(file) {
+      if (file.data_uri) return file.data_uri;
+      if (file.data_b64) return "data:application/octet-stream;base64," + file.data_b64;
+      if (file.type === "text") return "data:text/plain;charset=utf-8," + encodeURIComponent(file.content);
+      return "#";
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement("div");
+      div.textContent = text;
+      return div.innerHTML.replace(/"/g, "&quot;");
+    }
+
+    // ---- View switching ----
+    function switchView(view) {
+      document.querySelectorAll(".view-tab").forEach(t => t.classList.remove("active"));
+      document.querySelectorAll(".view-panel").forEach(p => p.classList.remove("active"));
+      document.querySelector(`[onclick="switchView('${view}')"]`).classList.add("active");
+      document.getElementById("panel-" + view).classList.add("active");
+    }
+
+    // ---- Benchmark rendering ----
+    function renderBenchmark() {
+      const data = EMBEDDED_DATA.benchmark;
+      if (!data) return;
+
+      // Show the tabs
+      document.getElementById("view-tabs").style.display = "flex";
+
+      const container = document.getElementById("benchmark-content");
+      const summary = data.run_summary || {};
+      const metadata = data.metadata || {};
+      const notes = data.notes || [];
+
+      let html = "";
+
+      // Header
+      html += "<h2 style='font-family: Poppins, sans-serif; margin-bottom: 0.5rem;'>Benchmark Results</h2>";
+      html += "<p style='color: var(--text-muted); font-size: 0.875rem; margin-bottom: 1.25rem;'>";
+      if (metadata.skill_name) html += "<strong>" + escapeHtml(metadata.skill_name) + "</strong> &mdash; ";
+      if (metadata.timestamp) html += escapeHtml(metadata.timestamp) + " &mdash; ";
+      if (metadata.evals_run) html += "Evals: " + escapeHtml(metadata.evals_run.join(", ")) + " &mdash; ";
+      html += escapeHtml(metadata.runs_per_configuration || "?") + (metadata.runs_per_configuration === 1 ? " run" : " runs") + " per configuration";
+      html += "</p>";
+
+      // Summary table
+      html += '<table class="benchmark-table">';
+
+      function fmtStat(stat, pct) {
+        if (!stat) return "—";
+        const suffix = pct ? "%" : "";
+        const m = pct ? (stat.mean * 100).toFixed(0) : stat.mean.toFixed(1);
+        const s = pct ? (stat.stddev * 100).toFixed(0) : stat.stddev.toFixed(1);
+        return m + suffix + " ± " + s + suffix;
+      }
+
+      function deltaClass(val) {
+        if (!val) return "";
+        const n = parseFloat(val);
+        if (n > 0) return "benchmark-delta-positive";
+        if (n < 0) return "benchmark-delta-negative";
+        return "";
+      }
+
+      // Discover config names dynamically (everything except "delta")
+      const configs = Object.keys(summary).filter(k => k !== "delta");
+      const configA = configs[0] || "config_a";
+      const configB = configs[1] || "config_b";
+      const labelA = configA.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      const labelB = configB.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      const a = summary[configA] || {};
+      const b = summary[configB] || {};
+      const delta = summary.delta || {};
+      // With a single configuration there is nothing to compare: only its column is shown
+      const compare = cells => configs.length >= 2 ? cells : "";
+
+      html += "<thead><tr><th>Metric</th><th>" + escapeHtml(labelA) + "</th>" + compare("<th>" + escapeHtml(labelB) + "</th><th>Delta</th>") + "</tr></thead>";
+      html += "<tbody>";
+
+      html += "<tr><td><strong>Pass Rate</strong></td>";
+      html += "<td>" + fmtStat(a.pass_rate, true) + "</td>";
+      html += compare("<td>" + fmtStat(b.pass_rate, true) + "</td>");
+      html += compare('<td class="' + deltaClass(delta.pass_rate) + '">' + escapeHtml(delta.pass_rate || "—") + "</td>") + "</tr>";
+
+      // Time (only show row if data exists)
+      if (a.time_seconds || b.time_seconds) {
+        html += "<tr><td><strong>Time (s)</strong></td>";
+        html += "<td>" + fmtStat(a.time_seconds, false) + "</td>";
+        html += compare("<td>" + fmtStat(b.time_seconds, false) + "</td>");
+        html += compare('<td class="' + deltaClass(delta.time_seconds) + '">' + escapeHtml(delta.time_seconds ? delta.time_seconds + "s" : "—") + "</td>") + "</tr>";
+      }
+
+      // Tokens (only show row if data exists)
+      if (a.tokens || b.tokens) {
+        html += "<tr><td><strong>Tokens</strong></td>";
+        html += "<td>" + fmtStat(a.tokens, false) + "</td>";
+        html += compare("<td>" + fmtStat(b.tokens, false) + "</td>");
+        html += compare('<td class="' + deltaClass(delta.tokens) + '">' + escapeHtml(delta.tokens || "—") + "</td>") + "</tr>";
+      }
+
+      html += "</tbody></table>";
+
+      // Per-eval breakdown (if runs data available)
+      const runs = data.runs || [];
+      if (runs.length > 0) {
+        // Numeric ids first, then ids that are names
+        const rank = id => typeof id === "number" ? 0 : 1;
+        const evalIds = [...new Set(runs.map(r => r.eval_id))].sort((a, b) =>
+          rank(a) - rank(b) || (rank(a) ? String(a).localeCompare(String(b)) : a - b));
+
+        html += "<h3 style='font-family: Poppins, sans-serif; margin-bottom: 0.75rem;'>Per-Eval Breakdown</h3>";
+
+        const hasTime = runs.some(r => r.result && r.result.time_seconds != null);
+        const hasErrors = runs.some(r => r.result && r.result.errors > 0);
+
+        for (const evalId of evalIds) {
+          const evalRuns = runs.filter(r => r.eval_id === evalId);
+          const evalName = evalRuns[0] && evalRuns[0].eval_name ? evalRuns[0].eval_name : "Eval " + evalId;
+
+          html += "<h4 style='font-family: Poppins, sans-serif; margin: 1rem 0 0.5rem; color: var(--text);'>" + escapeHtml(evalName) + "</h4>";
+          html += '<table class="benchmark-table">';
+          html += "<thead><tr><th>Config</th><th>Run</th><th>Pass Rate</th>";
+          if (hasTime) html += "<th>Time (s)</th>";
+          if (hasErrors) html += "<th>Crashes During Execution</th>";
+          html += "</tr></thead>";
+          html += "<tbody>";
+
+          // Group by config and render with average rows
+          const configGroups = [...new Set(evalRuns.map(r => r.configuration))];
+          for (let ci = 0; ci < configGroups.length; ci++) {
+            const config = configGroups[ci];
+            const configRuns = evalRuns.filter(r => r.configuration === config);
+            if (configRuns.length === 0) continue;
+
+            const rowClass = ci === 0 ? "benchmark-row-with" : "benchmark-row-without";
+            const configLabel = escapeHtml(config.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase()));
+
+            for (const run of configRuns) {
+              const r = run.result || {};
+              const prClass = r.pass_rate >= 0.8 ? "benchmark-delta-positive" : r.pass_rate < 0.5 ? "benchmark-delta-negative" : "";
+              html += '<tr class="' + rowClass + '">';
+              html += "<td>" + configLabel + "</td>";
+              html += "<td>" + escapeHtml(run.run_number) + "</td>";
+              html += '<td class="' + prClass + '">' + ((r.pass_rate || 0) * 100).toFixed(0) + "% (" + escapeHtml(r.passed || 0) + "/" + escapeHtml(r.total || 0) + ")</td>";
+              if (hasTime) html += "<td>" + (r.time_seconds != null ? r.time_seconds.toFixed(1) : "—") + "</td>";
+              if (hasErrors) html += "<td>" + escapeHtml(r.errors || 0) + "</td>";
+              html += "</tr>";
+            }
+
+            // Average row
+            const rates = configRuns.map(r => (r.result || {}).pass_rate || 0);
+            const avgRate = rates.reduce((a, b) => a + b, 0) / rates.length;
+            const avgPrClass = avgRate >= 0.8 ? "benchmark-delta-positive" : avgRate < 0.5 ? "benchmark-delta-negative" : "";
+            html += '<tr class="benchmark-row-avg ' + rowClass + '">';
+            html += "<td>" + configLabel + "</td>";
+            html += "<td>Avg</td>";
+            html += '<td class="' + avgPrClass + '">' + (avgRate * 100).toFixed(0) + "%</td>";
+            if (hasTime) {
+              const times = configRuns.map(r => (r.result || {}).time_seconds).filter(t => t != null);
+              html += "<td>" + (times.length ? (times.reduce((a, b) => a + b, 0) / times.length).toFixed(1) : "—") + "</td>";
+            }
+            if (hasErrors) html += "<td></td>";
+            html += "</tr>";
+          }
+          html += "</tbody></table>";
+
+          // Per-assertion detail for this eval
+          const runsWithExpectations = {};
+          for (const config of configGroups) {
+            runsWithExpectations[config] = evalRuns.filter(r => r.configuration === config && r.expectations && r.expectations.length > 0);
+          }
+          const hasAnyExpectations = Object.values(runsWithExpectations).some(runs => runs.length > 0);
+          if (hasAnyExpectations) {
+            // Collect all unique assertion texts across all configs
+            const allAssertions = [];
+            const seen = new Set();
+            for (const config of configGroups) {
+              for (const run of runsWithExpectations[config]) {
+                for (const exp of (run.expectations || [])) {
+                  if (!seen.has(exp.text)) {
+                    seen.add(exp.text);
+                    allAssertions.push(exp.text);
+                  }
+                }
+              }
+            }
+
+            html += '<table class="benchmark-table" style="margin-top: 0.5rem;">';
+            html += "<thead><tr><th>Assertion</th>";
+            for (const config of configGroups) {
+              const label = config.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+              html += "<th>" + escapeHtml(label) + "</th>";
+            }
+            html += "</tr></thead><tbody>";
+
+            for (const assertionText of allAssertions) {
+              html += "<tr><td>" + escapeHtml(assertionText) + "</td>";
+
+              for (const config of configGroups) {
+                html += "<td>";
+                for (const run of runsWithExpectations[config]) {
+                  const exp = (run.expectations || []).find(e => e.text === assertionText);
+                  if (exp) {
+                    const cls = exp.passed ? "benchmark-delta-positive" : "benchmark-delta-negative";
+                    const icon = exp.passed ? "\u2713" : "\u2717";
+                    html += '<span class="' + cls + '" title="Run ' + escapeHtml(run.run_number) + ': ' + escapeHtml(exp.evidence || "") + '">' + icon + "</span> ";
+                  } else {
+                    html += "— ";
+                  }
+                }
+                html += "</td>";
+              }
+              html += "</tr>";
+            }
+            html += "</tbody></table>";
+          }
+        }
+      }
+
+      // Notes
+      if (notes.length > 0) {
+        html += '<div class="benchmark-notes">';
+        html += "<h3>Analysis Notes</h3>";
+        html += "<ul>";
+        for (const note of notes) {
+          html += "<li>" + escapeHtml(note) + "</li>";
+        }
+        html += "</ul></div>";
+      }
+
+      container.innerHTML = html;
+    }
+
+    // ---- Start ----
+    init();
+    renderBenchmark();
+  </script>
+</body>
+</html>

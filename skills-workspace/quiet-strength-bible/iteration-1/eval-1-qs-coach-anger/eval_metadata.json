@@ -1,0 +1,13 @@
+{
+  "eval_id": 1,
+  "eval_name": "qs-coach-anger",
+  "prompt": "I coach a high school basketball team and I've been losing my temper with the kids. Using the Quiet Strength New Testament (the NLT edition with Tony Dungy's features), what verses and principles should I study about anger and leadership?",
+  "assertions": [
+    "Uses the Verse Finder framing 'Anger must be handled wisely' and cites Ephesians 4:26-27 and/or James 1:19",
+    "Uses the Verse Finder practice 'Leadership must be developed' (asking God to develop honesty, kindness, patience, purity, integrity) with Titus 2:7-8 and/or Hebrews 13:17",
+    "Includes related practices such as self-control (1 Peter 1:13 / 2 Peter 1:5-6), humility or kindness",
+    "Mentions Dungy's framing of the Bible as God's playbook and/or the Principles, Practices and Priorities of a Winning Life",
+    "Suggests the edition's three-step study method: observation, interpretation, application",
+    "Gives a concrete practical plan (e.g., daily reading/prayer, one practice per week) rather than only a list"
+  ]
+}

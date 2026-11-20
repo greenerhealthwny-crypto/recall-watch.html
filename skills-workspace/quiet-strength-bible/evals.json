@@ -1,0 +1,32 @@
+{
+  "skill_name": "quiet-strength-bible",
+  "evals": [
+    {"id": 1, "name": "qs-coach-anger",
+     "prompt": "I coach a high school basketball team and I've been losing my temper with the kids. Using the Quiet Strength New Testament (the NLT edition with Tony Dungy's features), what verses and principles should I study about anger and leadership?",
+     "assertions": [
+      "Uses the Verse Finder framing 'Anger must be handled wisely' and cites Ephesians 4:26-27 and/or James 1:19",
+      "Uses the Verse Finder practice 'Leadership must be developed' (asking God to develop honesty, kindness, patience, purity, integrity) with Titus 2:7-8 and/or Hebrews 13:17",
+      "Includes related practices such as self-control (1 Peter 1:13 / 2 Peter 1:5-6), humility or kindness",
+      "Mentions Dungy's framing of the Bible as God's playbook and/or the Principles, Practices and Priorities of a Winning Life",
+      "Suggests the edition's three-step study method: observation, interpretation, application",
+      "Gives a concrete practical plan (e.g., daily reading/prayer, one practice per week) rather than only a list"]},
+    {"id": 2, "name": "qs-new-reader",
+     "prompt": "I just got the Quiet Strength New Testament as a gift and I've never read the Bible. Where does it say I should start, and how should I study it?",
+     "assertions": [
+      "Says the edition recommends starting with Mark (short, fast-moving, by John Mark drawing on Peter) and then reading Acts",
+      "Explains the three steps: observation, interpretation, application",
+      "Mentions the Quiet Strength Verse Finder and/or the Overview of the New Testament Books as tools",
+      "Mentions Tony Dungy's letter comparing the Bible to a playbook and encouraging daily reading and prayer",
+      "Mentions Psalms and Proverbs are included (e.g., Psalms page 235, Proverbs page 301, or a proverb a day)",
+      "Does not reproduce long passages of scripture text"]},
+    {"id": 3, "name": "qs-book-overview",
+     "prompt": "Per the overview pages in my Quiet Strength NLT New Testament, who wrote Hebrews and James, when, and what are they about? And what does it say Galatians is about?",
+     "assertions": [
+      "States Hebrews' author is uncertain (perhaps Paul, Barnabas, Apollos, Priscilla, or Luke), dated around AD 68",
+      "Summarizes Hebrews as written to Jewish believers in danger of slipping back into Judaism, showing Jesus as the Messiah/superior",
+      "States James was written by James, Jesus' half brother, around AD 49",
+      "Summarizes James as about faith with an emphasis on results/practical working faith",
+      "Summarizes Galatians as foundational: Jesus' death was complete payment for salvation and nothing needs to be added, around AD 49 by Paul",
+      "Notes these are the edition's traditional views and/or that scholars debate dating/authorship"]}
+  ]
+}
