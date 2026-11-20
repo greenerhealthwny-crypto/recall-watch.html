@@ -1,0 +1,13 @@
+{
+  "eval_id": 3,
+  "eval_name": "syob-capital-patent",
+  "prompt": "I invented a kitchen gadget and want to start a company around it. Based on Levitt's book, where should I look for start-up money and how should I protect the idea? Please flag anything in the book that is out of date.",
+  "assertions": [
+    "Says Levitt prefers wealthy individuals/angels and that an investor wants the founder to risk his own money",
+    "Lists other sources from the book: venture capitalists, SBA guaranteed loans, SBICs, banks, business development corporations, state funds or stock offerings",
+    "Advises writing the business plan yourself with a strong executive summary (investors screen in about five minutes)",
+    "Covers utility vs design patents, getting a patent lawyer, and keeping witnessed dated records / invention disclosure",
+    "Flags outdated items, e.g. US is now first-inventor-to-file, Disclosure Document Program ended, provisional applications, changed fees/terms or SBA limits",
+    "Mentions trademark and/or legal structure (C vs S corporation, LLC) with a recommendation to consult a professional"
+  ]
+}

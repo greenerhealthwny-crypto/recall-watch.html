@@ -1,0 +1,13 @@
+{
+  "eval_id": 1,
+  "eval_name": "syob-meal-prep",
+  "prompt": "I'm thinking of quitting my job to start a meal-prep delivery business in my town. There are already two meal-kit companies that deliver here. Using Mortimer Levitt's 'How to Start Your Own Business Without Losing Your Shirt', how would he tell me to evaluate this idea before I jump in?",
+  "assertions": [
+    "Poses Levitt's 'one important question': why should customers come to me instead of where they go now",
+    "Explains his credo of giving more without charging more (success is not for the greedy)",
+    "Mentions the complete package (presentation, service, product, finance, timing, execution) and/or the X factor",
+    "Stresses obsessive drive / no nine-to-five entrepreneurs and the reality that most new businesses fail (about four out of five)",
+    "Uses Levitt's own Custom Shop example (custom shirt for about the price of a ready-made one) to illustrate an angle",
+    "Raises practical cautions from the book such as undercapitalization, competition/imitators, or keeping the job while testing (Raveis discussion)"
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "expectations": [
+    {
+      "text": "Poses Levitt's 'one important question': why should customers come to me instead of where they go now",
+      "passed": true,
+      "evidence": "'one important question... instead of continuing to go'"
+    },
+    {
+      "text": "Explains his credo of giving more without charging more (success is not for the greedy)",
+      "passed": true,
+      "evidence": "'giving more without charging more'"
+    },
+    {
+      "text": "Mentions the complete package (presentation, service, product, finance, timing, execution) and/or the X factor",
+      "passed": true,
+      "evidence": "complete package and X factor discussed"
+    },
+    {
+      "text": "Stresses obsessive drive / no nine-to-five entrepreneurs and the reality that most new businesses fail (about four out of five)",
+      "passed": true,
+      "evidence": "'nine-to-five' and 'four out of five' fail"
+    },
+    {
+      "text": "Uses Levitt's own Custom Shop example (custom shirt for about the price of a ready-made one) to illustrate an angle",
+      "passed": true,
+      "evidence": "Custom Shop at $2.15 vs ready-made"
+    },
+    {
+      "text": "Raises practical cautions from the book such as undercapitalization, competition/imitators, or keeping the job while testing (Raveis discussion)",
+      "passed": true,
+      "evidence": "undercapitalization and Raveis keep-the-job discussion"
+    }
+  ],
+  "summary": {
+    "passed": 6,
+    "failed": 0,
+    "total": 6,
+    "pass_rate": 1.0
+  }
+}

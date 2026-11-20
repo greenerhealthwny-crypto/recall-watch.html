@@ -1,0 +1,40 @@
+{
+  "expectations": [
+    {
+      "text": "States his newspaper ads cost about $84 to bring in a new customer whose purchase made only about $20 profit, so advertising did not pay",
+      "passed": true,
+      "evidence": "$84 per new customer vs $20 profit"
+    },
+    {
+      "text": "Describes cutting the catalogue to shirtings only and offering a 10 percent mail-reorder discount, raising mail sales from about $100,000 to $700,000",
+      "passed": true,
+      "evidence": "10% mail discount, $100,000 to $700,000"
+    },
+    {
+      "text": "Mentions the name 'The Custom Shop' was a mistake (impersonal) and/or the 'devised a method' window ad fueled rumors the shirts were not really custom",
+      "passed": true,
+      "evidence": "name impersonal and 'devised a method' rumors"
+    },
+    {
+      "text": "Mentions failure to develop a second-in-command / succession or staff turnover problems",
+      "passed": true,
+      "evidence": "second-in-command"
+    },
+    {
+      "text": "Mentions the failed executive image-consultation program as his biggest disappointment",
+      "passed": true,
+      "evidence": "image consultation program failure"
+    },
+    {
+      "text": "Turns these into practical marketing advice (test and measure, publicity like Silver Palate, pass savings to customers)",
+      "passed": true,
+      "evidence": "Silver Palate publicity, test and measure"
+    }
+  ],
+  "summary": {
+    "passed": 6,
+    "failed": 0,
+    "total": 6,
+    "pass_rate": 1.0
+  }
+}

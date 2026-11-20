@@ -1,0 +1,32 @@
+{
+  "skill_name": "start-your-own-business",
+  "evals": [
+    {"id": 1, "name": "syob-meal-prep",
+     "prompt": "I'm thinking of quitting my job to start a meal-prep delivery business in my town. There are already two meal-kit companies that deliver here. Using Mortimer Levitt's 'How to Start Your Own Business Without Losing Your Shirt', how would he tell me to evaluate this idea before I jump in?",
+     "assertions": [
+      "Poses Levitt's 'one important question': why should customers come to me instead of where they go now",
+      "Explains his credo of giving more without charging more (success is not for the greedy)",
+      "Mentions the complete package (presentation, service, product, finance, timing, execution) and/or the X factor",
+      "Stresses obsessive drive / no nine-to-five entrepreneurs and the reality that most new businesses fail (about four out of five)",
+      "Uses Levitt's own Custom Shop example (custom shirt for about the price of a ready-made one) to illustrate an angle",
+      "Raises practical cautions from the book such as undercapitalization, competition/imitators, or keeping the job while testing (Raveis discussion)"]},
+    {"id": 2, "name": "syob-advertising",
+     "prompt": "What did Mortimer Levitt learn about advertising and direct mail at The Custom Shop, and what other mistakes did he admit to in his book? I'm deciding how to market my own small business.",
+     "assertions": [
+      "States his newspaper ads cost about $84 to bring in a new customer whose purchase made only about $20 profit, so advertising did not pay",
+      "Describes cutting the catalogue to shirtings only and offering a 10 percent mail-reorder discount, raising mail sales from about $100,000 to $700,000",
+      "Mentions the name 'The Custom Shop' was a mistake (impersonal) and/or the 'devised a method' window ad fueled rumors the shirts were not really custom",
+      "Mentions failure to develop a second-in-command / succession or staff turnover problems",
+      "Mentions the failed executive image-consultation program as his biggest disappointment",
+      "Turns these into practical marketing advice (test and measure, publicity like Silver Palate, pass savings to customers)"]},
+    {"id": 3, "name": "syob-capital-patent",
+     "prompt": "I invented a kitchen gadget and want to start a company around it. Based on Levitt's book, where should I look for start-up money and how should I protect the idea? Please flag anything in the book that is out of date.",
+     "assertions": [
+      "Says Levitt prefers wealthy individuals/angels and that an investor wants the founder to risk his own money",
+      "Lists other sources from the book: venture capitalists, SBA guaranteed loans, SBICs, banks, business development corporations, state funds or stock offerings",
+      "Advises writing the business plan yourself with a strong executive summary (investors screen in about five minutes)",
+      "Covers utility vs design patents, getting a patent lawyer, and keeping witnessed dated records / invention disclosure",
+      "Flags outdated items, e.g. US is now first-inventor-to-file, Disclosure Document Program ended, provisional applications, changed fees/terms or SBA limits",
+      "Mentions trademark and/or legal structure (C vs S corporation, LLC) with a recommendation to consult a professional"]}
+  ]
+}

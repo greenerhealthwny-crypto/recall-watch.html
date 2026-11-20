@@ -1,0 +1,13 @@
+{
+  "eval_id": 2,
+  "eval_name": "syob-advertising",
+  "prompt": "What did Mortimer Levitt learn about advertising and direct mail at The Custom Shop, and what other mistakes did he admit to in his book? I'm deciding how to market my own small business.",
+  "assertions": [
+    "States his newspaper ads cost about $84 to bring in a new customer whose purchase made only about $20 profit, so advertising did not pay",
+    "Describes cutting the catalogue to shirtings only and offering a 10 percent mail-reorder discount, raising mail sales from about $100,000 to $700,000",
+    "Mentions the name 'The Custom Shop' was a mistake (impersonal) and/or the 'devised a method' window ad fueled rumors the shirts were not really custom",
+    "Mentions failure to develop a second-in-command / succession or staff turnover problems",
+    "Mentions the failed executive image-consultation program as his biggest disappointment",
+    "Turns these into practical marketing advice (test and measure, publicity like Silver Palate, pass savings to customers)"
+  ]
+}

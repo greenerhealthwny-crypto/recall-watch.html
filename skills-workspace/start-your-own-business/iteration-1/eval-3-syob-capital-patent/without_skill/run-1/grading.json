@@ -1,0 +1,40 @@
+{
+  "expectations": [
+    {
+      "text": "Says Levitt prefers wealthy individuals/angels and that an investor wants the founder to risk his own money",
+      "passed": false,
+      "evidence": "says it cannot recall the book; no Levitt angel preference"
+    },
+    {
+      "text": "Lists other sources from the book: venture capitalists, SBA guaranteed loans, SBICs, banks, business development corporations, state funds or stock offerings",
+      "passed": true,
+      "evidence": "lists SBA, angels, VC generically"
+    },
+    {
+      "text": "Advises writing the business plan yourself with a strong executive summary (investors screen in about five minutes)",
+      "passed": false,
+      "evidence": "no executive summary / five-minute screening"
+    },
+    {
+      "text": "Covers utility vs design patents, getting a patent lawyer, and keeping witnessed dated records / invention disclosure",
+      "passed": false,
+      "evidence": "utility and design covered but dismisses notebooks; no witnessed disclosure advice"
+    },
+    {
+      "text": "Flags outdated items, e.g. US is now first-inventor-to-file, Disclosure Document Program ended, provisional applications, changed fees/terms or SBA limits",
+      "passed": true,
+      "evidence": "first-inventor-to-file table of outdated points"
+    },
+    {
+      "text": "Mentions trademark and/or legal structure (C vs S corporation, LLC) with a recommendation to consult a professional",
+      "passed": true,
+      "evidence": "trademark covered"
+    }
+  ],
+  "summary": {
+    "passed": 3,
+    "failed": 3,
+    "total": 6,
+    "pass_rate": 0.5
+  }
+}
