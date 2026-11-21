@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eval Review</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&family=Lora:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js" integrity="sha384-EnyY0/GSHQGSxSgMwaIPzSESbqoOLSexfnSMN2AP+39Ckmn92stwABZynq1JyzdT" crossorigin="anonymous"></script>
+  <style>
+    :root {
+      --bg: #faf9f5;
+      --surface: #ffffff;
+      --border: #e8e6dc;
+      --text: #141413;
+      --text-muted: #b0aea5;
+      --accent: #d97757;
+      --accent-hover: #c4613f;
+      --green: #788c5d;
+      --green-bg: #eef2e8;
+      --red: #c44;
+      --red-bg: #fceaea;
+      --header-bg: #141413;
+      --header-text: #faf9f5;
+      --radius: 6px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Lora', Georgia, serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ---- Header ---- */
+    .header {
+      background: var(--header-bg);
+      color: var(--header-text);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .header h1 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+    .header .instructions {
+      font-size: 0.8rem;
+      opacity: 0.7;
+      margin-top: 0.25rem;
+    }
+    .header .progress {
+      font-size: 0.875rem;
+      opacity: 0.8;
+      text-align: right;
+    }
+
+    /* ---- Main content ---- */
+    .main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.5rem 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    /* ---- Sections ---- */
+    .section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      flex-shrink: 0;
+    }
+    .section-header {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.75rem 1rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+    }
+    .section-body {
+      padding: 1rem;
+    }
+
+    /* ---- Config badge ---- */
+    .config-badge {
+      display: inline-block;
+      padding: 0.2rem 0.625rem;
+      border-radius: 9999px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      margin-left: 0.75rem;
+      vertical-align: middle;
+    }
+    .config-badge.config-primary {
+      background: rgba(33, 150, 243, 0.12);
+      color: #1976d2;
+    }
+    .config-badge.config-baseline {
+      background: rgba(255, 193, 7, 0.15);
+      color: #f57f17;
+    }
+
+    /* ---- Prompt ---- */
+    .prompt-text {
+      white-space: pre-wrap;
+      font-size: 0.9375rem;
+      line-height: 1.6;
+    }
+
+    /* ---- Outputs ---- */
+    .output-file {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .output-file + .output-file {
+      margin-top: 1rem;
+    }
+    .output-file-header {
+      padding: 0.5rem 0.75rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .output-file-header .dl-btn {
+      font-size: 0.7rem;
+      color: var(--accent);
+      text-decoration: none;
+      cursor: pointer;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-weight: 500;
+      opacity: 0.8;
+    }
+    .output-file-header .dl-btn:hover {
+      opacity: 1;
+      text-decoration: underline;
+    }
+    .output-file-content {
+      padding: 0.75rem;
+      overflow-x: auto;
+    }
+    .output-file-content pre {
+      font-size: 0.8125rem;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+    }
+    .output-file-content img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 4px;
+    }
+    .output-file-content iframe {
+      width: 100%;
+      height: 600px;
+      border: none;
+    }
+    .output-file-content table {
+      border-collapse: collapse;
+      font-size: 0.8125rem;
+      width: 100%;
+    }
+    .output-file-content table td,
+    .output-file-content table th {
+      border: 1px solid var(--border);
+      padding: 0.375rem 0.5rem;
+      text-align: left;
+    }
+    .output-file-content table th {
+      background: var(--bg);
+      font-weight: 600;
+    }
+    .output-file-content .download-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 0.875rem;
+      cursor: pointer;
+    }
+    .output-file-content .download-link:hover {
+      background: var(--border);
+    }
+    .empty-state {
+      color: var(--text-muted);
+      font-style: italic;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    /* ---- Feedback ---- */
+    .prev-feedback {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.625rem 0.75rem;
+      margin-top: 0.75rem;
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+    .prev-feedback-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.25rem;
+      color: var(--text-muted);
+    }
+    .feedback-textarea {
+      width: 100%;
+      min-height: 100px;
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 0.9375rem;
+      line-height: 1.5;
+      resize: vertical;
+      color: var(--text);
+    }
+    .feedback-textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    .feedback-status {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.5rem;
+      min-height: 1.1em;
+    }
+
+    /* ---- Grades (collapsible) ---- */
+    .grades-toggle {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+    }
+    .grades-toggle:hover {
+      color: var(--accent);
+    }
+    .grades-toggle .arrow {
+      margin-right: 0.5rem;
+      transition: transform 0.15s;
+      font-size: 0.75rem;
+    }
+    .grades-toggle .arrow.open {
+      transform: rotate(90deg);
+    }
+    .grades-content {
+      display: none;
+      margin-top: 0.75rem;
+    }
+    .grades-content.open {
+      display: block;
+    }
+    .grades-summary {
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .grade-badge {
+      display: inline-block;
+      padding: 0.125rem 0.5rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .grade-pass { background: var(--green-bg); color: var(--green); }
+    .grade-fail { background: var(--red-bg); color: var(--red); }
+    .assertion-list {
+      list-style: none;
+    }
+    .assertion-item {
+      padding: 0.625rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.8125rem;
+    }
+    .assertion-item:last-child { border-bottom: none; }
+    .assertion-status {
+      font-weight: 600;
+      margin-right: 0.5rem;
+    }
+    .assertion-status.pass { color: var(--green); }
+    .assertion-status.fail { color: var(--red); }
+    .assertion-evidence {
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      margin-top: 0.25rem;
+      padding-left: 1.5rem;
+    }
+
+    /* ---- View tabs ---- */
+    .view-tabs {
+      display: flex;
+      gap: 0;
+      padding: 0 2rem;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .view-tab {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.625rem 1.25rem;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      background: none;
+      color: var(--text-muted);
+      border-bottom: 2px solid transparent;
+      transition: all 0.15s;
+    }
+    .view-tab:hover { color: var(--text); }
+    .view-tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+    .view-panel { display: none; }
+    .view-panel.active { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
+
+    /* ---- Benchmark view ---- */
+    .benchmark-view {
+      padding: 1.5rem 2rem;
+      overflow-y: auto;
+      flex: 1;
+    }
+    .benchmark-table {
+      border-collapse: collapse;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 0.8125rem;
+      width: 100%;
+      margin-bottom: 1.5rem;
+    }
+    .benchmark-table th, .benchmark-table td {
+      padding: 0.625rem 0.75rem;
+      text-align: left;
+      border: 1px solid var(--border);
+    }
+    .benchmark-table th {
+      font-family: 'Poppins', sans-serif;
+      background: var(--header-bg);
+      color: var(--header-text);
+      font-weight: 500;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .benchmark-table tr:hover { background: var(--bg); }
+    .benchmark-table tr.benchmark-row-with { background: rgba(33, 150, 243, 0.06); }
+    .benchmark-table tr.benchmark-row-without { background: rgba(255, 193, 7, 0.06); }
+    .benchmark-table tr.benchmark-row-with:hover { background: rgba(33, 150, 243, 0.12); }
+    .benchmark-table tr.benchmark-row-without:hover { background: rgba(255, 193, 7, 0.12); }
+    .benchmark-table tr.benchmark-row-avg { font-weight: 600; border-top: 2px solid var(--border); }
+    .benchmark-table tr.benchmark-row-avg.benchmark-row-with { background: rgba(33, 150, 243, 0.12); }
+    .benchmark-table tr.benchmark-row-avg.benchmark-row-without { background: rgba(255, 193, 7, 0.12); }
+    .benchmark-delta-positive { color: var(--green); font-weight: 600; }
+    .benchmark-delta-negative { color: var(--red); font-weight: 600; }
+    .benchmark-notes {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem;
+    }
+    .benchmark-notes h3 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+    }
+    .benchmark-notes ul {
+      list-style: disc;
+      padding-left: 1.25rem;
+    }
+    .benchmark-notes li {
+      font-size: 0.8125rem;
+      line-height: 1.6;
+      margin-bottom: 0.375rem;
+    }
+    .benchmark-empty {
+      color: var(--text-muted);
+      font-style: italic;
+      text-align: center;
+      padding: 3rem;
+    }
+
+    /* ---- Navigation ---- */
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+      flex-shrink: 0;
+    }
+    .nav-btn {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.5rem 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text);
+      transition: all 0.15s;
+    }
+    .nav-btn:hover:not(:disabled) {
+      background: var(--bg);
+      border-color: var(--text-muted);
+    }
+    .nav-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    .done-btn {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.5rem 1.5rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: all 0.15s;
+    }
+    .done-btn:hover {
+      background: var(--bg);
+      border-color: var(--text-muted);
+    }
+    .done-btn.ready {
+      border: none;
+      background: var(--accent);
+      color: white;
+      font-weight: 600;
+    }
+    .done-btn.ready:hover {
+      background: var(--accent-hover);
+    }
+    /* ---- Done overlay ---- */
+    .done-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 100;
+      justify-content: center;
+      align-items: center;
+    }
+    .done-overlay.visible {
+      display: flex;
+    }
+    .done-card {
+      background: var(--surface);
+      border-radius: 12px;
+      padding: 2rem 3rem;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      max-width: 500px;
+    }
+    .done-card h2 {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .done-card p {
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
+    }
+    .done-card .btn-row {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+    }
+    .done-card button {
+      padding: 0.5rem 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 0.875rem;
+    }
+    .done-card button:hover {
+      background: var(--bg);
+    }
+    /* ---- Toast ---- */
+    .toast {
+      position: fixed;
+      bottom: 5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--header-bg);
+      color: var(--header-text);
+      padding: 0.625rem 1.25rem;
+      border-radius: var(--radius);
+      font-size: 0.875rem;
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+      z-index: 200;
+    }
+    .toast.visible {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <div id="app" style="height:100vh; display:flex; flex-direction:column;">
+    <div class="header">
+      <div>
+        <h1>Eval Review: <span id="skill-name"></span></h1>
+        <div class="instructions">Review each output and leave feedback below. Navigate with arrow keys or buttons. When done, copy feedback and paste into Claude Code.</div>
+      </div>
+      <div class="progress" id="progress"></div>
+    </div>
+
+    <!-- View tabs (only shown when benchmark data exists) -->
+    <div class="view-tabs" id="view-tabs" style="display:none;">
+      <button class="view-tab active" onclick="switchView('outputs')">Outputs</button>
+      <button class="view-tab" onclick="switchView('benchmark')">Benchmark</button>
+    </div>
+
+    <!-- Outputs panel (qualitative review) -->
+    <div class="view-panel active" id="panel-outputs">
+    <div class="main">
+      <!-- Prompt -->
+      <div class="section">
+        <div class="section-header">Prompt <span class="config-badge" id="config-badge" style="display:none;"></span></div>
+        <div class="section-body">
+          <div class="prompt-text" id="prompt-text"></div>
+        </div>
+      </div>
+
+      <!-- Outputs -->
+      <div class="section">
+        <div class="section-header">Output</div>
+        <div class="section-body" id="outputs-body">
+          <div class="empty-state">No output files found</div>
+        </div>
+      </div>
+
+      <!-- Previous Output (collapsible) -->
+      <div class="section" id="prev-outputs-section" style="display:none;">
+        <div class="section-header">
+          <div class="grades-toggle" onclick="togglePrevOutputs()">
+            <span class="arrow" id="prev-outputs-arrow">&#9654;</span>
+            Previous Output
+          </div>
+        </div>
+        <div class="grades-content" id="prev-outputs-content"></div>
+      </div>
+
+      <!-- Grades (collapsible) -->
+      <div class="section" id="grades-section" style="display:none;">
+        <div class="section-header">
+          <div class="grades-toggle" onclick="toggleGrades()">
+            <span class="arrow" id="grades-arrow">&#9654;</span>
+            Formal Grades
+          </div>
+        </div>
+        <div class="grades-content" id="grades-content"></div>
+      </div>
+
+      <!-- Feedback -->
+      <div class="section">
+        <div class="section-header">Your Feedback</div>
+        <div class="section-body">
+          <textarea
+            class="feedback-textarea"
+            id="feedback"
+            placeholder="What do you think of this output? Any issues, suggestions, or things that look great?"
+          ></textarea>
+          <div class="feedback-status" id="feedback-status"></div>
+          <div class="prev-feedback" id="prev-feedback" style="display:none;">
+            <div class="prev-feedback-label">Previous feedback</div>
+            <div id="prev-feedback-text"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav" id="outputs-nav">
+      <button class="nav-btn" id="prev-btn" onclick="navigate(-1)">&#8592; Previous</button>
+      <button class="done-btn" id="done-btn" onclick="showDoneDialog()">Submit All Reviews</button>
+      <button class="nav-btn" id="next-btn" onclick="navigate(1)">Next &#8594;</button>
+    </div>
+    </div><!-- end panel-outputs -->
+
+    <!-- Benchmark panel (quantitative stats) -->
+    <div class="view-panel" id="panel-benchmark">
+      <div class="benchmark-view" id="benchmark-content">
+        <div class="benchmark-empty">No benchmark data available. Run a benchmark to see quantitative results here.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Done overlay -->
+  <div class="done-overlay" id="done-overlay">
+    <div class="done-card">
+      <h2>Review Complete</h2>
+      <p>Your feedback has been saved. Go back to your Claude Code session and tell Claude you're done reviewing.</p>
+      <div class="btn-row">
+        <button onclick="closeDoneDialog()">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ---- Embedded data (injected by generate_review.py) ----
+    const EMBEDDED_DATA = {"skill_name": "legal-research", "runs": [{"id": "eval-1-lr-plan-with_skill-run-1", "prompt": "My landlord kept my whole security deposit in Ohio and I want to research my rights myself before going to small claims. Using Nolo's Legal Research book approach, how should I go about the research?", "eval_id": 1, "outputs": [{"name": "response.md", "type": "text", "content": "# Researching an Ohio Security Deposit Claim: A Nolo-Style Research Plan\n\nThis follows the method in Nolo's *Legal Research: How to Find & Understand the Law* (19th ed., 2021): learn the framework, frame the issue, start with secondary sources, find the primary law, check that it is still good law, then organize it for court.\n\n> **Legal information, not legal advice.** If a lot of money is at stake, or the landlord sues you back, think about a short consultation with a lawyer or legal aid. Your own research will make that meeting cheaper and more useful.\n\n---\n\n## Before you start: facts to write down\n\nYour research has to fit your facts, so gather these first:\n\n- **Where the rental is** (city and county). That decides which small claims court you file in and whether any local ordinance applies.\n- **Lease dates**, the **deposit amount**, and the **monthly rent**.\n- **The date you moved out and returned the keys.** In legal terms that is when you \"delivered possession\".\n- **Whether you gave the landlord a forwarding address in writing**, when, and how. Keep a copy.\n- **What the landlord sent you, if anything:** an itemized list of deductions, a letter, or nothing at all.\n- **Your evidence:** move-in and move-out photos or video, any checklist, texts and emails, receipts for cleaning or repairs.\n\n---\n\n## Step 1: Frame the issue (Ch. 3)\n\nNolo's four framing steps:\n\n| Question | Your answer |\n|---|---|\n| **Civil or criminal?** | **Civil.** You want money back from a private party. No prosecutor is involved. |\n| **Substantive or procedural?** | **Both.** *Substantive:* what Ohio law says about deposits and deductions. *Procedural:* how to file and win in Ohio small claims court. |\n| **State or federal?** | **State.** Landlord-tenant law is on Nolo's \"mainly state\" list. The exception is federally subsidized housing, which may add federal rules. The book's rule of thumb is that if federal money is involved, some federal law applies. |\n| **Area of law** | **Landlord-tenant / housing.** Contract law (your lease) is a secondary area. |\n\n**Write your research question.** Nolo says to state your goal first, then list specific questions. Your goal (filing a lawsuit) calls for depth, not just an overview.\n\n> *My goal is to sue my former landlord in Ohio small claims court to recover my security deposit, which was kept in full.*\n\nThe specific questions to answer:\n\n1. What Ohio statute governs residential security deposits?\n2. How many days does the landlord have to return the deposit or send an itemized list of deductions?\n3. What may a landlord lawfully deduct? (Unpaid rent, damage beyond normal wear and tear, other charges under the lease?)\n4. Do I have to give a forwarding address in writing, and what happens if I didn't?\n5. If the landlord wrongfully withheld the deposit, what can I recover? (The deposit only, extra damages, interest, attorney fees?)\n6. Who has to prove what in court? For example, does the landlord have to justify each deduction?\n7. **Procedure:** What is the Ohio small claims limit? Which court and venue do I use? What forms, fees and service rules apply? Is there a deadline for filing?\n\n---\n\n## Step 2: Pick search terms using the Cartwheel (Ch. 3)\n\nNolo warns that most failed research happens because the researcher \"runs out of patience at the index\". Brainstorm widely:\n\n| Category | Terms |\n|---|---|\n| Major words from the facts | security deposit, landlord, tenant, withhold, refund, return |\n| Broader | landlord and tenant, residential rental, lease, rental agreement |\n| Narrower | itemized list, deductions, wrongful withholding, forwarding address, normal wear and tear |\n| Synonyms | damage deposit, rental deposit, prepaid rent, lessor / lessee |\n| Antonyms / opposite side | landlord's damages, tenant's liability for damage, unpaid rent |\n| Closely related | \"termination of the rental agreement\", \"delivery of possession\", interest on deposit, double damages |\n| Procedural | small claims, municipal court, county court, jurisdictional limit, venue, complaint |\n| Agencies / organizations | Ohio Attorney General (consumer protection), local fair housing or tenant-rights groups, legal aid |\n| Long shots | escrow, liquidated damages clause, cleaning fee, carpet replacement, abandonment |\n\n**Sample Boolean queries** (adjust the syntax for each site):\n\n- Google Scholar / Justia: `\"security deposit\" AND (Ohio) AND (withh* OR \"itemized\") AND tenant`\n- Westlaw-style: `\"security deposit\" /p (wrongful! withh!) /p (\"forwarding address\" OR itemiz!)`\n- To find cases on a statute once you have it: `\"5321.16\" AND \"wear and tear\"`\n\nKeep changing the queries as new terms come up in what you read.\n\n---\n\n## Step 3: Start with secondary sources (Ch. 2, 4)\n\nNolo advises starting with secondary sources to learn the vocabulary and to get citations to the primary law. For a state-law issue, a **state-specific** source is best.\n\n1. **Nolo resources**\n   - Nolo.com articles on Ohio security deposit rules and its state-by-state deposit charts. These give quick deadlines and citations to check.\n   - *Every Tenant's Legal Guide* (Nolo) for the substantive background.\n   - *Everybody's Guide to Small Claims Court* (Nolo) for the procedure. The book recommends it by name.\n2. **Ohio-specific plain-English sources**\n   - **Ohio Legal Help** (ohiolegalhelp.org) and your local legal aid society's tenant pages.\n   - **Your court's small claims self-help page.** Many Ohio municipal courts publish small claims guides and forms. Staff can't give legal advice, but they can explain procedure.\n3. **Lawyer-level sources** (at a county or law school law library; call first to check public access)\n   - **Ohio Jurisprudence 3d** (Ohio's state legal encyclopedia). Look under \"Landlord and Tenant\".\n   - An **Ohio landlord-tenant practice manual or treatise**. Ask the librarian which one the library has.\n   - **A.L.R. annotations** on tenants' remedies for wrongfully withheld deposits. These collect cases from many states. Ohio cases carry the most weight; others are only persuasive.\n\n**Rule from the book:** never rely only on a secondary source. Courts follow primary law, and the law changes faster than commentary does. Use these sources to get your citations, then go read the law itself.\n\n---\n\n## Step 4: Find and read the primary law (Ch. 5\u20137)\n\n### A. The statute\n\nOhio's residential landlord-tenant law is **Chapter 5321 of the Ohio Revised Code**. The security deposit section is generally cited as **R.C. 5321.16**. Confirm it yourself on the official site, **codes.ohio.gov**, or in an annotated code at the library (Baldwin's or Page's Ohio Revised Code Annotated).\n\nAs commonly summarized, that section covers:\n\n- the landlord's deadline (commonly stated as **30 days** after the lease ends and you move out) to return the deposit or give an **itemized written list** of deductions;\n- the tenant's duty to give a **forwarding address in writing**;\n- **interest** on larger deposits held for longer tenancies;\n- the **remedy** if money is wrongfully withheld (commonly summarized as the amount wrongfully withheld, **plus an equal amount in damages, plus reasonable attorney fees**).\n\nTreat every one of those points as something to **verify in the current statute text**, not as settled.\n\n**Apply Nolo's seven rules for reading a statute:**\n\n1. Read it at least three times, then read it again.\n2. Watch the **\"ands\" and \"ors\"**. For example, are the deadline's triggers \"termination **and** delivery of possession\"?\n3. Assume every word and punctuation mark has meaning. What exactly counts as an \"itemized\" list? What does \"wrongfully withheld\" mean?\n4. Read it **consistently with related sections** of Chapter 5321, such as the landlord's and tenant's duties and the definitions section. Track down every cross-reference.\n5. (The strict-reading rule applies to criminal statutes, so it isn't relevant here.)\n6. Read ambiguities **to further the law's purpose**. Tenant-protection statutes are often read to protect tenants.\n7. Read it **so that it makes sense** and avoids results the legislature couldn't have intended.\n\n**Check the pocket part** in the print volume, or the \"current through\" date on the website, for amendments.\n\n### B. Cases that interpret the statute\n\nNolo says **court interpretations are part of the statute**. Find them through:\n\n- **The annotations** under the section in Baldwin's or Page's Ohio annotated code. This is the fastest route.\n- **Google Scholar** (choose \"Case law\", then select Ohio courts), **Justia**, or **FindLaw**. Search the section number plus terms like \"forwarding address\", \"itemized\", \"wear and tear\", \"attorney fees\".\n- **West's Ohio Digest** under the Landlord and Tenant topic. Use the Descriptive Word Index and check the pocket part.\n- **One good case leads to more.** Follow its citations and its key numbers.\n\n**Look for cases on the questions that matter to you:**\n\n- What happens if the tenant didn't give a written forwarding address?\n- Is a landlord who sends no itemized list liable for the full amount?\n- What counts as \"normal wear and tear\"?\n- How are attorney fees handled when the tenant represents themselves?\n\n**Weigh the cases correctly (Ch. 1, 7):**\n\n- **Supreme Court of Ohio** decisions bind every Ohio court.\n- **Ohio's courts of appeals** are organized into numbered appellate districts. A decision from your district binds the trial court that will hear your case. A decision from another district is strongly persuasive.\n- **Out-of-state cases** are only persuasive.\n- Read the **opinion itself**, not just the headnotes, which \"tend to overly simplify issues\". Separate the **holding** from the **dicta**.\n- Compare the issues and facts with yours. Prefer **recent** cases.\n\n### C. Procedural law\n\n- The **Ohio small claims statute** (Chapter 1925 of the Ohio Revised Code) sets the **dollar limit**, which court hears the case, and the basic procedure. **Confirm the current limit**, since limits change.\n- Your **local court's rules and forms**, available on the municipal or county court website or from the clerk.\n- **Filing deadline:** look up which **statute of limitations** applies to a claim under the deposit statute or the written lease. Don't assume one, and file promptly anyway.\n\n### D. Local law\n\nCheck whether your **city has a housing or rental ordinance** that adds rules. Look on the city website or its online municipal code.\n\n---\n\n## Step 5: Validate: is it still good law? (Ch. 8)\n\n\"Shepardizing is every bit as important as finding a case or statute.\"\n\n- **Statute:** confirm the current version on codes.ohio.gov and check the annotated code's pocket part for amendments, and for cases that interpreted or limited it.\n- **Every case you plan to cite:** run it through **Shepard's** (Lexis) or **KeyCite** (Westlaw). Most law libraries give the public free access. Watch for:\n  - **red flags:** overruled or reversed. Don't rely on it.\n  - **orange or yellow:** questioned, criticized or distinguished. Read why.\n  - **\"followed\":** good support.\n- Without Shepard's or KeyCite, use Google Scholar's \"How cited\" feature as a rough check, then verify at the library before your hearing.\n\n---\n\n## Step 6: Organize and use it (Ch. 9)\n\n**Keep a folder for each research question:** deadline and itemization, deductions and wear and tear, remedies, and procedure. Mark where each case states its issue, facts, decision and reasoning.\n\n**Write a short IRAC memo for yourself.** It doubles as your script for court.\n\n```\nFacts: Lease ended [date]; keys returned [date]; written forwarding\n  address sent [date, method]; deposit $___; landlord kept all of it;\n  [no itemized list / list received on date, claiming ___].\nQuestion presented: Under Ohio law, did my landlord wrongfully withhold\n  my security deposit, and what can I recover?\nBrief answer: Probably yes / probably no, because ___.\nDiscussion:\n  Issue 1 - Deadline and itemized notice\n    Rule: R.C. 5321.16 [verified text] + interpreting case(s)\n    Analysis: my dates vs. the deadline; was a list sent?\n    Conclusion:\n  Issue 2 - Were the deductions lawful (damage vs. normal wear and tear)?\n  Issue 3 - Remedy: deposit + statutory damages + interest + fees?\n  Issue 4 - Procedure: court, venue, dollar limit, forms\nNext steps / open questions:\n```\n\n**For the hearing:**\n\n- Bring copies of the **statute** and your **key cases** (one set for the judge, one for the landlord, one for you).\n- Bring your evidence: the lease, photos and video, your forwarding-address letter and proof it was sent, any itemized list, and messages.\n- Small claims procedure is simplified, and clerks often help with the forms. Confine your argument to **existing law**. Trial judges follow precedent.\n- **A demand letter first** is often expected and can lead to settlement. It cites the statute, states the amount, and sets a deadline. Nolo's small claims book covers how to write one.\n\n---\n\n## Your one-page research plan\n\n```\nGoal: Sue former landlord in Ohio small claims for full security deposit\nJurisdiction: Ohio; county ___; city ___ (check local ordinance)\nType: Civil | substantive + procedural | landlord-tenant (+ lease/contract)\nQuestions: deadline/itemization; lawful deductions; forwarding address;\n  remedies (damages, interest, fees); burden of proof; small claims\n  limit/venue/forms; filing deadline\nSearch terms: security deposit, wrongful withholding, itemized, forwarding\n  address, normal wear and tear, delivery of possession, small claims\nStart with (secondary): Nolo deposit articles + Every Tenant's Legal Guide;\n  Everybody's Guide to Small Claims Court; Ohio Legal Help; Ohio Jur. 3d\nPrimary law: R.C. Chapter 5321 (esp. 5321.16) - verify; Ohio cases via the\n  annotated code / Google Scholar / Ohio Digest; R.C. Chapter 1925 + local\n  court rules; city ordinance\nValidate: Shepard's/KeyCite at county or law school library; pocket part;\n  codes.ohio.gov \"current through\" date\nOutput: IRAC memo -> demand letter -> small claims filing + hearing binder\n```\n\n**A note on citations.** The section numbers above are the commonly cited ones, but I haven't checked them against the current text. Treat them as leads. Confirm each one on codes.ohio.gov or in an annotated code before you put it in a demand letter or court filing. I haven't named specific cases on purpose. Find them through the annotations and check them with Shepard's or KeyCite so you know they are still good law.\n\n**When to get a lawyer.** Consider one if the landlord counterclaims for more than the deposit, if your claim is above the small claims limit, or if a filing deadline is close. Many Ohio legal aid offices handle deposit disputes for free if you qualify.\n"}], "grading": {"expectations": [{"text": "Frames the issue: civil (not criminal), substantive and procedural, state law (landlord-tenant), and writes a research question/goal", "passed": true, "evidence": "Table: civil, both substantive and procedural, state; goal and question list"}, {"text": "Recommends starting with secondary sources (e.g., Nolo, state-specific encyclopedia or practice guide) before primary law", "passed": true, "evidence": "Starts with Nolo Every Tenant's Legal Guide and state sources"}, {"text": "Points to the Ohio statute/code (primary law) and reading it carefully (e.g., read multiple times, ands/ors)", "passed": true, "evidence": "R.C. 5321.16; read at least three times"}, {"text": "Says to verify the law is current/good law (pocket parts, Shepardizing/KeyCite, law library access)", "passed": true, "evidence": "Pocket part, Shepard's/KeyCite, law library"}, {"text": "Gives search terms or a Boolean query (e.g., synonyms, Cartwheel, operators)", "passed": true, "evidence": "Search terms and Boolean query"}, {"text": "Covers small claims/court procedure research and/or organizing research (folders, memo) and a not-legal-advice caveat", "passed": true, "evidence": "Small claims procedure, folders/memo, not legal advice"}], "summary": {"passed": 6, "failed": 0, "total": 6, "pass_rate": 1.0}}}, {"id": "eval-1-lr-plan-without_skill-run-1", "prompt": "My landlord kept my whole security deposit in Ohio and I want to research my rights myself before going to small claims. Using Nolo's Legal Research book approach, how should I go about the research?", "eval_id": 1, "outputs": [{"name": "response.md", "type": "text", "content": "# Researching Your Ohio Security Deposit Claim, the Nolo *Legal Research* Way\n\nNolo's *Legal Research: How to Find & Understand the Law* (Elias & Levinkind) teaches a step-by-step method. You start broad with background reading, then find the primary law (statutes, then cases), read it closely, and check that it is still current. Here is that method applied to your situation.\n\n> This is a research roadmap, not legal advice. Check every citation below against a current official source before you rely on it in court.\n\n---\n\n## Step 1: Define your issue and put it in a category\n\nNolo suggests writing your question down in plain words, then sorting it into a legal category so you know where to look.\n\n- **Plain question:** \"My landlord kept my entire security deposit after I moved out. Did they have the right to, and what can I recover?\"\n- **Category:** Civil law, then landlord-tenant law, then security deposits. This is **state law**, plus possibly local ordinances. It is not federal law.\n- **Facts you need to pin down** (these decide which rules apply):\n  - Your move-out date, and the date you handed back the keys (gave up possession)\n  - Whether and when you gave the landlord your **forwarding address in writing**\n  - Whether you got **an itemized list of deductions**, and when\n  - The deposit amount, your monthly rent, and how long you lived there\n  - What your lease says about the deposit, cleaning and damage\n  - Your evidence: move-in and move-out photos, checklists, receipts, texts and emails\n\n**Build a word list** for searching indexes and databases: *security deposit, rental deposit, return of deposit, wrongful withholding, itemized deductions, landlord and tenant, damages, attorney fees, forwarding address, normal wear and tear.*\n\n---\n\n## Step 2: Get background from secondary sources\n\nNolo's main advice is to **start with secondary sources** (plain-English guides, practice manuals, encyclopedias) before you read statutes and cases. They tell you what the law is in general, use the vocabulary you need, and usually cite the controlling statute.\n\nGood starting points:\n- **Nolo's *Every Tenant's Legal Guide*** and Nolo's free online articles on security deposits. Nolo also keeps a state-by-state chart of deposit rules.\n- **Ohio Legal Help** (ohiolegalhelp.org): plain-language guides and forms for Ohio tenants, including sample deposit demand letters.\n- **The Ohio Attorney General's** consumer and tenant publications, and the **Ohio State Bar Association's** \"Law You Can Use\" pieces.\n- **Your local legal aid society** and **court self-help centers**. Many municipal courts publish small claims guides.\n- **Legal encyclopedias and treatises** at a public or county law library, such as *Ohio Jurisprudence 3d* (the \"Landlord and Tenant\" title) and Ohio landlord-tenant practice manuals. A **law librarian** can point you to the right volume. Nolo strongly recommends asking librarians for help.\n\n**What to look for:** the name and citation of the statute, the deadline for returning the deposit, what counts as a proper deduction, and what penalties a landlord faces.\n\n---\n\n## Step 3: Find the primary law, starting with the statute\n\nThe background sources should lead you to the **Ohio Landlord-Tenant Act, Ohio Revised Code Chapter 5321**. The key section is:\n\n- **R.C. 5321.16, Security deposits.** In summary (check this against the current text):\n  - **(A)** Any deposit over $50 or one month's rent, whichever is greater, earns **interest at 5% a year** if you stayed **six months or more**. Interest is computed and paid yearly.\n  - **(B)** Within **30 days** after the tenancy ends and you give up possession, the landlord must **return the deposit** or give you an **itemized written list of deductions** (past-due rent and damages caused by your failure to meet your duties, for example under R.C. 5321.05), together with whatever money is left. The notice goes to the forwarding address you provided in writing.\n  - **(C)** If the landlord wrongfully withholds any part of the deposit, you can recover **the money wrongfully withheld, plus damages equal to that amount** (which effectively doubles it), **plus reasonable attorney fees**. One catch: if you **did not give a written forwarding address**, you may not get the double damages and fees. Read this subsection carefully.\n- Related sections to read:\n  - **R.C. 5321.01** (definitions)\n  - **R.C. 5321.04 and 5321.05** (landlord and tenant duties, which bear on what counts as legitimate \"damage\")\n  - **R.C. 5321.13** (lease terms that can't waive your rights under the chapter)\n\n**Where to find it:**\n- Free: **codes.ohio.gov**, the official online Ohio Revised Code.\n- Better, at a law library: an **annotated code**, either *Page's Ohio Revised Code Annotated* or *Baldwin's Ohio Revised Code Annotated*. Annotations list summaries of cases that interpret each section, which leads you straight into Step 5. Nolo emphasizes using annotated codes for exactly this reason.\n\n---\n\n## Step 4: Read the statute closely\n\nNolo advises reading the statute several times, word by word, and breaking it into parts:\n- **Who** must act (the landlord), **when** (within 30 days of termination *and* delivery of possession), **what** (return the money or provide an itemized notice), and **how** (by mail or delivery to your written forwarding address).\n- Note the defined terms and look them up in R.C. 5321.01.\n- Pay attention to words like \"shall\" (mandatory) and \"may.\"\n- Check **cross-references** (for example, to R.C. 5321.05) and read those sections too.\n- Make a checklist of each **element** you'll have to prove, and note which facts and evidence support each one.\n\n---\n\n## Step 5: Find cases that interpret the statute\n\nStatutes rarely answer every question. Cases tell you how Ohio courts actually apply R.C. 5321.16, for example: what \"wrongful withholding\" means, what counts as normal wear and tear, whether a vague notice counts as \"itemized,\" and how double damages are calculated.\n\n**How to find them:**\n- Use the **case annotations** under R.C. 5321.16 in the annotated code.\n- Use free databases: **Google Scholar** (choose \"Case law\" and select Ohio courts), **CourtListener**, **Casetext/vLex alternatives**, and the **Supreme Court of Ohio's website** (supremecourt.ohio.gov), which posts opinions from the Ohio Supreme Court and the courts of appeals. Search terms: `\"5321.16\" wrongful withholding`, `\"5321.16\" itemized`, `\"5321.16\" forwarding address`.\n- Many law libraries offer free public access to **Westlaw or Lexis**.\n\n**A leading case to start with:** *Smith v. Padgett*, 32 Ohio St.3d 344 (1987). The Ohio Supreme Court discussed how R.C. 5321.16 works, including that the landlord's liability for double damages and attorney fees covers the *wrongfully withheld* amount, and that a tenant who wins is entitled to attorney fees. Read the full opinion, not just a summary. After that:\n- Prefer **Ohio Supreme Court** decisions, then decisions from **your own appellate district**. Ohio has 12 district courts of appeals, and your district's rulings carry the most weight in your local court.\n- Read for the **holding**: what the court decided on facts like yours.\n\n---\n\n## Step 6: Update and validate everything (\"Shepardize\")\n\nNolo stresses that you must confirm the law is still good law:\n- **Statutes:** check that you are reading the current version (codes.ohio.gov shows effective dates), and look for recent amendments or pending bills on the Ohio Legislature's site (legislature.ohio.gov).\n- **Cases:** use a citator, either **Shepard's** (Lexis) or **KeyCite** (Westlaw), usually free at a law library, to make sure no case you rely on has been overruled or limited. On Google Scholar, the \"How cited\" link is a rough free substitute.\n\n---\n\n## Step 7: Check local law, court rules and the procedure for your court\n\n- **Local ordinances:** some Ohio cities have extra tenant protections. Check your city's codified ordinances, which are often on American Legal Publishing or Municode.\n- **Small claims procedure:**\n  - **R.C. Chapter 1925** governs small claims divisions of municipal and county courts. The current limit is **$6,000**; check whether that has changed. Your claim, including double damages, has to fit within the limit, or you can waive any excess.\n  - Read **your court's local rules** and small claims guide. They cover filing fees, service on the landlord, and hearing procedure.\n  - Note that attorney fees under R.C. 5321.16(C) matter mostly if you hire a lawyer.\n- **Your lease:** read the deposit, cleaning and notice clauses. Remember that a lease can't waive your statutory rights (R.C. 5321.13).\n\n---\n\n## Step 8: Organize your findings and apply them to your facts\n\nNolo recommends writing a short **summary or memo** for yourself:\n1. **Issue:** Did the landlord wrongfully withhold the deposit under R.C. 5321.16?\n2. **Rule:** Quote the statute and the key cases.\n3. **Application:** Go through each element with your facts and evidence (dates, forwarding address, missing or inadequate itemization, photos showing no damage).\n4. **Remedy:** List what you'll ask for: the wrongfully withheld amount, an equal amount in damages, any interest owed under 5321.16(A), and court costs.\n\nThen:\n- Send the landlord a **written demand letter** that cites R.C. 5321.16, states the amount owed and sets a deadline. Keep proof that you sent it.\n- If they don't pay, **file in small claims**. Bring copies of the statute, the key cases (highlighted), your lease, your forwarding-address letter, any deduction notice, photos and receipts.\n\n---\n\n## Quick checklist\n- [ ] Wrote down the issue, the key facts and the search terms\n- [ ] Read background in Nolo, Ohio Legal Help or a law library treatise\n- [ ] Read the current R.C. 5321.16, plus 5321.01, .04, .05 and .13\n- [ ] Used an annotated code to find interpreting cases\n- [ ] Read *Smith v. Padgett* and cases from my appellate district\n- [ ] Shepardized or KeyCited every case, and confirmed the statute is current\n- [ ] Checked local ordinances and my small claims court's rules and limit\n- [ ] Organized evidence and sent a demand letter\n- [ ] Filed in small claims if the landlord doesn't pay\n\nIf your situation has complications, such as a large amount, counterclaims for damage or an unclear tenancy end date, think about a free consultation with **local legal aid** or a **lawyer referral service**. Many offer low-cost initial meetings.\n"}], "grading": {"expectations": [{"text": "Frames the issue: civil (not criminal), substantive and procedural, state law (landlord-tenant), and writes a research question/goal", "passed": false, "evidence": "Civil/state and a plain question, but no substantive vs procedural framing"}, {"text": "Recommends starting with secondary sources (e.g., Nolo, state-specific encyclopedia or practice guide) before primary law", "passed": true, "evidence": "AG and bar publications, Ohio Jur 3d first"}, {"text": "Points to the Ohio statute/code (primary law) and reading it carefully (e.g., read multiple times, ands/ors)", "passed": true, "evidence": "R.C. 5321.16; defined terms, shall vs may"}, {"text": "Says to verify the law is current/good law (pocket parts, Shepardizing/KeyCite, law library access)", "passed": true, "evidence": "Step 6 Shepardize/KeyCite, current version"}, {"text": "Gives search terms or a Boolean query (e.g., synonyms, Cartwheel, operators)", "passed": false, "evidence": "No search terms or Boolean query given"}, {"text": "Covers small claims/court procedure research and/or organizing research (folders, memo) and a not-legal-advice caveat", "passed": true, "evidence": "Small claims R.C. 1925, checklist, not legal advice"}], "summary": {"passed": 4, "failed": 2, "total": 6, "pass_rate": 0.6666666666666666}}}, {"id": "eval-2-lr-good-law-with_skill-run-1", "prompt": "I found a 1998 appellate case online that supports my argument. Per the Nolo Legal Research book, how do I know if it's still good law and whether it binds my court? What do the Shepard's codes mean?", "eval_id": 2, "outputs": [{"name": "response.md", "type": "text", "content": "# Is your 1998 appellate case still good law, and does it bind your court?\n\nFinding a case that supports you is a good start. Nolo's *Legal Research* (19th ed., 2021) warns that **\"just because a source is online doesn't mean it holds legal weight.\"** A 1998 case has had more than 25 years to be reversed, overruled, limited by later cases, or replaced by a new statute. Before you rely on it, answer two separate questions:\n\n1. **Does it bind my court?** (This is about the court hierarchy.)\n2. **Is it still good law?** (This is about what has happened to the case since 1998.)\n\n---\n\n## Part 1: Does the case bind your court?\n\n### Step 1. Identify which court decided it\n\nThe citation tells you. Look at the reporter abbreviation and the parenthetical at the end. For example, \"(9th Cir. 1998)\" is a federal circuit court, and \"Cal. App. 4th\" is a California intermediate appellate court. Then work out whether it's a **state** or **federal** court, and **which** appellate court or circuit.\n\n### Step 2. Apply the book's rules on binding versus persuasive authority\n\n| Situation | Binding or persuasive? |\n|---|---|\n| A published opinion from an appellate court **above your court in the same system** (for example, your state's court of appeal and you're in a trial court in that state) | **Binding.** A published appellate decision binds the courts below it in that system. |\n| A state with **only one intermediate appellate ruling** on the issue | That ruling is generally followed statewide until other appellate courts rule on it. Check how your state handles conflicts between appellate districts. |\n| A **federal circuit** case | Binds only the district courts **in that circuit**. For example, a Fifth Circuit case binds federal courts in Texas, Louisiana and Mississippi. In the Eleventh Circuit it is only persuasive. |\n| A **different state's** court | **Persuasive only.** Courts sometimes rely on out-of-state cases (the book's example is a Colorado court citing cases from Hawaii, Texas and Virginia), but they don't have to follow them. |\n| **State and federal courts** | They generally **don't bind each other**. One exception: a state court deciding a *federal* claim must follow federal law. |\n| A **trial court** decision | Trial courts generally don't issue binding opinions. |\n\n### Step 3. Make sure the part you rely on is the holding\n\nOnly some of an opinion is binding:\n- **The holding** of the **majority** (or a plurality) is the law.\n- **Dicta**, meaning statements that weren't needed to decide the case, are **not binding**. The book's one exception is the U.S. Supreme Court, where every word is weighed.\n- **Concurring and dissenting opinions** are not binding, although they can be persuasive.\n- **Headnotes and the synopsis** at the top of the case were added by the publisher. They are **not law** and \"tend to overly simplify issues\", so quote the opinion itself, never a headnote.\n\nAlso check whether the opinion was **published**. Unpublished opinions often carry limited or no precedential weight. Your court's rules will say whether you can cite them *(std, verify your court's rules)*.\n\n### Step 4. Check that the case really fits your issue\n\nThe book's method for deciding whether a case helps you:\n1. Identify the **precise issues** the court decided and compare them with yours. If none match, the case probably won't help.\n2. Check whether its ruling on those issues **logically applies to your facts**.\n3. Check whether the court is **binding on the court hearing your matter**. If it isn't, treat the case as persuasive.\n4. Check whether it is **still good law** (Part 2).\n\nExpect your opponent to try to **distinguish** the case, meaning they'll argue that your facts or the law involved are different. The book notes that it is \"much easier to get a court to 'distinguish' an old case than openly overrule it.\" Be ready to explain why the differences don't matter.\n\n---\n\n## Part 2: Is it still good law? Shepardize it (or KeyCite it)\n\nThe book says **\"Shepardizing is every bit as important as finding a case or statute.\"** Shepardizing does two jobs:\n- It confirms the case **hasn't been overruled, reversed or otherwise changed**.\n- It **finds later cases** that cite yours. Those cases are leads to more, and more recent, law on your issue.\n\n### How to do it\n\n**Online (fastest).** Use **Shepard's on Lexis** or **KeyCite on Westlaw**. Both update almost immediately and link to every citing case. Westlaw also flags cases that are at risk of being overruled.\n\n**Free.** Free sites like Google Scholar, Justia and FindLaw let you read cases, but they don't reliably tell you whether a case has been overruled. (VersusLaw lists citing cases but gives no analysis of how they treated the case.) For a free Shepard's or KeyCite check, **go to a local law library**: law school, state or county libraries often give the public free access to Lexis or Westlaw. Call first to confirm public access. Librarians can show you how to run the check.\n\n**In print (law library).** Following the book's steps:\n1. Write down the case's full citation (volume, reporter, page).\n2. Find the Shepard's volumes for that reporter.\n3. Use the right section and the right time period.\n4. Find the volume number, then the page number in bold.\n5. Read the list of citing references and their letter codes.\n6. **Check every supplement**, so nothing after 1998 is missed.\n\n### What to look for: two kinds of information\n\n**A. The case's own history** (what happened to *this* case on further appeal):\n- **Affirmed**: a higher court agreed. Good.\n- **Reversed** or **vacated**: a higher court undid it. Don't rely on the decision you found.\n- **Modified**: part of it changed. Check that *your* point survived.\n- **Supreme Court action**: for example, **review denied** means the higher court declined to hear the case, so the decision stands as good law.\n\n**B. Treatment by later, unrelated cases**:\n\n| Code | Meaning | What it means for you |\n|---|---|---|\n| **o** (overruled) | A later court overruled it | **No longer valid.** Don't rely on it. |\n| **su** (superseded by statute) | A statute replaced the rule | The rule is gone. Find and use the new statute. |\n| **q** (questioned) | Its validity is doubted | Risky. Read the questioning case. |\n| **c** (criticized) | Another court disagreed | Shows the arguments your opponent may use. |\n| **d** (distinguished) | A similar case was decided differently because its facts or law differed | Read it. It may be closer to your facts than your case is. |\n| **e** (explained) | The case is clarified | Read it for how courts understand the rule. |\n| **f** (followed) | A later court applied the rule | **Helpful.** Cite the later cases too, especially recent ones. |\n| **j** (dissenting opinion) | Cited in a dissent | Not binding. |\n| **~** (concurring opinion) | Cited in a concurrence | Not binding. |\n\n### Online signals (Lexis Shepard's)\n\nIf you use Lexis, the codes appear as colored signals:\n- **Red**: strong negative treatment, such as overruled or reversed.\n- **Orange**: validity questioned.\n- **Yellow**: possible negative treatment, such as distinguished or criticized.\n- **Green**: positive treatment, such as affirmed or followed.\n- **Blue \"A\"**: neutral analysis available.\n- **Blue \"I\"**: citation information only, for example law review articles.\n\n*(The book lists these meanings. Confirm the exact colors on the current Lexis screen.)* A signal is only a summary, so **always read the negative cases yourself**. A case can be overruled on one point and still be good law on another. A yellow flag may only mean another court distinguished it on different facts.\n\n### Don't forget the statute angle\n\nThe book points out that a legislature can **undo case law with a new statute** (unless the case interpreted the Constitution). Its example is the Lilly Ledbetter Fair Pay Act, passed after a Supreme Court ruling. If your 1998 case interprets a statute:\n- Shepardize the **statute** too, to find amendments and repeals.\n- Check the **pocket part** (or the online update) of the annotated code.\n- Check the **official code website**.\n\nLook for \"su\" (superseded by statute) in the case's Shepard's report.\n\n---\n\n## Part 3: Make your argument stronger\n\n- **Find newer cases.** The book advises preferring recent cases. Look at the citing cases marked \"f\" (followed), especially ones from the court that binds yours. A 2020s case from your own appellate court that follows the 1998 case is far more persuasive than the 1998 case alone.\n- **Use the headnote key number** (West reporters) and a **digest** to find more cases on the same point. Always check the digest's pocket part.\n- **Stick with existing law.** The book notes that trial judges almost never disregard precedent (*stare decisis*). A binding, still-good case is your best tool. Arguing for a change in the law usually has to happen on appeal.\n\n---\n\n## Quick checklist\n\n- [ ] What court decided the case (state or federal, which appellate court or circuit)?\n- [ ] Is that court above my court in the same system? If so, it's **binding**. If not, it's **persuasive** only.\n- [ ] Was the opinion published? Is my point in the **holding**, not dicta, a dissent or a headnote?\n- [ ] Do the issues and facts really match mine?\n- [ ] Shepardized or KeyCited: no reversal, no \"o\", no \"su\"? Did I read every \"q\", \"c\" and \"d\" case?\n- [ ] If it interprets a statute: is the statute still in the same form (pocket part, official code site)?\n- [ ] Did I find recent cases that **follow** it?\n\n---\n\n## To help further\n\nTell me:\n- **the court that decided the 1998 case** (or its citation);\n- **which court your matter is in** (state and county, or the federal district);\n- **the legal issue** it supports.\n\nWith those, I can tell you whether it's likely binding or persuasive in your court, and suggest search terms for finding newer cases that follow it. I won't guess at whether a specific case has been overruled, though. Only a current Shepard's or KeyCite check can tell you that.\n\n*This is legal information drawn from Nolo's* Legal Research*, not legal advice. If a lot is at stake, or a filing deadline is close, consider having a lawyer review your authorities. Many offer limited-scope help such as checking your research.*\n"}], "grading": {"expectations": [{"text": "Explains Shepardizing/KeyCite purpose: confirm not overruled/reversed and find citing cases", "passed": true, "evidence": "Shepardizing confirms not overruled and finds citing cases"}, {"text": "Lists treatment codes such as criticized, distinguished, explained, followed, overruled, questioned, superseded", "passed": true, "evidence": "Code table c, d, e, f, o, q, su"}, {"text": "Explains binding vs persuasive authority by court hierarchy (higher court in same system binds; other states/circuits persuasive)", "passed": true, "evidence": "Binding vs persuasive by hierarchy"}, {"text": "Distinguishes holding from dicta and/or majority vs concurring/dissenting opinions", "passed": true, "evidence": "Dicta and concurring/dissenting covered"}, {"text": "Suggests free/low-cost path: read on Justia/FindLaw/Google Scholar and Shepardize at a law library with Lexis/Westlaw access", "passed": true, "evidence": "Free sites, then law library Lexis/Westlaw"}, {"text": "Warns that online availability does not mean legal weight and/or headnotes are not law", "passed": true, "evidence": "Online does not mean legal weight; headnotes not law"}], "summary": {"passed": 6, "failed": 0, "total": 6, "pass_rate": 1.0}}}, {"id": "eval-2-lr-good-law-without_skill-run-1", "prompt": "I found a 1998 appellate case online that supports my argument. Per the Nolo Legal Research book, how do I know if it's still good law and whether it binds my court? What do the Shepard's codes mean?", "eval_id": 2, "outputs": [{"name": "response.md", "type": "text", "content": "# Is Your 1998 Case Still Good Law, and Does It Bind Your Court?\n\n*Based on the general approach taught in Nolo's* Legal Research: How to Find & Understand the Law *(Elias & Levinkind), written from memory. Check the current edition for exact wording and page references.*\n\nFinding a case that supports you is only the first step. Before you rely on it, answer two separate questions:\n\n1. **Is it still good law?** Has it been overruled, reversed, or weakened since 1998?\n2. **Is it binding authority in your court, or only persuasive?**\n\n---\n\n## Part 1: Is the case still \"good law\"?\n\nA case from 1998 has had more than 25 years for things to happen to it. Any of these can take away its value:\n\n- **Reversed:** a higher court in the *same* case changed the result on appeal.\n- **Overruled:** a later case in a court with authority over it (or the same court) rejected its rule.\n- **Superseded by statute:** the legislature changed the law the case interpreted.\n- **Depublished or review granted:** in some states, such as California, an appellate opinion can be depublished, or review can be granted, which may leave it uncitable.\n- **Criticized, limited, or distinguished:** the case still stands, but later courts have narrowed it.\n\n### How to check: \"Shepardize\" or cite-check the case\n\nNolo's book teaches the traditional method, **Shepardizing**: you look up your case in *Shepard's Citations* and get a list of every later case (and some secondary sources) that cited it, with a code showing what each one did to it.\n\n**Ways to do it today:**\n\n- **Shepard's on Lexis** (Lexis+ or Lexis Advance). This is the modern Shepard's. Lexis also puts colored signals on cases (see below).\n- **KeyCite on Westlaw.** This is Westlaw's equivalent, with red and yellow flags.\n- **A law library.** Many county, court, and law school libraries give the public free access to Lexis or Westlaw on library terminals, and some still keep the print Shepard's volumes. Ask a law librarian. Nolo strongly recommends this.\n- **Free tools** such as Google Scholar's \"How cited,\" CourtListener, and Casetext-style citators. These help you find later cases, but they are **not a substitute** for Shepard's or KeyCite because they do not reliably flag negative treatment.\n\n### Steps (Nolo-style)\n\n1. Get the case's **full citation**: volume, reporter, page, court, and year (for example, `123 Cal. App. 4th 456 (1998)`). Use the official reporter citation, not just a website URL.\n2. Run it through Shepard's or KeyCite, or look it up in the print Shepard's volumes and **every later supplement** (the paper pamphlets update the bound books, so you must check them all).\n3. **Check the case history first.** Was this decision appealed, reversed, or modified?\n4. **Look for negative treatment** by later courts: overruled, questioned, criticized, limited.\n5. **Read the citing cases yourself.** A code is only a hint. Pull any case marked negative and read what it actually says. Pay attention to whether it dealt with the **same point of law** you are relying on. Many cases have several holdings, and a case can be overruled on one issue and still be good law on another. Shepard's headnote numbers help you match citing cases to the specific point.\n6. **Look for newer, stronger authority.** The citing cases often include more recent decisions that state the same rule. Citing those as well makes your argument stronger.\n7. **Check statutes.** If the case interprets a statute, confirm the statute has not been amended or repealed since 1998, using the annotated code and its pocket parts.\n\n---\n\n## Part 2: What the Shepard's codes mean\n\n### Case history codes (the same case, going up or down on appeal)\n\n| Code | Meaning |\n|---|---|\n| **a** (affirmed) | A higher court affirmed the decision in the same case. |\n| **r** (reversed) | A higher court reversed the decision in the same case. **Danger.** |\n| **m** (modified) | The decision was changed in some way on appeal. |\n| **s** (same case) | The same case at another stage of the litigation. |\n| **S** (superseded) | A later opinion in the same case replaced this one. |\n| **v** (vacated) | The decision was vacated (set aside). **Danger.** |\n| **D** (dismissed) | The appeal was dismissed. |\n| **cert den / US cert den** | The U.S. Supreme Court declined review. This is generally *not* an endorsement of the decision. |\n| **cert gran** | The Supreme Court agreed to review the case. Find out what happened next. |\n| **reh den / reh gran** | Rehearing was denied or granted. |\n\n### Treatment codes (how *other* later cases treated it)\n\n| Code | Meaning |\n|---|---|\n| **o** (overruled) | A later court said the ruling is no longer law. **Do not rely on it**, at least on that point. |\n| **q** (questioned) | A later court questioned whether the ruling is valid. **Warning.** |\n| **c** (criticized) | A later court disagreed with the reasoning. **Warning.** |\n| **L** (limited) | A later court refused to extend the ruling beyond its exact facts. |\n| **d** (distinguished) | A later court said its facts were different, so the rule did not apply. This often does no harm, but read it to see if your facts look more like the later case. |\n| **e** (explained) | A later court interpreted or clarified the ruling. |\n| **f** (followed) | A later court relied on it as controlling. **Good sign.** |\n| **h** (harmonized) | A later court reconciled an apparent conflict with another case. |\n| **j** (dissenting opinion) | Cited in a dissent. |\n| **~** (concurring opinion) | Cited in a concurrence. |\n| **\u03c8** (psi) | The citing case was decided on other grounds, so the citation may matter less. |\n\nA citing case that has **no letter** just cited your case without a specific treatment. Most citations look like this. Shepard's also gives **small superscript numbers**: these are headnote numbers that tie each citing reference to a particular point of law in your case.\n\n### Signals in Shepard's online (Lexis)\n\n| Signal | Meaning |\n|---|---|\n| **Red stop sign** | Strong negative treatment (overruled or reversed). |\n| **Red \"Pr\"** | Strong negative treatment of a statute. |\n| **Orange \"Q\"** | Validity questioned. |\n| **Yellow triangle** | Possible negative treatment (criticized, limited, distinguished). |\n| **Green diamond with a \"+\"** | Positive treatment (followed, affirmed). |\n| **Blue \"A\"** | Analyzed or cited, neutral. |\n| **Blue \"I\"** | Citing references exist, but no history or treatment analysis. |\n\n**KeyCite (Westlaw) equivalents:** a **red flag** means no longer good law on at least one point, a **yellow flag** means some negative history, and a **blue-striped flag** means an appeal is pending.\n\nA red or yellow signal does **not** always mean you can't use the case. It could be negative on a different issue. That is why you have to read the citing cases.\n\n---\n\n## Part 3: Does the case bind your court?\n\n**Mandatory (binding) authority** means your court *must* follow it. **Persuasive authority** means your court *may* consider it but is not required to follow it.\n\n### The basic rules\n\nTwo things decide whether a case binds you: **which court decided it** and **which court you are in**.\n\n1. **Same court system.** State law generally binds only courts in that state. A California appellate case does not bind a Texas court, although the Texas court may find it persuasive.\n2. **Higher court in your line.** Decisions of courts *above* yours bind you. Your state supreme court binds every court in your state. A court is generally not bound by courts at the same level or below.\n3. **Intermediate appellate courts vary by state:**\n   - In some states (California is the usual example), a published decision of **any** court of appeal binds **all** trial courts in the state. If appellate districts conflict, the trial court may choose between them.\n   - In other states, a trial court is bound only by the appellate district or division it sits in. Decisions from other districts are persuasive.\n   - One appellate panel usually does not bind another panel or district in the same state. Practice varies, so check your state.\n4. **Federal courts:**\n   - U.S. Supreme Court decisions bind all federal courts, and they bind state courts on questions of federal law.\n   - A federal **circuit court** binds the district courts *within that circuit*. A 9th Circuit case does not bind a court in the 5th Circuit.\n   - State courts generally are **not** bound by lower federal courts, even on federal questions, though they often find them persuasive.\n   - When a federal court applies **state** law (in a diversity case), the state's highest court is the final word.\n5. **Published vs. unpublished.** Many courts treat unpublished opinions as non-precedential, and some court rules limit or forbid citing them. Cases \"found online\" are sometimes unpublished, so check this.\n6. **Holding vs. dicta.** Only the **holding**, meaning the part of the decision needed to resolve the issues before the court, is binding. Comments that weren't needed (dicta), concurrences, and dissents are at most persuasive.\n7. **Subject matter.** A case binds you on the legal issue it actually decided. Make sure your facts and issue are close enough.\n\n### Quick checklist for your 1998 case\n\n- [ ] What court decided it: state or federal, which state or circuit, which district?\n- [ ] What court are you in? Is the deciding court above yours in the same system?\n- [ ] Was it **published**, and can it be cited under your court's rules?\n- [ ] Does the part you rely on come from the **holding**, not dicta?\n- [ ] Has it been **Shepardized or KeyCited** with no reversal or overruling on your point?\n- [ ] Has a **higher court**, or a statute change, since 1998 changed the rule?\n- [ ] Are there **newer cases** stating the same rule that you can cite alongside it?\n\nIf the case is persuasive only (for example, from another state), you can still cite it. Present it as persuasive and look for binding authority from your own jurisdiction that agrees with it.\n\n---\n\n## Practical tips from Nolo's approach\n\n- **Don't trust the website copy alone.** Get the official citation and confirm the text in an official reporter or a reliable database.\n- **Ask a law librarian.** They can show you how to Shepardize in minutes, and many public law libraries offer free Lexis or Westlaw access.\n- **Check your court's local rules** on citing cases, especially unpublished ones.\n- **Citing bad law hurts your credibility** with the judge, and opposing counsel will check. Always cite-check right before you file.\n- If the stakes are significant, consider a limited-scope consultation with a lawyer to confirm the case still works for your situation.\n\n*This is general legal-research information, not legal advice for your situation.*\n"}], "grading": {"expectations": [{"text": "Explains Shepardizing/KeyCite purpose: confirm not overruled/reversed and find citing cases", "passed": true, "evidence": "Explains citator purpose"}, {"text": "Lists treatment codes such as criticized, distinguished, explained, followed, overruled, questioned, superseded", "passed": true, "evidence": "Lists treatment codes"}, {"text": "Explains binding vs persuasive authority by court hierarchy (higher court in same system binds; other states/circuits persuasive)", "passed": true, "evidence": "Binding vs persuasive explained"}, {"text": "Distinguishes holding from dicta and/or majority vs concurring/dissenting opinions", "passed": true, "evidence": "Dicta and dissents mentioned"}, {"text": "Suggests free/low-cost path: read on Justia/FindLaw/Google Scholar and Shepardize at a law library with Lexis/Westlaw access", "passed": true, "evidence": "Law library free access, Google Scholar"}, {"text": "Warns that online availability does not mean legal weight and/or headnotes are not law", "passed": false, "evidence": "No warning that online or headnotes lack legal weight"}], "summary": {"passed": 5, "failed": 1, "total": 6, "pass_rate": 0.8333333333333334}}}, {"id": "eval-3-lr-memo-with_skill-run-1", "prompt": "How does the Nolo Legal Research book say to write a legal memo? Give me the structure and a short example.", "eval_id": 3, "outputs": [{"name": "response.md", "type": "text", "content": "# Writing a Legal Memo: Nolo's *Legal Research* (19th ed., 2021)\n\nChapter 9 of the book (\"Organizing and putting your research to use\") covers the legal memo.\n\n## First: a memo is not a brief\n\n- A **legal memorandum** is an internal document. You write it for yourself or your employer, and it lays out the facts and the law **neutrally**, including the weak points.\n- A **brief** (also called a \"memorandum of points and authorities\") is filed in court and **argues one side**.\n\nIf you are writing the memo for someone else, such as a supervising lawyer or an employer, use their format and be objective about the weaknesses in the case.\n\n## The structure\n\nThe book says a memo's parts follow the parts of a court opinion:\n\n1. **Statement of facts.** Include only the **legally relevant** facts, the ones that affect the outcome. Leave out background that makes no legal difference.\n2. **Question presented (the issue).** One short question, usually one you can answer \"yes\" or \"no\".\n3. **Decision (conclusion or brief answer).** Your prediction of how a court would rule, for example \"Probably not\", followed by a one-line reason.\n4. **Discussion (analysis).** The book calls this \"really the most important part.\" For each issue, apply the law to your facts using **IRAC**:\n   - **I: Issue.** The specific question the authority answers.\n   - **R: Rule.** What the statute or case holds, with a citation.\n   - **A: Analysis.** How your facts match the case, or differ from it.\n   - **C: Conclusion.** What that authority means for your situation.\n5. **Citations throughout.** The book calls citations \"the roadmap\" for the reader. Every rule you state should point to its source so the reader can check it.\n\nThe book's IRAC illustration uses a Louisiana appellate case, *Ellender v. Neff Rental, Inc.* An employee who was on a work-related call, on a phone the employer provided, was held to be acting in the course and scope of employment. That made the employer **vicariously liable** when the employee drove negligently and hit a pedestrian. The **Issue** is whether the employer is liable. The **Rule** is the case's holding. The **Analysis** compares your facts with the case's facts (Was it a work call? Whose phone was it?). The **Conclusion** follows from that comparison. Look up the full citation yourself before you rely on the case.\n\n## Template\n\n```\nTO:\nFROM:\nDATE:\nRE:\n\nFACTS\n(legally relevant facts only)\n\nQUESTION PRESENTED\n(one question, answerable yes or no)\n\nBRIEF ANSWER\n(probably yes / probably no, plus a one-line reason)\n\nDISCUSSION\nIssue 1:\n  Issue:      ...\n  Rule:       ... (citation)\n  Analysis:   ... (how our facts compare)\n  Conclusion: ...\n(repeat for each issue)\n\nNEXT STEPS / OPEN QUESTIONS\n(what still needs research or verification)\n```\n\n## Short example\n\nThis uses the book's own landlord-tenant scenario. The book gives the question and the answer. I filled in the facts, and I put bracketed placeholders where the real citations would go, so the example doesn't present an authority I haven't checked.\n\n> **TO:** File\n> **FROM:** [Your name]\n> **DATE:** [Date]\n> **RE:** Whether the new building owner can evict Tenant over her dog\n>\n> **FACTS**\n> Tenant has rented a California apartment since 2019 under a written one-year lease that later became month to month. The lease says nothing about pets. In 2020 the then-owner gave Tenant written permission to keep one dog. The building was sold in March 2024. In May 2024 the new owner served Tenant a notice to remove the dog or face eviction.\n>\n> **QUESTION PRESENTED**\n> Can a new owner of an apartment house in California evict a tenant for having pets even though a prior landlord allowed them?\n>\n> **BRIEF ANSWER**\n> Probably not. The new owner takes the property subject to the agreements the prior owner negotiated, including the permission to keep the dog.\n>\n> **DISCUSSION**\n> *Issue:* Is the new owner bound by the prior owner's written permission for the dog?\n> *Rule:* [State the California statute or case on a buyer's obligations under existing tenancies, with its citation.]\n> *Analysis:* The permission was in writing and was given while the earlier owner held the property. Nothing suggests Tenant agreed to change it when the building was sold. [Compare these facts with the facts of the authority. Note any difference, such as an oral versus written permission or a lease clause that allows changes.]\n> *Conclusion:* If the rule holds as stated, the new owner probably cannot evict on this ground without first changing the terms lawfully. For a month-to-month tenancy, that would mean proper notice of the change and compliance with any local just-cause or rent-control ordinance.\n>\n> **NEXT STEPS**\n> - Check the city and county ordinances (for example rent control or just-cause eviction rules).\n> - Shepardize or KeyCite every case cited, and check the pocket part or the official code site for each statute.\n\n## Tips for the research behind the memo\n\n- **Organize as you go.** Keep one folder for each research question. On each case, mark where the issue, facts, decision and rationale appear, so you can write the IRAC sections quickly.\n- **Cite primary law, not secondary sources.** Encyclopedias, treatises and practice guides help you find the law, but the Rule section should cite the actual statute, regulation or case.\n- **Make sure the law is still good** before you rely on it: Shepard's or KeyCite, the pocket parts, and the date on the official code website.\n- **Keep to existing law.** Predict what a court would do under current precedent, not what you think the law should be.\n\n*This is legal information drawn from the Nolo book, not legal advice. For a real dispute, especially one with a close deadline or a lot of money at stake, check with a local lawyer.*\n"}], "grading": {"expectations": [{"text": "Lists the memo parts: statement of facts, question presented/issue, decision/conclusion (brief answer), discussion", "passed": true, "evidence": "Facts, question presented, decision, discussion"}, {"text": "Explains IRAC (Issue, Rule, Analysis, Conclusion) for the discussion section", "passed": true, "evidence": "IRAC explained"}, {"text": "Says the facts section includes only legally relevant facts", "passed": true, "evidence": "Legally relevant facts only"}, {"text": "Says the question presented is succinct and usually answerable yes/no", "passed": true, "evidence": "Succinct yes/no question"}, {"text": "Distinguishes an internal memo from a brief/points and authorities filed in court", "passed": true, "evidence": "Memo vs brief / points and authorities"}, {"text": "Provides a concrete example memo or uses the book's example (new landlord/pets or employer cell phone liability)", "passed": true, "evidence": "Book's pets and cell-phone examples"}], "summary": {"passed": 6, "failed": 0, "total": 6, "pass_rate": 1.0}}}, {"id": "eval-3-lr-memo-without_skill-run-1", "prompt": "How does the Nolo Legal Research book say to write a legal memo? Give me the structure and a short example.", "eval_id": 3, "outputs": [{"name": "response.md", "type": "text", "content": "# Writing a Legal Memo, Following Nolo's *Legal Research*\n\n**A note on sources:** This answer is written from memory. I don't have the book in front of me. Nolo's *Legal Research: How to Find & Understand the Law* (Stephen Elias and Susan Levinkind; later editions revised by the Nolo editors) has a chapter on writing up your research as a legal memorandum. The structure below is the standard one the book teaches. Section names and their order can differ a little between editions, so check your copy for the exact headings and its sample memo.\n\n## Why the book says to write a memo\n\n- **It tests your research.** If you can't explain the law clearly in writing, you probably don't understand it yet, or you haven't finished researching.\n- **It keeps a record.** You can come back to it later, or hand it to a lawyer, a court clerk or the other side without starting over.\n- **It's a step toward court papers.** Much of a memo can be reused in a letter, a motion or a brief.\n- **It's objective, not one-sided.** A memo is for you to understand where you stand. Lay out the law that hurts you as well as the law that helps you.\n\n## The structure\n\n1. **Heading.** Who the memo is to and from, the date and the subject (for example, \"Tenant's right to withhold rent for repairs\").\n2. **Statement of Facts.** The facts that matter to the legal question, stated neutrally and briefly. Leave out facts that don't affect the outcome, but include the unhelpful ones.\n3. **Question(s) Presented.** The legal issue or issues, each written as one specific question that combines the law and the key facts. Number them if there is more than one.\n4. **Brief Answer / Conclusion.** A short, direct answer to each question (\"Probably yes, because...\") so the reader knows the bottom line right away.\n5. **Discussion.** The main part of the memo. For each issue:\n   - State the rule from the statutes, regulations and cases you found, with citations.\n   - Explain how courts have read and applied the rule. Compare the facts of key cases to yours.\n   - Apply the rule to your facts.\n   - Deal with counterarguments and law that goes against you.\n   - Note any gaps or uncertainty, and say whether you Shepardized or KeyCited your authorities to confirm they are still good law.\n\n   This order is essentially IRAC: Issue, Rule, Application, Conclusion.\n6. **Conclusion.** A short summary of where things stand, along with practical next steps or recommendations. Some short memos combine this with the Brief Answer.\n\n**Writing tips the book stresses:** use plain English, short sentences and paragraphs, and a headed section for each issue. Cite every legal statement so it can be checked, and quote statutory language exactly when it matters.\n\n## A short example\n\n> **MEMORANDUM**\n>\n> **To:** File\n> **From:** J. Researcher\n> **Date:** November 21, 2026\n> **Re:** Can a tenant deduct repair costs from rent? (California)\n>\n> **Statement of Facts**\n> The tenant rents an apartment in Los Angeles for $1,500 a month. On March 1 the heater stopped working, and on March 2 the tenant gave the landlord written notice. As of April 5 the landlord had not made the repair. The tenant paid a repair service $300 and wants to subtract that amount from April's rent. The tenant has not used repair-and-deduct in the past 12 months.\n>\n> **Question Presented**\n> Under California law, can a tenant whose landlord failed for more than 30 days after written notice to fix a broken heater pay for the repair and deduct the $300 from one month's rent?\n>\n> **Brief Answer**\n> Probably yes. California Civil Code \u00a7 1942 lets a tenant deduct repair costs of up to one month's rent if the landlord fails to make a needed repair within a reasonable time after notice. The statute presumes that 30 days is reasonable. Heating is a basic habitability requirement, and the tenant meets the once-in-12-months limit.\n>\n> **Discussion**\n> *Rule.* Civil Code \u00a7 1942(a) allows a tenant to make repairs to conditions that make the premises untenantable and deduct the cost from rent. The landlord must have had notice and failed to repair within a reasonable time, which the statute presumes is 30 days. The deduction can't exceed one month's rent, and the remedy may be used no more than twice in any 12-month period. Civil Code \u00a7 1941.1 lists adequate heating among the conditions required for a home to be tenantable.\n>\n> *Application.* The broken heater is an untenantable condition under \u00a7 1941.1. The tenant gave written notice, and the landlord did nothing for more than 30 days, which meets the presumptively reasonable period. The $300 is well under one month's rent, and this is the tenant's first use of the remedy this year.\n>\n> *Counterarguments.* The landlord might argue that the tenant caused the damage. Under \u00a7 1929, a tenant cannot use the remedy for damage the tenant caused. Nothing in the facts suggests that. The landlord might also try to evict in retaliation. Civil Code \u00a7 1942.5 presumes retaliation if the landlord acts within 180 days of the tenant using this remedy. *(Cases interpreting \u00a7 1942 still to be checked, and all authorities to be Shepardized.)*\n>\n> **Conclusion**\n> The tenant can most likely deduct the $300. Next steps: keep copies of the notice, the repair invoice and the receipt; send the landlord a letter explaining the deduction with the April rent; and confirm that the statutes haven't been amended since this memo was written.\n\nThe example's statutes are given for illustration. Check current law before relying on them for a real situation.\n"}], "grading": {"expectations": [{"text": "Lists the memo parts: statement of facts, question presented/issue, decision/conclusion (brief answer), discussion", "passed": true, "evidence": "Heading, facts, question, brief answer, discussion, conclusion"}, {"text": "Explains IRAC (Issue, Rule, Analysis, Conclusion) for the discussion section", "passed": true, "evidence": "IRAC mentioned"}, {"text": "Says the facts section includes only legally relevant facts", "passed": true, "evidence": "Facts that matter, omit irrelevant"}, {"text": "Says the question presented is succinct and usually answerable yes/no", "passed": false, "evidence": "No yes/no guidance"}, {"text": "Distinguishes an internal memo from a brief/points and authorities filed in court", "passed": false, "evidence": "No memo vs brief distinction"}, {"text": "Provides a concrete example memo or uses the book's example (new landlord/pets or employer cell phone liability)", "passed": true, "evidence": "Own short example memo"}], "summary": {"passed": 4, "failed": 2, "total": 6, "pass_rate": 0.6666666666666666}}}], "previous_feedback": {}, "previous_outputs": {}, "benchmark": {"metadata": {"skill_name": "legal-research", "skill_path": "\u003cpath/to/skill>", "executor_model": "\u003cmodel-name>", "analyzer_model": "\u003cmodel-name>", "timestamp": "2026-11-21T03:08:43Z", "evals_run": [1, 2, 3], "runs_per_configuration": 1}, "runs": [{"eval_id": 1, "eval_name": "lr-plan", "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 6, "failed": 0, "total": 6, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Frames the issue: civil (not criminal), substantive and procedural, state law (landlord-tenant), and writes a research question/goal", "passed": true, "evidence": "Table: civil, both substantive and procedural, state; goal and question list"}, {"text": "Recommends starting with secondary sources (e.g., Nolo, state-specific encyclopedia or practice guide) before primary law", "passed": true, "evidence": "Starts with Nolo Every Tenant's Legal Guide and state sources"}, {"text": "Points to the Ohio statute/code (primary law) and reading it carefully (e.g., read multiple times, ands/ors)", "passed": true, "evidence": "R.C. 5321.16; read at least three times"}, {"text": "Says to verify the law is current/good law (pocket parts, Shepardizing/KeyCite, law library access)", "passed": true, "evidence": "Pocket part, Shepard's/KeyCite, law library"}, {"text": "Gives search terms or a Boolean query (e.g., synonyms, Cartwheel, operators)", "passed": true, "evidence": "Search terms and Boolean query"}, {"text": "Covers small claims/court procedure research and/or organizing research (folders, memo) and a not-legal-advice caveat", "passed": true, "evidence": "Small claims procedure, folders/memo, not legal advice"}], "notes": []}, {"eval_id": 2, "eval_name": "lr-good-law", "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 6, "failed": 0, "total": 6, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Explains Shepardizing/KeyCite purpose: confirm not overruled/reversed and find citing cases", "passed": true, "evidence": "Shepardizing confirms not overruled and finds citing cases"}, {"text": "Lists treatment codes such as criticized, distinguished, explained, followed, overruled, questioned, superseded", "passed": true, "evidence": "Code table c, d, e, f, o, q, su"}, {"text": "Explains binding vs persuasive authority by court hierarchy (higher court in same system binds; other states/circuits persuasive)", "passed": true, "evidence": "Binding vs persuasive by hierarchy"}, {"text": "Distinguishes holding from dicta and/or majority vs concurring/dissenting opinions", "passed": true, "evidence": "Dicta and concurring/dissenting covered"}, {"text": "Suggests free/low-cost path: read on Justia/FindLaw/Google Scholar and Shepardize at a law library with Lexis/Westlaw access", "passed": true, "evidence": "Free sites, then law library Lexis/Westlaw"}, {"text": "Warns that online availability does not mean legal weight and/or headnotes are not law", "passed": true, "evidence": "Online does not mean legal weight; headnotes not law"}], "notes": []}, {"eval_id": 3, "eval_name": "lr-memo", "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 6, "failed": 0, "total": 6, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Lists the memo parts: statement of facts, question presented/issue, decision/conclusion (brief answer), discussion", "passed": true, "evidence": "Facts, question presented, decision, discussion"}, {"text": "Explains IRAC (Issue, Rule, Analysis, Conclusion) for the discussion section", "passed": true, "evidence": "IRAC explained"}, {"text": "Says the facts section includes only legally relevant facts", "passed": true, "evidence": "Legally relevant facts only"}, {"text": "Says the question presented is succinct and usually answerable yes/no", "passed": true, "evidence": "Succinct yes/no question"}, {"text": "Distinguishes an internal memo from a brief/points and authorities filed in court", "passed": true, "evidence": "Memo vs brief / points and authorities"}, {"text": "Provides a concrete example memo or uses the book's example (new landlord/pets or employer cell phone liability)", "passed": true, "evidence": "Book's pets and cell-phone examples"}], "notes": []}, {"eval_id": 1, "eval_name": "lr-plan", "configuration": "without_skill", "run_number": 1, "result": {"pass_rate": 0.6666666666666666, "passed": 4, "failed": 2, "total": 6, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Frames the issue: civil (not criminal), substantive and procedural, state law (landlord-tenant), and writes a research question/goal", "passed": false, "evidence": "Civil/state and a plain question, but no substantive vs procedural framing"}, {"text": "Recommends starting with secondary sources (e.g., Nolo, state-specific encyclopedia or practice guide) before primary law", "passed": true, "evidence": "AG and bar publications, Ohio Jur 3d first"}, {"text": "Points to the Ohio statute/code (primary law) and reading it carefully (e.g., read multiple times, ands/ors)", "passed": true, "evidence": "R.C. 5321.16; defined terms, shall vs may"}, {"text": "Says to verify the law is current/good law (pocket parts, Shepardizing/KeyCite, law library access)", "passed": true, "evidence": "Step 6 Shepardize/KeyCite, current version"}, {"text": "Gives search terms or a Boolean query (e.g., synonyms, Cartwheel, operators)", "passed": false, "evidence": "No search terms or Boolean query given"}, {"text": "Covers small claims/court procedure research and/or organizing research (folders, memo) and a not-legal-advice caveat", "passed": true, "evidence": "Small claims R.C. 1925, checklist, not legal advice"}], "notes": []}, {"eval_id": 2, "eval_name": "lr-good-law", "configuration": "without_skill", "run_number": 1, "result": {"pass_rate": 0.8333333333333334, "passed": 5, "failed": 1, "total": 6, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Explains Shepardizing/KeyCite purpose: confirm not overruled/reversed and find citing cases", "passed": true, "evidence": "Explains citator purpose"}, {"text": "Lists treatment codes such as criticized, distinguished, explained, followed, overruled, questioned, superseded", "passed": true, "evidence": "Lists treatment codes"}, {"text": "Explains binding vs persuasive authority by court hierarchy (higher court in same system binds; other states/circuits persuasive)", "passed": true, "evidence": "Binding vs persuasive explained"}, {"text": "Distinguishes holding from dicta and/or majority vs concurring/dissenting opinions", "passed": true, "evidence": "Dicta and dissents mentioned"}, {"text": "Suggests free/low-cost path: read on Justia/FindLaw/Google Scholar and Shepardize at a law library with Lexis/Westlaw access", "passed": true, "evidence": "Law library free access, Google Scholar"}, {"text": "Warns that online availability does not mean legal weight and/or headnotes are not law", "passed": false, "evidence": "No warning that online or headnotes lack legal weight"}], "notes": []}, {"eval_id": 3, "eval_name": "lr-memo", "configuration": "without_skill", "run_number": 1, "result": {"pass_rate": 0.6666666666666666, "passed": 4, "failed": 2, "total": 6, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Lists the memo parts: statement of facts, question presented/issue, decision/conclusion (brief answer), discussion", "passed": true, "evidence": "Heading, facts, question, brief answer, discussion, conclusion"}, {"text": "Explains IRAC (Issue, Rule, Analysis, Conclusion) for the discussion section", "passed": true, "evidence": "IRAC mentioned"}, {"text": "Says the facts section includes only legally relevant facts", "passed": true, "evidence": "Facts that matter, omit irrelevant"}, {"text": "Says the question presented is succinct and usually answerable yes/no", "passed": false, "evidence": "No yes/no guidance"}, {"text": "Distinguishes an internal memo from a brief/points and authorities filed in court", "passed": false, "evidence": "No memo vs brief distinction"}, {"text": "Provides a concrete example memo or uses the book's example (new landlord/pets or employer cell phone liability)", "passed": true, "evidence": "Own short example memo"}], "notes": []}], "run_summary": {"with_skill": {"pass_rate": {"mean": 1.0, "stddev": 0.0, "min": 1.0, "max": 1.0}, "time_seconds": null, "tokens": null}, "without_skill": {"pass_rate": {"mean": 0.7222, "stddev": 0.0962, "min": 0.6667, "max": 0.8333}, "time_seconds": null, "tokens": null}, "delta": {"pass_rate": "+0.28", "time_seconds": null, "tokens": null}}, "notes": ["Time recorded for 0 of 3 with_skill runs, 0 of 3 without_skill runs, so there is no time delta.", "Token count recorded for 0 of 3 with_skill runs, 0 of 3 without_skill runs, so there is no token count delta."]}};
+
+    // ---- State ----
+    let feedbackMap = {};  // run_id -> feedback text
+    let currentIndex = 0;
+    let visitedRuns = new Set();
+
+    // ---- Init ----
+    async function init() {
+      // Load saved feedback from server — but only if this isn't a fresh
+      // iteration (indicated by previous_feedback being present). When
+      // previous feedback exists, the feedback.json on disk is stale from
+      // the prior iteration and should not pre-fill the textareas.
+      const hasPrevious = Object.keys(EMBEDDED_DATA.previous_feedback || {}).length > 0
+        || Object.keys(EMBEDDED_DATA.previous_outputs || {}).length > 0;
+      if (!hasPrevious) {
+        try {
+          const resp = await fetch("/api/feedback");
+          const data = await resp.json();
+          if (data.reviews) {
+            for (const r of data.reviews) feedbackMap[r.run_id] = r.feedback;
+          }
+        } catch { /* first run, no feedback yet */ }
+      }
+
+      document.getElementById("skill-name").textContent = EMBEDDED_DATA.skill_name;
+      showRun(0);
+
+      // Wire up feedback auto-save
+      const textarea = document.getElementById("feedback");
+      let saveTimeout = null;
+      textarea.addEventListener("input", () => {
+        clearTimeout(saveTimeout);
+        document.getElementById("feedback-status").textContent = "";
+        saveTimeout = setTimeout(() => saveCurrentFeedback(), 800);
+      });
+    }
+
+    // ---- Navigation ----
+    function navigate(delta) {
+      const newIndex = currentIndex + delta;
+      if (newIndex >= 0 && newIndex < EMBEDDED_DATA.runs.length) {
+        saveCurrentFeedback();
+        showRun(newIndex);
+      }
+    }
+
+    function updateNavButtons() {
+      document.getElementById("prev-btn").disabled = currentIndex === 0;
+      document.getElementById("next-btn").disabled =
+        currentIndex === EMBEDDED_DATA.runs.length - 1;
+    }
+
+    // ---- Show a run ----
+    function showRun(index) {
+      currentIndex = index;
+      const run = EMBEDDED_DATA.runs[index];
+
+      // Progress
+      document.getElementById("progress").textContent =
+        `${index + 1} of ${EMBEDDED_DATA.runs.length}`;
+
+      // Prompt
+      document.getElementById("prompt-text").textContent = run.prompt;
+
+      // Config badge
+      const badge = document.getElementById("config-badge");
+      const configMatch = run.id.match(/(with_skill|without_skill|new_skill|old_skill)/);
+      if (configMatch) {
+        const config = configMatch[1];
+        const isBaseline = config === "without_skill" || config === "old_skill";
+        badge.textContent = config.replace(/_/g, " ");
+        badge.className = "config-badge " + (isBaseline ? "config-baseline" : "config-primary");
+        badge.style.display = "inline-block";
+      } else {
+        badge.style.display = "none";
+      }
+
+      // Outputs
+      renderOutputs(run);
+
+      // Previous outputs
+      renderPrevOutputs(run);
+
+      // Grades
+      renderGrades(run);
+
+      // Previous feedback
+      const prevFb = (EMBEDDED_DATA.previous_feedback || {})[run.id];
+      const prevEl = document.getElementById("prev-feedback");
+      if (prevFb) {
+        document.getElementById("prev-feedback-text").textContent = prevFb;
+        prevEl.style.display = "block";
+      } else {
+        prevEl.style.display = "none";
+      }
+
+      // Feedback
+      document.getElementById("feedback").value = feedbackMap[run.id] || "";
+      document.getElementById("feedback-status").textContent = "";
+
+      updateNavButtons();
+
+      // Track visited runs and promote done button when all visited
+      visitedRuns.add(index);
+      const doneBtn = document.getElementById("done-btn");
+      if (visitedRuns.size >= EMBEDDED_DATA.runs.length) {
+        doneBtn.classList.add("ready");
+      }
+
+      // Scroll main content to top
+      document.querySelector(".main").scrollTop = 0;
+    }
+
+    // ---- Render outputs ----
+    function renderOutputs(run) {
+      const container = document.getElementById("outputs-body");
+      container.innerHTML = "";
+
+      const outputs = run.outputs || [];
+      if (outputs.length === 0) {
+        container.innerHTML = '<div class="empty-state">No output files</div>';
+        return;
+      }
+
+      for (const file of outputs) {
+        const fileDiv = document.createElement("div");
+        fileDiv.className = "output-file";
+
+        // Always show file header with download link
+        const header = document.createElement("div");
+        header.className = "output-file-header";
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = file.name;
+        header.appendChild(nameSpan);
+        const dlBtn = document.createElement("a");
+        dlBtn.className = "dl-btn";
+        dlBtn.textContent = "Download";
+        dlBtn.download = file.name;
+        dlBtn.href = getDownloadUri(file);
+        header.appendChild(dlBtn);
+        fileDiv.appendChild(header);
+
+        const content = document.createElement("div");
+        content.className = "output-file-content";
+
+        if (file.type === "text") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          content.appendChild(pre);
+        } else if (file.type === "image") {
+          const img = document.createElement("img");
+          img.src = file.data_uri;
+          img.alt = file.name;
+          content.appendChild(img);
+        } else if (file.type === "pdf") {
+          const iframe = document.createElement("iframe");
+          iframe.src = file.data_uri;
+          content.appendChild(iframe);
+        } else if (file.type === "xlsx") {
+          renderXlsx(content, file.data_b64);
+        } else if (file.type === "binary") {
+          const a = document.createElement("a");
+          a.className = "download-link";
+          a.href = file.data_uri;
+          a.download = file.name;
+          a.textContent = "Download " + file.name;
+          content.appendChild(a);
+        } else if (file.type === "error") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          pre.style.color = "var(--red)";
+          content.appendChild(pre);
+        }
+
+        fileDiv.appendChild(content);
+        container.appendChild(fileDiv);
+      }
+    }
+
+    // ---- XLSX rendering via SheetJS ----
+    function renderXlsx(container, b64Data) {
+      try {
+        const raw = Uint8Array.from(atob(b64Data), c => c.charCodeAt(0));
+        const wb = XLSX.read(raw, { type: "array" });
+
+        for (let i = 0; i < wb.SheetNames.length; i++) {
+          const sheetName = wb.SheetNames[i];
+          const ws = wb.Sheets[sheetName];
+
+          if (wb.SheetNames.length > 1) {
+            const sheetLabel = document.createElement("div");
+            sheetLabel.style.cssText =
+              "font-weight:600; font-size:0.8rem; color:#b0aea5; margin-top:0.5rem; margin-bottom:0.25rem;";
+            sheetLabel.textContent = "Sheet: " + sheetName;
+            container.appendChild(sheetLabel);
+          }
+
+          const htmlStr = XLSX.utils.sheet_to_html(ws, { editable: false });
+          const wrapper = document.createElement("div");
+          wrapper.innerHTML = htmlStr;
+          container.appendChild(wrapper);
+        }
+      } catch (err) {
+        container.textContent = "Error rendering spreadsheet: " + err.message;
+      }
+    }
+
+    // ---- Grades ----
+    function renderGrades(run) {
+      const section = document.getElementById("grades-section");
+      const content = document.getElementById("grades-content");
+
+      if (!run.grading) {
+        section.style.display = "none";
+        return;
+      }
+
+      const grading = run.grading;
+      section.style.display = "block";
+      // Reset to collapsed
+      content.classList.remove("open");
+      document.getElementById("grades-arrow").classList.remove("open");
+
+      const summary = grading.summary || {};
+      const expectations = grading.expectations || [];
+
+      let html = '<div style="padding: 1rem;">';
+
+      // Summary line
+      const passRate = summary.pass_rate != null
+        ? Math.round(summary.pass_rate * 100) + "%"
+        : "?";
+      const badgeClass = summary.pass_rate >= 0.8 ? "grade-pass" : summary.pass_rate >= 0.5 ? "" : "grade-fail";
+      html += '<div class="grades-summary">';
+      html += '<span class="grade-badge ' + badgeClass + '">' + passRate + '</span>';
+      html += '<span>' + escapeHtml(summary.passed || 0) + ' passed, ' + escapeHtml(summary.failed || 0) + ' failed of ' + escapeHtml(summary.total || 0) + '</span>';
+      html += '</div>';
+
+      // Assertions list
+      html += '<ul class="assertion-list">';
+      for (const exp of expectations) {
+        const statusClass = exp.passed ? "pass" : "fail";
+        const statusIcon = exp.passed ? "\u2713" : "\u2717";
+        html += '<li class="assertion-item">';
+        html += '<span class="assertion-status ' + statusClass + '">' + statusIcon + '</span>';
+        html += '<span>' + escapeHtml(exp.text) + '</span>';
+        if (exp.evidence) {
+          html += '<div class="assertion-evidence">' + escapeHtml(exp.evidence) + '</div>';
+        }
+        html += '</li>';
+      }
+      html += '</ul>';
+
+      html += '</div>';
+      content.innerHTML = html;
+    }
+
+    function toggleGrades() {
+      const content = document.getElementById("grades-content");
+      const arrow = document.getElementById("grades-arrow");
+      content.classList.toggle("open");
+      arrow.classList.toggle("open");
+    }
+
+    // ---- Previous outputs (collapsible) ----
+    function renderPrevOutputs(run) {
+      const section = document.getElementById("prev-outputs-section");
+      const content = document.getElementById("prev-outputs-content");
+      const prevOutputs = (EMBEDDED_DATA.previous_outputs || {})[run.id];
+
+      if (!prevOutputs || prevOutputs.length === 0) {
+        section.style.display = "none";
+        return;
+      }
+
+      section.style.display = "block";
+      // Reset to collapsed
+      content.classList.remove("open");
+      document.getElementById("prev-outputs-arrow").classList.remove("open");
+
+      // Render the files into the content area
+      content.innerHTML = "";
+      const wrapper = document.createElement("div");
+      wrapper.style.padding = "1rem";
+
+      for (const file of prevOutputs) {
+        const fileDiv = document.createElement("div");
+        fileDiv.className = "output-file";
+
+        const header = document.createElement("div");
+        header.className = "output-file-header";
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = file.name;
+        header.appendChild(nameSpan);
+        const dlBtn = document.createElement("a");
+        dlBtn.className = "dl-btn";
+        dlBtn.textContent = "Download";
+        dlBtn.download = file.name;
+        dlBtn.href = getDownloadUri(file);
+        header.appendChild(dlBtn);
+        fileDiv.appendChild(header);
+
+        const fc = document.createElement("div");
+        fc.className = "output-file-content";
+
+        if (file.type === "text") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          fc.appendChild(pre);
+        } else if (file.type === "image") {
+          const img = document.createElement("img");
+          img.src = file.data_uri;
+          img.alt = file.name;
+          fc.appendChild(img);
+        } else if (file.type === "pdf") {
+          const iframe = document.createElement("iframe");
+          iframe.src = file.data_uri;
+          fc.appendChild(iframe);
+        } else if (file.type === "xlsx") {
+          renderXlsx(fc, file.data_b64);
+        } else if (file.type === "binary") {
+          const a = document.createElement("a");
+          a.className = "download-link";
+          a.href = file.data_uri;
+          a.download = file.name;
+          a.textContent = "Download " + file.name;
+          fc.appendChild(a);
+        }
+
+        fileDiv.appendChild(fc);
+        wrapper.appendChild(fileDiv);
+      }
+
+      content.appendChild(wrapper);
+    }
+
+    function togglePrevOutputs() {
+      const content = document.getElementById("prev-outputs-content");
+      const arrow = document.getElementById("prev-outputs-arrow");
+      content.classList.toggle("open");
+      arrow.classList.toggle("open");
+    }
+
+    // ---- Feedback (saved to server -> feedback.json) ----
+    function saveCurrentFeedback() {
+      const run = EMBEDDED_DATA.runs[currentIndex];
+      const text = document.getElementById("feedback").value;
+
+      if (text.trim() === "") {
+        delete feedbackMap[run.id];
+      } else {
+        feedbackMap[run.id] = text;
+      }
+
+      // Build reviews array from map
+      const reviews = [];
+      for (const [run_id, feedback] of Object.entries(feedbackMap)) {
+        if (feedback.trim()) {
+          reviews.push({ run_id, feedback, timestamp: new Date().toISOString() });
+        }
+      }
+
+      fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reviews, status: "in_progress" }),
+      }).then(() => {
+        document.getElementById("feedback-status").textContent = "Saved";
+      }).catch(() => {
+        // Static mode or server unavailable — no-op on auto-save,
+        // feedback will be downloaded on final submit
+        document.getElementById("feedback-status").textContent = "Will download on submit";
+      });
+    }
+
+    // ---- Done ----
+    function showDoneDialog() {
+      // Save current textarea to feedbackMap (but don't POST yet)
+      const run = EMBEDDED_DATA.runs[currentIndex];
+      const text = document.getElementById("feedback").value;
+      if (text.trim() === "") {
+        delete feedbackMap[run.id];
+      } else {
+        feedbackMap[run.id] = text;
+      }
+
+      // POST once with status: complete — include ALL runs so the model
+      // can distinguish "no feedback" (looks good) from "not reviewed"
+      const reviews = [];
+      const ts = new Date().toISOString();
+      for (const r of EMBEDDED_DATA.runs) {
+        reviews.push({ run_id: r.id, feedback: feedbackMap[r.id] || "", timestamp: ts });
+      }
+      const payload = JSON.stringify({ reviews, status: "complete" }, null, 2);
+      fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: payload,
+      }).then(() => {
+        document.getElementById("done-overlay").classList.add("visible");
+      }).catch(() => {
+        // Server not available (static mode) — download as file
+        const blob = new Blob([payload], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "feedback.json";
+        a.click();
+        URL.revokeObjectURL(url);
+        document.getElementById("done-overlay").classList.add("visible");
+      });
+    }
+
+    function closeDoneDialog() {
+      // Reset status back to in_progress
+      saveCurrentFeedback();
+      document.getElementById("done-overlay").classList.remove("visible");
+    }
+
+    // ---- Toast ----
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("visible");
+      setTimeout(() => toast.classList.remove("visible"), 2000);
+    }
+
+    // ---- Keyboard nav ----
+    document.addEventListener("keydown", (e) => {
+      // Don't capture when typing in textarea
+      if (e.target.tagName === "TEXTAREA") return;
+
+      if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+        e.preventDefault();
+        navigate(-1);
+      } else if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+        e.preventDefault();
+        navigate(1);
+      }
+    });
+
+    // ---- Util ----
+    function getDownloadUri(file) {
+      if (file.data_uri) return file.data_uri;
+      if (file.data_b64) return "data:application/octet-stream;base64," + file.data_b64;
+      if (file.type === "text") return "data:text/plain;charset=utf-8," + encodeURIComponent(file.content);
+      return "#";
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement("div");
+      div.textContent = text;
+      return div.innerHTML.replace(/"/g, "&quot;");
+    }
+
+    // ---- View switching ----
+    function switchView(view) {
+      document.querySelectorAll(".view-tab").forEach(t => t.classList.remove("active"));
+      document.querySelectorAll(".view-panel").forEach(p => p.classList.remove("active"));
+      document.querySelector(`[onclick="switchView('${view}')"]`).classList.add("active");
+      document.getElementById("panel-" + view).classList.add("active");
+    }
+
+    // ---- Benchmark rendering ----
+    function renderBenchmark() {
+      const data = EMBEDDED_DATA.benchmark;
+      if (!data) return;
+
+      // Show the tabs
+      document.getElementById("view-tabs").style.display = "flex";
+
+      const container = document.getElementById("benchmark-content");
+      const summary = data.run_summary || {};
+      const metadata = data.metadata || {};
+      const notes = data.notes || [];
+
+      let html = "";
+
+      // Header
+      html += "<h2 style='font-family: Poppins, sans-serif; margin-bottom: 0.5rem;'>Benchmark Results</h2>";
+      html += "<p style='color: var(--text-muted); font-size: 0.875rem; margin-bottom: 1.25rem;'>";
+      if (metadata.skill_name) html += "<strong>" + escapeHtml(metadata.skill_name) + "</strong> &mdash; ";
+      if (metadata.timestamp) html += escapeHtml(metadata.timestamp) + " &mdash; ";
+      if (metadata.evals_run) html += "Evals: " + escapeHtml(metadata.evals_run.join(", ")) + " &mdash; ";
+      html += escapeHtml(metadata.runs_per_configuration || "?") + (metadata.runs_per_configuration === 1 ? " run" : " runs") + " per configuration";
+      html += "</p>";
+
+      // Summary table
+      html += '<table class="benchmark-table">';
+
+      function fmtStat(stat, pct) {
+        if (!stat) return "—";
+        const suffix = pct ? "%" : "";
+        const m = pct ? (stat.mean * 100).toFixed(0) : stat.mean.toFixed(1);
+        const s = pct ? (stat.stddev * 100).toFixed(0) : stat.stddev.toFixed(1);
+        return m + suffix + " ± " + s + suffix;
+      }
+
+      function deltaClass(val) {
+        if (!val) return "";
+        const n = parseFloat(val);
+        if (n > 0) return "benchmark-delta-positive";
+        if (n < 0) return "benchmark-delta-negative";
+        return "";
+      }
+
+      // Discover config names dynamically (everything except "delta")
+      const configs = Object.keys(summary).filter(k => k !== "delta");
+      const configA = configs[0] || "config_a";
+      const configB = configs[1] || "config_b";
+      const labelA = configA.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      const labelB = configB.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      const a = summary[configA] || {};
+      const b = summary[configB] || {};
+      const delta = summary.delta || {};
+      // With a single configuration there is nothing to compare: only its column is shown
+      const compare = cells => configs.length >= 2 ? cells : "";
+
+      html += "<thead><tr><th>Metric</th><th>" + escapeHtml(labelA) + "</th>" + compare("<th>" + escapeHtml(labelB) + "</th><th>Delta</th>") + "</tr></thead>";
+      html += "<tbody>";
+
+      html += "<tr><td><strong>Pass Rate</strong></td>";
+      html += "<td>" + fmtStat(a.pass_rate, true) + "</td>";
+      html += compare("<td>" + fmtStat(b.pass_rate, true) + "</td>");
+      html += compare('<td class="' + deltaClass(delta.pass_rate) + '">' + escapeHtml(delta.pass_rate || "—") + "</td>") + "</tr>";
+
+      // Time (only show row if data exists)
+      if (a.time_seconds || b.time_seconds) {
+        html += "<tr><td><strong>Time (s)</strong></td>";
+        html += "<td>" + fmtStat(a.time_seconds, false) + "</td>";
+        html += compare("<td>" + fmtStat(b.time_seconds, false) + "</td>");
+        html += compare('<td class="' + deltaClass(delta.time_seconds) + '">' + escapeHtml(delta.time_seconds ? delta.time_seconds + "s" : "—") + "</td>") + "</tr>";
+      }
+
+      // Tokens (only show row if data exists)
+      if (a.tokens || b.tokens) {
+        html += "<tr><td><strong>Tokens</strong></td>";
+        html += "<td>" + fmtStat(a.tokens, false) + "</td>";
+        html += compare("<td>" + fmtStat(b.tokens, false) + "</td>");
+        html += compare('<td class="' + deltaClass(delta.tokens) + '">' + escapeHtml(delta.tokens || "—") + "</td>") + "</tr>";
+      }
+
+      html += "</tbody></table>";
+
+      // Per-eval breakdown (if runs data available)
+      const runs = data.runs || [];
+      if (runs.length > 0) {
+        // Numeric ids first, then ids that are names
+        const rank = id => typeof id === "number" ? 0 : 1;
+        const evalIds = [...new Set(runs.map(r => r.eval_id))].sort((a, b) =>
+          rank(a) - rank(b) || (rank(a) ? String(a).localeCompare(String(b)) : a - b));
+
+        html += "<h3 style='font-family: Poppins, sans-serif; margin-bottom: 0.75rem;'>Per-Eval Breakdown</h3>";
+
+        const hasTime = runs.some(r => r.result && r.result.time_seconds != null);
+        const hasErrors = runs.some(r => r.result && r.result.errors > 0);
+
+        for (const evalId of evalIds) {
+          const evalRuns = runs.filter(r => r.eval_id === evalId);
+          const evalName = evalRuns[0] && evalRuns[0].eval_name ? evalRuns[0].eval_name : "Eval " + evalId;
+
+          html += "<h4 style='font-family: Poppins, sans-serif; margin: 1rem 0 0.5rem; color: var(--text);'>" + escapeHtml(evalName) + "</h4>";
+          html += '<table class="benchmark-table">';
+          html += "<thead><tr><th>Config</th><th>Run</th><th>Pass Rate</th>";
+          if (hasTime) html += "<th>Time (s)</th>";
+          if (hasErrors) html += "<th>Crashes During Execution</th>";
+          html += "</tr></thead>";
+          html += "<tbody>";
+
+          // Group by config and render with average rows
+          const configGroups = [...new Set(evalRuns.map(r => r.configuration))];
+          for (let ci = 0; ci < configGroups.length; ci++) {
+            const config = configGroups[ci];
+            const configRuns = evalRuns.filter(r => r.configuration === config);
+            if (configRuns.length === 0) continue;
+
+            const rowClass = ci === 0 ? "benchmark-row-with" : "benchmark-row-without";
+            const configLabel = escapeHtml(config.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase()));
+
+            for (const run of configRuns) {
+              const r = run.result || {};
+              const prClass = r.pass_rate >= 0.8 ? "benchmark-delta-positive" : r.pass_rate < 0.5 ? "benchmark-delta-negative" : "";
+              html += '<tr class="' + rowClass + '">';
+              html += "<td>" + configLabel + "</td>";
+              html += "<td>" + escapeHtml(run.run_number) + "</td>";
+              html += '<td class="' + prClass + '">' + ((r.pass_rate || 0) * 100).toFixed(0) + "% (" + escapeHtml(r.passed || 0) + "/" + escapeHtml(r.total || 0) + ")</td>";
+              if (hasTime) html += "<td>" + (r.time_seconds != null ? r.time_seconds.toFixed(1) : "—") + "</td>";
+              if (hasErrors) html += "<td>" + escapeHtml(r.errors || 0) + "</td>";
+              html += "</tr>";
+            }
+
+            // Average row
+            const rates = configRuns.map(r => (r.result || {}).pass_rate || 0);
+            const avgRate = rates.reduce((a, b) => a + b, 0) / rates.length;
+            const avgPrClass = avgRate >= 0.8 ? "benchmark-delta-positive" : avgRate < 0.5 ? "benchmark-delta-negative" : "";
+            html += '<tr class="benchmark-row-avg ' + rowClass + '">';
+            html += "<td>" + configLabel + "</td>";
+            html += "<td>Avg</td>";
+            html += '<td class="' + avgPrClass + '">' + (avgRate * 100).toFixed(0) + "%</td>";
+            if (hasTime) {
+              const times = configRuns.map(r => (r.result || {}).time_seconds).filter(t => t != null);
+              html += "<td>" + (times.length ? (times.reduce((a, b) => a + b, 0) / times.length).toFixed(1) : "—") + "</td>";
+            }
+            if (hasErrors) html += "<td></td>";
+            html += "</tr>";
+          }
+          html += "</tbody></table>";
+
+          // Per-assertion detail for this eval
+          const runsWithExpectations = {};
+          for (const config of configGroups) {
+            runsWithExpectations[config] = evalRuns.filter(r => r.configuration === config && r.expectations && r.expectations.length > 0);
+          }
+          const hasAnyExpectations = Object.values(runsWithExpectations).some(runs => runs.length > 0);
+          if (hasAnyExpectations) {
+            // Collect all unique assertion texts across all configs
+            const allAssertions = [];
+            const seen = new Set();
+            for (const config of configGroups) {
+              for (const run of runsWithExpectations[config]) {
+                for (const exp of (run.expectations || [])) {
+                  if (!seen.has(exp.text)) {
+                    seen.add(exp.text);
+                    allAssertions.push(exp.text);
+                  }
+                }
+              }
+            }
+
+            html += '<table class="benchmark-table" style="margin-top: 0.5rem;">';
+            html += "<thead><tr><th>Assertion</th>";
+            for (const config of configGroups) {
+              const label = config.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+              html += "<th>" + escapeHtml(label) + "</th>";
+            }
+            html += "</tr></thead><tbody>";
+
+            for (const assertionText of allAssertions) {
+              html += "<tr><td>" + escapeHtml(assertionText) + "</td>";
+
+              for (const config of configGroups) {
+                html += "<td>";
+                for (const run of runsWithExpectations[config]) {
+                  const exp = (run.expectations || []).find(e => e.text === assertionText);
+                  if (exp) {
+                    const cls = exp.passed ? "benchmark-delta-positive" : "benchmark-delta-negative";
+                    const icon = exp.passed ? "\u2713" : "\u2717";
+                    html += '<span class="' + cls + '" title="Run ' + escapeHtml(run.run_number) + ': ' + escapeHtml(exp.evidence || "") + '">' + icon + "</span> ";
+                  } else {
+                    html += "— ";
+                  }
+                }
+                html += "</td>";
+              }
+              html += "</tr>";
+            }
+            html += "</tbody></table>";
+          }
+        }
+      }
+
+      // Notes
+      if (notes.length > 0) {
+        html += '<div class="benchmark-notes">';
+        html += "<h3>Analysis Notes</h3>";
+        html += "<ul>";
+        for (const note of notes) {
+          html += "<li>" + escapeHtml(note) + "</li>";
+        }
+        html += "</ul></div>";
+      }
+
+      container.innerHTML = html;
+    }
+
+    // ---- Start ----
+    init();
+    renderBenchmark();
+  </script>
+</body>
+</html>

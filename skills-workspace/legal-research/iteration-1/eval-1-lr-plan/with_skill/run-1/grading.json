@@ -1,0 +1,40 @@
+{
+ "expectations": [
+  {
+   "text": "Frames the issue: civil (not criminal), substantive and procedural, state law (landlord-tenant), and writes a research question/goal",
+   "passed": true,
+   "evidence": "Table: civil, both substantive and procedural, state; goal and question list"
+  },
+  {
+   "text": "Recommends starting with secondary sources (e.g., Nolo, state-specific encyclopedia or practice guide) before primary law",
+   "passed": true,
+   "evidence": "Starts with Nolo Every Tenant's Legal Guide and state sources"
+  },
+  {
+   "text": "Points to the Ohio statute/code (primary law) and reading it carefully (e.g., read multiple times, ands/ors)",
+   "passed": true,
+   "evidence": "R.C. 5321.16; read at least three times"
+  },
+  {
+   "text": "Says to verify the law is current/good law (pocket parts, Shepardizing/KeyCite, law library access)",
+   "passed": true,
+   "evidence": "Pocket part, Shepard's/KeyCite, law library"
+  },
+  {
+   "text": "Gives search terms or a Boolean query (e.g., synonyms, Cartwheel, operators)",
+   "passed": true,
+   "evidence": "Search terms and Boolean query"
+  },
+  {
+   "text": "Covers small claims/court procedure research and/or organizing research (folders, memo) and a not-legal-advice caveat",
+   "passed": true,
+   "evidence": "Small claims procedure, folders/memo, not legal advice"
+  }
+ ],
+ "summary": {
+  "passed": 6,
+  "failed": 0,
+  "total": 6,
+  "pass_rate": 1.0
+ }
+}

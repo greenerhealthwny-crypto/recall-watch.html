@@ -1,0 +1,40 @@
+{
+ "expectations": [
+  {
+   "text": "Explains Shepardizing/KeyCite purpose: confirm not overruled/reversed and find citing cases",
+   "passed": true,
+   "evidence": "Shepardizing confirms not overruled and finds citing cases"
+  },
+  {
+   "text": "Lists treatment codes such as criticized, distinguished, explained, followed, overruled, questioned, superseded",
+   "passed": true,
+   "evidence": "Code table c, d, e, f, o, q, su"
+  },
+  {
+   "text": "Explains binding vs persuasive authority by court hierarchy (higher court in same system binds; other states/circuits persuasive)",
+   "passed": true,
+   "evidence": "Binding vs persuasive by hierarchy"
+  },
+  {
+   "text": "Distinguishes holding from dicta and/or majority vs concurring/dissenting opinions",
+   "passed": true,
+   "evidence": "Dicta and concurring/dissenting covered"
+  },
+  {
+   "text": "Suggests free/low-cost path: read on Justia/FindLaw/Google Scholar and Shepardize at a law library with Lexis/Westlaw access",
+   "passed": true,
+   "evidence": "Free sites, then law library Lexis/Westlaw"
+  },
+  {
+   "text": "Warns that online availability does not mean legal weight and/or headnotes are not law",
+   "passed": true,
+   "evidence": "Online does not mean legal weight; headnotes not law"
+  }
+ ],
+ "summary": {
+  "passed": 6,
+  "failed": 0,
+  "total": 6,
+  "pass_rate": 1.0
+ }
+}

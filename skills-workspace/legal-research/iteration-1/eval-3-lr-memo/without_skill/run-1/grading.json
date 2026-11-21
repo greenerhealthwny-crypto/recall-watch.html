@@ -1,0 +1,40 @@
+{
+ "expectations": [
+  {
+   "text": "Lists the memo parts: statement of facts, question presented/issue, decision/conclusion (brief answer), discussion",
+   "passed": true,
+   "evidence": "Heading, facts, question, brief answer, discussion, conclusion"
+  },
+  {
+   "text": "Explains IRAC (Issue, Rule, Analysis, Conclusion) for the discussion section",
+   "passed": true,
+   "evidence": "IRAC mentioned"
+  },
+  {
+   "text": "Says the facts section includes only legally relevant facts",
+   "passed": true,
+   "evidence": "Facts that matter, omit irrelevant"
+  },
+  {
+   "text": "Says the question presented is succinct and usually answerable yes/no",
+   "passed": false,
+   "evidence": "No yes/no guidance"
+  },
+  {
+   "text": "Distinguishes an internal memo from a brief/points and authorities filed in court",
+   "passed": false,
+   "evidence": "No memo vs brief distinction"
+  },
+  {
+   "text": "Provides a concrete example memo or uses the book's example (new landlord/pets or employer cell phone liability)",
+   "passed": true,
+   "evidence": "Own short example memo"
+  }
+ ],
+ "summary": {
+  "passed": 4,
+  "failed": 2,
+  "total": 6,
+  "pass_rate": 0.6666666666666666
+ }
+}

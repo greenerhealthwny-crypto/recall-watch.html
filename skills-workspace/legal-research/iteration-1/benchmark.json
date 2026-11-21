@@ -1,0 +1,342 @@
+{
+  "metadata": {
+    "skill_name": "legal-research",
+    "skill_path": "<path/to/skill>",
+    "executor_model": "<model-name>",
+    "analyzer_model": "<model-name>",
+    "timestamp": "2026-11-21T03:08:43Z",
+    "evals_run": [
+      1,
+      2,
+      3
+    ],
+    "runs_per_configuration": 1
+  },
+  "runs": [
+    {
+      "eval_id": 1,
+      "eval_name": "lr-plan",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Frames the issue: civil (not criminal), substantive and procedural, state law (landlord-tenant), and writes a research question/goal",
+          "passed": true,
+          "evidence": "Table: civil, both substantive and procedural, state; goal and question list"
+        },
+        {
+          "text": "Recommends starting with secondary sources (e.g., Nolo, state-specific encyclopedia or practice guide) before primary law",
+          "passed": true,
+          "evidence": "Starts with Nolo Every Tenant's Legal Guide and state sources"
+        },
+        {
+          "text": "Points to the Ohio statute/code (primary law) and reading it carefully (e.g., read multiple times, ands/ors)",
+          "passed": true,
+          "evidence": "R.C. 5321.16; read at least three times"
+        },
+        {
+          "text": "Says to verify the law is current/good law (pocket parts, Shepardizing/KeyCite, law library access)",
+          "passed": true,
+          "evidence": "Pocket part, Shepard's/KeyCite, law library"
+        },
+        {
+          "text": "Gives search terms or a Boolean query (e.g., synonyms, Cartwheel, operators)",
+          "passed": true,
+          "evidence": "Search terms and Boolean query"
+        },
+        {
+          "text": "Covers small claims/court procedure research and/or organizing research (folders, memo) and a not-legal-advice caveat",
+          "passed": true,
+          "evidence": "Small claims procedure, folders/memo, not legal advice"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "lr-good-law",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Explains Shepardizing/KeyCite purpose: confirm not overruled/reversed and find citing cases",
+          "passed": true,
+          "evidence": "Shepardizing confirms not overruled and finds citing cases"
+        },
+        {
+          "text": "Lists treatment codes such as criticized, distinguished, explained, followed, overruled, questioned, superseded",
+          "passed": true,
+          "evidence": "Code table c, d, e, f, o, q, su"
+        },
+        {
+          "text": "Explains binding vs persuasive authority by court hierarchy (higher court in same system binds; other states/circuits persuasive)",
+          "passed": true,
+          "evidence": "Binding vs persuasive by hierarchy"
+        },
+        {
+          "text": "Distinguishes holding from dicta and/or majority vs concurring/dissenting opinions",
+          "passed": true,
+          "evidence": "Dicta and concurring/dissenting covered"
+        },
+        {
+          "text": "Suggests free/low-cost path: read on Justia/FindLaw/Google Scholar and Shepardize at a law library with Lexis/Westlaw access",
+          "passed": true,
+          "evidence": "Free sites, then law library Lexis/Westlaw"
+        },
+        {
+          "text": "Warns that online availability does not mean legal weight and/or headnotes are not law",
+          "passed": true,
+          "evidence": "Online does not mean legal weight; headnotes not law"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 3,
+      "eval_name": "lr-memo",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Lists the memo parts: statement of facts, question presented/issue, decision/conclusion (brief answer), discussion",
+          "passed": true,
+          "evidence": "Facts, question presented, decision, discussion"
+        },
+        {
+          "text": "Explains IRAC (Issue, Rule, Analysis, Conclusion) for the discussion section",
+          "passed": true,
+          "evidence": "IRAC explained"
+        },
+        {
+          "text": "Says the facts section includes only legally relevant facts",
+          "passed": true,
+          "evidence": "Legally relevant facts only"
+        },
+        {
+          "text": "Says the question presented is succinct and usually answerable yes/no",
+          "passed": true,
+          "evidence": "Succinct yes/no question"
+        },
+        {
+          "text": "Distinguishes an internal memo from a brief/points and authorities filed in court",
+          "passed": true,
+          "evidence": "Memo vs brief / points and authorities"
+        },
+        {
+          "text": "Provides a concrete example memo or uses the book's example (new landlord/pets or employer cell phone liability)",
+          "passed": true,
+          "evidence": "Book's pets and cell-phone examples"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 1,
+      "eval_name": "lr-plan",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.6666666666666666,
+        "passed": 4,
+        "failed": 2,
+        "total": 6,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Frames the issue: civil (not criminal), substantive and procedural, state law (landlord-tenant), and writes a research question/goal",
+          "passed": false,
+          "evidence": "Civil/state and a plain question, but no substantive vs procedural framing"
+        },
+        {
+          "text": "Recommends starting with secondary sources (e.g., Nolo, state-specific encyclopedia or practice guide) before primary law",
+          "passed": true,
+          "evidence": "AG and bar publications, Ohio Jur 3d first"
+        },
+        {
+          "text": "Points to the Ohio statute/code (primary law) and reading it carefully (e.g., read multiple times, ands/ors)",
+          "passed": true,
+          "evidence": "R.C. 5321.16; defined terms, shall vs may"
+        },
+        {
+          "text": "Says to verify the law is current/good law (pocket parts, Shepardizing/KeyCite, law library access)",
+          "passed": true,
+          "evidence": "Step 6 Shepardize/KeyCite, current version"
+        },
+        {
+          "text": "Gives search terms or a Boolean query (e.g., synonyms, Cartwheel, operators)",
+          "passed": false,
+          "evidence": "No search terms or Boolean query given"
+        },
+        {
+          "text": "Covers small claims/court procedure research and/or organizing research (folders, memo) and a not-legal-advice caveat",
+          "passed": true,
+          "evidence": "Small claims R.C. 1925, checklist, not legal advice"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "lr-good-law",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.8333333333333334,
+        "passed": 5,
+        "failed": 1,
+        "total": 6,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Explains Shepardizing/KeyCite purpose: confirm not overruled/reversed and find citing cases",
+          "passed": true,
+          "evidence": "Explains citator purpose"
+        },
+        {
+          "text": "Lists treatment codes such as criticized, distinguished, explained, followed, overruled, questioned, superseded",
+          "passed": true,
+          "evidence": "Lists treatment codes"
+        },
+        {
+          "text": "Explains binding vs persuasive authority by court hierarchy (higher court in same system binds; other states/circuits persuasive)",
+          "passed": true,
+          "evidence": "Binding vs persuasive explained"
+        },
+        {
+          "text": "Distinguishes holding from dicta and/or majority vs concurring/dissenting opinions",
+          "passed": true,
+          "evidence": "Dicta and dissents mentioned"
+        },
+        {
+          "text": "Suggests free/low-cost path: read on Justia/FindLaw/Google Scholar and Shepardize at a law library with Lexis/Westlaw access",
+          "passed": true,
+          "evidence": "Law library free access, Google Scholar"
+        },
+        {
+          "text": "Warns that online availability does not mean legal weight and/or headnotes are not law",
+          "passed": false,
+          "evidence": "No warning that online or headnotes lack legal weight"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 3,
+      "eval_name": "lr-memo",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.6666666666666666,
+        "passed": 4,
+        "failed": 2,
+        "total": 6,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Lists the memo parts: statement of facts, question presented/issue, decision/conclusion (brief answer), discussion",
+          "passed": true,
+          "evidence": "Heading, facts, question, brief answer, discussion, conclusion"
+        },
+        {
+          "text": "Explains IRAC (Issue, Rule, Analysis, Conclusion) for the discussion section",
+          "passed": true,
+          "evidence": "IRAC mentioned"
+        },
+        {
+          "text": "Says the facts section includes only legally relevant facts",
+          "passed": true,
+          "evidence": "Facts that matter, omit irrelevant"
+        },
+        {
+          "text": "Says the question presented is succinct and usually answerable yes/no",
+          "passed": false,
+          "evidence": "No yes/no guidance"
+        },
+        {
+          "text": "Distinguishes an internal memo from a brief/points and authorities filed in court",
+          "passed": false,
+          "evidence": "No memo vs brief distinction"
+        },
+        {
+          "text": "Provides a concrete example memo or uses the book's example (new landlord/pets or employer cell phone liability)",
+          "passed": true,
+          "evidence": "Own short example memo"
+        }
+      ],
+      "notes": []
+    }
+  ],
+  "run_summary": {
+    "with_skill": {
+      "pass_rate": {
+        "mean": 1.0,
+        "stddev": 0.0,
+        "min": 1.0,
+        "max": 1.0
+      },
+      "time_seconds": null,
+      "tokens": null
+    },
+    "without_skill": {
+      "pass_rate": {
+        "mean": 0.7222,
+        "stddev": 0.0962,
+        "min": 0.6667,
+        "max": 0.8333
+      },
+      "time_seconds": null,
+      "tokens": null
+    },
+    "delta": {
+      "pass_rate": "+0.28",
+      "time_seconds": null,
+      "tokens": null
+    }
+  },
+  "notes": [
+    "Time recorded for 0 of 3 with_skill runs, 0 of 3 without_skill runs, so there is no time delta.",
+    "Token count recorded for 0 of 3 with_skill runs, 0 of 3 without_skill runs, so there is no token count delta."
+  ]
+}
