@@ -1,0 +1,13 @@
+{
+ "eval_id": 3,
+ "eval_name": "lr-memo",
+ "prompt": "How does the Nolo Legal Research book say to write a legal memo? Give me the structure and a short example.",
+ "assertions": [
+  "Lists the memo parts: statement of facts, question presented/issue, decision/conclusion (brief answer), discussion",
+  "Explains IRAC (Issue, Rule, Analysis, Conclusion) for the discussion section",
+  "Says the facts section includes only legally relevant facts",
+  "Says the question presented is succinct and usually answerable yes/no",
+  "Distinguishes an internal memo from a brief/points and authorities filed in court",
+  "Provides a concrete example memo or uses the book's example (new landlord/pets or employer cell phone liability)"
+ ]
+}

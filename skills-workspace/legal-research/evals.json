@@ -1,0 +1,32 @@
+{
+  "skill_name": "legal-research",
+  "evals": [
+    {"id": 1, "name": "lr-plan",
+     "prompt": "My landlord kept my whole security deposit in Ohio and I want to research my rights myself before going to small claims. Using Nolo's Legal Research book approach, how should I go about the research?",
+     "assertions": [
+      "Frames the issue: civil (not criminal), substantive and procedural, state law (landlord-tenant), and writes a research question/goal",
+      "Recommends starting with secondary sources (e.g., Nolo, state-specific encyclopedia or practice guide) before primary law",
+      "Points to the Ohio statute/code (primary law) and reading it carefully (e.g., read multiple times, ands/ors)",
+      "Says to verify the law is current/good law (pocket parts, Shepardizing/KeyCite, law library access)",
+      "Gives search terms or a Boolean query (e.g., synonyms, Cartwheel, operators)",
+      "Covers small claims/court procedure research and/or organizing research (folders, memo) and a not-legal-advice caveat"]},
+    {"id": 2, "name": "lr-good-law",
+     "prompt": "I found a 1998 appellate case online that supports my argument. Per the Nolo Legal Research book, how do I know if it's still good law and whether it binds my court? What do the Shepard's codes mean?",
+     "assertions": [
+      "Explains Shepardizing/KeyCite purpose: confirm not overruled/reversed and find citing cases",
+      "Lists treatment codes such as criticized, distinguished, explained, followed, overruled, questioned, superseded",
+      "Explains binding vs persuasive authority by court hierarchy (higher court in same system binds; other states/circuits persuasive)",
+      "Distinguishes holding from dicta and/or majority vs concurring/dissenting opinions",
+      "Suggests free/low-cost path: read on Justia/FindLaw/Google Scholar and Shepardize at a law library with Lexis/Westlaw access",
+      "Warns that online availability does not mean legal weight and/or headnotes are not law"]},
+    {"id": 3, "name": "lr-memo",
+     "prompt": "How does the Nolo Legal Research book say to write a legal memo? Give me the structure and a short example.",
+     "assertions": [
+      "Lists the memo parts: statement of facts, question presented/issue, decision/conclusion (brief answer), discussion",
+      "Explains IRAC (Issue, Rule, Analysis, Conclusion) for the discussion section",
+      "Says the facts section includes only legally relevant facts",
+      "Says the question presented is succinct and usually answerable yes/no",
+      "Distinguishes an internal memo from a brief/points and authorities filed in court",
+      "Provides a concrete example memo or uses the book's example (new landlord/pets or employer cell phone liability)"]}
+  ]
+}

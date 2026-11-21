@@ -1,0 +1,13 @@
+{
+ "eval_id": 1,
+ "eval_name": "lr-plan",
+ "prompt": "My landlord kept my whole security deposit in Ohio and I want to research my rights myself before going to small claims. Using Nolo's Legal Research book approach, how should I go about the research?",
+ "assertions": [
+  "Frames the issue: civil (not criminal), substantive and procedural, state law (landlord-tenant), and writes a research question/goal",
+  "Recommends starting with secondary sources (e.g., Nolo, state-specific encyclopedia or practice guide) before primary law",
+  "Points to the Ohio statute/code (primary law) and reading it carefully (e.g., read multiple times, ands/ors)",
+  "Says to verify the law is current/good law (pocket parts, Shepardizing/KeyCite, law library access)",
+  "Gives search terms or a Boolean query (e.g., synonyms, Cartwheel, operators)",
+  "Covers small claims/court procedure research and/or organizing research (folders, memo) and a not-legal-advice caveat"
+ ]
+}

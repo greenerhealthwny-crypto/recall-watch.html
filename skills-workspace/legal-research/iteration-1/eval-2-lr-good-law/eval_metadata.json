@@ -1,0 +1,13 @@
+{
+ "eval_id": 2,
+ "eval_name": "lr-good-law",
+ "prompt": "I found a 1998 appellate case online that supports my argument. Per the Nolo Legal Research book, how do I know if it's still good law and whether it binds my court? What do the Shepard's codes mean?",
+ "assertions": [
+  "Explains Shepardizing/KeyCite purpose: confirm not overruled/reversed and find citing cases",
+  "Lists treatment codes such as criticized, distinguished, explained, followed, overruled, questioned, superseded",
+  "Explains binding vs persuasive authority by court hierarchy (higher court in same system binds; other states/circuits persuasive)",
+  "Distinguishes holding from dicta and/or majority vs concurring/dissenting opinions",
+  "Suggests free/low-cost path: read on Justia/FindLaw/Google Scholar and Shepardize at a law library with Lexis/Westlaw access",
+  "Warns that online availability does not mean legal weight and/or headnotes are not law"
+ ]
+}
