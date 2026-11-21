@@ -1,0 +1,35 @@
+{
+ "expectations": [
+  {
+   "text": "Uses Joshua Latimer's home-services ideas (max CAC and/or front-end offer)",
+   "passed": true,
+   "evidence": "Section 1 'Know your numbers first (Latimer's maximum CAC)' uses his one-off formula ('decide what share of a job's profit you'll give up'), matching references/experts.md; Section 2 cites his real front-end examples ('$20 45-minute power clean, a free spot clean, and 10 exterior windows for $99'), the value ladder quote 'amateurs focus on the front end but professionals focus on the back end', the ~$3,850/yr client, and Section 3 lists his seven steps correctly."
+  },
+  {
+   "text": "Borrows from at least one other named expert (e.g. David Frey referrals, Tyler Shaule SMS, Hormozi client-financed acquisition)",
+   "passed": true,
+   "evidence": "Section 4 uses Tyler Shaule's Phone Funnel System (reactivation, survey-to-appointment with 3-5 questions, NPS rate/review/referral, ~300 reviews, repackage every 90 days); Section 6 uses David Frey's Dream 100, 20 friend requests/day, Team 12, viral deal, fishbowl; Section 5 uses Woolner's portfolio of proof and Position Ascension Loop. All match the skill files."
+  },
+  {
+   "text": "Breaks the plan into phases across 100 days",
+   "passed": true,
+   "evidence": "Section 7 '100-day calendar' splits into Weeks 1-2 (days 1-14), 3-4 (15-28), 5-6 (29-42), 7-10 (43-70), 11-14 (71-100), each with cumulative customer targets (10, 25, 42, 72, 100)."
+  },
+  {
+   "text": "Includes acquisition-cost math",
+   "passed": true,
+   "evidence": "Max CAC table: $325 job, $190 gross profit, 35% share -> 'Max CAC on the first job about $65', back-end-adjusted 'about $100'; working-backward funnel (100 customers / 55% close = ~180 quotes / 70% = ~260 leads); Hormozi's 'spend $1 to make $3' check, correctly attributed."
+  },
+  {
+   "text": "Includes reviews/referrals or reactivation",
+   "passed": true,
+   "evidence": "Section 4a reactivation funnel ('Upload every past customer and every old lead'), 4c NPS review/referral funnel (with correct no-gating caution), Section 6 referral methods ($20/$20 refer-a-friend, share a post, Team 12)."
+  }
+ ],
+ "summary": {
+  "passed": 5,
+  "failed": 0,
+  "total": 5,
+  "pass_rate": 1.0
+ }
+}

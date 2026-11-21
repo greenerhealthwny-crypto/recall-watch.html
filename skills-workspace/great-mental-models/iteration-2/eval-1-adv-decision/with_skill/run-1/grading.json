@@ -1,0 +1,35 @@
+{
+ "expectations": [
+  {
+   "text": "Applies at least five named models",
+   "passed": true,
+   "evidence": "Sections 1-9 apply all nine Vol. 1 models by their correct names (Map Is Not the Territory, Circle of Competence, First Principles, Thought Experiment, Second-Order, Probabilistic, Inversion, Occam's, Hanlon's), each with book tools matching SKILL.md (e.g. the three map tools, Lifer/Stranger, LeBron vs Woody Allen/Durant)."
+  },
+  {
+   "text": "Uses second-order thinking with concrete consequences",
+   "passed": true,
+   "evidence": "Section 5: 'your income now has to come from furniture. You start taking deals you'd have passed on... Healthcare costs show up. Seasonal dips hit your rent'; 10-year 'gap on your r\u00e9sum\u00e9 and less retirement saved'. Cobra bounty example matches SKILL.md. The 10/10/10 framing is SKILL.md's '(std framing)' and is not credited to the book."
+  },
+  {
+   "text": "Uses inversion (e.g. what would guarantee failure)",
+   "passed": true,
+   "evidence": "Section 7: 'How would I guarantee this fails?' with 8 failure conditions ('Quit with less than 3 months of savings', 'Skip health insurance'), then 'do the opposite'. Jacobi quote and Lewin's 5-step force field analysis match SKILL.md."
+  },
+  {
+   "text": "Uses circle of competence and/or probabilistic thinking with numbers",
+   "passed": true,
+   "evidence": "Circle of competence: Lifer vs Stranger, curiosity/monitoring/feedback, and the three outside-the-circle steps all match SKILL.md. Probabilistic section has numbers: 'cut your projected revenue by 20-30% and add 20-30% to your costs', and the book's '20-40% returns' asymmetry example. Small embellishment: 'The book warns that we remember wins and forget losses' is not in SKILL.md, but it fits the monitoring idea and does not drive the assertion."
+  },
+  {
+   "text": "Ends with a decision rule or test, not just a list",
+   "passed": true,
+   "evidence": "Ends with 'a falsifiable go/no-go rule: 3 months in a row of profit >= 60-70% of my take-home pay' and the fallback 'If by month 9 I'm below $___, I start applying for jobs'."
+  }
+ ],
+ "summary": {
+  "passed": 5,
+  "failed": 0,
+  "total": 5,
+  "pass_rate": 1.0
+ }
+}

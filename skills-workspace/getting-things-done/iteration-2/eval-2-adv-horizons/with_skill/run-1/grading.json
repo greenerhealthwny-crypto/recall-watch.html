@@ -1,0 +1,35 @@
+{
+ "expectations": [
+  {
+   "text": "Names the horizons from Ground/runway through Horizon 5 (purpose/principles)",
+   "passed": true,
+   "evidence": "Table and sections name all six with the book's labels: '5 Purpose and principles', '4 Vision', '3 Goals', '2 Areas of focus and accountabilities', '1 Current projects', 'Ground Current actions'; exactly matches SKILL.md's six-level model."
+  },
+  {
+   "text": "Places the 2-year goal at the right horizon (vision, ~3-5 years, or goals 1-2 years)",
+   "passed": true,
+   "evidence": "'It is a Horizon 3 goal, possibly serving a Horizon 4 vision', and under Horizon 3 (1-2 years): 'This is where your \"quit in 2 years\" belongs.' Also correctly argues it is not a project using the book's quoted definition 'any desired result that can be accomplished within a year that requires more than one action step'."
+  },
+  {
+   "text": "Gives concrete content at each horizon",
+   "passed": true,
+   "evidence": "Each horizon has specific content: H5 purpose statement and four principles; H4 a present-tense 2030 vision; H3 central goal plus six readiness criteria and 12/18-month go/no-go checkpoints; H2 business and life areas; H1 a table of six outcome-phrased projects plus Someday/Maybe; Ground a table of next actions with contexts."
+  },
+  {
+   "text": "Connects horizons to next actions",
+   "passed": true,
+   "evidence": "Ground section: 'Every active project needs at least one next action' with a table mapping each H1 project to a next action and context (e.g. 'Find my employment agreement in email and read the IP section' @computer); projects are tied to goals/areas in the 'Serves goal / area' column."
+  },
+  {
+   "text": "Mentions reviewing higher horizons periodically",
+   "passed": true,
+   "evidence": "'Keeping the horizons alive: review rhythm' table: Ground/H1 weekly, H2 monthly, H3 quarterly, H4-5 yearly or at big decisions; plus a Weekly Review summary (get clear/current/creative) matching SKILL.md."
+  }
+ ],
+ "summary": {
+  "passed": 5,
+  "failed": 0,
+  "total": 5,
+  "pass_rate": 1.0
+ }
+}

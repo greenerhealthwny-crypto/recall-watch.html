@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eval Review</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&family=Lora:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js" integrity="sha384-EnyY0/GSHQGSxSgMwaIPzSESbqoOLSexfnSMN2AP+39Ckmn92stwABZynq1JyzdT" crossorigin="anonymous"></script>
+  <style>
+    :root {
+      --bg: #faf9f5;
+      --surface: #ffffff;
+      --border: #e8e6dc;
+      --text: #141413;
+      --text-muted: #b0aea5;
+      --accent: #d97757;
+      --accent-hover: #c4613f;
+      --green: #788c5d;
+      --green-bg: #eef2e8;
+      --red: #c44;
+      --red-bg: #fceaea;
+      --header-bg: #141413;
+      --header-text: #faf9f5;
+      --radius: 6px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Lora', Georgia, serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ---- Header ---- */
+    .header {
+      background: var(--header-bg);
+      color: var(--header-text);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .header h1 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+    .header .instructions {
+      font-size: 0.8rem;
+      opacity: 0.7;
+      margin-top: 0.25rem;
+    }
+    .header .progress {
+      font-size: 0.875rem;
+      opacity: 0.8;
+      text-align: right;
+    }
+
+    /* ---- Main content ---- */
+    .main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.5rem 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    /* ---- Sections ---- */
+    .section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      flex-shrink: 0;
+    }
+    .section-header {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.75rem 1rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+    }
+    .section-body {
+      padding: 1rem;
+    }
+
+    /* ---- Config badge ---- */
+    .config-badge {
+      display: inline-block;
+      padding: 0.2rem 0.625rem;
+      border-radius: 9999px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      margin-left: 0.75rem;
+      vertical-align: middle;
+    }
+    .config-badge.config-primary {
+      background: rgba(33, 150, 243, 0.12);
+      color: #1976d2;
+    }
+    .config-badge.config-baseline {
+      background: rgba(255, 193, 7, 0.15);
+      color: #f57f17;
+    }
+
+    /* ---- Prompt ---- */
+    .prompt-text {
+      white-space: pre-wrap;
+      font-size: 0.9375rem;
+      line-height: 1.6;
+    }
+
+    /* ---- Outputs ---- */
+    .output-file {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .output-file + .output-file {
+      margin-top: 1rem;
+    }
+    .output-file-header {
+      padding: 0.5rem 0.75rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .output-file-header .dl-btn {
+      font-size: 0.7rem;
+      color: var(--accent);
+      text-decoration: none;
+      cursor: pointer;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-weight: 500;
+      opacity: 0.8;
+    }
+    .output-file-header .dl-btn:hover {
+      opacity: 1;
+      text-decoration: underline;
+    }
+    .output-file-content {
+      padding: 0.75rem;
+      overflow-x: auto;
+    }
+    .output-file-content pre {
+      font-size: 0.8125rem;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+    }
+    .output-file-content img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 4px;
+    }
+    .output-file-content iframe {
+      width: 100%;
+      height: 600px;
+      border: none;
+    }
+    .output-file-content table {
+      border-collapse: collapse;
+      font-size: 0.8125rem;
+      width: 100%;
+    }
+    .output-file-content table td,
+    .output-file-content table th {
+      border: 1px solid var(--border);
+      padding: 0.375rem 0.5rem;
+      text-align: left;
+    }
+    .output-file-content table th {
+      background: var(--bg);
+      font-weight: 600;
+    }
+    .output-file-content .download-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 0.875rem;
+      cursor: pointer;
+    }
+    .output-file-content .download-link:hover {
+      background: var(--border);
+    }
+    .empty-state {
+      color: var(--text-muted);
+      font-style: italic;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    /* ---- Feedback ---- */
+    .prev-feedback {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.625rem 0.75rem;
+      margin-top: 0.75rem;
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+    .prev-feedback-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.25rem;
+      color: var(--text-muted);
+    }
+    .feedback-textarea {
+      width: 100%;
+      min-height: 100px;
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 0.9375rem;
+      line-height: 1.5;
+      resize: vertical;
+      color: var(--text);
+    }
+    .feedback-textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    .feedback-status {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.5rem;
+      min-height: 1.1em;
+    }
+
+    /* ---- Grades (collapsible) ---- */
+    .grades-toggle {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+    }
+    .grades-toggle:hover {
+      color: var(--accent);
+    }
+    .grades-toggle .arrow {
+      margin-right: 0.5rem;
+      transition: transform 0.15s;
+      font-size: 0.75rem;
+    }
+    .grades-toggle .arrow.open {
+      transform: rotate(90deg);
+    }
+    .grades-content {
+      display: none;
+      margin-top: 0.75rem;
+    }
+    .grades-content.open {
+      display: block;
+    }
+    .grades-summary {
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .grade-badge {
+      display: inline-block;
+      padding: 0.125rem 0.5rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .grade-pass { background: var(--green-bg); color: var(--green); }
+    .grade-fail { background: var(--red-bg); color: var(--red); }
+    .assertion-list {
+      list-style: none;
+    }
+    .assertion-item {
+      padding: 0.625rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.8125rem;
+    }
+    .assertion-item:last-child { border-bottom: none; }
+    .assertion-status {
+      font-weight: 600;
+      margin-right: 0.5rem;
+    }
+    .assertion-status.pass { color: var(--green); }
+    .assertion-status.fail { color: var(--red); }
+    .assertion-evidence {
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      margin-top: 0.25rem;
+      padding-left: 1.5rem;
+    }
+
+    /* ---- View tabs ---- */
+    .view-tabs {
+      display: flex;
+      gap: 0;
+      padding: 0 2rem;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .view-tab {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.625rem 1.25rem;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      background: none;
+      color: var(--text-muted);
+      border-bottom: 2px solid transparent;
+      transition: all 0.15s;
+    }
+    .view-tab:hover { color: var(--text); }
+    .view-tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+    .view-panel { display: none; }
+    .view-panel.active { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
+
+    /* ---- Benchmark view ---- */
+    .benchmark-view {
+      padding: 1.5rem 2rem;
+      overflow-y: auto;
+      flex: 1;
+    }
+    .benchmark-table {
+      border-collapse: collapse;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 0.8125rem;
+      width: 100%;
+      margin-bottom: 1.5rem;
+    }
+    .benchmark-table th, .benchmark-table td {
+      padding: 0.625rem 0.75rem;
+      text-align: left;
+      border: 1px solid var(--border);
+    }
+    .benchmark-table th {
+      font-family: 'Poppins', sans-serif;
+      background: var(--header-bg);
+      color: var(--header-text);
+      font-weight: 500;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .benchmark-table tr:hover { background: var(--bg); }
+    .benchmark-table tr.benchmark-row-with { background: rgba(33, 150, 243, 0.06); }
+    .benchmark-table tr.benchmark-row-without { background: rgba(255, 193, 7, 0.06); }
+    .benchmark-table tr.benchmark-row-with:hover { background: rgba(33, 150, 243, 0.12); }
+    .benchmark-table tr.benchmark-row-without:hover { background: rgba(255, 193, 7, 0.12); }
+    .benchmark-table tr.benchmark-row-avg { font-weight: 600; border-top: 2px solid var(--border); }
+    .benchmark-table tr.benchmark-row-avg.benchmark-row-with { background: rgba(33, 150, 243, 0.12); }
+    .benchmark-table tr.benchmark-row-avg.benchmark-row-without { background: rgba(255, 193, 7, 0.12); }
+    .benchmark-delta-positive { color: var(--green); font-weight: 600; }
+    .benchmark-delta-negative { color: var(--red); font-weight: 600; }
+    .benchmark-notes {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem;
+    }
+    .benchmark-notes h3 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+    }
+    .benchmark-notes ul {
+      list-style: disc;
+      padding-left: 1.25rem;
+    }
+    .benchmark-notes li {
+      font-size: 0.8125rem;
+      line-height: 1.6;
+      margin-bottom: 0.375rem;
+    }
+    .benchmark-empty {
+      color: var(--text-muted);
+      font-style: italic;
+      text-align: center;
+      padding: 3rem;
+    }
+
+    /* ---- Navigation ---- */
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+      flex-shrink: 0;
+    }
+    .nav-btn {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.5rem 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text);
+      transition: all 0.15s;
+    }
+    .nav-btn:hover:not(:disabled) {
+      background: var(--bg);
+      border-color: var(--text-muted);
+    }
+    .nav-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    .done-btn {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.5rem 1.5rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: all 0.15s;
+    }
+    .done-btn:hover {
+      background: var(--bg);
+      border-color: var(--text-muted);
+    }
+    .done-btn.ready {
+      border: none;
+      background: var(--accent);
+      color: white;
+      font-weight: 600;
+    }
+    .done-btn.ready:hover {
+      background: var(--accent-hover);
+    }
+    /* ---- Done overlay ---- */
+    .done-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 100;
+      justify-content: center;
+      align-items: center;
+    }
+    .done-overlay.visible {
+      display: flex;
+    }
+    .done-card {
+      background: var(--surface);
+      border-radius: 12px;
+      padding: 2rem 3rem;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      max-width: 500px;
+    }
+    .done-card h2 {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .done-card p {
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
+    }
+    .done-card .btn-row {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+    }
+    .done-card button {
+      padding: 0.5rem 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 0.875rem;
+    }
+    .done-card button:hover {
+      background: var(--bg);
+    }
+    /* ---- Toast ---- */
+    .toast {
+      position: fixed;
+      bottom: 5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--header-bg);
+      color: var(--header-text);
+      padding: 0.625rem 1.25rem;
+      border-radius: var(--radius);
+      font-size: 0.875rem;
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+      z-index: 200;
+    }
+    .toast.visible {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <div id="app" style="height:100vh; display:flex; flex-direction:column;">
+    <div class="header">
+      <div>
+        <h1>Eval Review: <span id="skill-name"></span></h1>
+        <div class="instructions">Review each output and leave feedback below. Navigate with arrow keys or buttons. When done, copy feedback and paste into Claude Code.</div>
+      </div>
+      <div class="progress" id="progress"></div>
+    </div>
+
+    <!-- View tabs (only shown when benchmark data exists) -->
+    <div class="view-tabs" id="view-tabs" style="display:none;">
+      <button class="view-tab active" onclick="switchView('outputs')">Outputs</button>
+      <button class="view-tab" onclick="switchView('benchmark')">Benchmark</button>
+    </div>
+
+    <!-- Outputs panel (qualitative review) -->
+    <div class="view-panel active" id="panel-outputs">
+    <div class="main">
+      <!-- Prompt -->
+      <div class="section">
+        <div class="section-header">Prompt <span class="config-badge" id="config-badge" style="display:none;"></span></div>
+        <div class="section-body">
+          <div class="prompt-text" id="prompt-text"></div>
+        </div>
+      </div>
+
+      <!-- Outputs -->
+      <div class="section">
+        <div class="section-header">Output</div>
+        <div class="section-body" id="outputs-body">
+          <div class="empty-state">No output files found</div>
+        </div>
+      </div>
+
+      <!-- Previous Output (collapsible) -->
+      <div class="section" id="prev-outputs-section" style="display:none;">
+        <div class="section-header">
+          <div class="grades-toggle" onclick="togglePrevOutputs()">
+            <span class="arrow" id="prev-outputs-arrow">&#9654;</span>
+            Previous Output
+          </div>
+        </div>
+        <div class="grades-content" id="prev-outputs-content"></div>
+      </div>
+
+      <!-- Grades (collapsible) -->
+      <div class="section" id="grades-section" style="display:none;">
+        <div class="section-header">
+          <div class="grades-toggle" onclick="toggleGrades()">
+            <span class="arrow" id="grades-arrow">&#9654;</span>
+            Formal Grades
+          </div>
+        </div>
+        <div class="grades-content" id="grades-content"></div>
+      </div>
+
+      <!-- Feedback -->
+      <div class="section">
+        <div class="section-header">Your Feedback</div>
+        <div class="section-body">
+          <textarea
+            class="feedback-textarea"
+            id="feedback"
+            placeholder="What do you think of this output? Any issues, suggestions, or things that look great?"
+          ></textarea>
+          <div class="feedback-status" id="feedback-status"></div>
+          <div class="prev-feedback" id="prev-feedback" style="display:none;">
+            <div class="prev-feedback-label">Previous feedback</div>
+            <div id="prev-feedback-text"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav" id="outputs-nav">
+      <button class="nav-btn" id="prev-btn" onclick="navigate(-1)">&#8592; Previous</button>
+      <button class="done-btn" id="done-btn" onclick="showDoneDialog()">Submit All Reviews</button>
+      <button class="nav-btn" id="next-btn" onclick="navigate(1)">Next &#8594;</button>
+    </div>
+    </div><!-- end panel-outputs -->
+
+    <!-- Benchmark panel (quantitative stats) -->
+    <div class="view-panel" id="panel-benchmark">
+      <div class="benchmark-view" id="benchmark-content">
+        <div class="benchmark-empty">No benchmark data available. Run a benchmark to see quantitative results here.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Done overlay -->
+  <div class="done-overlay" id="done-overlay">
+    <div class="done-card">
+      <h2>Review Complete</h2>
+      <p>Your feedback has been saved. Go back to your Claude Code session and tell Claude you're done reviewing.</p>
+      <div class="btn-row">
+        <button onclick="closeDoneDialog()">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ---- Embedded data (injected by generate_review.py) ----
+    const EMBEDDED_DATA = {"skill_name": "hormozi-offers", "runs": [{"id": "eval-1-adv-offer-with_skill-run-1", "prompt": "I clean out garages and haul junk. Competitors charge $300 a load. Build me a Grand Slam Offer using $100M Offers: dream outcome, problems, solutions, delivery vehicles, trim and stack, plus pricing, guarantee and a MAGIC name.", "eval_id": 1, "outputs": [{"name": "response.md", "type": "text", "content": "# A Grand Slam Offer for Garage Cleanouts and Junk Hauling ($100M Offers)\n\nYour problem right now is the one Hormozi calls **the commodity problem**. \"$300 a load\" is a commodity offer. The buyer can line you up against every truck on Craigslist and pick the cheapest one, and that is a race to the bottom. A **Grand Slam Offer** is \"an offer you present to the marketplace that cannot be compared to any other product or service available\". You stop selling *a load of junk hauled* and sell a **finished result** in a **category of one**. The truck, the crew and the dump fees can stay much the same. Only the offer changes.\n\nHormozi's order of importance is **Starving Crowd > Offer Strength > Persuasion**, so the market comes first.\n\n---\n\n## Step 0: Pick the starving crowd and narrow the avatar\n\n\"Everyone with junk\" is not an avatar. Score the obvious segments against the four indicators: massive pain, purchasing power, easy to target, growing.\n\n| Segment | Pain | Purchasing power | Easy to target | Growing | Verdict |\n|---|---|---|---|---|---|\n| Homeowners about to **list or sell** a house | Very high: a cluttered garage hurts the sale price and holds up the listing date | High: they're sitting on home equity | Very easy: through realtors, stagers and new listings | Steady | **Primary avatar** |\n| Adult children **downsizing a parent** or clearing an estate | Very high: emotional, overwhelming, often working from out of town | High | Easy: through estate attorneys, senior-move managers and assisted-living facilities | Growing (an aging population) | **Strong second avatar / referral channel** |\n| General homeowners who \"want the garage back\" | Moderate: they *want* it but don't *need* it | Mixed | Broad | Flat | Secondary |\n| Renters / students | Low | Low | Easy | Flat | Avoid (the resume-for-the-unemployed trap) |\n\n**Avatar:** a homeowner in your service area who is selling, moving or downsizing in the next 60 days. Their garage (or garage plus attic and basement) is full. They have a deadline and no time, crew or truck. \"The pain is the pitch.\" The deadline is what makes the pain massive.\n\nTell prospects outside this avatar politely that you're not the right fit, or route them to a separate basic \"load\" price. \"Riches are in the niches.\"\n\n---\n\n## Step 1: The dream outcome\n\nIn their own words:\n\n> \"My garage is empty, clean and photo-ready, and my house can go on the market on time, for more money, without me lifting a box or spending a weekend on it.\"\n\nThe status piece is a home that shows well. The buyer's agent says \"wow\", the neighbours see a clean garage, and they get relief from a chore they've avoided for years.\n\n---\n\n## Step 2: Every problem in the way (before, during and after)\n\nEach problem is scored against the four Value Equation drivers. **O** = isn't worth it (outcome), **L** = won't work for me (likelihood), **T** = takes too long (time delay), **E** = too hard (effort and sacrifice).\n\n| # | Problem | Stage | Driver(s) |\n|---|---|---|---|\n| 1 | \"I don't know what it'll cost. Haulers quote by the load and then upsell on site\" | Before | L |\n| 2 | \"I have to get quotes, compare and schedule. It's a hassle\" | Before | E, T |\n| 3 | \"I can't get anyone here before my listing or closing date\" | Before | T |\n| 4 | \"I have to sort everything first: keep, donate, sell, trash\" | Before/During | E, T |\n| 5 | \"I'm emotional or overwhelmed about Dad's stuff\" | During | E |\n| 6 | \"I have to be home all day to supervise\" | During | E, T |\n| 7 | \"They'll damage my floors, walls or driveway\" | During | L |\n| 8 | \"Will they actually take *everything*, like paint, chemicals, tires or the old fridge?\" | During | L, E |\n| 9 | \"I feel guilty throwing usable stuff in a landfill\" | During | O |\n| 10 | \"There's still something valuable in there that I could sell\" | During | O |\n| 11 | \"Once the junk is gone the garage is still filthy: oil stains, cobwebs, dust\" | After | O, E |\n| 12 | \"It'll fill right back up within six months\" | After | O, L |\n| 13 | \"I'll still need photos, staging or an organized look for the listing\" | After | O |\n| 14 | \"I need donation receipts for taxes\" | After | E |\n| 15 | \"Are they insured? What if someone gets hurt on my property?\" | Before | L |\n| 16 | \"The attic, basement and shed are just as bad\" | After | O |\n\n---\n\n## Step 3: Solutions (reverse each problem with \"how to\u2026\", then name it)\n\n| # | Problem | Solution (\"how to\u2026\") | Named solution |\n|---|---|---|---|\n| 1 | Pricing uncertainty | How to know your exact price before we arrive | **Locked-Price Photo Quote** |\n| 2 | Hassle of quoting and booking | How to book in 2 minutes from your phone | **Text-a-Photo Booking** |\n| 3 | No availability before the deadline | How to get it done before your listing date | **Listing-Date Lock** |\n| 4 | Sorting burden | How to have it sorted for you | **Keep / Donate / Sell / Haul Sort** |\n| 5 | Emotional overwhelm | How to clear a loved one's things respectfully | **Family Keepsake Protocol** (a set-aside bin for photos and documents) |\n| 6 | Supervising all day | How to be gone while it's done | **Hands-Off Day** (photo updates by text; you can stay at work) |\n| 7 | Property damage | How to be sure nothing gets damaged | **Floor & Wall Protection + insurance certificate** |\n| 8 | Will they take everything? | How to get rid of the hard stuff too | **Everything-Goes List** (including appliance and e-waste disposal, coordinated legally) |\n| 9 | Landfill guilt | How to make sure usable items get a second life | **Second-Life Donation Run** + receipt |\n| 10 | Valuables in the pile | How to turn junk into cash | **Hidden-Cash Flag** (we set aside resellable items and point you to resale options) |\n| 11 | Still filthy afterwards | How to get a garage you'd show a buyer | **Sweep, Degrease & Detail** |\n| 12 | Refilling | How to keep it clean | **Stay-Clear Zone Setup** (simple shelving/zone plan) and a **6-month re-check** |\n| 13 | Listing appearance | How to make the garage a selling feature | **Listing-Ready Photos** (before/after photos sent to you and your agent) |\n| 14 | Receipts | How to get the paperwork without chasing it | **Tax-Ready Donation Packet** |\n| 15 | Insurance and liability | How to know you're protected | **Insured & Background-Checked Crew** (show the proof) |\n| 16 | Other rooms | How to clear the whole house in one visit | **Whole-Home Add-On** (attic, basement, shed) |\n\n---\n\n## Step 4: Delivery vehicles (the \"cheat codes\")\n\n**Level of personal attention**\n- One-to-one: an owner-led walk-through and a personal crew lead for the day.\n- Small group / one-to-many: a recorded \"How to Prep Your Garage for a Sale\" video and a checklist sent to every booked client and every partner realtor.\n\n**Effort expected from the customer (DIY / DWY / DFY)**\n- DIY: a free \"Keep/Donate/Sell\" sorting checklist and sticker kit for people who want to pre-sort.\n- DWY: a 15-minute video call where you tag the \"keep\" items together on their phone photos.\n- **DFY (the core):** the crew sorts, hauls, donates, sweeps, degreases and photographs everything. The customer just unlocks the door.\n\n**Medium, if live:** in person on the day, plus text updates with photos as you go (before, mid-job, after). Phone for the walk-through.\n\n**Recorded format:** a 3-minute \"what to expect\" video, a written Everything-Goes list, and a one-page Stay-Clear zone plan.\n\n**Response speed**\n- Photo quote returned within **1 business hour**.\n- Job booked within **72 hours**, or on a specific listing-date deadline.\n- Same-day text replies on job day.\n\n**The 10x / one-tenth test**\n- *If they paid 10x ($15,000)?* A full house cleanout, an estate-sale coordination partner, a deep clean, installed shelving, a professional stager, a painter for garage walls, and a white-glove move-out to the closing date. Pull the cheap, high-value pieces down into the core offer: photos, a zone plan, a degrease, a coordinated donation.\n- *At one-tenth (about $150)?* A curbside pickup where they've already sorted, plus the DIY checklist. Keep this as a **downsell** for the non-avatar so you don't lose them. Don't lead with it.\n\n---\n\n## Step 5: Trim and stack\n\nKeep the items that are **low cost / high value** and **high cost / high value**. Cut the low-value ones.\n\n| Item | Cost to you | Value to the customer | Keep? |\n|---|---|---|---|\n| Locked-Price Photo Quote | Very low | High (likelihood) | Keep |\n| Listing-Date Lock | Low (scheduling) | Very high (time) | Keep |\n| Full DFY sort + haul | High | Very high | Keep (the core) |\n| Second-Life Donation Run + receipt | Low | High (outcome) | Keep |\n| Sweep, Degrease & Detail | Low\u2013Medium | High (outcome) | Keep |\n| Listing-Ready Photos | Very low | High | Keep |\n| Text photo updates (Hands-Off Day) | Very low | High (effort) | Keep |\n| Floor & wall protection | Low | Medium (likelihood) | Keep |\n| Stay-Clear Zone Setup (plan + basic hooks) | Low | Medium\u2013High | Keep |\n| 6-month re-check visit | Low (a 20-minute stop that also generates upsells) | Medium | Keep |\n| Installed custom shelving | High | Medium (not everyone wants it) | **Cut from core.** Offer as an upsell |\n| Painting garage walls | High | Low\u2013Medium | **Cut** |\n| Estate-sale coordination | High | High, but only for the estate avatar | Make it a separate tier or partner bonus |\n| Branded fridge magnet | Low | Low | **Cut** |\n\nRemember the **sales-to-fulfillment continuum**: \"Create flow. Monetize flow. Then add friction.\" Over-deliver on the first 20\u201330 jobs to collect testimonials and before/after photos. Then trim what isn't moving the needle.\n\n---\n\n## The stacked offer\n\n### **The \"Listing-Ready Garage Reset\": Empty, Clean & Photo-Ready Before Your Listing Date**\n*(For homeowners selling, moving or downsizing)*\n\n| Component | What it does | Stated value* |\n|---|---|---|\n| **Done-For-You Sort, Haul & Haul-Away** (garage, up to [X] cubic yards) | Everything sorted into keep/donate/sell/haul, then removed. You lift nothing | $1,200 |\n| **Sweep, Degrease & Detail** | An oil-stain treatment, a sweep and cobweb removal, so the garage shows like a feature | $350 |\n| **Listing-Ready Photos** | Before/after photos sent to you and your agent the same day | $150 |\n| **Second-Life Donation Run + Tax-Ready Packet** | Usable items go to local charities, with an itemized receipt | $200 |\n| **Hidden-Cash Flag** | Resellable items set aside with resale guidance | $150 |\n| **Stay-Clear Zone Plan** | A simple layout so it doesn't fill back up | $150 |\n| **Hands-Off Day** | Text updates, so you don't need to be home | $100 |\n| **6-Month Re-Check** | A follow-up visit to keep it clear | $150 |\n| **Total stated value** | | **$2,450** |\n\n\\*The stated values are illustrative. Base them on what each service would honestly cost to buy separately in your market (for example, a separate cleaner, a photographer and a donation pickup). Don't inflate them.\n\n### Bonuses (each named, priced and aimed at a specific doubt)\n\nFollowing Hormozi's bonus rules, each one answers a reason the buyer thinks they can't succeed.\n\n1. **\"The 7-Day Pre-Listing Garage Checklist\"** ($47): \"I don't know what buyers look for.\" *A tool beats more training.*\n2. **\"Family Keepsake Protocol\"** ($97): \"I'm scared you'll throw out something irreplaceable.\" Photos, papers and jewelry go into a sealed keepsake bin, and you get a call before anything questionable is hauled.\n3. **\"Agent Fast-Track\"** ($100): \"My realtor needs this yesterday.\" Photos and a completion note go straight to the agent.\n4. **Partner bonus:** a discount from a local stager, cleaner or mover. It costs you nothing, adds value and builds referrals (Hormozi's \"get other businesses to provide bonuses\").\n\nThe total bonus value should **eclipse** the core. In practice, grow these as you add partner bonuses.\n\n---\n\n## Pricing\n\nHormozi: \"99 percent of businesses need to raise their prices to grow.\" You're not competing with $300 a load any more. You're competing with *a delayed listing, a lower sale price and three lost weekends*.\n\n- **Core \"Listing-Ready Garage Reset\": $1,497** (one standard garage, up to a stated volume). That's well below the $2,450 stack, so the price-to-value gap is wide.\n  - Compare it with the real stakes. On a home sale, even a small hit to the sale price, or a week's delay in carrying costs, typically dwarfs $1,500. The customer still \"gets a deal\".\n- **Whole-Home Reset (garage + attic + basement/shed): $2,997.**\n- **Estate & Downsizing Concierge: from $4,500**, including estate-sale or consignment coordination with a partner.\n- **Downsell (non-avatar, already sorted): \"Curbside Load\" at market rate (about $300\u2013$400).** Never lead with it.\n\nWhy charge more? **The virtuous cycle of price.** The margin pays for a better crew, insurance, photo gear and paid ads to realtors. That produces better results, which justifies the price. \"Profit is oxygen.\"\n\n*Tip from the book:* \"Charge as high a price as you can say out loud without cracking a smile.\" Test $1,497, $1,997 and $997 on real calls and track close rates.\n\n**Money model:** take a deposit at booking (for example, 30%) to lock the Listing-Date slot. Collect the balance on completion. Offer realtors a referral fee or a pre-paid \"listing credit\" so they bring clients to you.\n\n---\n\n## Guarantee (reversing risk)\n\nHormozi's formula: **\"If you do not get X result in Y time period, we will Z.\"**\n\nStack two guarantees:\n\n1. **Locked-Price Guarantee (unconditional on price):**\n   > \"The price we quote from your photos is the price you pay. If we try to charge you a penny more on the day, the job is free.\"\n   *Condition (stated up front):* this applies to the items and volume shown in your photos. Added items get quoted in writing *before* we touch them.\n\n2. **Listing-Date Guarantee (conditional, \"better than money back\"):**\n   > \"If your garage isn't empty, clean and photo-ready by the date we lock in, you don't pay a cent for the reset, **and** we'll pay $250 toward your cleaning or staging bill.\"\n   *Conditions (the key actions):* you send complete photos, give access on the scheduled day, and flag hazardous items in advance.\n\n3. **\"Leave-It-Better\" Promise:** \"If we damage anything, we repair it or pay for it, and we're insured to back that up.\"\n\n**Do the math** (Hormozi's example): 100 sales with 5% refunds is 95 net, but 130 sales with 10% refunds is 117 net, about 23% more. A strong guarantee usually pays for itself. \"Hit your guarantee hard.\"\n\n*Ethics and compliance:* only promise what your crew capacity can honour. Put the terms in writing, honour every claim promptly, and check your state's consumer-protection, contractor and waste-disposal rules (especially for hazardous materials).\n\n---\n\n## Scarcity and urgency (real ones only)\n\n- **Scarcity (real capacity):** \"We take **[N] Listing-Ready Resets per week**, because each one gets a full crew for a full day.\" If you truly run one crew, say so: \"Tell them your real limits and let psychology do the rest.\"\n- **Rolling urgency:** \"Book by Friday and we can lock you into next week's Listing-Date slots.\"\n- **Seasonal urgency:** a **Spring Listing Season** push (Feb\u2013May is peak listing season in many markets) and a **\"Before the Holidays\" cleanout** in Nov\u2013Dec.\n- **Bonus scarcity:** the partner staging discount or the Agent Fast-Track bonus \"for the first 10 bookings this month\", but only if that's true.\n\nNever invent fake deadlines or fake limits. Hormozi insists scarcity and urgency be real.\n\n---\n\n## The M-A-G-I-C name\n\nUse three to five components.\n- **M**agnetic reason why: Spring Listing Season, Moving Day\n- **A**nnounce the avatar: for Home Sellers\n- **G**ive a goal: Listing-Ready, Photo-Ready Garage\n- **I**ndicate a time interval: in One Day, Before Your Listing Date\n- **C**ontainer word: Reset, Blitz, System, Makeover\n\n**Recommended name:**\n> ### **The Home Seller's 1-Day Listing-Ready Garage Reset**\n> (A = Home Seller's, I = 1-Day, G = Listing-Ready Garage, C = Reset)\n\n**Seasonal variant for ads:**\n> **The Spring Listing Season Garage Blitz: Photo-Ready in 1 Day for Home Sellers**\n\n**Estate tier:**\n> **The Downsizing Family's Done-For-You Clear-Out Concierge**\n\nName each bonus with the same formula, for example \"The 7-Day Pre-Listing Garage Checklist\".\n\n---\n\n## How to launch it (next steps)\n\n1. **Go where the avatar gathers:** realtors, stagers, estate attorneys, senior-move managers and new-listing lists. Offer realtors the Agent Fast-Track and a referral fee.\n2. **Do 5\u201310 jobs at a launch price** in exchange for before/after photos and video testimonials. That raises **perceived likelihood**, the Value Equation driver most junk haulers ignore.\n3. **Lead every ad and quote with the dream outcome and the guarantee**, not the truck size.\n4. **Track:** quote-to-close rate, average ticket and refund/guarantee claims. Adjust the price up until the close rate starts to fall meaningfully.\n5. **Keep iterating.** \"If your offer doesn't work\u2026 It means your offer sucks\", not you. Try many offers.\n\n*All numbers here are illustrative. Hormozi himself says \"the numbers in this book are theoretical\". Test them in your own market.*\n"}], "grading": {"expectations": [{"text": "Follows the five-step build: dream outcome, problems, solutions, delivery vehicles, trim and stack", "passed": true, "evidence": "Explicit sections 'Step 1: The dream outcome', 'Step 2: Every problem in the way (before, during and after)', 'Step 3: Solutions (reverse each problem with \"how to\u2026\", then name it)', 'Step 4: Delivery vehicles (the \"cheat codes\")' covering one-to-one/group, DIY/DWY/DFY, medium, response speed and the 10x/one-tenth test, and 'Step 5: Trim and stack' keeping 'low cost / high value and high cost / high value'. All match offer-framework.md \u00a74, including 'Create flow. Monetize flow. Then add friction.'"}, {"text": "Uses the Value Equation (dream outcome, likelihood, time delay, effort)", "passed": true, "evidence": "Each problem is scored on 'O = isn't worth it (outcome), L = won't work for me (likelihood), T = takes too long (time delay), E = too hard (effort and sacrifice)', which matches the four drivers and their buyer objections in offer-framework.md \u00a74 Step 2. The launch section also cites 'perceived likelihood, the Value Equation driver'."}, {"text": "Recommends premium pricing rather than undercutting $300", "passed": true, "evidence": "'Core \"Listing-Ready Garage Reset\": $1,497', with tiers at $2,997 and 'from $4,500'. It quotes '99 percent of businesses need to raise their prices to grow', 'virtuous cycle of price' and 'Profit is oxygen', all matching SKILL.md. The $300 load is kept only as a downsell: 'Never lead with it.'"}, {"text": "Includes a specific guarantee and scarcity/urgency and bonuses", "passed": true, "evidence": "Uses the guarantee formula 'If you do not get X result in Y time period, we will Z' with a specific Listing-Date Guarantee: 'not empty, clean and photo-ready by the date we lock in\u2026 you don't pay\u2026 and we'll pay $250'. Its conditions are tied to key actions, consistent with enhancers.md \u00a74. The 23% refund math is correct. Named and priced bonuses each answer a doubt, and the partner-bonus idea matches \u00a73. Real capacity scarcity ('[N] Listing-Ready Resets per week') plus rolling and seasonal urgency are given, with the ethics caveat."}, {"text": "Gives a name using M-A-G-I-C", "passed": true, "evidence": "The M-A-G-I-C breakdown is correct: Magnetic reason why, Announce the avatar, Give a goal, Indicate a time interval, Container word (matches enhancers.md \u00a75). The name 'The Home Seller's 1-Day Listing-Ready Garage Reset' is annotated with A, I, G and C."}], "summary": {"passed": 5, "failed": 0, "total": 5, "pass_rate": 1.0}}}, {"id": "eval-1-adv-offer-without_skill-run-1", "prompt": "I clean out garages and haul junk. Competitors charge $300 a load. Build me a Grand Slam Offer using $100M Offers: dream outcome, problems, solutions, delivery vehicles, trim and stack, plus pricing, guarantee and a MAGIC name.", "eval_id": 1, "outputs": [{"name": "response.md", "type": "text", "content": "# Grand Slam Offer: Garage Cleanout & Junk Hauling\n\nThe goal is to stop selling \"a load for $300\" and make an offer so good that people feel stupid saying no. If you sell what competitors sell, you get compared on price. If you build something nobody else offers, there is nothing to compare it to.\n\n---\n\n## 1. Dream Outcome\n\nNobody wants junk hauled. They want what they get afterward:\n\n> **\"Park your car in your garage again, and open the door without being embarrassed, by this weekend, without lifting a finger.\"**\n\nLayers of the dream outcome to use in your copy:\n- **Functional:** a clean, usable garage (car fits, tools findable, room for a gym or workshop).\n- **Emotional:** relief, pride, an end to arguments with a spouse about \"the garage.\"\n- **Status:** neighbors see the door open and it looks like a showroom.\n- **Life events:** getting ready to sell the house, a move, a new baby, a parent moving in, an estate cleanout.\n\n### Value equation check\nValue = (Dream Outcome x Perceived Likelihood of Achievement) / (Time Delay x Effort and Sacrifice)\n\n| Lever | Where competitors are | Where you will be |\n|---|---|---|\n| Dream outcome | \"We remove stuff\" | \"Your garage back\" |\n| Likelihood | Unknown crew, vague pricing | Guaranteed results, photos, reviews, insured |\n| Time delay | \"We'll call you back,\" a week out | Quote in 15 minutes, done in one day |\n| Effort and sacrifice | Customer sorts, carries, schedules, donates | Customer points; you do everything |\n\n---\n\n## 2. Problems (every obstacle the customer faces)\n\nList every problem before, during and after the job. Each one becomes a solution.\n\n**Before**\n1. \"I don't know what it'll cost.\" (fear of a surprise bill)\n2. \"I don't have time to be home all day.\"\n3. \"I can't decide what to keep. It's overwhelming.\"\n4. \"I don't trust strangers in my house / garage.\"\n5. \"Getting quotes is a pain; nobody calls back.\"\n6. \"There's hazardous stuff (paint, chemicals, batteries) and I don't know what to do with it.\"\n\n**During**\n7. \"They'll damage my floor, drywall or driveway.\"\n8. \"They'll toss something I wanted to keep.\"\n9. \"It'll take forever.\"\n10. \"They'll leave a mess.\"\n\n**After**\n11. \"It'll be cluttered again in six months.\"\n12. \"I wanted my stuff donated, not dumped, and to get a tax receipt.\"\n13. \"Now I have an empty garage but no system: things still pile on the floor.\"\n14. \"The floor is stained and gross.\"\n15. \"I could have sold some of this stuff.\"\n\n---\n\n## 3. Solutions (turn each problem into a \"how to\")\n\n| # | Problem | Solution |\n|---|---|---|\n| 1 | Surprise bill | Fixed, all-in price quoted from photos before you book |\n| 2 | No time | No need to be home; lockbox or keypad access; photo updates by text |\n| 3 | Decision overwhelm | Sorting session: Keep / Donate / Sell / Toss, crew handles the sorting |\n| 4 | Trust | Background-checked, uniformed, insured crew; owner's cell number |\n| 5 | Quote hassle | Text 3 photos, get a price in 15 minutes |\n| 6 | Hazardous waste | Hazardous item disposal handled for you |\n| 7 | Damage | Damage protection guarantee |\n| 8 | Losing something | \"Hold bin\": anything uncertain is set aside for your approval |\n| 9 | Slow | Same-day or next-day, single-visit completion |\n| 10 | Mess | Sweep, blow-out, and floor wash included |\n| 11 | Re-clutter | 6-month \"reset\" visit |\n| 12 | Donation | Drop at local charity, receipt emailed for taxes |\n| 13 | No system | Wall shelving / hook installation |\n| 14 | Dirty floor | Degrease and pressure wash; optional epoxy upsell |\n| 15 | Could sell items | Resale service: you list valuable items and split proceeds, or credit against the price |\n\n---\n\n## 4. Delivery Vehicles (how each solution is delivered)\n\nFor each solution, ask: done-for-you, done-with-you, or do-it-yourself? One-on-one or group? In person or digital? How fast?\n\n- **Done-for-you (core):** crew does the full cleanout, sort, haul, donate, and clean.\n- **Done-with-you (option):** 30-minute walk-through with the owner to tag Keep / Donate / Toss.\n- **Digital:** photo quote by text; before/after photo report; donation receipts by email.\n- **Physical:** shelving/hook install; labeled storage bins.\n- **Ongoing:** 6-month reset visit; annual cleanout membership.\n- **Speed tiers:** standard (within 7 days), priority (next day), emergency (same day / moving deadline).\n\n---\n\n## 5. Trim and Stack\n\nScore each item: **high value to the customer, low cost to you** = keep. **Low value, high cost** = cut.\n\n| Item | Value to customer | Cost to you | Decision |\n|---|---|---|---|\n| Fixed all-in photo quote | High | Very low | **Keep** |\n| Sorting (Keep/Donate/Sell/Toss) | High | Low (labor already on site) | **Keep** |\n| Hold bin for uncertain items | High | Nearly zero | **Keep** |\n| Donation drop-off + tax receipt | High | Low | **Keep** |\n| Sweep + blow-out | High | Very low | **Keep** |\n| Before/after photo report | Medium-high | Nearly zero | **Keep** |\n| No-need-to-be-home service | High | Nearly zero | **Keep** |\n| Hazardous item disposal (small qty) | Medium-high | Medium | **Keep, cap quantity** |\n| Pressure wash/degrease floor | High | Medium | **Keep in premium tier** |\n| Wall shelving / hooks install | High | Medium (parts) | **Premium tier or upsell** |\n| 6-month reset visit | High | Low-medium | **Keep as bonus** |\n| Resale of valuable items | Medium | High (time) | **Cut from core; offer as add-on** |\n| Epoxy floor | High | High | **Cut; upsell only / partner referral** |\n\n### The stacked core offer: \"The Garage Rescue\"\n1. Full garage cleanout, every item hauled, in one visit\n2. Crew sorts everything into Keep / Donate / Toss (you just approve)\n3. \"Hold bin\" for anything you're unsure about\n4. Donation drop-off with tax receipt emailed\n5. Small hazardous items (paint, batteries, chemicals) disposed properly\n6. Full sweep, blow-out, and cobweb removal\n7. Before/after photo report\n8. You don't need to be home\n9. **Bonus:** 6-month \"Reset Visit\" (one free light load + tidy)\n10. **Bonus:** \"Keep it clean\" checklist and zone map taped inside the garage\n\n---\n\n## 6. Pricing\n\nDo not compete with the $300 load. You're not selling a load; you're selling a garage back. Charge a premium and use that margin to deliver more, so the customer is happier and you can pay a better crew.\n\n**Value anchor (what it would cost to piece together):**\n- Junk removal for a full garage (2-3 loads): $600-$900\n- Professional organizer, half day: $300-$500\n- Donation pickup coordination + hazardous disposal: $100-$150\n- Floor clean: $150\n- Follow-up visit: $150\n- **Total value: roughly $1,300-$1,850**\n\n**Tiers (good / better / best):**\n\n| Tier | Includes | Price |\n|---|---|---|\n| **Clear-Out** | Haul-away + sort + hold bin + sweep + donation receipt | $795 |\n| **Garage Rescue** (most popular) | Everything above + hazardous disposal + photo report + 6-month reset visit + degrease/pressure wash | $1,295 |\n| **Garage Makeover** | Everything above + wall shelving/hooks install + labeled bins + 12-month reset | $2,495 |\n\nNotes:\n- The middle tier is the one you want people to pick; the top tier makes it look reasonable.\n- Price by garage size (1-car / 2-car / 3-car) instead of by load, so the customer never worries about the truck \"filling up.\"\n- Add a **rush fee** (+$200 for next-day, +$350 same-day) and a **moving deadline guarantee** for realtors and sellers.\n- Upsells: epoxy floor (partner), recurring annual cleanout membership, attic or basement add-on, resale service.\n- Offer a **realtor program**: listing agents get a pre-sale garage package they can gift or bill at close.\n\n---\n\n## 7. Guarantee\n\nStack guarantees to remove risk. Pick one strong headline guarantee and back it with smaller ones.\n\n- **Headline (conditional, unconditional feel):** *\"Garage done in one day, or it's free.\"* If we don't finish in the single scheduled visit, you don't pay.\n- **Price-lock guarantee:** \"The price we quote from your photos is the price you pay. No surprise fees, ever.\"\n- **Damage guarantee:** \"If we scratch, dent or break anything, we fix or replace it.\"\n- **Spotless guarantee:** \"If the garage isn't broom-clean and you're not happy, we come back free within 48 hours.\"\n- **Nothing-lost guarantee:** \"Anything you're unsure about goes in the hold bin. We never toss it without your say-so.\"\n\nMaking it a strong guarantee is fine because the risk is controllable: you only quote what you can finish, you set the scope from photos, and you use a \"one-day\" promise matched to crew size.\n\n---\n\n## 8. MAGIC Name\n\nMAGIC = **M**agnetic reason why, **A**vatar (who it's for), **G**oal (dream outcome), **I**nterval (time frame), **C**ontainer word (package name).\n\nOptions:\n- **\"The 1-Day Garage Rescue\"** (Interval + Container + Goal)\n- **\"Spring Reset: Get Your Car Back in the Garage in 1 Day\"** (Reason + Goal + Interval)\n- **\"Homeowner's Park-It-Again Garage Makeover: Done in a Day or It's Free\"** (Avatar + Goal + Interval + Container + guarantee)\n- **\"Pre-Sale Garage Blitz for Home Sellers: Show-Ready in 24 Hours\"** (Avatar + Goal + Interval + Container, for the realtor/seller niche)\n- **\"New-Year Garage Reset: 1-Day Cleanout, Organize & Haul\"** (seasonal reason why)\n\n**Recommended headline offer:**\n> **\"The 1-Day Garage Rescue: Park in Your Garage Again by Tomorrow Night, or It's Free.\"**\n\nRotate the magnetic reason seasonally (Spring Reset, Before-the-Holidays, Moving Season, Tax-Season Donation) so the offer stays fresh without rebuilding it.\n\n---\n\n## 9. Putting it all together (the pitch)\n\n> \"Most guys charge $300 a load and leave you to sort, carry and clean. We do the whole garage in one day. Text us three photos, get a fixed price in 15 minutes. Our crew sorts everything into keep, donate and toss. Anything you're not sure about goes in a hold bin. We drop donations at the local charity and email you the tax receipt, take the old paint and chemicals, and blow out and pressure wash the floor. You don't even have to be home. You get before and after photos, and in six months we come back for a free reset. If we don't finish in one day, it's free. If we damage anything, we fix it. The Garage Rescue is $1,295 for a two-car garage. Do you want this Saturday or next Tuesday?\"\n\n### Next steps\n1. Test the middle tier at $1,295 with your next 10 leads; track close rate.\n2. If more than ~40% say yes immediately, raise the price.\n3. Collect before/after photos and video testimonials on every job; they boost perceived likelihood more than anything.\n4. Build the realtor channel: one agent can send you a steady stream of pre-sale jobs.\n"}], "grading": {"expectations": [{"text": "Follows the five-step build: dream outcome, problems, solutions, delivery vehicles, trim and stack", "passed": true, "evidence": "Has sections '1. Dream Outcome', '2. Problems' (before/during/after), '3. Solutions (turn each problem into a \"how to\")', '4. Delivery Vehicles' (DFY/DWY/DIY, one-on-one or group, medium, speed tiers) and '5. Trim and Stack'. Minor deviation: its trim rule is only 'high value, low cost = keep; low value, high cost = cut', and it cuts 'Epoxy floor | High | High' to an upsell, whereas the book keeps high-cost/high-value items. That one row does not undo the overall five-step build."}, {"text": "Uses the Value Equation (dream outcome, likelihood, time delay, effort)", "passed": true, "evidence": "States 'Value = (Dream Outcome x Perceived Likelihood of Achievement) / (Time Delay x Effort and Sacrifice)', which matches SKILL.md. It also includes a lever table comparing competitors with the user on all four drivers."}, {"text": "Recommends premium pricing rather than undercutting $300", "passed": true, "evidence": "'Do not compete with the $300 load\u2026 Charge a premium and use that margin to deliver more.' Tiers are $795 / $1,295 / $2,495, priced against a value anchor of '$1,300-$1,850'."}, {"text": "Includes a specific guarantee and scarcity/urgency and bonuses", "passed": false, "evidence": "There is a specific guarantee ('Garage done in one day, or it's free') and there are bonuses (a 6-month 'Reset Visit' and a checklist). But no scarcity or urgency appears anywhere: no capacity limits, deadlines, cohorts or expiring bonuses. A 'rush fee' is a price add-on, not urgency. The guarantee is also mislabelled 'conditional, unconditional feel', which does not match the book's four types. The scarcity/urgency part of the assertion fails."}, {"text": "Gives a name using M-A-G-I-C", "passed": true, "evidence": "'MAGIC = Magnetic reason why, Avatar (who it's for), Goal (dream outcome), Interval (time frame), Container word', which matches enhancers.md \u00a75. Several names are annotated by component, for example 'Pre-Sale Garage Blitz for Home Sellers: Show-Ready in 24 Hours' (Avatar + Goal + Interval + Container)."}], "summary": {"passed": 4, "failed": 1, "total": 5, "pass_rate": 0.8}}}, {"id": "eval-2-adv-market-with_skill-run-1", "prompt": "Rank these markets for a new coaching offer using Hormozi's starving-crowd criteria: (a) busy moms wanting to lose weight, (b) dentists wanting more patients, (c) teenagers wanting to learn guitar.", "eval_id": 2, "outputs": [{"name": "response.md", "type": "text", "content": "# Ranking Three Coaching Markets with Hormozi's Starving-Crowd Criteria\n\nIn *$100M Offers*, Hormozi's order of importance is **Starving Crowd (market) > Offer Strength > Persuasion Skills**. A great market can save a weak offer, and a bad market sinks even a brilliant one. So this is the most important decision you'll make for the offer.\n\nHe judges a market on **four indicators**:\n1. **Massive pain.** They *desperately need* it, not merely want it. \"The pain is the pitch,\" and price is proportional to pain.\n2. **Purchasing power.** They can afford to pay, ideally a premium. (His cautionary example: a resume service for the unemployed failed because the buyers had no money.)\n3. **Easy to target.** They gather somewhere you can reach them: associations, lists, groups, channels.\n4. **Growing.** Growth is a tailwind and decline is a headwind. Newspapers had three of the four but were shrinking.\n\nHe also says the evergreen markets sit in **health, wealth or relationships**.\n\n---\n\n## Scorecard (1 = weak, 5 = strong)\n\n| Indicator | (b) Dentists wanting more patients | (a) Busy moms wanting to lose weight | (c) Teenagers wanting to learn guitar |\n|---|---|---|---|\n| **Massive pain** | **4**: patients are revenue; an empty chair is lost income, and practice debt and overhead are high | **4**: health, self-image and energy pain is real and emotional, but many \"want\" rather than \"need\" it, and it's often deferred | **1**: a hobby desire. Nice to have, not a pain |\n| **Purchasing power** | **5**: high-income professionals with business budgets, and the coaching can be justified as a business expense | **3**: varies widely. Some households have money, many are budget-stretched and price-sensitive | **1**: teens have little money. Parents are the real buyers, and they want cheap lessons |\n| **Easy to target** | **5**: licensed and listed. Dental associations, conferences, journals, Facebook groups, practice-management lists | **3**: reachable through social ads and mom groups, but a broad, crowded audience with many competing offers | **2**: reachable on YouTube/TikTok, but advertising to minors is restricted, and you'd really have to target the parents |\n| **Growing** | **4**: a stable-to-growing profession; consolidation (DSOs) is raising competition pressure on independents, which raises the pain | **4**: weight loss is a perennial, growing market, though new medical options (e.g., GLP-1 drugs) are reshaping it | **2**: flat. Free online lessons and apps compete hard |\n| **Category** | **Wealth** | **Health** | None of the three (a hobby) |\n| **Total (out of 20)** | **18** | **14** | **6** |\n\n---\n\n## The ranking\n\n### 1st: (b) Dentists wanting more patients\n**This is the strongest starving crowd by Hormozi's criteria.** It matches all four indicators.\n- **Pain:** more patients means more revenue, so the pain is measurable in dollars. You can show the ROI directly (\"one new patient is worth $X in lifetime value\").\n- **Purchasing power:** this is Hormozi's own example. \"Rich doctors\" are easy to find, and they can afford premium prices. With a high price, the **virtuous cycle of price** kicks in: more margin, better delivery, better results, more justification for the price.\n- **Targeting:** they're licensed, listed and clustered in associations and conferences.\n- **Why it's a \"wealth\" offer:** you can sell it against the money it produces. That's the easiest kind of value to prove, and it supports guarantees tied to results (for example, \"X new patients in 90 days or we keep working for free\").\n- **Watch-outs:** sophisticated buyers who are pitched constantly by dental marketing agencies, and some professional advertising rules (state dental boards). You'll need a differentiated **Grand Slam Offer**, not \"marketing services\", to avoid being a commodity.\n- **Niche down further:** for example, \"solo general dentists in their first 5 years of practice ownership\", or \"practices that want more implant/Invisalign cases\". Hormozi: \"Riches are in the niches.\" The same product can command many times the price for a specific avatar.\n\n### 2nd: (a) Busy moms wanting to lose weight\n**A good \"normal\" market, and worth doing with a strong offer, but weaker on purchasing power and targeting.**\n- **Pain:** high and emotional (health, confidence, energy for the kids). This is the classic health market, and Hormozi's own gym clients sold exactly this outcome.\n- **Purchasing power:** mixed. Many busy moms control household spending, but discretionary budgets are tight and price sensitivity is high. You'll likely need a lower price point or careful avatar selection (for example, \"working professional moms aged 35\u201345\", with higher household incomes).\n- **Targeting:** reachable but crowded. Every fitness coach, app and program targets this group, so commoditization pressure is intense.\n- **Growing:** yes. But GLP-1 medications and cheap apps are changing what \"losing weight\" means for buyers. A coaching offer would need to address that (for example, \"for moms who want results without medication\", or support *alongside* it, within your scope).\n- **How to win here:** attack the **bottom of the Value Equation**. \"Busy\" means time delay and effort are the real obstacles, so lower them: done-for-you meal plans, 20-minute home workouts, prebuilt grocery carts (one of Hormozi's own delivery-vehicle examples), and text support.\n- **Compliance note:** weight-loss outcome-plus-time claims (\"lose 20 lbs in 6 weeks\") are heavily regulated (FTC and platform ad policies). Use action goals in the name and keep testimonials typical and truthful.\n\n### 3rd: (c) Teenagers wanting to learn guitar\n**A weak starving crowd. It fails at least three of the four indicators.**\n- **Pain:** a want, not a need. Nobody \"desperately needs\" to play guitar, and it sits outside health, wealth and relationships.\n- **Purchasing power:** teenagers don't have money. This is the same trap as Hormozi's resume service for the unemployed. The real buyer is the parent, who is comparing you with cheap local lessons and free YouTube videos.\n- **Targeting:** advertising to minors is restricted, and the content space is saturated with free alternatives.\n- **Growing:** flat at best.\n- **If you love this space anyway:** reposition toward a buyer with pain and money. For example, *parents* who want a screen-free, confidence-building activity for their child; or adults (often 35\u201355) who always wanted to learn guitar and have disposable income. That's a different, stronger market.\n\n---\n\n## Bottom line\n\n**Rank: (b) Dentists > (a) Busy moms > (c) Teen guitarists.**\n\n- **Dentists** are the closest to Hormozi's ideal starving crowd: massive financial pain, strong purchasing power, easy to target and stable-to-growing. Start here if you have, or can acquire, credible expertise in practice growth.\n- **Busy moms** are a solid health market, but you'll be fighting commoditization and price sensitivity. Win with a Grand Slam Offer that removes time and effort.\n- **Teen guitar** is the market you'd have to out-persuade, and Hormozi's whole point is that persuasion can't fix a bad market.\n\n**One more filter:** pick the market whose avatar you can serve credibly. Hormozi committed to one narrow avatar (microgym owners) and turned everyone else away. Whichever you choose, **niche down hard**, then build the offer with the Value Equation and the five-step process.\n\n*The scores are judgment calls meant to illustrate the framework, not market data. Validate them with real conversations and test offers before committing. As Hormozi says, try many offers. A failed offer \"doesn't mean you suck. It means your offer sucks.\"*\n"}], "grading": {"expectations": [{"text": "Uses the four criteria: massive pain, purchasing power, easy to target, growing", "passed": true, "evidence": "Lists 'four indicators': Massive pain ('The pain is the pitch'), Purchasing power (the resume-service-for-the-unemployed example), Easy to target, and Growing (newspapers had three of four). All match the offer-framework.md \u00a71 table."}, {"text": "Scores each market on the criteria", "passed": true, "evidence": "The scorecard table scores all three markets 1\u20135 on each indicator, with reasons. Totals: dentists 18, moms 14, teens 6. The scoring is presented as a judgment call ('The scores are judgment calls\u2026 not market data') and is not attributed to Hormozi."}, {"text": "Ranks dentists high on purchasing power and targetability and teens low on purchasing power", "passed": true, "evidence": "Dentists get 'Purchasing power 5' and 'Easy to target 5'; teens get 'Purchasing power 1: teens have little money. Parents are the real buyers'. This is tied to the resume-service trap."}, {"text": "Notes market matters more than offer or persuasion (order of importance)", "passed": true, "evidence": "Opens with 'Starving Crowd (market) > Offer Strength > Persuasion Skills. A great market can save a weak offer, and a bad market sinks even a brilliant one', matching SKILL.md item 3. It closes with 'persuasion can't fix a bad market'."}, {"text": "Gives a clear final ranking with reasoning", "passed": true, "evidence": "'Rank: (b) Dentists > (a) Busy moms > (c) Teen guitarists', with a reasoned section per market. Minor: 'Rich doctors are easy to find' is the book's easy-to-target example, cited here under purchasing power, but it is not a factual error."}], "summary": {"passed": 5, "failed": 0, "total": 5, "pass_rate": 1.0}}}, {"id": "eval-2-adv-market-without_skill-run-1", "prompt": "Rank these markets for a new coaching offer using Hormozi's starving-crowd criteria: (a) busy moms wanting to lose weight, (b) dentists wanting more patients, (c) teenagers wanting to learn guitar.", "eval_id": 2, "outputs": [{"name": "response.md", "type": "text", "content": "# Ranking Markets with Hormozi's \"Starving Crowd\" Criteria\n\nIn *$100M Offers*, Hormozi says the market matters more than the offer or the persuasion skill. A great offer to the wrong market fails; a decent offer to a starving crowd wins. He scores a market on four indicators:\n\n1. **Massive pain** - they must have the problem, and badly. Not just want it; need it.\n2. **Purchasing power** - they must be able to afford it.\n3. **Easy to target** - you can find and reach them as a group (associations, publications, groups, lists).\n4. **Growing** - the market is expanding, not shrinking (a tailwind).\n\nHe suggests scoring each 1-10. All four matter; a zero on any one, especially purchasing power, can sink the market.\n\n---\n\n## Scorecard\n\n| Market | Pain | Purchasing power | Easy to target | Growing | Total (/40) |\n|---|---|---|---|---|---|\n| **(b) Dentists wanting more patients** | 8 | 10 | 10 | 7 | **35** |\n| **(a) Busy moms wanting to lose weight** | 8 | 6 | 7 | 7 | **28** |\n| **(c) Teenagers wanting to learn guitar** | 3 | 2 | 6 | 4 | **15** |\n\n### Ranking\n1. **Dentists wanting more patients** (best)\n2. **Busy moms wanting to lose weight** (good, but crowded and harder to monetize)\n3. **Teenagers wanting to learn guitar** (weak; avoid unless you sell to parents)\n\n---\n\n## (b) Dentists wanting more patients - #1\n\n- **Pain (8):** Practices have high fixed costs: staff, equipment, rent, loan payments for school and the practice. Empty chairs cost real money every day. New-patient flow directly decides whether the practice is profitable. Pain is financial, measurable and urgent.\n- **Purchasing power (10):** Dentists are high earners, and the service is a business expense with a clear ROI. One new patient can be worth thousands over their lifetime, so paying $2,000-$10,000+ for coaching is easy to justify.\n- **Easy to target (10):** Licensed, listed and organized. State and national dental associations, dental trade publications, conferences, Facebook groups, LinkedIn titles, Google Maps listings, and purchasable lists. You can name and reach nearly every one.\n- **Growing (7):** Dental demand rises with an aging population, cosmetic demand (implants, aligners, whitening), and more dentists going independent or competing with DSOs (corporate chains) that push private practices to market better.\n\n**Watch-outs:** This is a known niche, so marketing agencies already pitch dentists heavily. You win by being specific (for example, \"implant patients for solo practices\" or \"new practices in their first 3 years\") and by tying your offer to a hard result: \"X new patients in 90 days or you don't pay.\"\n\n**Verdict:** This is the classic starving crowd: painful problem, lots of money, easy to find. Hormozi himself points to selling business-growth services to businesses with clear ROI as the easiest route.\n\n---\n\n## (a) Busy moms wanting to lose weight - #2\n\n- **Pain (8):** Real and emotional: health, energy, confidence, body image after pregnancy, being a role model for kids. Weight loss is one of the \"big three\" markets (health, wealth, relationships), so the need is evergreen.\n- **Purchasing power (6):** Mixed. Many households have money, but moms often put the family first and feel guilty spending on themselves. Spending may need a partner's buy-in. Price sensitivity is higher than for a business owner with ROI.\n- **Easy to target (7):** Easy to reach on Facebook/Instagram, mom groups, schools, and local communities. But \"busy moms\" is broad; ad platforms make targeting easy, so competition for their attention is fierce.\n- **Growing (7):** Steady demand, boosted by new trends (GLP-1 drugs, at-home and online fitness). The GLP-1 trend is a threat as well as a tailwind: some buyers will choose the drug instead of coaching, and others will want help keeping muscle and keeping the weight off.\n\n**Watch-outs:** Extremely crowded and full of past failures, so skepticism is high (\"I've tried everything\"). Perceived likelihood of success is low, so you need strong proof, a guarantee, and a niche angle (for example, \"moms of under-5s who have 20 minutes a day\" or \"post-partum moms in year one\").\n\n**Verdict:** A viable market and a big one. You'll need a sharper niche and a stronger offer to stand out, and lower average prices mean you need more volume.\n\n---\n\n## (c) Teenagers wanting to learn guitar - #3\n\n- **Pain (3):** It's a want, not a need. Nothing bad happens if they don't learn. Motivation is often short-lived.\n- **Purchasing power (2):** Teens have little money of their own; parents pay, which means you're actually selling to a different buyer with different reasons. Hormozi is clear: if they can't pay, it doesn't matter how much they want it.\n- **Easy to target (6):** Reachable via schools, music shops, YouTube/TikTok, but advertising to minors is restricted and you still have to convince the parent.\n- **Growing (4):** Interest in guitar is fairly flat. Free YouTube lessons and cheap apps (Yousician, Fender Play) set price expectations near zero.\n\n**Watch-outs:** Low prices, high churn, free substitutes everywhere.\n\n**Verdict:** The weakest starving crowd. If you love this space, reframe it: sell to **parents** (\"give your kid a skill and confidence, off screens\") or to **adults** who always wanted to play and now have money and time. That changes purchasing power and pain dramatically.\n\n---\n\n## Bottom line\n\n**Choose dentists.** They score highest on the two things that matter most for a new offer: **purchasing power** and **ease of targeting**, with real, money-driven pain. You can charge premium prices, find every prospect, and prove ROI in dollars.\n\nBusy moms is a solid second choice if you are passionate about fitness, but expect more competition and lower prices. Teenage guitar is a hobby market with weak buying power; avoid it unless you reposition toward parents or adults.\n\n**Next step:** Niche down inside the winner. \"Dentists\" becomes, for example, \"solo general dentists in their first 5 years who want 30 new patients a month,\" then build the Grand Slam Offer for that exact person.\n"}], "grading": {"expectations": [{"text": "Uses the four criteria: massive pain, purchasing power, easy to target, growing", "passed": true, "evidence": "Lists 'Massive pain', 'Purchasing power', 'Easy to target' ('associations, publications, groups, lists') and 'Growing' ('a tailwind'). These match offer-framework.md \u00a71."}, {"text": "Scores each market on the criteria", "passed": false, "evidence": "It does score each market (8/10/10/7, 8/6/7/7, 3/2/6/4). But it attributes the method to the book: 'He suggests scoring each 1-10' and 'a zero on any one\u2026 can sink the market'. Neither is in SKILL.md or the references, so it is an invented framework misattributed to Hormozi, which fails under the grading rules."}, {"text": "Ranks dentists high on purchasing power and targetability and teens low on purchasing power", "passed": true, "evidence": "Dentists: 'Purchasing power (10)', 'Easy to target (10)'. Teens: 'Purchasing power (2): Teens have little money of their own; parents pay'."}, {"text": "Notes market matters more than offer or persuasion (order of importance)", "passed": true, "evidence": "'Hormozi says the market matters more than the offer or the persuasion skill. A great offer to the wrong market fails; a decent offer to a starving crowd wins.' This is consistent with the order of importance in SKILL.md."}, {"text": "Gives a clear final ranking with reasoning", "passed": true, "evidence": "A clear 'Ranking: 1. Dentists 2. Busy moms 3. Teenagers' with per-criterion reasoning and verdicts. Note: it includes the unsupported claim 'Hormozi himself points to selling business-growth services to businesses with clear ROI as the easiest route', which is not in the skill files. The ranking and the reasoning built on the criteria still hold."}], "summary": {"passed": 4, "failed": 1, "total": 5, "pass_rate": 0.8}}}], "previous_feedback": {}, "previous_outputs": {}, "benchmark": {"metadata": {"skill_name": "hormozi-offers", "skill_path": "\u003cpath/to/skill>", "executor_model": "\u003cmodel-name>", "analyzer_model": "\u003cmodel-name>", "timestamp": "2026-11-21T22:00:50Z", "evals_run": [1, 2], "runs_per_configuration": 1}, "runs": [{"eval_id": 1, "eval_name": "adv-offer", "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 5, "failed": 0, "total": 5, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Follows the five-step build: dream outcome, problems, solutions, delivery vehicles, trim and stack", "passed": true, "evidence": "Explicit sections 'Step 1: The dream outcome', 'Step 2: Every problem in the way (before, during and after)', 'Step 3: Solutions (reverse each problem with \"how to\u2026\", then name it)', 'Step 4: Delivery vehicles (the \"cheat codes\")' covering one-to-one/group, DIY/DWY/DFY, medium, response speed and the 10x/one-tenth test, and 'Step 5: Trim and stack' keeping 'low cost / high value and high cost / high value'. All match offer-framework.md \u00a74, including 'Create flow. Monetize flow. Then add friction.'"}, {"text": "Uses the Value Equation (dream outcome, likelihood, time delay, effort)", "passed": true, "evidence": "Each problem is scored on 'O = isn't worth it (outcome), L = won't work for me (likelihood), T = takes too long (time delay), E = too hard (effort and sacrifice)', which matches the four drivers and their buyer objections in offer-framework.md \u00a74 Step 2. The launch section also cites 'perceived likelihood, the Value Equation driver'."}, {"text": "Recommends premium pricing rather than undercutting $300", "passed": true, "evidence": "'Core \"Listing-Ready Garage Reset\": $1,497', with tiers at $2,997 and 'from $4,500'. It quotes '99 percent of businesses need to raise their prices to grow', 'virtuous cycle of price' and 'Profit is oxygen', all matching SKILL.md. The $300 load is kept only as a downsell: 'Never lead with it.'"}, {"text": "Includes a specific guarantee and scarcity/urgency and bonuses", "passed": true, "evidence": "Uses the guarantee formula 'If you do not get X result in Y time period, we will Z' with a specific Listing-Date Guarantee: 'not empty, clean and photo-ready by the date we lock in\u2026 you don't pay\u2026 and we'll pay $250'. Its conditions are tied to key actions, consistent with enhancers.md \u00a74. The 23% refund math is correct. Named and priced bonuses each answer a doubt, and the partner-bonus idea matches \u00a73. Real capacity scarcity ('[N] Listing-Ready Resets per week') plus rolling and seasonal urgency are given, with the ethics caveat."}, {"text": "Gives a name using M-A-G-I-C", "passed": true, "evidence": "The M-A-G-I-C breakdown is correct: Magnetic reason why, Announce the avatar, Give a goal, Indicate a time interval, Container word (matches enhancers.md \u00a75). The name 'The Home Seller's 1-Day Listing-Ready Garage Reset' is annotated with A, I, G and C."}], "notes": []}, {"eval_id": 2, "eval_name": "adv-market", "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 5, "failed": 0, "total": 5, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Uses the four criteria: massive pain, purchasing power, easy to target, growing", "passed": true, "evidence": "Lists 'four indicators': Massive pain ('The pain is the pitch'), Purchasing power (the resume-service-for-the-unemployed example), Easy to target, and Growing (newspapers had three of four). All match the offer-framework.md \u00a71 table."}, {"text": "Scores each market on the criteria", "passed": true, "evidence": "The scorecard table scores all three markets 1\u20135 on each indicator, with reasons. Totals: dentists 18, moms 14, teens 6. The scoring is presented as a judgment call ('The scores are judgment calls\u2026 not market data') and is not attributed to Hormozi."}, {"text": "Ranks dentists high on purchasing power and targetability and teens low on purchasing power", "passed": true, "evidence": "Dentists get 'Purchasing power 5' and 'Easy to target 5'; teens get 'Purchasing power 1: teens have little money. Parents are the real buyers'. This is tied to the resume-service trap."}, {"text": "Notes market matters more than offer or persuasion (order of importance)", "passed": true, "evidence": "Opens with 'Starving Crowd (market) > Offer Strength > Persuasion Skills. A great market can save a weak offer, and a bad market sinks even a brilliant one', matching SKILL.md item 3. It closes with 'persuasion can't fix a bad market'."}, {"text": "Gives a clear final ranking with reasoning", "passed": true, "evidence": "'Rank: (b) Dentists > (a) Busy moms > (c) Teen guitarists', with a reasoned section per market. Minor: 'Rich doctors are easy to find' is the book's easy-to-target example, cited here under purchasing power, but it is not a factual error."}], "notes": []}, {"eval_id": 1, "eval_name": "adv-offer", "configuration": "without_skill", "run_number": 1, "result": {"pass_rate": 0.8, "passed": 4, "failed": 1, "total": 5, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Follows the five-step build: dream outcome, problems, solutions, delivery vehicles, trim and stack", "passed": true, "evidence": "Has sections '1. Dream Outcome', '2. Problems' (before/during/after), '3. Solutions (turn each problem into a \"how to\")', '4. Delivery Vehicles' (DFY/DWY/DIY, one-on-one or group, medium, speed tiers) and '5. Trim and Stack'. Minor deviation: its trim rule is only 'high value, low cost = keep; low value, high cost = cut', and it cuts 'Epoxy floor | High | High' to an upsell, whereas the book keeps high-cost/high-value items. That one row does not undo the overall five-step build."}, {"text": "Uses the Value Equation (dream outcome, likelihood, time delay, effort)", "passed": true, "evidence": "States 'Value = (Dream Outcome x Perceived Likelihood of Achievement) / (Time Delay x Effort and Sacrifice)', which matches SKILL.md. It also includes a lever table comparing competitors with the user on all four drivers."}, {"text": "Recommends premium pricing rather than undercutting $300", "passed": true, "evidence": "'Do not compete with the $300 load\u2026 Charge a premium and use that margin to deliver more.' Tiers are $795 / $1,295 / $2,495, priced against a value anchor of '$1,300-$1,850'."}, {"text": "Includes a specific guarantee and scarcity/urgency and bonuses", "passed": false, "evidence": "There is a specific guarantee ('Garage done in one day, or it's free') and there are bonuses (a 6-month 'Reset Visit' and a checklist). But no scarcity or urgency appears anywhere: no capacity limits, deadlines, cohorts or expiring bonuses. A 'rush fee' is a price add-on, not urgency. The guarantee is also mislabelled 'conditional, unconditional feel', which does not match the book's four types. The scarcity/urgency part of the assertion fails."}, {"text": "Gives a name using M-A-G-I-C", "passed": true, "evidence": "'MAGIC = Magnetic reason why, Avatar (who it's for), Goal (dream outcome), Interval (time frame), Container word', which matches enhancers.md \u00a75. Several names are annotated by component, for example 'Pre-Sale Garage Blitz for Home Sellers: Show-Ready in 24 Hours' (Avatar + Goal + Interval + Container)."}], "notes": []}, {"eval_id": 2, "eval_name": "adv-market", "configuration": "without_skill", "run_number": 1, "result": {"pass_rate": 0.8, "passed": 4, "failed": 1, "total": 5, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Uses the four criteria: massive pain, purchasing power, easy to target, growing", "passed": true, "evidence": "Lists 'Massive pain', 'Purchasing power', 'Easy to target' ('associations, publications, groups, lists') and 'Growing' ('a tailwind'). These match offer-framework.md \u00a71."}, {"text": "Scores each market on the criteria", "passed": false, "evidence": "It does score each market (8/10/10/7, 8/6/7/7, 3/2/6/4). But it attributes the method to the book: 'He suggests scoring each 1-10' and 'a zero on any one\u2026 can sink the market'. Neither is in SKILL.md or the references, so it is an invented framework misattributed to Hormozi, which fails under the grading rules."}, {"text": "Ranks dentists high on purchasing power and targetability and teens low on purchasing power", "passed": true, "evidence": "Dentists: 'Purchasing power (10)', 'Easy to target (10)'. Teens: 'Purchasing power (2): Teens have little money of their own; parents pay'."}, {"text": "Notes market matters more than offer or persuasion (order of importance)", "passed": true, "evidence": "'Hormozi says the market matters more than the offer or the persuasion skill. A great offer to the wrong market fails; a decent offer to a starving crowd wins.' This is consistent with the order of importance in SKILL.md."}, {"text": "Gives a clear final ranking with reasoning", "passed": true, "evidence": "A clear 'Ranking: 1. Dentists 2. Busy moms 3. Teenagers' with per-criterion reasoning and verdicts. Note: it includes the unsupported claim 'Hormozi himself points to selling business-growth services to businesses with clear ROI as the easiest route', which is not in the skill files. The ranking and the reasoning built on the criteria still hold."}], "notes": []}], "run_summary": {"with_skill": {"pass_rate": {"mean": 1.0, "stddev": 0.0, "min": 1.0, "max": 1.0}, "time_seconds": null, "tokens": null}, "without_skill": {"pass_rate": {"mean": 0.8, "stddev": 0.0, "min": 0.8, "max": 0.8}, "time_seconds": null, "tokens": null}, "delta": {"pass_rate": "+0.20", "time_seconds": null, "tokens": null}}, "notes": ["Time recorded for 0 of 2 with_skill runs, 0 of 2 without_skill runs, so there is no time delta.", "Token count recorded for 0 of 2 with_skill runs, 0 of 2 without_skill runs, so there is no token count delta."]}};
+
+    // ---- State ----
+    let feedbackMap = {};  // run_id -> feedback text
+    let currentIndex = 0;
+    let visitedRuns = new Set();
+
+    // ---- Init ----
+    async function init() {
+      // Load saved feedback from server — but only if this isn't a fresh
+      // iteration (indicated by previous_feedback being present). When
+      // previous feedback exists, the feedback.json on disk is stale from
+      // the prior iteration and should not pre-fill the textareas.
+      const hasPrevious = Object.keys(EMBEDDED_DATA.previous_feedback || {}).length > 0
+        || Object.keys(EMBEDDED_DATA.previous_outputs || {}).length > 0;
+      if (!hasPrevious) {
+        try {
+          const resp = await fetch("/api/feedback");
+          const data = await resp.json();
+          if (data.reviews) {
+            for (const r of data.reviews) feedbackMap[r.run_id] = r.feedback;
+          }
+        } catch { /* first run, no feedback yet */ }
+      }
+
+      document.getElementById("skill-name").textContent = EMBEDDED_DATA.skill_name;
+      showRun(0);
+
+      // Wire up feedback auto-save
+      const textarea = document.getElementById("feedback");
+      let saveTimeout = null;
+      textarea.addEventListener("input", () => {
+        clearTimeout(saveTimeout);
+        document.getElementById("feedback-status").textContent = "";
+        saveTimeout = setTimeout(() => saveCurrentFeedback(), 800);
+      });
+    }
+
+    // ---- Navigation ----
+    function navigate(delta) {
+      const newIndex = currentIndex + delta;
+      if (newIndex >= 0 && newIndex < EMBEDDED_DATA.runs.length) {
+        saveCurrentFeedback();
+        showRun(newIndex);
+      }
+    }
+
+    function updateNavButtons() {
+      document.getElementById("prev-btn").disabled = currentIndex === 0;
+      document.getElementById("next-btn").disabled =
+        currentIndex === EMBEDDED_DATA.runs.length - 1;
+    }
+
+    // ---- Show a run ----
+    function showRun(index) {
+      currentIndex = index;
+      const run = EMBEDDED_DATA.runs[index];
+
+      // Progress
+      document.getElementById("progress").textContent =
+        `${index + 1} of ${EMBEDDED_DATA.runs.length}`;
+
+      // Prompt
+      document.getElementById("prompt-text").textContent = run.prompt;
+
+      // Config badge
+      const badge = document.getElementById("config-badge");
+      const configMatch = run.id.match(/(with_skill|without_skill|new_skill|old_skill)/);
+      if (configMatch) {
+        const config = configMatch[1];
+        const isBaseline = config === "without_skill" || config === "old_skill";
+        badge.textContent = config.replace(/_/g, " ");
+        badge.className = "config-badge " + (isBaseline ? "config-baseline" : "config-primary");
+        badge.style.display = "inline-block";
+      } else {
+        badge.style.display = "none";
+      }
+
+      // Outputs
+      renderOutputs(run);
+
+      // Previous outputs
+      renderPrevOutputs(run);
+
+      // Grades
+      renderGrades(run);
+
+      // Previous feedback
+      const prevFb = (EMBEDDED_DATA.previous_feedback || {})[run.id];
+      const prevEl = document.getElementById("prev-feedback");
+      if (prevFb) {
+        document.getElementById("prev-feedback-text").textContent = prevFb;
+        prevEl.style.display = "block";
+      } else {
+        prevEl.style.display = "none";
+      }
+
+      // Feedback
+      document.getElementById("feedback").value = feedbackMap[run.id] || "";
+      document.getElementById("feedback-status").textContent = "";
+
+      updateNavButtons();
+
+      // Track visited runs and promote done button when all visited
+      visitedRuns.add(index);
+      const doneBtn = document.getElementById("done-btn");
+      if (visitedRuns.size >= EMBEDDED_DATA.runs.length) {
+        doneBtn.classList.add("ready");
+      }
+
+      // Scroll main content to top
+      document.querySelector(".main").scrollTop = 0;
+    }
+
+    // ---- Render outputs ----
+    function renderOutputs(run) {
+      const container = document.getElementById("outputs-body");
+      container.innerHTML = "";
+
+      const outputs = run.outputs || [];
+      if (outputs.length === 0) {
+        container.innerHTML = '<div class="empty-state">No output files</div>';
+        return;
+      }
+
+      for (const file of outputs) {
+        const fileDiv = document.createElement("div");
+        fileDiv.className = "output-file";
+
+        // Always show file header with download link
+        const header = document.createElement("div");
+        header.className = "output-file-header";
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = file.name;
+        header.appendChild(nameSpan);
+        const dlBtn = document.createElement("a");
+        dlBtn.className = "dl-btn";
+        dlBtn.textContent = "Download";
+        dlBtn.download = file.name;
+        dlBtn.href = getDownloadUri(file);
+        header.appendChild(dlBtn);
+        fileDiv.appendChild(header);
+
+        const content = document.createElement("div");
+        content.className = "output-file-content";
+
+        if (file.type === "text") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          content.appendChild(pre);
+        } else if (file.type === "image") {
+          const img = document.createElement("img");
+          img.src = file.data_uri;
+          img.alt = file.name;
+          content.appendChild(img);
+        } else if (file.type === "pdf") {
+          const iframe = document.createElement("iframe");
+          iframe.src = file.data_uri;
+          content.appendChild(iframe);
+        } else if (file.type === "xlsx") {
+          renderXlsx(content, file.data_b64);
+        } else if (file.type === "binary") {
+          const a = document.createElement("a");
+          a.className = "download-link";
+          a.href = file.data_uri;
+          a.download = file.name;
+          a.textContent = "Download " + file.name;
+          content.appendChild(a);
+        } else if (file.type === "error") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          pre.style.color = "var(--red)";
+          content.appendChild(pre);
+        }
+
+        fileDiv.appendChild(content);
+        container.appendChild(fileDiv);
+      }
+    }
+
+    // ---- XLSX rendering via SheetJS ----
+    function renderXlsx(container, b64Data) {
+      try {
+        const raw = Uint8Array.from(atob(b64Data), c => c.charCodeAt(0));
+        const wb = XLSX.read(raw, { type: "array" });
+
+        for (let i = 0; i < wb.SheetNames.length; i++) {
+          const sheetName = wb.SheetNames[i];
+          const ws = wb.Sheets[sheetName];
+
+          if (wb.SheetNames.length > 1) {
+            const sheetLabel = document.createElement("div");
+            sheetLabel.style.cssText =
+              "font-weight:600; font-size:0.8rem; color:#b0aea5; margin-top:0.5rem; margin-bottom:0.25rem;";
+            sheetLabel.textContent = "Sheet: " + sheetName;
+            container.appendChild(sheetLabel);
+          }
+
+          const htmlStr = XLSX.utils.sheet_to_html(ws, { editable: false });
+          const wrapper = document.createElement("div");
+          wrapper.innerHTML = htmlStr;
+          container.appendChild(wrapper);
+        }
+      } catch (err) {
+        container.textContent = "Error rendering spreadsheet: " + err.message;
+      }
+    }
+
+    // ---- Grades ----
+    function renderGrades(run) {
+      const section = document.getElementById("grades-section");
+      const content = document.getElementById("grades-content");
+
+      if (!run.grading) {
+        section.style.display = "none";
+        return;
+      }
+
+      const grading = run.grading;
+      section.style.display = "block";
+      // Reset to collapsed
+      content.classList.remove("open");
+      document.getElementById("grades-arrow").classList.remove("open");
+
+      const summary = grading.summary || {};
+      const expectations = grading.expectations || [];
+
+      let html = '<div style="padding: 1rem;">';
+
+      // Summary line
+      const passRate = summary.pass_rate != null
+        ? Math.round(summary.pass_rate * 100) + "%"
+        : "?";
+      const badgeClass = summary.pass_rate >= 0.8 ? "grade-pass" : summary.pass_rate >= 0.5 ? "" : "grade-fail";
+      html += '<div class="grades-summary">';
+      html += '<span class="grade-badge ' + badgeClass + '">' + passRate + '</span>';
+      html += '<span>' + escapeHtml(summary.passed || 0) + ' passed, ' + escapeHtml(summary.failed || 0) + ' failed of ' + escapeHtml(summary.total || 0) + '</span>';
+      html += '</div>';
+
+      // Assertions list
+      html += '<ul class="assertion-list">';
+      for (const exp of expectations) {
+        const statusClass = exp.passed ? "pass" : "fail";
+        const statusIcon = exp.passed ? "\u2713" : "\u2717";
+        html += '<li class="assertion-item">';
+        html += '<span class="assertion-status ' + statusClass + '">' + statusIcon + '</span>';
+        html += '<span>' + escapeHtml(exp.text) + '</span>';
+        if (exp.evidence) {
+          html += '<div class="assertion-evidence">' + escapeHtml(exp.evidence) + '</div>';
+        }
+        html += '</li>';
+      }
+      html += '</ul>';
+
+      html += '</div>';
+      content.innerHTML = html;
+    }
+
+    function toggleGrades() {
+      const content = document.getElementById("grades-content");
+      const arrow = document.getElementById("grades-arrow");
+      content.classList.toggle("open");
+      arrow.classList.toggle("open");
+    }
+
+    // ---- Previous outputs (collapsible) ----
+    function renderPrevOutputs(run) {
+      const section = document.getElementById("prev-outputs-section");
+      const content = document.getElementById("prev-outputs-content");
+      const prevOutputs = (EMBEDDED_DATA.previous_outputs || {})[run.id];
+
+      if (!prevOutputs || prevOutputs.length === 0) {
+        section.style.display = "none";
+        return;
+      }
+
+      section.style.display = "block";
+      // Reset to collapsed
+      content.classList.remove("open");
+      document.getElementById("prev-outputs-arrow").classList.remove("open");
+
+      // Render the files into the content area
+      content.innerHTML = "";
+      const wrapper = document.createElement("div");
+      wrapper.style.padding = "1rem";
+
+      for (const file of prevOutputs) {
+        const fileDiv = document.createElement("div");
+        fileDiv.className = "output-file";
+
+        const header = document.createElement("div");
+        header.className = "output-file-header";
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = file.name;
+        header.appendChild(nameSpan);
+        const dlBtn = document.createElement("a");
+        dlBtn.className = "dl-btn";
+        dlBtn.textContent = "Download";
+        dlBtn.download = file.name;
+        dlBtn.href = getDownloadUri(file);
+        header.appendChild(dlBtn);
+        fileDiv.appendChild(header);
+
+        const fc = document.createElement("div");
+        fc.className = "output-file-content";
+
+        if (file.type === "text") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          fc.appendChild(pre);
+        } else if (file.type === "image") {
+          const img = document.createElement("img");
+          img.src = file.data_uri;
+          img.alt = file.name;
+          fc.appendChild(img);
+        } else if (file.type === "pdf") {
+          const iframe = document.createElement("iframe");
+          iframe.src = file.data_uri;
+          fc.appendChild(iframe);
+        } else if (file.type === "xlsx") {
+          renderXlsx(fc, file.data_b64);
+        } else if (file.type === "binary") {
+          const a = document.createElement("a");
+          a.className = "download-link";
+          a.href = file.data_uri;
+          a.download = file.name;
+          a.textContent = "Download " + file.name;
+          fc.appendChild(a);
+        }
+
+        fileDiv.appendChild(fc);
+        wrapper.appendChild(fileDiv);
+      }
+
+      content.appendChild(wrapper);
+    }
+
+    function togglePrevOutputs() {
+      const content = document.getElementById("prev-outputs-content");
+      const arrow = document.getElementById("prev-outputs-arrow");
+      content.classList.toggle("open");
+      arrow.classList.toggle("open");
+    }
+
+    // ---- Feedback (saved to server -> feedback.json) ----
+    function saveCurrentFeedback() {
+      const run = EMBEDDED_DATA.runs[currentIndex];
+      const text = document.getElementById("feedback").value;
+
+      if (text.trim() === "") {
+        delete feedbackMap[run.id];
+      } else {
+        feedbackMap[run.id] = text;
+      }
+
+      // Build reviews array from map
+      const reviews = [];
+      for (const [run_id, feedback] of Object.entries(feedbackMap)) {
+        if (feedback.trim()) {
+          reviews.push({ run_id, feedback, timestamp: new Date().toISOString() });
+        }
+      }
+
+      fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reviews, status: "in_progress" }),
+      }).then(() => {
+        document.getElementById("feedback-status").textContent = "Saved";
+      }).catch(() => {
+        // Static mode or server unavailable — no-op on auto-save,
+        // feedback will be downloaded on final submit
+        document.getElementById("feedback-status").textContent = "Will download on submit";
+      });
+    }
+
+    // ---- Done ----
+    function showDoneDialog() {
+      // Save current textarea to feedbackMap (but don't POST yet)
+      const run = EMBEDDED_DATA.runs[currentIndex];
+      const text = document.getElementById("feedback").value;
+      if (text.trim() === "") {
+        delete feedbackMap[run.id];
+      } else {
+        feedbackMap[run.id] = text;
+      }
+
+      // POST once with status: complete — include ALL runs so the model
+      // can distinguish "no feedback" (looks good) from "not reviewed"
+      const reviews = [];
+      const ts = new Date().toISOString();
+      for (const r of EMBEDDED_DATA.runs) {
+        reviews.push({ run_id: r.id, feedback: feedbackMap[r.id] || "", timestamp: ts });
+      }
+      const payload = JSON.stringify({ reviews, status: "complete" }, null, 2);
+      fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: payload,
+      }).then(() => {
+        document.getElementById("done-overlay").classList.add("visible");
+      }).catch(() => {
+        // Server not available (static mode) — download as file
+        const blob = new Blob([payload], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "feedback.json";
+        a.click();
+        URL.revokeObjectURL(url);
+        document.getElementById("done-overlay").classList.add("visible");
+      });
+    }
+
+    function closeDoneDialog() {
+      // Reset status back to in_progress
+      saveCurrentFeedback();
+      document.getElementById("done-overlay").classList.remove("visible");
+    }
+
+    // ---- Toast ----
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("visible");
+      setTimeout(() => toast.classList.remove("visible"), 2000);
+    }
+
+    // ---- Keyboard nav ----
+    document.addEventListener("keydown", (e) => {
+      // Don't capture when typing in textarea
+      if (e.target.tagName === "TEXTAREA") return;
+
+      if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+        e.preventDefault();
+        navigate(-1);
+      } else if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+        e.preventDefault();
+        navigate(1);
+      }
+    });
+
+    // ---- Util ----
+    function getDownloadUri(file) {
+      if (file.data_uri) return file.data_uri;
+      if (file.data_b64) return "data:application/octet-stream;base64," + file.data_b64;
+      if (file.type === "text") return "data:text/plain;charset=utf-8," + encodeURIComponent(file.content);
+      return "#";
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement("div");
+      div.textContent = text;
+      return div.innerHTML.replace(/"/g, "&quot;");
+    }
+
+    // ---- View switching ----
+    function switchView(view) {
+      document.querySelectorAll(".view-tab").forEach(t => t.classList.remove("active"));
+      document.querySelectorAll(".view-panel").forEach(p => p.classList.remove("active"));
+      document.querySelector(`[onclick="switchView('${view}')"]`).classList.add("active");
+      document.getElementById("panel-" + view).classList.add("active");
+    }
+
+    // ---- Benchmark rendering ----
+    function renderBenchmark() {
+      const data = EMBEDDED_DATA.benchmark;
+      if (!data) return;
+
+      // Show the tabs
+      document.getElementById("view-tabs").style.display = "flex";
+
+      const container = document.getElementById("benchmark-content");
+      const summary = data.run_summary || {};
+      const metadata = data.metadata || {};
+      const notes = data.notes || [];
+
+      let html = "";
+
+      // Header
+      html += "<h2 style='font-family: Poppins, sans-serif; margin-bottom: 0.5rem;'>Benchmark Results</h2>";
+      html += "<p style='color: var(--text-muted); font-size: 0.875rem; margin-bottom: 1.25rem;'>";
+      if (metadata.skill_name) html += "<strong>" + escapeHtml(metadata.skill_name) + "</strong> &mdash; ";
+      if (metadata.timestamp) html += escapeHtml(metadata.timestamp) + " &mdash; ";
+      if (metadata.evals_run) html += "Evals: " + escapeHtml(metadata.evals_run.join(", ")) + " &mdash; ";
+      html += escapeHtml(metadata.runs_per_configuration || "?") + (metadata.runs_per_configuration === 1 ? " run" : " runs") + " per configuration";
+      html += "</p>";
+
+      // Summary table
+      html += '<table class="benchmark-table">';
+
+      function fmtStat(stat, pct) {
+        if (!stat) return "—";
+        const suffix = pct ? "%" : "";
+        const m = pct ? (stat.mean * 100).toFixed(0) : stat.mean.toFixed(1);
+        const s = pct ? (stat.stddev * 100).toFixed(0) : stat.stddev.toFixed(1);
+        return m + suffix + " ± " + s + suffix;
+      }
+
+      function deltaClass(val) {
+        if (!val) return "";
+        const n = parseFloat(val);
+        if (n > 0) return "benchmark-delta-positive";
+        if (n < 0) return "benchmark-delta-negative";
+        return "";
+      }
+
+      // Discover config names dynamically (everything except "delta")
+      const configs = Object.keys(summary).filter(k => k !== "delta");
+      const configA = configs[0] || "config_a";
+      const configB = configs[1] || "config_b";
+      const labelA = configA.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      const labelB = configB.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      const a = summary[configA] || {};
+      const b = summary[configB] || {};
+      const delta = summary.delta || {};
+      // With a single configuration there is nothing to compare: only its column is shown
+      const compare = cells => configs.length >= 2 ? cells : "";
+
+      html += "<thead><tr><th>Metric</th><th>" + escapeHtml(labelA) + "</th>" + compare("<th>" + escapeHtml(labelB) + "</th><th>Delta</th>") + "</tr></thead>";
+      html += "<tbody>";
+
+      html += "<tr><td><strong>Pass Rate</strong></td>";
+      html += "<td>" + fmtStat(a.pass_rate, true) + "</td>";
+      html += compare("<td>" + fmtStat(b.pass_rate, true) + "</td>");
+      html += compare('<td class="' + deltaClass(delta.pass_rate) + '">' + escapeHtml(delta.pass_rate || "—") + "</td>") + "</tr>";
+
+      // Time (only show row if data exists)
+      if (a.time_seconds || b.time_seconds) {
+        html += "<tr><td><strong>Time (s)</strong></td>";
+        html += "<td>" + fmtStat(a.time_seconds, false) + "</td>";
+        html += compare("<td>" + fmtStat(b.time_seconds, false) + "</td>");
+        html += compare('<td class="' + deltaClass(delta.time_seconds) + '">' + escapeHtml(delta.time_seconds ? delta.time_seconds + "s" : "—") + "</td>") + "</tr>";
+      }
+
+      // Tokens (only show row if data exists)
+      if (a.tokens || b.tokens) {
+        html += "<tr><td><strong>Tokens</strong></td>";
+        html += "<td>" + fmtStat(a.tokens, false) + "</td>";
+        html += compare("<td>" + fmtStat(b.tokens, false) + "</td>");
+        html += compare('<td class="' + deltaClass(delta.tokens) + '">' + escapeHtml(delta.tokens || "—") + "</td>") + "</tr>";
+      }
+
+      html += "</tbody></table>";
+
+      // Per-eval breakdown (if runs data available)
+      const runs = data.runs || [];
+      if (runs.length > 0) {
+        // Numeric ids first, then ids that are names
+        const rank = id => typeof id === "number" ? 0 : 1;
+        const evalIds = [...new Set(runs.map(r => r.eval_id))].sort((a, b) =>
+          rank(a) - rank(b) || (rank(a) ? String(a).localeCompare(String(b)) : a - b));
+
+        html += "<h3 style='font-family: Poppins, sans-serif; margin-bottom: 0.75rem;'>Per-Eval Breakdown</h3>";
+
+        const hasTime = runs.some(r => r.result && r.result.time_seconds != null);
+        const hasErrors = runs.some(r => r.result && r.result.errors > 0);
+
+        for (const evalId of evalIds) {
+          const evalRuns = runs.filter(r => r.eval_id === evalId);
+          const evalName = evalRuns[0] && evalRuns[0].eval_name ? evalRuns[0].eval_name : "Eval " + evalId;
+
+          html += "<h4 style='font-family: Poppins, sans-serif; margin: 1rem 0 0.5rem; color: var(--text);'>" + escapeHtml(evalName) + "</h4>";
+          html += '<table class="benchmark-table">';
+          html += "<thead><tr><th>Config</th><th>Run</th><th>Pass Rate</th>";
+          if (hasTime) html += "<th>Time (s)</th>";
+          if (hasErrors) html += "<th>Crashes During Execution</th>";
+          html += "</tr></thead>";
+          html += "<tbody>";
+
+          // Group by config and render with average rows
+          const configGroups = [...new Set(evalRuns.map(r => r.configuration))];
+          for (let ci = 0; ci < configGroups.length; ci++) {
+            const config = configGroups[ci];
+            const configRuns = evalRuns.filter(r => r.configuration === config);
+            if (configRuns.length === 0) continue;
+
+            const rowClass = ci === 0 ? "benchmark-row-with" : "benchmark-row-without";
+            const configLabel = escapeHtml(config.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase()));
+
+            for (const run of configRuns) {
+              const r = run.result || {};
+              const prClass = r.pass_rate >= 0.8 ? "benchmark-delta-positive" : r.pass_rate < 0.5 ? "benchmark-delta-negative" : "";
+              html += '<tr class="' + rowClass + '">';
+              html += "<td>" + configLabel + "</td>";
+              html += "<td>" + escapeHtml(run.run_number) + "</td>";
+              html += '<td class="' + prClass + '">' + ((r.pass_rate || 0) * 100).toFixed(0) + "% (" + escapeHtml(r.passed || 0) + "/" + escapeHtml(r.total || 0) + ")</td>";
+              if (hasTime) html += "<td>" + (r.time_seconds != null ? r.time_seconds.toFixed(1) : "—") + "</td>";
+              if (hasErrors) html += "<td>" + escapeHtml(r.errors || 0) + "</td>";
+              html += "</tr>";
+            }
+
+            // Average row
+            const rates = configRuns.map(r => (r.result || {}).pass_rate || 0);
+            const avgRate = rates.reduce((a, b) => a + b, 0) / rates.length;
+            const avgPrClass = avgRate >= 0.8 ? "benchmark-delta-positive" : avgRate < 0.5 ? "benchmark-delta-negative" : "";
+            html += '<tr class="benchmark-row-avg ' + rowClass + '">';
+            html += "<td>" + configLabel + "</td>";
+            html += "<td>Avg</td>";
+            html += '<td class="' + avgPrClass + '">' + (avgRate * 100).toFixed(0) + "%</td>";
+            if (hasTime) {
+              const times = configRuns.map(r => (r.result || {}).time_seconds).filter(t => t != null);
+              html += "<td>" + (times.length ? (times.reduce((a, b) => a + b, 0) / times.length).toFixed(1) : "—") + "</td>";
+            }
+            if (hasErrors) html += "<td></td>";
+            html += "</tr>";
+          }
+          html += "</tbody></table>";
+
+          // Per-assertion detail for this eval
+          const runsWithExpectations = {};
+          for (const config of configGroups) {
+            runsWithExpectations[config] = evalRuns.filter(r => r.configuration === config && r.expectations && r.expectations.length > 0);
+          }
+          const hasAnyExpectations = Object.values(runsWithExpectations).some(runs => runs.length > 0);
+          if (hasAnyExpectations) {
+            // Collect all unique assertion texts across all configs
+            const allAssertions = [];
+            const seen = new Set();
+            for (const config of configGroups) {
+              for (const run of runsWithExpectations[config]) {
+                for (const exp of (run.expectations || [])) {
+                  if (!seen.has(exp.text)) {
+                    seen.add(exp.text);
+                    allAssertions.push(exp.text);
+                  }
+                }
+              }
+            }
+
+            html += '<table class="benchmark-table" style="margin-top: 0.5rem;">';
+            html += "<thead><tr><th>Assertion</th>";
+            for (const config of configGroups) {
+              const label = config.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+              html += "<th>" + escapeHtml(label) + "</th>";
+            }
+            html += "</tr></thead><tbody>";
+
+            for (const assertionText of allAssertions) {
+              html += "<tr><td>" + escapeHtml(assertionText) + "</td>";
+
+              for (const config of configGroups) {
+                html += "<td>";
+                for (const run of runsWithExpectations[config]) {
+                  const exp = (run.expectations || []).find(e => e.text === assertionText);
+                  if (exp) {
+                    const cls = exp.passed ? "benchmark-delta-positive" : "benchmark-delta-negative";
+                    const icon = exp.passed ? "\u2713" : "\u2717";
+                    html += '<span class="' + cls + '" title="Run ' + escapeHtml(run.run_number) + ': ' + escapeHtml(exp.evidence || "") + '">' + icon + "</span> ";
+                  } else {
+                    html += "— ";
+                  }
+                }
+                html += "</td>";
+              }
+              html += "</tr>";
+            }
+            html += "</tbody></table>";
+          }
+        }
+      }
+
+      // Notes
+      if (notes.length > 0) {
+        html += '<div class="benchmark-notes">';
+        html += "<h3>Analysis Notes</h3>";
+        html += "<ul>";
+        for (const note of notes) {
+          html += "<li>" + escapeHtml(note) + "</li>";
+        }
+        html += "</ul></div>";
+      }
+
+      container.innerHTML = html;
+    }
+
+    // ---- Start ----
+    init();
+    renderBenchmark();
+  </script>
+</body>
+</html>

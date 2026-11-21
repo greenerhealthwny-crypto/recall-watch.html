@@ -1,0 +1,223 @@
+{
+  "metadata": {
+    "skill_name": "brain-on-food",
+    "skill_path": "<path/to/skill>",
+    "executor_model": "<model-name>",
+    "analyzer_model": "<model-name>",
+    "timestamp": "2026-11-21T22:00:50Z",
+    "evals_run": [
+      1,
+      2
+    ],
+    "runs_per_configuration": 1
+  },
+  "runs": [
+    {
+      "eval_id": 1,
+      "eval_name": "adv-plan",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.8,
+        "passed": 4,
+        "failed": 1,
+        "total": 5,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Gives a concrete 3-day dinner plan",
+          "passed": true,
+          "evidence": "Section 2 gives three full dinners: Day 1 turmeric-black-pepper salmon/quinoa/broccoli/kimchi, Day 2 turkey-chickpea stew over brown rice or barley, Day 3 miso-glazed tempeh stir-fry, each with sides, dessert and a per-person benefit table."
+        },
+        {
+          "text": "Ties anxiety foods to Naidoo's guidance (e.g. fermented foods/probiotics, omega-3s, fiber, avoiding refined sugar or excess caffeine/alcohol)",
+          "passed": true,
+          "evidence": "Anxiety column matches the p.79-80 cheat sheet in cheat-sheets.md: high-fiber foods; aged, fermented and cultured foods; tryptophan with carbohydrates; avoid Western diet, caffeine over 400 mg, alcohol over the limits (correct 7/1 and 14/2 figures), aspartame. Explains the 'tryptophan myth' correctly (p.79). Correctly notes omega-3s are not on the anxiety sheet itself."
+        },
+        {
+          "text": "Ties ADHD foods to her guidance (e.g. protein, omega-3s, limiting sugar/additives, low glycemic load)",
+          "passed": true,
+          "evidence": "ADHD column matches p.112-113: Mediterranean pattern, polyphenols (berries, cherries, eggplant, onions, kale, coffee, green tea), vitamins C and B12, zinc/iron/potassium/magnesium, caffeine can help under 400 mg; avoid A1 milk caseins, sugar ('unfairly vilified' but still limit), food colorings and additives, Feingold/few-foods diet. Swaps to goat/sheep/A2 dairy as the book says."
+        },
+        {
+          "text": "Explains the gut-brain mechanism (microbiome, inflammation, vagus nerve or HPA axis)",
+          "passed": false,
+          "evidence": "Only labels the mechanism: 'Prebiotic fiber feeds gut bacteria (the gut-brain connection)', 'fermented food that supports the microbiome', omega-3s 'anti-inflammatory'. It never explains how gut bacteria affect the brain. The vagus nerve, HPA axis, serotonin receptors in the gut and bacterial neurotransmitters (Ch 1 in science-by-chapter.md) are all absent, so a strict 'explains' bar is not met."
+        },
+        {
+          "text": "Includes a caveat that diet complements, not replaces, treatment",
+          "passed": true,
+          "evidence": "Line 4: 'Food is meant to work alongside treatment. Naidoo says diet can work \"alongside your other treatments\". Don't change any ADHD or anxiety medication because of this plan.' Repeated in Safety notes: 'Naidoo presents diet as an add-on.'"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "adv-conflict",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "States Naidoo's nuanced position on gluten (sensitivity varies, not universal ban)",
+          "passed": true,
+          "evidence": "Section 1 says gluten is on six cheat sheets, always conditioned on 'if you have celiac disease or non-celiac gluten sensitivity', and that whole grains are on her embrace lists (MIND diet, whole-wheat bread for myoinositol, whole-grain bread for depression). All of this matches cheat-sheets.md."
+        },
+        {
+          "text": "States her position on MSG/glutamates",
+          "passed": true,
+          "evidence": "Section 2 says MSG/glutamates appear only on the PTSD (p.98) and OCD (p.157-158) sheets. It lists the broad glutamate foods accurately and quotes her caveat that some of these foods help other conditions, so a 'personalized plan' is needed. This matches the skill files exactly."
+        },
+        {
+          "text": "Gives her caffeine guidance as a limit rather than a ban",
+          "passed": true,
+          "evidence": "Section 3: 'She never says to cut out all caffeine... keep it under 400 mg a day'. Its table covers anxiety, ADHD ('can help'), memory, insomnia ('You don't have to eliminate it completely', none after 3 p.m.), bipolar and libido, all matching the cheat sheets."
+        },
+        {
+          "text": "Raises orthorexia as a risk of over-restriction",
+          "passed": true,
+          "evidence": "Section 4 raises orthorexia nervosa from the OCD chapter. It mentions her admitted irony, the muscle-dysmorphia bodybuilder near kidney failure, and her advice to avoid radical diet changes. It adds self-check questions, labelled as general knowledge. Accurate to science-by-chapter.md Ch 7."
+        },
+        {
+          "text": "Recommends a measured approach (e.g. elimination trial, professional input)",
+          "passed": true,
+          "evidence": "Section 6 advises getting a celiac test before cutting gluten, setting a caffeine cap and tapering, 'Change one thing at a time and track how you feel over several weeks', and seeing a doctor, therapist or dietitian."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 1,
+      "eval_name": "adv-plan",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.6,
+        "passed": 3,
+        "failed": 2,
+        "total": 5,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Gives a concrete 3-day dinner plan",
+          "passed": true,
+          "evidence": "Three dinners given: Day 1 salmon with quinoa and spinach, Day 2 chickpea-sweet potato-cauliflower curry with brown rice and kimchi, Day 3 turkey/lentil bowls with roasted vegetables, each with a nutrient table."
+        },
+        {
+          "text": "Ties anxiety foods to Naidoo's guidance (e.g. fermented foods/probiotics, omega-3s, fiber, avoiding refined sugar or excess caffeine/alcohol)",
+          "passed": true,
+          "evidence": "Anxiety ties line up with the book: probiotics/fermented foods 'are a core of her anxiety advice via the gut-brain axis', prebiotic fiber, turmeric with black pepper, chamomile, and avoiding excess caffeine, alcohol, sugar, fried and processed foods. Minor overreach: omega-3s for anxiety are attributed to her, but they are not on the anxiety cheat sheet."
+        },
+        {
+          "text": "Ties ADHD foods to her guidance (e.g. protein, omega-3s, limiting sugar/additives, low glycemic load)",
+          "passed": false,
+          "evidence": "The ADHD ties are mostly generic or contradict the book. It puts caffeine under 'Limit' for ADHD ('Caffeine can be erratic'), but the ADHD cheat sheet says caffeine 'can help' under 400 mg. It frames omega-3s as the lead ADHD nutrient, which is not on her ADHD list. It omits her A1-casein avoid item and even serves cow's-milk yoghurt/kefir and Greek yoghurt to the ADHD partner. It also omits polyphenols as an ADHD item. The only clearly correct tie is dyes and additives."
+        },
+        {
+          "text": "Explains the gut-brain mechanism (microbiome, inflammation, vagus nerve or HPA axis)",
+          "passed": false,
+          "evidence": "Only passing mentions: 'Supports the gut-brain axis and dopamine-related signalling', 'Gut-brain axis; fermented foods...', 'Feeds gut bacteria'. There is no explanation of the vagus nerve, the HPA axis, inflammation pathways or microbial neurotransmitters."
+        },
+        {
+          "text": "Includes a caveat that diet complements, not replaces, treatment",
+          "passed": true,
+          "evidence": "Line 3: 'Food can support ADHD and anxiety, but it doesn't replace medication, therapy or a clinician's care.'"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "adv-conflict",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.6,
+        "passed": 3,
+        "failed": 2,
+        "total": 5,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "States Naidoo's nuanced position on gluten (sensitivity varies, not universal ban)",
+          "passed": true,
+          "evidence": "'Gluten is clearly a problem for people with coeliac disease... non-coeliac gluten sensitivity... She does not say everyone should go gluten-free.' This matches the book's conditional position, though it is hedged 'as I recall the book'."
+        },
+        {
+          "text": "States her position on MSG/glutamates",
+          "passed": false,
+          "evidence": "It is factually wrong against the book: 'MSG is not a major theme of her book' and 'MSG barely features in her advice.' In fact, MSG, glutamates and glutamic acid are on the PTSD (p.98) and OCD (p.157-158) avoid lists, with a long food list. It gives general research on MSG instead of her position."
+        },
+        {
+          "text": "Gives her caffeine guidance as a limit rather than a ban",
+          "passed": false,
+          "evidence": "It does say she 'doesn't require everyone to cut it out entirely', but it never gives her actual guidance (under 400 mg a day, none after 3 p.m.). Instead it offers a non-book target ('about 1-2 cups... before noon'). It also misstates her ADHD position ('mixed, modest effect. It isn't a treatment') when the ADHD cheat sheet says caffeine 'can help'."
+        },
+        {
+          "text": "Raises orthorexia as a risk of over-restriction",
+          "passed": true,
+          "evidence": "Section 4 defines orthorexia nervosa, lists warning signs, and says 'cutting three things at once... is a common way into this pattern.' It does not note that Naidoo herself covers orthorexia (Ch 7), but the assertion only requires raising the risk."
+        },
+        {
+          "text": "Recommends a measured approach (e.g. elimination trial, professional input)",
+          "passed": true,
+          "evidence": "Section 5 says to add before you subtract, change one thing at a time for 2-4 weeks and track it, test for coeliac disease before a structured gluten trial, and get help from a registered dietitian or therapist."
+        }
+      ],
+      "notes": []
+    }
+  ],
+  "run_summary": {
+    "with_skill": {
+      "pass_rate": {
+        "mean": 0.9,
+        "stddev": 0.1414,
+        "min": 0.8,
+        "max": 1.0
+      },
+      "time_seconds": null,
+      "tokens": null
+    },
+    "without_skill": {
+      "pass_rate": {
+        "mean": 0.6,
+        "stddev": 0.0,
+        "min": 0.6,
+        "max": 0.6
+      },
+      "time_seconds": null,
+      "tokens": null
+    },
+    "delta": {
+      "pass_rate": "+0.30",
+      "time_seconds": null,
+      "tokens": null
+    }
+  },
+  "notes": [
+    "Time recorded for 0 of 2 with_skill runs, 0 of 2 without_skill runs, so there is no time delta.",
+    "Token count recorded for 0 of 2 with_skill runs, 0 of 2 without_skill runs, so there is no token count delta."
+  ]
+}

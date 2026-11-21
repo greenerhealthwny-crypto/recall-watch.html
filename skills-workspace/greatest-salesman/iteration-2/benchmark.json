@@ -1,0 +1,223 @@
+{
+  "metadata": {
+    "skill_name": "greatest-salesman",
+    "skill_path": "<path/to/skill>",
+    "executor_model": "<model-name>",
+    "analyzer_model": "<model-name>",
+    "timestamp": "2026-11-21T22:00:50Z",
+    "evals_run": [
+      1,
+      2
+    ],
+    "runs_per_configuration": 1
+  },
+  "runs": [
+    {
+      "eval_id": 1,
+      "eval_name": "adv-rejection",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Explains the 30-day reading method: silently on waking, after the midday meal, aloud before bed",
+          "passed": true,
+          "evidence": "Section 3 table: 'When you wake up | Read Scroll III silently', 'After lunch | Read it silently again', 'Just before bed | Read it aloud'; plus 'Do not skip a day' and '30 days on one scroll' and the 'other mind' - all match SKILL.md method."
+        },
+        {
+          "text": "Notes Scroll I (habits) is the first scroll / scrolls are read in order",
+          "passed": true,
+          "evidence": "'An honest note on the book's order': 'He tells you to read them in order, starting with Scroll I (form good habits)... A strict reading of the book puts Scroll III in your third month.' Correct per SKILL.md, though it recommends starting on III (option A) while giving option B by the book."
+        },
+        {
+          "text": "Explains persistence and the law of averages (each no brings a yes closer)",
+          "passed": true,
+          "evidence": "Section 2: 'each \"nay\" brings him \"closer to the sound of yea\"', 'I must fail often to succeed only once', blow of the blade against an oak, 'make one more attempt' - all match references/scrolls.md Scroll III."
+        },
+        {
+          "text": "Uses mood mastery or 'This too shall pass' for rejection",
+          "passed": true,
+          "evidence": "Section 4: 'Bad mood after a harsh rejection -> Scroll VI... \"If I feel depressed I will sing... If I feel fear I will plunge ahead\"' and 'A deal falls through -> Scroll VII. Say the four words, \"This too shall pass\"' - correct scroll attributions per scrolls.md."
+        },
+        {
+          "text": "Gives a concrete daily routine",
+          "passed": true,
+          "evidence": "Daily reading table with times, daily behaviors (daily minimum, 'one more' call, tally of noes, ban defeat words), week-by-week plan and a copyable tracking sheet."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "adv-compare",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Lists or references the ten scrolls accurately",
+          "passed": true,
+          "evidence": "Recap lists all ten with correct principles: habits (I), love (II), persistence (III), self-worth (IV), living each day as your last (V), mastering emotions (VI), laughter (VII), hundredfold goals (VIII), acting now (IX), prayer for guidance (X) - matches SKILL.md table."
+        },
+        {
+          "text": "Connects Scroll I's habit-formation idea to modern habit science",
+          "passed": true,
+          "evidence": "Agreement table: 'Habits decide outcomes (Scroll I...)' vs automaticity research; 'Repetition makes behavior automatic (\"easy, then a pleasure, then a habit\")'; 'Only a habit can subdue another habit' vs habit substitution; fixed cues vs implementation intentions/habit stacking. Book quotes match scrolls.md."
+        },
+        {
+          "text": "Notes something unusual (e.g. reading aloud 3x/day, 30 days per scroll, prayer scroll)",
+          "passed": true,
+          "evidence": "Section 3 covers reading (not the target behavior) as the habit, 'other mind' theory, 30 days vs Lally median ~66 days, 'never skip a day', reading aloud before bed, hundredfold goals, and the Scroll X prayer ('ability equal to your opportunities')."
+        },
+        {
+          "text": "Covers emotional control and/or act now",
+          "passed": true,
+          "evidence": "Scroll VI counter-actions quoted ('If I feel depressed I will sing... If I feel fear I will plunge ahead') linked to opposite action/behavioral activation; Scroll IX act now linked to procrastination research; Scroll VII 'This too shall pass' to reappraisal."
+        },
+        {
+          "text": "Distinguishes what the book says from the comparison",
+          "passed": true,
+          "evidence": "Explicit sourcing note: 'points about the book come from the text. Points about research are general summaries... (std)'; research columns marked (std); summary table has separate 'Mandino' and 'Modern habit science (std)' columns."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 1,
+      "eval_name": "adv-rejection",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.8,
+        "passed": 4,
+        "failed": 1,
+        "total": 5,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Explains the 30-day reading method: silently on waking, after the midday meal, aloud before bed",
+          "passed": true,
+          "evidence": "'silently, when you wake up / silently again, after your midday meal / out loud, just before you go to bed', one scroll for 30 days, about ten months - matches SKILL.md. (Minor unsupported addition: 'Mandino says this reading matters most' is not in the skill files, but the method itself is correct.)"
+        },
+        {
+          "text": "Notes Scroll I (habits) is the first scroll / scrolls are read in order",
+          "passed": true,
+          "evidence": "'Go in order. The first scroll explains how to use all the others.' and 'The book's answer is Scroll I: \"Today I begin a new life.\"' with full I-X sequence listed - correct."
+        },
+        {
+          "text": "Explains persistence and the law of averages (each no brings a yes closer)",
+          "passed": true,
+          "evidence": "'In Scroll III, Mandino says that every failure to sell moves you closer to the next success. Every \"nay\" brings you nearer to a \"yea\"' plus oak-tree image - matches scrolls.md."
+        },
+        {
+          "text": "Uses mood mastery or 'This too shall pass' for rejection",
+          "passed": false,
+          "evidence": "No use of Scroll VI mood mastery or 'This too shall pass' as a tool for rejection; Scroll VI and VII appear only as titles in the reference sequence list. Rejection is handled via habits, logging and Scroll III only."
+        },
+        {
+          "text": "Gives a concrete daily routine",
+          "passed": true,
+          "evidence": "Daily table (three readings, call block with quota, end-of-day log) and week-by-week tasks (e.g. 'After every no, I write one line about what happened and dial the next number within 60 seconds')."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "adv-compare",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Lists or references the ten scrolls accurately",
+          "passed": true,
+          "evidence": "'The scrolls are: (I) habits / a new life; (II) greet the day with love; (III) persist until I succeed; (IV) I am nature's greatest miracle; (V) live this day as if it is my last; (VI) master my emotions; (VII) laugh at the world; (VIII) multiply my value a hundredfold; (IX) act now; (X) a prayer for guidance.' - all ten correct per SKILL.md."
+        },
+        {
+          "text": "Connects Scroll I's habit-formation idea to modern habit science",
+          "passed": true,
+          "evidence": "Agreement 1-3: habit centrality vs Wood's ~40-45% habitual actions; fixed anchors (waking, midday meal, bedtime) vs cue-based repetition/habit stacking; 'Scroll I says the only way to break a bad habit is to replace it with a good one' vs competing-response approach. Consistent with scrolls.md."
+        },
+        {
+          "text": "Notes something unusual (e.g. reading aloud 3x/day, 30 days per scroll, prayer scroll)",
+          "passed": true,
+          "evidence": "Unusual section: reading rather than doing, fixed 30-day period vs Lally median ~66 days, no-skip rule, bedtime reading aloud, sequenced curriculum, prayer in Scroll X."
+        },
+        {
+          "text": "Covers emotional control and/or act now",
+          "passed": true,
+          "evidence": "Agreement 7 covers Scroll IX 'I will act now' vs implementation intentions; Agreement 8 covers Scroll VI emotions and Scroll VII 'this too shall pass' vs reappraisal."
+        },
+        {
+          "text": "Distinguishes what the book says from the comparison",
+          "passed": true,
+          "evidence": "Structured separation: 'Quick reminder: Mandino's method' section describing the book, then research claims attributed to named studies, and a summary table with separate 'Mandino' and 'Habit science' columns; also flags non-book origin ('comes from 20th-century self-help (Napoleon Hill..., Coue), not from evidence'). Less explicit than a sourcing note, but the distinction is clear. (One quoted line, 'small attempts, repeated, will complete any undertaking', is not in the skill files but does not affect these assertions.)"
+        }
+      ],
+      "notes": []
+    }
+  ],
+  "run_summary": {
+    "with_skill": {
+      "pass_rate": {
+        "mean": 1.0,
+        "stddev": 0.0,
+        "min": 1.0,
+        "max": 1.0
+      },
+      "time_seconds": null,
+      "tokens": null
+    },
+    "without_skill": {
+      "pass_rate": {
+        "mean": 0.9,
+        "stddev": 0.1414,
+        "min": 0.8,
+        "max": 1.0
+      },
+      "time_seconds": null,
+      "tokens": null
+    },
+    "delta": {
+      "pass_rate": "+0.10",
+      "time_seconds": null,
+      "tokens": null
+    }
+  },
+  "notes": [
+    "Time recorded for 0 of 2 with_skill runs, 0 of 2 without_skill runs, so there is no time delta.",
+    "Token count recorded for 0 of 2 with_skill runs, 0 of 2 without_skill runs, so there is no token count delta."
+  ]
+}

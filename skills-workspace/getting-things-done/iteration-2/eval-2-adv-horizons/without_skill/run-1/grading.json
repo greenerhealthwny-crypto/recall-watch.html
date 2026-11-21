@@ -1,0 +1,35 @@
+{
+ "expectations": [
+  {
+   "text": "Names the horizons from Ground/runway through Horizon 5 (purpose/principles)",
+   "passed": true,
+   "evidence": "Headings name all six: 'Horizon 5 (50,000 ft): Purpose and Principles', 'Horizon 4 (40,000 ft): Vision', 'Horizon 3 (30,000 ft): 1-2 Year Goals', 'Horizon 2 (20,000 ft): Areas of Focus and Responsibility', 'Horizon 1 (10,000 ft): Current Projects', 'Ground (Runway): Next Actions and Calendar'. Order and content match SKILL.md (altitude labels are Allen's older metaphor; 'Responsibility' vs 'accountabilities' is a minor wording difference)."
+  },
+  {
+   "text": "Places the 2-year goal at the right horizon (vision, ~3-5 years, or goals 1-2 years)",
+   "passed": true,
+   "evidence": "Horizon 3: 'This is where your 2-year deadline lives', turned into a measurable 'Quit Trigger'; Horizon 4 framed as 3-5 years beyond it. Correct placement."
+  },
+  {
+   "text": "Gives concrete content at each horizon",
+   "passed": true,
+   "evidence": "Concrete content at every level: H5 draft purpose and four principles; H4 present-tense vision with business/lifestyle/financial/personal elements; H3 quit-trigger conditions and a milestone table by month; H2 day-job, business and life areas; H1 ten projects plus Someday/Maybe; Ground next actions by context and calendar items."
+  },
+  {
+   "text": "Connects horizons to next actions",
+   "passed": true,
+   "evidence": "Ground section: 'Each active project gets one concrete next action, sorted by context' with each action tagged to its project (e.g. 'Draft a list of 20 people who match my target customer (Validate idea)'); plus the 'why test' chain from 'Text Sarah...' (Runway) up to Purpose."
+  },
+  {
+   "text": "Mentions reviewing higher horizons periodically",
+   "passed": true,
+   "evidence": "'Review rhythm' table: Next Actions daily, Projects weekly (Weekly Review), Areas weekly-monthly, Goals monthly+quarterly, Vision quarterly, Purpose yearly; calendar also schedules quarterly reviews and month-12/18 checkpoints."
+  }
+ ],
+ "summary": {
+  "passed": 5,
+  "failed": 0,
+  "total": 5,
+  "pass_rate": 1.0
+ }
+}

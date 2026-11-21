@@ -1,0 +1,35 @@
+{
+ "expectations": [
+  {
+   "text": "Quotes or paraphrases the desire contract idea",
+   "passed": true,
+   "evidence": "Quotes \"Desire is a contract you make with yourself to be unhappy until you get what you want\" in 2(b), and the 'that you make' variant in the intro. Consistent with SKILL.md."
+  },
+  {
+   "text": "States the seek-wealth idea",
+   "passed": true,
+   "evidence": "'Wealth side: \"Seek wealth, not money or status.\"' plus wealth defined as assets that earn while you sleep. Matches SKILL.md."
+  },
+  {
+   "text": "Explains one-desire-at-a-time or choosing desires carefully",
+   "passed": true,
+   "evidence": "2(b): 'The Almanack doesn't prescribe zero desire. It prescribes few, chosen desires. Naval's advice is to pick one big desire at a time and let go of the rest.' Matches SKILL.md."
+  },
+  {
+   "text": "Explains wealth as freedom/means to stop playing games",
+   "passed": true,
+   "evidence": "2(a): wealth is 'a tool to buy freedom', solves money problems, ends dependence on a boss and selling hours; retirement redefined as stopping 'sacrificing today for an imagined tomorrow'; 2(c) says the wealth advice 'explicitly tells you to avoid status games'. Note: the quote \"Wealth is the thing you want... it buys you freedom\" is a loose splice that isn't verifiable in SKILL.md, but the idea itself is correct."
+  },
+  {
+   "text": "Mentions peace/happiness being separate from success",
+   "passed": true,
+   "evidence": "2(e): happiness is 'a skill and a choice' on an 'independent track'; 'getting rich won't fix an unhappy mind'; 'Wealth solves money problems. It doesn't solve happiness problems.' Consistent with SKILL.md 'Success does not earn happiness'."
+  }
+ ],
+ "summary": {
+  "passed": 5,
+  "failed": 0,
+  "total": 5,
+  "pass_rate": 1.0
+ }
+}

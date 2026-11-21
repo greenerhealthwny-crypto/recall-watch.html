@@ -1,0 +1,35 @@
+{
+ "expectations": [
+  {
+   "text": "Identifies possible specific knowledge for a flipper",
+   "passed": true,
+   "evidence": "Section 1 lists 'Pricing intuition and spotting value' (Broyhill Brasilia, Herman Miller, walnut under paint), 'Taste in transformation', 'Local market microstructure', 'Negotiation and trust'; defines specific knowledge as play-to-you/work-to-others found via curiosity, consistent with SKILL.md."
+  },
+  {
+   "text": "Names leverage types and highlights code/media as permissionless",
+   "passed": true,
+   "evidence": "'Naval names three kinds of leverage: Labour, Capital, Products with no marginal cost of replication: code and media... it is permissionless.' This matches the book's 'capital, people, and products with no marginal cost of replication (code and media)' and SKILL.md's 'code and media are permissionless leverage'."
+  },
+  {
+   "text": "Moves toward equity/ownership rather than trading hours",
+   "passed": true,
+   "evidence": "Section 3: 'you won't get rich renting out your time... you want to own equity'; stage table ending in '4. Owned assets / products | Equity | Decoupled from your hours'; step 6 'Own equity' (branded resale business, revenue-share partnerships)."
+  },
+  {
+   "text": "Uses accountability or long-term games",
+   "passed": true,
+   "evidence": "Step 7 'Take accountability. Naval says to take on risk under your own name'; Section 4 'Play long-term games with long-term people. Repeat dealings compound' (estate sale company, designers). Both consistent with SKILL.md."
+  },
+  {
+   "text": "Gives concrete next steps",
+   "passed": true,
+   "evidence": "Seven numbered concrete steps: track hours per flip vs profit, set an aspirational rate (~$100/hr) and outsource below it, systematise with templates, film every flip, build an email list/site, productise knowledge, own equity."
+  }
+ ],
+ "summary": {
+  "passed": 5,
+  "failed": 0,
+  "total": 5,
+  "pass_rate": 1.0
+ }
+}

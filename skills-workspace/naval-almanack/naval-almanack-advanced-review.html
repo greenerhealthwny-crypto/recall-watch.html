@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eval Review</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&family=Lora:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js" integrity="sha384-EnyY0/GSHQGSxSgMwaIPzSESbqoOLSexfnSMN2AP+39Ckmn92stwABZynq1JyzdT" crossorigin="anonymous"></script>
+  <style>
+    :root {
+      --bg: #faf9f5;
+      --surface: #ffffff;
+      --border: #e8e6dc;
+      --text: #141413;
+      --text-muted: #b0aea5;
+      --accent: #d97757;
+      --accent-hover: #c4613f;
+      --green: #788c5d;
+      --green-bg: #eef2e8;
+      --red: #c44;
+      --red-bg: #fceaea;
+      --header-bg: #141413;
+      --header-text: #faf9f5;
+      --radius: 6px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Lora', Georgia, serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ---- Header ---- */
+    .header {
+      background: var(--header-bg);
+      color: var(--header-text);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .header h1 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+    .header .instructions {
+      font-size: 0.8rem;
+      opacity: 0.7;
+      margin-top: 0.25rem;
+    }
+    .header .progress {
+      font-size: 0.875rem;
+      opacity: 0.8;
+      text-align: right;
+    }
+
+    /* ---- Main content ---- */
+    .main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.5rem 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    /* ---- Sections ---- */
+    .section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      flex-shrink: 0;
+    }
+    .section-header {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.75rem 1rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+    }
+    .section-body {
+      padding: 1rem;
+    }
+
+    /* ---- Config badge ---- */
+    .config-badge {
+      display: inline-block;
+      padding: 0.2rem 0.625rem;
+      border-radius: 9999px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      margin-left: 0.75rem;
+      vertical-align: middle;
+    }
+    .config-badge.config-primary {
+      background: rgba(33, 150, 243, 0.12);
+      color: #1976d2;
+    }
+    .config-badge.config-baseline {
+      background: rgba(255, 193, 7, 0.15);
+      color: #f57f17;
+    }
+
+    /* ---- Prompt ---- */
+    .prompt-text {
+      white-space: pre-wrap;
+      font-size: 0.9375rem;
+      line-height: 1.6;
+    }
+
+    /* ---- Outputs ---- */
+    .output-file {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .output-file + .output-file {
+      margin-top: 1rem;
+    }
+    .output-file-header {
+      padding: 0.5rem 0.75rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .output-file-header .dl-btn {
+      font-size: 0.7rem;
+      color: var(--accent);
+      text-decoration: none;
+      cursor: pointer;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-weight: 500;
+      opacity: 0.8;
+    }
+    .output-file-header .dl-btn:hover {
+      opacity: 1;
+      text-decoration: underline;
+    }
+    .output-file-content {
+      padding: 0.75rem;
+      overflow-x: auto;
+    }
+    .output-file-content pre {
+      font-size: 0.8125rem;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+    }
+    .output-file-content img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 4px;
+    }
+    .output-file-content iframe {
+      width: 100%;
+      height: 600px;
+      border: none;
+    }
+    .output-file-content table {
+      border-collapse: collapse;
+      font-size: 0.8125rem;
+      width: 100%;
+    }
+    .output-file-content table td,
+    .output-file-content table th {
+      border: 1px solid var(--border);
+      padding: 0.375rem 0.5rem;
+      text-align: left;
+    }
+    .output-file-content table th {
+      background: var(--bg);
+      font-weight: 600;
+    }
+    .output-file-content .download-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 0.875rem;
+      cursor: pointer;
+    }
+    .output-file-content .download-link:hover {
+      background: var(--border);
+    }
+    .empty-state {
+      color: var(--text-muted);
+      font-style: italic;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    /* ---- Feedback ---- */
+    .prev-feedback {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.625rem 0.75rem;
+      margin-top: 0.75rem;
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+    .prev-feedback-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.25rem;
+      color: var(--text-muted);
+    }
+    .feedback-textarea {
+      width: 100%;
+      min-height: 100px;
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 0.9375rem;
+      line-height: 1.5;
+      resize: vertical;
+      color: var(--text);
+    }
+    .feedback-textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    .feedback-status {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.5rem;
+      min-height: 1.1em;
+    }
+
+    /* ---- Grades (collapsible) ---- */
+    .grades-toggle {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+    }
+    .grades-toggle:hover {
+      color: var(--accent);
+    }
+    .grades-toggle .arrow {
+      margin-right: 0.5rem;
+      transition: transform 0.15s;
+      font-size: 0.75rem;
+    }
+    .grades-toggle .arrow.open {
+      transform: rotate(90deg);
+    }
+    .grades-content {
+      display: none;
+      margin-top: 0.75rem;
+    }
+    .grades-content.open {
+      display: block;
+    }
+    .grades-summary {
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .grade-badge {
+      display: inline-block;
+      padding: 0.125rem 0.5rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .grade-pass { background: var(--green-bg); color: var(--green); }
+    .grade-fail { background: var(--red-bg); color: var(--red); }
+    .assertion-list {
+      list-style: none;
+    }
+    .assertion-item {
+      padding: 0.625rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.8125rem;
+    }
+    .assertion-item:last-child { border-bottom: none; }
+    .assertion-status {
+      font-weight: 600;
+      margin-right: 0.5rem;
+    }
+    .assertion-status.pass { color: var(--green); }
+    .assertion-status.fail { color: var(--red); }
+    .assertion-evidence {
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      margin-top: 0.25rem;
+      padding-left: 1.5rem;
+    }
+
+    /* ---- View tabs ---- */
+    .view-tabs {
+      display: flex;
+      gap: 0;
+      padding: 0 2rem;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .view-tab {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.625rem 1.25rem;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      background: none;
+      color: var(--text-muted);
+      border-bottom: 2px solid transparent;
+      transition: all 0.15s;
+    }
+    .view-tab:hover { color: var(--text); }
+    .view-tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+    .view-panel { display: none; }
+    .view-panel.active { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
+
+    /* ---- Benchmark view ---- */
+    .benchmark-view {
+      padding: 1.5rem 2rem;
+      overflow-y: auto;
+      flex: 1;
+    }
+    .benchmark-table {
+      border-collapse: collapse;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 0.8125rem;
+      width: 100%;
+      margin-bottom: 1.5rem;
+    }
+    .benchmark-table th, .benchmark-table td {
+      padding: 0.625rem 0.75rem;
+      text-align: left;
+      border: 1px solid var(--border);
+    }
+    .benchmark-table th {
+      font-family: 'Poppins', sans-serif;
+      background: var(--header-bg);
+      color: var(--header-text);
+      font-weight: 500;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .benchmark-table tr:hover { background: var(--bg); }
+    .benchmark-table tr.benchmark-row-with { background: rgba(33, 150, 243, 0.06); }
+    .benchmark-table tr.benchmark-row-without { background: rgba(255, 193, 7, 0.06); }
+    .benchmark-table tr.benchmark-row-with:hover { background: rgba(33, 150, 243, 0.12); }
+    .benchmark-table tr.benchmark-row-without:hover { background: rgba(255, 193, 7, 0.12); }
+    .benchmark-table tr.benchmark-row-avg { font-weight: 600; border-top: 2px solid var(--border); }
+    .benchmark-table tr.benchmark-row-avg.benchmark-row-with { background: rgba(33, 150, 243, 0.12); }
+    .benchmark-table tr.benchmark-row-avg.benchmark-row-without { background: rgba(255, 193, 7, 0.12); }
+    .benchmark-delta-positive { color: var(--green); font-weight: 600; }
+    .benchmark-delta-negative { color: var(--red); font-weight: 600; }
+    .benchmark-notes {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem;
+    }
+    .benchmark-notes h3 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+    }
+    .benchmark-notes ul {
+      list-style: disc;
+      padding-left: 1.25rem;
+    }
+    .benchmark-notes li {
+      font-size: 0.8125rem;
+      line-height: 1.6;
+      margin-bottom: 0.375rem;
+    }
+    .benchmark-empty {
+      color: var(--text-muted);
+      font-style: italic;
+      text-align: center;
+      padding: 3rem;
+    }
+
+    /* ---- Navigation ---- */
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+      flex-shrink: 0;
+    }
+    .nav-btn {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.5rem 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text);
+      transition: all 0.15s;
+    }
+    .nav-btn:hover:not(:disabled) {
+      background: var(--bg);
+      border-color: var(--text-muted);
+    }
+    .nav-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    .done-btn {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.5rem 1.5rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: all 0.15s;
+    }
+    .done-btn:hover {
+      background: var(--bg);
+      border-color: var(--text-muted);
+    }
+    .done-btn.ready {
+      border: none;
+      background: var(--accent);
+      color: white;
+      font-weight: 600;
+    }
+    .done-btn.ready:hover {
+      background: var(--accent-hover);
+    }
+    /* ---- Done overlay ---- */
+    .done-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 100;
+      justify-content: center;
+      align-items: center;
+    }
+    .done-overlay.visible {
+      display: flex;
+    }
+    .done-card {
+      background: var(--surface);
+      border-radius: 12px;
+      padding: 2rem 3rem;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      max-width: 500px;
+    }
+    .done-card h2 {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .done-card p {
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
+    }
+    .done-card .btn-row {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+    }
+    .done-card button {
+      padding: 0.5rem 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 0.875rem;
+    }
+    .done-card button:hover {
+      background: var(--bg);
+    }
+    /* ---- Toast ---- */
+    .toast {
+      position: fixed;
+      bottom: 5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--header-bg);
+      color: var(--header-text);
+      padding: 0.625rem 1.25rem;
+      border-radius: var(--radius);
+      font-size: 0.875rem;
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+      z-index: 200;
+    }
+    .toast.visible {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <div id="app" style="height:100vh; display:flex; flex-direction:column;">
+    <div class="header">
+      <div>
+        <h1>Eval Review: <span id="skill-name"></span></h1>
+        <div class="instructions">Review each output and leave feedback below. Navigate with arrow keys or buttons. When done, copy feedback and paste into Claude Code.</div>
+      </div>
+      <div class="progress" id="progress"></div>
+    </div>
+
+    <!-- View tabs (only shown when benchmark data exists) -->
+    <div class="view-tabs" id="view-tabs" style="display:none;">
+      <button class="view-tab active" onclick="switchView('outputs')">Outputs</button>
+      <button class="view-tab" onclick="switchView('benchmark')">Benchmark</button>
+    </div>
+
+    <!-- Outputs panel (qualitative review) -->
+    <div class="view-panel active" id="panel-outputs">
+    <div class="main">
+      <!-- Prompt -->
+      <div class="section">
+        <div class="section-header">Prompt <span class="config-badge" id="config-badge" style="display:none;"></span></div>
+        <div class="section-body">
+          <div class="prompt-text" id="prompt-text"></div>
+        </div>
+      </div>
+
+      <!-- Outputs -->
+      <div class="section">
+        <div class="section-header">Output</div>
+        <div class="section-body" id="outputs-body">
+          <div class="empty-state">No output files found</div>
+        </div>
+      </div>
+
+      <!-- Previous Output (collapsible) -->
+      <div class="section" id="prev-outputs-section" style="display:none;">
+        <div class="section-header">
+          <div class="grades-toggle" onclick="togglePrevOutputs()">
+            <span class="arrow" id="prev-outputs-arrow">&#9654;</span>
+            Previous Output
+          </div>
+        </div>
+        <div class="grades-content" id="prev-outputs-content"></div>
+      </div>
+
+      <!-- Grades (collapsible) -->
+      <div class="section" id="grades-section" style="display:none;">
+        <div class="section-header">
+          <div class="grades-toggle" onclick="toggleGrades()">
+            <span class="arrow" id="grades-arrow">&#9654;</span>
+            Formal Grades
+          </div>
+        </div>
+        <div class="grades-content" id="grades-content"></div>
+      </div>
+
+      <!-- Feedback -->
+      <div class="section">
+        <div class="section-header">Your Feedback</div>
+        <div class="section-body">
+          <textarea
+            class="feedback-textarea"
+            id="feedback"
+            placeholder="What do you think of this output? Any issues, suggestions, or things that look great?"
+          ></textarea>
+          <div class="feedback-status" id="feedback-status"></div>
+          <div class="prev-feedback" id="prev-feedback" style="display:none;">
+            <div class="prev-feedback-label">Previous feedback</div>
+            <div id="prev-feedback-text"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav" id="outputs-nav">
+      <button class="nav-btn" id="prev-btn" onclick="navigate(-1)">&#8592; Previous</button>
+      <button class="done-btn" id="done-btn" onclick="showDoneDialog()">Submit All Reviews</button>
+      <button class="nav-btn" id="next-btn" onclick="navigate(1)">Next &#8594;</button>
+    </div>
+    </div><!-- end panel-outputs -->
+
+    <!-- Benchmark panel (quantitative stats) -->
+    <div class="view-panel" id="panel-benchmark">
+      <div class="benchmark-view" id="benchmark-content">
+        <div class="benchmark-empty">No benchmark data available. Run a benchmark to see quantitative results here.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Done overlay -->
+  <div class="done-overlay" id="done-overlay">
+    <div class="done-card">
+      <h2>Review Complete</h2>
+      <p>Your feedback has been saved. Go back to your Claude Code session and tell Claude you're done reviewing.</p>
+      <div class="btn-row">
+        <button onclick="closeDoneDialog()">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ---- Embedded data (injected by generate_review.py) ----
+    const EMBEDDED_DATA = {"skill_name": "naval-almanack", "runs": [{"id": "eval-1-adv-apply-with_skill-run-1", "prompt": "Apply Naval's framework to a Facebook Marketplace furniture flipper: where is the specific knowledge, which leverage is available, and how do they stop renting out their time?", "eval_id": 1, "outputs": [{"name": "response.md", "type": "text", "content": "# Naval's Framework Applied to a Facebook Marketplace Furniture Flipper\n\n*Source: The Almanack of Naval Ravikant* by Eric Jorgenson, a compilation of Naval's tweets, podcasts and interviews that Jorgenson edited and rearranged. Quoted lines are Naval's as the book gives them. The flipping analysis is my own application of his ideas. Naval never wrote about furniture.\n\n---\n\n## First, an honest diagnosis: what game is a flipper playing now?\n\nNaval's core instruction is **\"Arm yourself with specific knowledge, accountability, and leverage,\"** and his warning is **\"You're not going to get rich renting out your time.\"** A typical flipper is in an odd middle position:\n\n| Naval's lens | Typical flipper today |\n|---|---|\n| **Renting out time?** | Mostly yes, though it doesn't look like it. No one pays an hourly wage, but every dollar of profit depends on the flipper's own hours: scrolling listings, driving, haggling, hauling, sanding, photographing, answering \"is this still available?\", and waiting for no-shows. Income stops when they stop. |\n| **Equity?** | Very little. They own *inventory*, which is a small amount of capital, but no asset that \"earns while you sleep.\" Each flip is a one-off transaction. |\n| **Leverage?** | Small capital leverage (buying stock). No labor, code or media leverage yet. |\n| **Accountability?** | Some reputation inside Marketplace, but often no name or brand of their own. |\n| **Long-term game?** | Often not. Buyers and sellers are anonymous one-time strangers. |\n\nSo the flipper is a skilled **trader working by hand**. The goal is to turn that into **owning something that sells, sources or creates value without them standing there.**\n\n---\n\n## 1. Where is the specific knowledge?\n\nNaval defines specific knowledge as **\"knowledge you cannot be trained for.\"** It comes from genuine curiosity and feels like play to you while it looks like work to others. In flipping, the **profit is in the gap between what something is worth and what the seller thinks it's worth**. Specific knowledge is whatever lets you see that gap when others can't. Likely sources:\n\n- **The eye.** In two seconds, from a blurry photo, they can tell a solid-wood mid-century dresser from veneered particleboard. They can spot a maker's mark, a dovetail joint, or a style that is about to come back. You can't learn this from a course. It comes from thousands of hours of looking because you enjoy looking. This is the clearest case of Naval's idea.\n- **Local price intuition.** What will a walnut credenza bring *in this city, this month*? Which pieces sit unsold for weeks and which sell in an hour?\n- **Transformation skill.** Seeing what a $40 piece could become after refinishing, reupholstering or painting, and knowing which repairs are worth the labor.\n- **Market psychology.** Knowing who sells in a hurry (moves, estate clear-outs, divorces), how to negotiate respectfully, and what listing photos and copy make a buyer message first.\n- **Taste.** Knowing how to style and stage a piece so buyers see a lifestyle and not just a used table.\n\n**Diagnostic question (from the skill's method):** *What part of this feels like play to you but work to others?* If the answer is \"hunting for the hidden gem,\" the specific knowledge is **sourcing and judgment**. If it's \"bringing a wreck back to life,\" it's **craft and restoration**. If it's \"styling the photo,\" it's **taste and media**. Each answer points to a different path out. Naval's advice is to follow your real curiosity, not whatever is hot this year.\n\n**Key point:** the specific knowledge is in **choosing what to buy**. Hauling and listing are not where it lives. That matters because Naval says that with leverage, **judgment** is what gets paid. **\"Earn with your mind, not your time.\"**\n\n---\n\n## 2. Which leverage is available?\n\nNaval names four kinds: **labor, capital, code and media**, and he calls **code and media \"permissionless leverage.\"** Here is each one for a flipper:\n\n### Labor (permissioned: someone must agree to work with you)\n- Pay helpers by the job: a mover with a truck, a refinisher, an upholsterer, a photographer, a virtual assistant who answers messages.\n- That frees the flipper to spend their hours only on judgment (sourcing and pricing) and to delegate the rest.\n- *Limit:* managing people is work in itself. Naval calls labor the oldest and most contested kind of leverage.\n\n### Capital (permissioned: needs money, yours or someone else's)\n- Buy in bulk: whole estate-sale lots, storage-unit cleanouts, hotel or office liquidations, closing showrooms. Bigger checks mean less competition and a lower cost per piece.\n- Rent a small warehouse or showroom so inventory can be on display without the flipper being there.\n- *Limit:* physical goods have real marginal costs, including storage, transport and damage. Capital multiplies good judgment and bad judgment equally. A bad eye at scale loses money faster.\n\n### Code (permissionless, zero marginal cost)\n- Saved searches, alerts or scripts that find underpriced listings (where the platform's terms allow it), so you buy first without scrolling.\n- A pricing spreadsheet or database built from your own sales history: what sold, how fast, for how much. This turns your intuition into a repeatable tool.\n- Your own simple online store or booking page, so you aren't fully dependent on one platform's algorithm.\n- *Further out:* software or tools sold to other flippers.\n\n### Media (permissionless, zero marginal cost) **The biggest opening**\n- Before-and-after restoration videos, \"how I spotted this $30 dresser worth $600\" breakdowns, and sourcing-trip vlogs on TikTok, YouTube or Instagram. Furniture transformations are naturally good content.\n- A piece of content made once keeps working while you sleep. It brings buyers to you, brings sellers who want you to take their stuff, and builds an audience you can sell other things to.\n- This is the clearest route to Naval's **fourth kind of luck**, the luck that finds you because of your unique character, brand and mindset. When designers, estate agents and buyers DM *you* first, the luck is coming to you.\n\n**A note on the platform:** Marketplace is useful but **rented ground**. You don't own the customer relationships, and the rules or algorithm can change. Naval's leverage logic says to own your audience and brand (email list, social following, your own name) so that the platform is a channel and not the business.\n\n---\n\n## 3. How do they stop renting out their time?\n\nNaval: **\"Productize yourself.\"** \"Yourself\" brings uniqueness, accountability and specific knowledge. \"Productize\" brings leverage. His two test questions are: *Is this authentic to me? Am I scaling it with labor, capital, code or media?*\n\nA sequence of moves, from easiest to biggest:\n\n### Step 1: Set an aspirational hourly rate and buy back your time\nNaval: set an aspirational hourly rate and spend to save time at that rate. **\"You will never be worth more than you think you're worth.\"**\n- Work out your real profit per hour, including driving, haggling and no-shows. It's often surprisingly low.\n- Pick a target rate, say $75 an hour. Any task you could pay someone less than that to do (hauling, sanding, answering messages) is a task to hand off.\n- Drop low-margin flips that only pay for your time. Focus on pieces where the judgment premium is large.\n\n### Step 2: Move from transactions to long-term games with long-term people\nNaval: **\"Play iterated games. All the returns in life, whether in wealth, relationships, or knowledge, come from compound interest.\"** Anonymous Marketplace buyers are one-time games. Repeated relationships compound:\n- **Supply side:** estate-sale companies, real-estate agents, movers, property managers and junk haulers who call you first when a house needs clearing.\n- **Demand side:** interior designers, home stagers, Airbnb hosts, cafes and restaurants, and repeat collectors. Ten designers who trust your eye are worth more than a thousand strangers.\n- Over time your reputation becomes the asset.\n\n### Step 3: Take on accountability by building a name\nNaval: take business risks under your own name, and society will pay you for creating things it wants. Turn \"some seller on Marketplace\" into **a named brand with a consistent style**. A brand charges a premium, gets trusted sight-unseen, and attracts deals. It's also the start of **equity**: something with value apart from your hours this week.\n\n### Step 4: Own equity, meaning a business that runs partly without you\nPossible directions, depending on which specific knowledge you have:\n- **Curated shop or showroom** (online, physical or pop-up) with staff and a sourcing pipeline. You set taste and buy, others execute.\n- **Consignment or estate-clearing service:** people pay you or split proceeds to process their furniture, which supplies you with inventory at no upfront cost.\n- **Wholesale or trade program** supplying stagers and designers on a regular schedule.\n- **Restoration studio** with employees, if craft is your edge.\n\n### Step 5: Sell your judgment, not your labor\nThe most scalable assets don't involve furniture at all:\n- **Content and audience** (media leverage): ad revenue, sponsorships (paint, tools, platforms), affiliate links.\n- **Courses, guides or a paid community** on \"how to spot and flip furniture,\" sold over and over at zero marginal cost.\n- **Sourcing or pricing tools** for other flippers (code leverage).\n- **Equity partnerships:** back other flippers' inventory or stake a showroom in return for a share.\n\nNaval's line **\"Learn to sell. Learn to build. If you can do both, you will be unstoppable\"** fits closely here. Flippers already *sell*, through negotiating, listing and closing. Learning to *build* (a brand, a team, a store, software, a body of content) is the jump from hustler to owner.\n\n---\n\n## 4. Patience, focus and judgment checks\n\n- **\"Impatience with actions, patience with results.\"** List today, film today, call the estate agent today. But an audience, a trade network and a brand take years to compound. Naval says finding what you can uniquely provide may take the better part of a decade.\n- **\"Inspiration is perishable.\"** If a content idea or business angle excites you, act on it now.\n- **\"If you can't decide, the answer is no.\"** Use it on marginal buys. A piece you have to talk yourself into is usually dead inventory.\n- **Escape competition through authenticity.** Competition comes from copying. Thousands of people flip generic IKEA furniture. No one can compete with *your* specific eye, style and voice. Lean into the niche that's truly yours (mid-century teak, Victorian restoration, bold painted pieces, whatever it is), not the crowded middle.\n- **Wealth, not status.** The goal is assets that earn while you sleep, not a flashy truck or follower counts for their own sake.\n\n---\n\n## 5. Summary\n\n| Naval's question | Flipper's answer |\n|---|---|\n| **Specific knowledge?** | The eye for undervalued pieces, local price intuition, restoration craft and taste. Mainly the **judgment of what to buy**. |\n| **Leverage available?** | **Labor** (helpers and refinishers), **capital** (bulk lots, a showroom), **code** (alerts, pricing database, own store), and above all **media** (transformation content that brings deals to you). |\n| **Accountability?** | Build a named brand with a consistent style, not an anonymous account. |\n| **Long-term game?** | Repeat relationships with estate agents, designers, stagers and collectors. |\n| **Equity?** | A business with value apart from your hours: shop, consignment service, trade program, audience, course or tool. |\n| **Stop renting time by\u2026** | Setting an aspirational hourly rate, delegating below it, getting paid for judgment, and **productizing yourself** through media and a brand. |\n\n---\n\n### Caveats\n- This is an application of Naval's general principles. *The Almanack* doesn't discuss resale businesses.\n- Not financial or legal advice. Check platform terms of service before any automation, plus local business licensing and sales-tax rules.\n- Physical goods never have the zero marginal cost of code or media, so the biggest returns probably come from the media and brand layer on top of the flipping, not from flipping more pieces by hand.\n- Naval's own path (startups and angel investing) is unusual. His framework is a way of thinking, not a guarantee.\n"}], "grading": {"expectations": [{"text": "Identifies possible specific knowledge for a flipper", "passed": true, "evidence": "Section 1 quotes the definition \"knowledge you cannot be trained for\" (matches SKILL.md) and lists flipper-specific candidates: 'The eye' (solid wood vs particleboard, maker's marks), 'Local price intuition', 'Transformation skill', 'Market psychology', 'Taste', plus the play-vs-work diagnostic."}, {"text": "Names leverage types and highlights code/media as permissionless", "passed": true, "evidence": "'Naval names four kinds: labor, capital, code and media, and he calls code and media \"permissionless leverage.\"' Each gets a subsection; code and media are labeled '(permissionless, zero marginal cost)'. Matches SKILL.md."}, {"text": "Moves toward equity/ownership rather than trading hours", "passed": true, "evidence": "Opens with \"You're not going to get rich renting out your time\"; 'Step 4: Own equity, meaning a business that runs partly without you' (curated shop, consignment, wholesale, restoration studio) and 'Equity partnerships'."}, {"text": "Uses accountability or long-term games", "passed": true, "evidence": "'Step 2: Move from transactions to long-term games with long-term people' quotes \"Play iterated games... compound interest\" (exact SKILL.md wording); 'Step 3: Take on accountability by building a name' (risk under your own name)."}, {"text": "Gives concrete next steps", "passed": true, "evidence": "Five ordered steps: compute real profit/hour and set an aspirational rate (e.g. $75/hr) and delegate below it, build supply/demand relationships (estate agents, designers), named brand, equity business forms, media/courses/tools."}], "summary": {"passed": 5, "failed": 0, "total": 5, "pass_rate": 1.0}}}, {"id": "eval-1-adv-apply-without_skill-run-1", "prompt": "Apply Naval's framework to a Facebook Marketplace furniture flipper: where is the specific knowledge, which leverage is available, and how do they stop renting out their time?", "eval_id": 1, "outputs": [{"name": "response.md", "type": "text", "content": "# Naval's Framework Applied to a Facebook Marketplace Furniture Flipper\n\nNaval Ravikant's wealth model, as collected in *The Almanack of Naval Ravikant*, comes down to one line: **seek wealth, not money or status. Wealth comes from owning equity in assets that earn while you sleep, and you build it from specific knowledge, accountability, leverage and judgment, compounded over a long time.** A furniture flipper is a good test case because the business usually starts as pure time-for-money: drive, haul, clean, photograph, haggle, deliver. The question is which parts can become owned, leveraged and compounding.\n\n---\n\n## 1. Where the specific knowledge is\n\nNaval defines specific knowledge as knowledge that **can't be trained into someone quickly**. It feels like play to you and looks like work to others. It is often tacit, and it is usually found by following genuine curiosity, not by taking a course. If someone could write it down as a checklist and hire a new person to do it next week, it isn't specific knowledge.\n\nFor a flipper, the commodity skills are: picking up furniture, wiping it down, posting a listing. Anyone can do those. The specific knowledge is usually some mix of the following.\n\n**Pricing intuition and spotting value.** This is the ability to scroll past 200 listings and know in two seconds that one blurry photo shows a mid-century Broyhill Brasilia dresser, a real Herman Miller, solid walnut under bad paint, or Ethan Allen bones under a dated finish. It is built from thousands of reps of \"what did this actually sell for?\" It is hard to transfer and it is the real edge, the arbitrage between what the seller thinks it's worth and what the market will pay.\n\n**Taste in transformation.** Which pieces are worth refinishing, which paint colour or hardware swap turns a $40 dresser into a $350 one, and which \"projects\" are traps. That is aesthetic judgment and you can't easily teach it.\n\n**Local market microstructure.** Knowing which neighbourhoods dump good furniture at month-end lease turnover, which estate sale companies underprice, when college move-out happens, which buyers pay up for what, and how long a given category sits before it sells.\n\n**Negotiation and trust on a sketchy platform.** Reading sellers, being the buyer people want to deal with, writing listings that get serious buyers and fewer flakes.\n\n**How to find yours:** ask \"what do people already ask me about?\" If friends send you listings asking \"is this a good deal?\", that is the specific knowledge. If you lose hours reading about furniture makers' marks or joinery for fun, that is the thread to pull.\n\nThe key Naval move is to **lean into the narrowest version of this edge**, for example \"mid-century teak in the Pacific Northwest\" or \"solid-wood pieces refinished in modern colours\", rather than being a generalist who flips anything. Narrow specific knowledge plus authenticity means less competition. As Naval puts it, \"escape competition through authenticity.\"\n\n---\n\n## 2. Which leverage is available\n\nNaval names three kinds of leverage:\n\n1. **Labour**: other people working for you. It is the oldest form, the most fragile, and needs management.\n2. **Capital**: money working for you.\n3. **Products with no marginal cost of replication**: code and media. This is the newest form and it is **permissionless**. Nobody has to say yes for you to use it.\n\nA flipper has access to all three, roughly in reverse order of how valuable Naval thinks they are.\n\n### Capital leverage (immediately available, modest)\n- **Inventory as capital.** More working capital lets you buy more pieces, buy higher-value pieces, and hold out for better prices instead of dumping stock to make rent. A flipper with $500 has to sell fast. A flipper with $15k can buy the whole estate lot, wait for the right buyer, and earn much higher margins.\n- **Bulk buying.** Estate clean-outs, office liquidations, hotel renovations and storage auctions let you deploy capital at a lower cost per piece.\n- **Physical capital.** A van or box truck, a workshop or storage unit, a spray booth. Each one raises throughput per hour.\n- **Caveat:** capital leverage scales your judgment, good or bad. Naval says it rewards people with good judgment, and bad buying at scale is a fast way to lose money.\n\n### Labour leverage (available, but it's the \"old\" kind)\n- Hire a mover or helper paid per job for pickups and deliveries.\n- Contract a refinisher or upholsterer paid per piece.\n- Eventually hire a sourcer or lister you train on your criteria.\n- This frees your hours for the high-judgment work: buying, pricing and taste. But it adds management overhead, and labour is the leverage that takes the most from you. Use it to buy back your time from low-skill tasks, not as the end goal.\n\n### Code and media leverage (the permissionless kind, most important)\nThis is where a flipper can break from \"small local business\" into something that scales without them.\n\n- **Media: build an audience.** Before/after transformation videos on TikTok, Instagram Reels and YouTube (\"$30 curb find to $600 sale\") are a well-proven genre. One video costs the same to make whether 100 or 1 million people watch. An audience gives you:\n  - **Direct demand**: buyers who follow you and claim pieces before they're listed, so you're less dependent on Marketplace's algorithm.\n  - **Supply**: people offering you furniture.\n  - **Brand**, so you can charge more than a random Marketplace seller.\n  - **New products**: sponsorships from paint and tool brands, affiliate links to the supplies you use.\n- **Media: package the knowledge.** Courses, ebooks, paid communities or newsletters on \"how to flip furniture\", \"how to spot valuable mid-century pieces\" or \"my pricing spreadsheet\". This sells your specific knowledge while you sleep. You build it once and sell it unlimited times.\n- **Code: tools.** Saved-search alerts, scripts that flag underpriced listings by keyword, pricing databases built from your own sales history, templates for listings and buyer messages. At the ambitious end, a software product or marketplace for other flippers or for a niche such as vintage furniture, which scales beyond your own buying.\n\nMedia leverage turns invisible specific knowledge into an **asset that compounds**. Every video and every follower keeps working after you stop.\n\n---\n\n## 3. How they stop renting out their time\n\nNaval's point: **you won't get rich renting out your time.** Inputs (hours) must be decoupled from outputs. You want to be paid for judgment, and you want to own equity, a piece of a business or asset. A flipper isn't technically an employee, but if they only earn when they personally drive, sand and haggle, they're still renting time, just to the market.\n\nA practical path, moving from left to right:\n\n| Stage | What you're paid for | How income relates to time |\n|---|---|---|\n| 1. Solo flipper | Labour + some judgment | Linear: no work, no money |\n| 2. Flipper with helpers | Judgment (buying/pricing); labour delegated | More output per hour, still tied to your presence |\n| 3. Brand + audience | Judgment + reputation + media | Content and following earn while you sleep |\n| 4. Owned assets / products | Equity | Decoupled from your hours |\n\n**Concrete steps:**\n\n1. **Know your real hourly rate.** Track every hour per flip (sourcing, driving, refinishing, messaging, delivery) against net profit. Many flippers find they earn $12\u2013$20/hour once everything is counted. Then follow Naval's advice to set an aspirational hourly rate (say $100/hr) and **outsource or drop any task worth less than that**. Hauling and wiping down are worth $20/hr. Spotting the $40 Paul McCobb piece is worth hundreds.\n\n2. **Keep the judgment, delegate the labour.** Your scarce input is buying and pricing decisions. Systematise everything else: pickup checklists, listing templates, standard refinishing processes.\n\n3. **Turn each flip into media.** Film it. The flip earns once. The video can keep earning, both in views and in the audience it builds. This is the single highest-leverage habit change.\n\n4. **Build owned channels.** Get off rented land. Marketplace's algorithm and account bans can wipe you out. An email list, an Instagram following, a simple website or a showroom day you run yourself are assets you own.\n\n5. **Productise the knowledge.** Once you've done hundreds of flips, your pricing data, sourcing playbook and refinishing methods are a product: a course, a guide, a paid community, a consulting service for estate liquidators.\n\n6. **Own equity.** Options include:\n   - A **branded resale business** (a vintage furniture shop or online store) with staff, where you own the business rather than being the labour inside it.\n   - A **partnership** with estate sale companies, designers, Airbnb hosts or stagers, structured as a revenue share.\n   - A **sourcing or refinishing operation** that others run while you own it.\n   - Reinvest profits into assets that compound, such as index funds or real estate (a warehouse or workshop you rent out), instead of only into more inventory.\n\n7. **Take accountability.** Naval says to take on risk under your own name. A flipper who puts their face on the brand (\"I'm the person who restores mid-century pieces in Portland\") gets the upside of reputation. Accountability plus leverage plus specific knowledge is what lets the market pay you for judgment rather than hours.\n\n---\n\n## 4. Judgment and long-term games\n\nTwo more ideas from the Almanack fit here:\n\n- **Judgment is the payoff of leverage.** Once you have leverage (capital, staff, an audience), the quality of your decisions matters more than how hard you work. Which pieces to buy, which niche to own, which partnership to sign. Naval's line: \"In an age of leverage, one correct decision can win everything.\" The flipper's specific knowledge of value and taste becomes judgment at scale.\n\n- **Play long-term games with long-term people.** Repeat dealings compound: the estate sale company that calls you first, the designer who buys everything you make in a certain style, the followers who trust your taste. Reputation in a local resale market builds over the years, and it is what turns one-off transactions into a business.\n\n---\n\n## Summary\n\n- **Specific knowledge:** spotting undervalued pieces, pricing intuition, transformation taste, local market knowledge. It is built through play-like obsession. Narrow it to a niche you own.\n- **Leverage:** capital (inventory, tools, bulk buys) and labour (helpers, refinishers) are available but limited. **Media and code** are the permissionless, scalable leverage: transformation content, an audience, knowledge products, and tools built on your own sales data.\n- **Stop renting time:** calculate your true hourly rate, delegate everything below your aspirational rate, keep the judgment work, turn every flip into compounding content, build owned channels, productise your knowledge, and convert cash flow into equity in a brand, partnerships and assets that earn without you.\n\nFurniture flipping gives Naval's model a natural ladder. The flip is the cash engine, the knowledge is the edge, and media is the leverage that lets the edge earn while you sleep.\n"}], "grading": {"expectations": [{"text": "Identifies possible specific knowledge for a flipper", "passed": true, "evidence": "Section 1 lists 'Pricing intuition and spotting value' (Broyhill Brasilia, Herman Miller, walnut under paint), 'Taste in transformation', 'Local market microstructure', 'Negotiation and trust'; defines specific knowledge as play-to-you/work-to-others found via curiosity, consistent with SKILL.md."}, {"text": "Names leverage types and highlights code/media as permissionless", "passed": true, "evidence": "'Naval names three kinds of leverage: Labour, Capital, Products with no marginal cost of replication: code and media... it is permissionless.' This matches the book's 'capital, people, and products with no marginal cost of replication (code and media)' and SKILL.md's 'code and media are permissionless leverage'."}, {"text": "Moves toward equity/ownership rather than trading hours", "passed": true, "evidence": "Section 3: 'you won't get rich renting out your time... you want to own equity'; stage table ending in '4. Owned assets / products | Equity | Decoupled from your hours'; step 6 'Own equity' (branded resale business, revenue-share partnerships)."}, {"text": "Uses accountability or long-term games", "passed": true, "evidence": "Step 7 'Take accountability. Naval says to take on risk under your own name'; Section 4 'Play long-term games with long-term people. Repeat dealings compound' (estate sale company, designers). Both consistent with SKILL.md."}, {"text": "Gives concrete next steps", "passed": true, "evidence": "Seven numbered concrete steps: track hours per flip vs profit, set an aspirational rate (~$100/hr) and outsource below it, systematise with templates, film every flip, build an email list/site, productise knowledge, own equity."}], "summary": {"passed": 5, "failed": 0, "total": 5, "pass_rate": 1.0}}}, {"id": "eval-2-adv-tension-with_skill-run-1", "prompt": "Naval says desire is a contract to be unhappy, but also that you should seek wealth. How does the Almanack reconcile those?", "eval_id": 2, "outputs": [{"name": "response.md", "type": "text", "content": "# Desire as a Contract to Be Unhappy vs. \"Seek Wealth\": How the Almanack Reconciles Them\n\n*Source: The Almanack of Naval Ravikant* by Eric Jorgenson, compiled from Naval's tweets, podcasts and interviews. Jorgenson notes he transcribed, edited and rearranged the material, so the book is a collage and not a single argued thesis. Lines in quotation marks are Naval's as the book gives them. The reconciliation below is my synthesis of how the two halves of the book fit together. **The Almanack never sets the two lines side by side and resolves them in one passage.**\n\n---\n\n## The apparent contradiction\n\n- **Part I, Wealth:** **\"Seek wealth, not money or status.\"** Build specific knowledge, take on accountability, gain leverage, own equity, play long-term games.\n- **Part II, Happiness:** **\"Desire is a contract you make with yourself to be unhappy until you get what you want.\"**\n\nIf wanting things makes you unhappy, isn't \"seek wealth\" an instruction to sign exactly that contract? The book offers several threads that resolve most of the tension. A little of it remains, and that's worth admitting.\n\n---\n\n## Thread 1: The rule isn't \"have no desires.\" It's \"pick them carefully, one at a time\"\n\nNaval doesn't recommend wanting nothing. His advice is to **choose your desires carefully** and keep them few, ideally **one at a time**. A desire is a *contract*, and contracts can be entered on purpose, on terms you've chosen.\n\nSo \"seek wealth\" can be read as **one deliberately chosen desire** in place of a crowd of default cravings (the newer car, the better title, the bigger house, beating the neighbor). You sign one contract with your eyes open and accept the unhappiness that comes with it. That frees you from dozens of smaller contracts you never meant to sign.\n\n## Thread 2: Wealth, money and status are different things, and the split matters for happiness\n\nNaval's definitions *(book)*:\n- **Wealth** = assets that earn while you sleep.\n- **Money** = how we transfer time and wealth.\n- **Status** = your place in the social hierarchy.\n\nThe desire that does the most damage to happiness is the **status** desire. It's relative and zero-sum, and it drives **envy**, which the book calls the enemy of happiness. Status games have a winner only if someone else loses, and there's always someone higher up.\n\nWealth creation, as Naval frames it, is **positive-sum**: you get paid for \"creating things society wants\" that it doesn't yet know how to make. So \"seek wealth, *not money or status*\" already steers you away from the most toxic kind of wanting. It's a narrower, healthier desire than ambition in general.\n\n## Thread 3: Wealth is a means (freedom), not the source of happiness\n\nThe book insists that **success does not earn happiness**. Getting rich won't make you happy. A fair reading of Part I is that wealth is worth seeking because it **solves money problems and buys back your time and freedom**: freedom from having to rent out your hours and from doing things you don't want to do. It won't fill the sense that something is missing.\n\nThat fits Naval's definition of happiness: **the state when nothing is missing**, with **peace as happiness at rest**. Wealth can remove *external* lacks (bills, a boss, a commute). It can't remove the *internal* lack that desire creates. So the two halves cover different territory:\n\n| | Wealth (Part I) | Happiness (Part II) |\n|---|---|---|\n| Solves | Money problems, lack of time and freedom | The inner sense that something is missing |\n| Method | Specific knowledge, leverage, equity, judgment | Choosing it, habits, presence, acceptance, fewer desires |\n| Mistake to avoid | Renting out your time, status games | Expecting success to deliver it |\n\nNaval lists **\"wealth, health and happiness\"** as the three big things in life. They're separate projects, and progress on one doesn't automatically bring the others. If you seek wealth *expecting it to make you happy*, you've signed the worst kind of contract. If you seek it as a tool for freedom, you haven't.\n\nHis picture of the good life backs this up: **\"A calm mind, a fit body, and a house full of love.\"** Money isn't on the list. Wealth is a supporting tool, not the goal.\n\n## Thread 4: Pursue wealth in a way that doesn't feel like craving\n\nSeveral Part I instructions make the *process* of building wealth less of a desire-driven grind:\n\n- **Specific knowledge comes from genuine curiosity and passion**, not from chasing what's hot. Work you'd do anyway doesn't feel like a long wait to be happy \"once I get there.\"\n- **Find work that feels like play** (a chapter title in Part I). If the work is play, you're happy *while* doing it, not only after you're paid.\n- **\"Impatience with actions, patience with results.\"** Put energy into the actions and let go of the outcome. That's close to the acceptance Part II teaches. Don't fixate on the payoff.\n- **Long-term games and compound interest.** Results take years. Someone who is attached to the result is miserable that whole time. Someone who is engaged in the game isn't.\n\nSo the reconciliation is partly about **how** you seek: absorbed and patient, not grasping.\n\n## Thread 5: Free yourself from wanting more, and know when you're done\n\nNaval's line **\"Retirement is when you stop sacrificing today for an imaginary tomorrow\"** redefines the finish line. It isn't a dollar figure. It's the point where you stop putting your present on hold. Wealth-seeking that defers all happiness to \"someday\" is exactly the contract Part II warns about. Wealth-seeking that's enjoyable now, and that stops once enough freedom is bought, isn't.\n\nPart II's *Saving Yourself* section ends with **freeing yourself**. Read with Part I, the arc becomes: **build wealth so you're free from money, then free yourself from the desire for more.** The book puts Wealth before Happiness, which suggests an order. Solve the material problem well and early, then turn to the inner work.\n\n---\n\n## What's left unresolved (an honest note)\n\n- **The book has no single reconciling passage.** Jorgenson assembled it from many sources over many years. The halves sit next to each other and the reader has to join them. Anyone who claims the Almanack resolves the tension in one quotable paragraph is overstating it.\n- **Seeking wealth still involves wanting.** Even a chosen, curious, patient desire for wealth is a desire, and by Naval's own definition it brings some unhappiness until it's met. His position is closer to *\"sign this one contract deliberately and on good terms\"* than *\"this isn't a contract at all.\"*\n- **It's easier from Naval's position.** He made his money through startups and angel investing, which is an unusual path. \"Seek wealth, then drop desire\" is easier to say once you have it. A reader early in their career should weigh that.\n\n---\n\n## The short answer\n\nThe Almanack reconciles the two lines like this:\n\n1. **Desire isn't forbidden. It's to be chosen**, carefully and one at a time. Wealth can be that one deliberate contract.\n2. **Seek wealth, *not* status.** Status is the zero-sum, envy-driven desire that ruins happiness. Positive-sum wealth creation is a narrower, cleaner aim.\n3. **Wealth buys freedom, not happiness.** Success doesn't earn happiness. Happiness is \"a choice you make and a skill you develop,\" built through habits, presence and acceptance.\n4. **Seek it in a way that's play**, following your curiosity, with impatience for actions and patience for results, so you aren't miserable along the way.\n5. **Then let the desire go.** Stop sacrificing today for an imaginary tomorrow, and free yourself.\n\nIn one line: **use one carefully chosen desire (wealth, as a means to freedom) to escape a hundred unchosen ones, and never expect it to deliver the happiness only Part II can give.**\n\n*Not financial advice. The synthesis above is an interpretation of a compiled text, not a direct claim by Naval.*\n"}], "grading": {"expectations": [{"text": "Quotes or paraphrases the desire contract idea", "passed": true, "evidence": "Quotes exactly: \"Desire is a contract you make with yourself to be unhappy until you get what you want.\" (matches SKILL.md)."}, {"text": "States the seek-wealth idea", "passed": true, "evidence": "\"Seek wealth, not money or status.\" with definitions: wealth = assets that earn while you sleep, money = how we transfer time and wealth, status = place in the social hierarchy (all match SKILL.md)."}, {"text": "Explains one-desire-at-a-time or choosing desires carefully", "passed": true, "evidence": "Thread 1: 'His advice is to choose your desires carefully and keep them few, ideally one at a time'; frames wealth as 'one deliberately chosen desire'. Matches SKILL.md 'Pick desires carefully, one at a time'."}, {"text": "Explains wealth as freedom/means to stop playing games", "passed": true, "evidence": "Thread 3: wealth is worth seeking because it 'solves money problems and buys back your time and freedom: freedom from having to rent out your hours'; Thread 2 contrasts positive-sum wealth with zero-sum status games; Thread 5 uses the retirement quote (matches SKILL.md)."}, {"text": "Mentions peace/happiness being separate from success", "passed": true, "evidence": "'The book insists that success does not earn happiness'; happiness as 'the state when nothing is missing, with peace as happiness at rest'; table separating Wealth (Part I) from Happiness (Part II). All match SKILL.md."}], "summary": {"passed": 5, "failed": 0, "total": 5, "pass_rate": 1.0}}}, {"id": "eval-2-adv-tension-without_skill-run-1", "prompt": "Naval says desire is a contract to be unhappy, but also that you should seek wealth. How does the Almanack reconcile those?", "eval_id": 2, "outputs": [{"name": "response.md", "type": "text", "content": "# \"Desire Is a Contract to Be Unhappy\" vs. \"Seek Wealth\": How the Almanack Reconciles Them\n\n*The Almanack of Naval Ravikant* (compiled by Eric Jorgenson) is split into two halves: **Wealth** and **Happiness**. On the surface they seem to contradict each other. Part one tells you how to get rich. Part two says that \"desire is a contract that you make with yourself to be unhappy until you get what you want.\" This answer covers how the book, and Naval himself, holds the two together.\n\n---\n\n## 1. The apparent contradiction\n\n- **Wealth side:** \"Seek wealth, not money or status.\" Build specific knowledge, use leverage, own equity, and get rich without getting lucky.\n- **Happiness side:** desire creates unhappiness. Happiness is \"the state when nothing is missing,\" a default state that appears once you stop wanting things to be different. Peace comes from fewer desires.\n\nIf desire makes you unhappy, isn't wanting wealth just a big, long-running desire?\n\n---\n\n## 2. The reconciliation, in several layers\n\n### (a) Wealth is a tool to buy freedom, not a source of happiness\n\nNaval is explicit that money doesn't make you happy. What it does is **solve money problems** and buy **freedom**. He defines wealth as assets that earn while you sleep, and the point is to free up your time: \"Wealth is the thing you want... it buys you freedom.\" The goal is to retire, in his sense of the word: to stop sacrificing today for an imagined tomorrow.\n\nThe wealth chapters are therefore not telling you to make desire for money the centre of your life. They are about removing a category of problems (financial stress, being dependent on a boss, selling your hours) so that you have more room for what actually brings peace. He even frames getting rich as a way to get it **out of the way**: solve your money problems so you can focus on what matters, and \"then you can get on with the rest of your life.\"\n\n### (b) Pick one desire deliberately; don't let a hundred run you\n\nThe full form of his line on desire matters: \"Desire is a contract you make with yourself to be unhappy until you get what you want.\" The Almanack doesn't prescribe zero desire. It prescribes **few, chosen desires**. Naval's advice is to **pick one big desire at a time** and let go of the rest. The one you pick gives you purpose and focus. The many you drop stop generating constant low-level dissatisfaction.\n\nSo seeking wealth can be that one consciously chosen contract, accepted on purpose and with awareness of its cost, rather than an endless series of cravings for the next car, house or bit of status.\n\n### (c) Wealth vs. status: the desire he warns against most\n\nNaval separates **wealth creation** (a positive-sum game) from **status seeking** (a zero-sum game). Status games are about relative position and they are built on envy and comparison. That is the kind of desire that never ends, because someone always has more. Seeking wealth in his sense means creating things society wants and owning a piece of them, which isn't about beating other people.\n\nThe \"desire = unhappiness\" warning hits status desire hardest. His wealth advice explicitly tells you to **avoid status games**. The two halves agree: pursue wealth through creation, and don't fall into the comparison trap that makes desire miserable.\n\n### (d) Play-like work makes the pursuit itself less of a craving\n\nHis wealth method relies on **specific knowledge**: things that feel like play to you and look like work to others. If you build wealth through work you love, and you play long-term games with long-term people, the pursuit doesn't feel like a tense contract to be unhappy until some future day. You are partly absorbed in the activity itself. The process is satisfying while the outcome compounds in the background. This removes much of the tension: the desire is less \"I'll be happy when...\" and more \"I enjoy doing this, and it happens to compound.\"\n\n### (e) Happiness is a skill you can build independently of wealth\n\nThe happiness section treats peace as a **skill and a choice**: meditation, habits, less judgment, accepting reality, being present, reducing ego. Naval says happiness is mostly internal, something you can train \"like fitness or nutrition.\" This makes the two halves independent tracks rather than rivals:\n\n- Wealth solves external problems (money and freedom).\n- Inner work solves internal ones (peace and contentment).\n\nYou can work on both, and you need the second regardless of the first. He notes that plenty of rich people are miserable, and that getting rich won't fix an unhappy mind. Wealth without inner work just gets you \"unhappy, but rich.\"\n\n### (f) Desire's cost is awareness, not prohibition\n\nNaval presents the desire principle as an **observation to be aware of**, not a commandment. When you desire something, you accept a period of discontent. Knowing this lets you choose your desires wisely and hold them more lightly. You can work hard toward wealth while staying aware that the result won't deliver lasting happiness. That awareness lowers the emotional stakes, which tends to improve your judgment and makes the pursuit more sustainable.\n\n### (g) The end point: freedom from desire, including wealth\n\nNaval's view of the arc of life is that you build wealth so you can eventually **outgrow the desire for it**. Once you have \"enough\", you are free to do what you want, including nothing. The final goal in the Almanack is freedom: from money problems, from bosses, from status games and, ultimately, from compulsive desire itself. Wealth is a stage on the way there, not the destination.\n\n---\n\n## 3. A compact way to state it\n\n> **Seek wealth as one deliberate, positive-sum desire, pursued through work that feels like play, in order to buy freedom. Recognise that desire of any kind costs you peace, so keep your desires few, avoid status games, and build happiness as an independent internal skill. Wealth solves money problems. It doesn't solve happiness problems.**\n\n---\n\n## 4. Where some tension remains\n\nTo be fair, the reconciliation isn't perfectly tidy:\n\n- **Pursuing wealth does involve years of desire.** Naval accepts this. It is the one contract you consciously sign. Critics might say this is a rationalised exception, and that the line between \"one chosen desire\" and plain ambition is blurry.\n- **Survivorship and privilege.** \"Get rich, then let go of desire\" is easier to say from a position of success. Someone who doesn't reach wealth may find the \"contract to be unhappy\" dragging on for a long time.\n- **The book is a compilation.** The Almanack collects tweets, podcasts and essays from different periods. Some of the reconciliation is supplied by how the material is arranged (Wealth first, Happiness second) rather than by Naval laying out one systematic argument.\n\nNaval's own framing still holds together: **money is a tool for freedom, happiness is an inner skill, and the trick is to want very few things very deliberately.** The two halves of the book are less a contradiction than a sequence. Solve the external problem efficiently, so you can spend your life working on the internal one.\n"}], "grading": {"expectations": [{"text": "Quotes or paraphrases the desire contract idea", "passed": true, "evidence": "Quotes \"Desire is a contract you make with yourself to be unhappy until you get what you want\" in 2(b), and the 'that you make' variant in the intro. Consistent with SKILL.md."}, {"text": "States the seek-wealth idea", "passed": true, "evidence": "'Wealth side: \"Seek wealth, not money or status.\"' plus wealth defined as assets that earn while you sleep. Matches SKILL.md."}, {"text": "Explains one-desire-at-a-time or choosing desires carefully", "passed": true, "evidence": "2(b): 'The Almanack doesn't prescribe zero desire. It prescribes few, chosen desires. Naval's advice is to pick one big desire at a time and let go of the rest.' Matches SKILL.md."}, {"text": "Explains wealth as freedom/means to stop playing games", "passed": true, "evidence": "2(a): wealth is 'a tool to buy freedom', solves money problems, ends dependence on a boss and selling hours; retirement redefined as stopping 'sacrificing today for an imagined tomorrow'; 2(c) says the wealth advice 'explicitly tells you to avoid status games'. Note: the quote \"Wealth is the thing you want... it buys you freedom\" is a loose splice that isn't verifiable in SKILL.md, but the idea itself is correct."}, {"text": "Mentions peace/happiness being separate from success", "passed": true, "evidence": "2(e): happiness is 'a skill and a choice' on an 'independent track'; 'getting rich won't fix an unhappy mind'; 'Wealth solves money problems. It doesn't solve happiness problems.' Consistent with SKILL.md 'Success does not earn happiness'."}], "summary": {"passed": 5, "failed": 0, "total": 5, "pass_rate": 1.0}}}], "previous_feedback": {}, "previous_outputs": {}, "benchmark": {"metadata": {"skill_name": "naval-almanack", "skill_path": "\u003cpath/to/skill>", "executor_model": "\u003cmodel-name>", "analyzer_model": "\u003cmodel-name>", "timestamp": "2026-11-21T22:00:51Z", "evals_run": [1, 2], "runs_per_configuration": 1}, "runs": [{"eval_id": 1, "eval_name": "adv-apply", "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 5, "failed": 0, "total": 5, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Identifies possible specific knowledge for a flipper", "passed": true, "evidence": "Section 1 quotes the definition \"knowledge you cannot be trained for\" (matches SKILL.md) and lists flipper-specific candidates: 'The eye' (solid wood vs particleboard, maker's marks), 'Local price intuition', 'Transformation skill', 'Market psychology', 'Taste', plus the play-vs-work diagnostic."}, {"text": "Names leverage types and highlights code/media as permissionless", "passed": true, "evidence": "'Naval names four kinds: labor, capital, code and media, and he calls code and media \"permissionless leverage.\"' Each gets a subsection; code and media are labeled '(permissionless, zero marginal cost)'. Matches SKILL.md."}, {"text": "Moves toward equity/ownership rather than trading hours", "passed": true, "evidence": "Opens with \"You're not going to get rich renting out your time\"; 'Step 4: Own equity, meaning a business that runs partly without you' (curated shop, consignment, wholesale, restoration studio) and 'Equity partnerships'."}, {"text": "Uses accountability or long-term games", "passed": true, "evidence": "'Step 2: Move from transactions to long-term games with long-term people' quotes \"Play iterated games... compound interest\" (exact SKILL.md wording); 'Step 3: Take on accountability by building a name' (risk under your own name)."}, {"text": "Gives concrete next steps", "passed": true, "evidence": "Five ordered steps: compute real profit/hour and set an aspirational rate (e.g. $75/hr) and delegate below it, build supply/demand relationships (estate agents, designers), named brand, equity business forms, media/courses/tools."}], "notes": []}, {"eval_id": 2, "eval_name": "adv-tension", "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 5, "failed": 0, "total": 5, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Quotes or paraphrases the desire contract idea", "passed": true, "evidence": "Quotes exactly: \"Desire is a contract you make with yourself to be unhappy until you get what you want.\" (matches SKILL.md)."}, {"text": "States the seek-wealth idea", "passed": true, "evidence": "\"Seek wealth, not money or status.\" with definitions: wealth = assets that earn while you sleep, money = how we transfer time and wealth, status = place in the social hierarchy (all match SKILL.md)."}, {"text": "Explains one-desire-at-a-time or choosing desires carefully", "passed": true, "evidence": "Thread 1: 'His advice is to choose your desires carefully and keep them few, ideally one at a time'; frames wealth as 'one deliberately chosen desire'. Matches SKILL.md 'Pick desires carefully, one at a time'."}, {"text": "Explains wealth as freedom/means to stop playing games", "passed": true, "evidence": "Thread 3: wealth is worth seeking because it 'solves money problems and buys back your time and freedom: freedom from having to rent out your hours'; Thread 2 contrasts positive-sum wealth with zero-sum status games; Thread 5 uses the retirement quote (matches SKILL.md)."}, {"text": "Mentions peace/happiness being separate from success", "passed": true, "evidence": "'The book insists that success does not earn happiness'; happiness as 'the state when nothing is missing, with peace as happiness at rest'; table separating Wealth (Part I) from Happiness (Part II). All match SKILL.md."}], "notes": []}, {"eval_id": 1, "eval_name": "adv-apply", "configuration": "without_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 5, "failed": 0, "total": 5, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Identifies possible specific knowledge for a flipper", "passed": true, "evidence": "Section 1 lists 'Pricing intuition and spotting value' (Broyhill Brasilia, Herman Miller, walnut under paint), 'Taste in transformation', 'Local market microstructure', 'Negotiation and trust'; defines specific knowledge as play-to-you/work-to-others found via curiosity, consistent with SKILL.md."}, {"text": "Names leverage types and highlights code/media as permissionless", "passed": true, "evidence": "'Naval names three kinds of leverage: Labour, Capital, Products with no marginal cost of replication: code and media... it is permissionless.' This matches the book's 'capital, people, and products with no marginal cost of replication (code and media)' and SKILL.md's 'code and media are permissionless leverage'."}, {"text": "Moves toward equity/ownership rather than trading hours", "passed": true, "evidence": "Section 3: 'you won't get rich renting out your time... you want to own equity'; stage table ending in '4. Owned assets / products | Equity | Decoupled from your hours'; step 6 'Own equity' (branded resale business, revenue-share partnerships)."}, {"text": "Uses accountability or long-term games", "passed": true, "evidence": "Step 7 'Take accountability. Naval says to take on risk under your own name'; Section 4 'Play long-term games with long-term people. Repeat dealings compound' (estate sale company, designers). Both consistent with SKILL.md."}, {"text": "Gives concrete next steps", "passed": true, "evidence": "Seven numbered concrete steps: track hours per flip vs profit, set an aspirational rate (~$100/hr) and outsource below it, systematise with templates, film every flip, build an email list/site, productise knowledge, own equity."}], "notes": []}, {"eval_id": 2, "eval_name": "adv-tension", "configuration": "without_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 5, "failed": 0, "total": 5, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Quotes or paraphrases the desire contract idea", "passed": true, "evidence": "Quotes \"Desire is a contract you make with yourself to be unhappy until you get what you want\" in 2(b), and the 'that you make' variant in the intro. Consistent with SKILL.md."}, {"text": "States the seek-wealth idea", "passed": true, "evidence": "'Wealth side: \"Seek wealth, not money or status.\"' plus wealth defined as assets that earn while you sleep. Matches SKILL.md."}, {"text": "Explains one-desire-at-a-time or choosing desires carefully", "passed": true, "evidence": "2(b): 'The Almanack doesn't prescribe zero desire. It prescribes few, chosen desires. Naval's advice is to pick one big desire at a time and let go of the rest.' Matches SKILL.md."}, {"text": "Explains wealth as freedom/means to stop playing games", "passed": true, "evidence": "2(a): wealth is 'a tool to buy freedom', solves money problems, ends dependence on a boss and selling hours; retirement redefined as stopping 'sacrificing today for an imagined tomorrow'; 2(c) says the wealth advice 'explicitly tells you to avoid status games'. Note: the quote \"Wealth is the thing you want... it buys you freedom\" is a loose splice that isn't verifiable in SKILL.md, but the idea itself is correct."}, {"text": "Mentions peace/happiness being separate from success", "passed": true, "evidence": "2(e): happiness is 'a skill and a choice' on an 'independent track'; 'getting rich won't fix an unhappy mind'; 'Wealth solves money problems. It doesn't solve happiness problems.' Consistent with SKILL.md 'Success does not earn happiness'."}], "notes": []}], "run_summary": {"with_skill": {"pass_rate": {"mean": 1.0, "stddev": 0.0, "min": 1.0, "max": 1.0}, "time_seconds": null, "tokens": null}, "without_skill": {"pass_rate": {"mean": 1.0, "stddev": 0.0, "min": 1.0, "max": 1.0}, "time_seconds": null, "tokens": null}, "delta": {"pass_rate": "+0.00", "time_seconds": null, "tokens": null}}, "notes": ["Time recorded for 0 of 2 with_skill runs, 0 of 2 without_skill runs, so there is no time delta.", "Token count recorded for 0 of 2 with_skill runs, 0 of 2 without_skill runs, so there is no token count delta."]}};
+
+    // ---- State ----
+    let feedbackMap = {};  // run_id -> feedback text
+    let currentIndex = 0;
+    let visitedRuns = new Set();
+
+    // ---- Init ----
+    async function init() {
+      // Load saved feedback from server — but only if this isn't a fresh
+      // iteration (indicated by previous_feedback being present). When
+      // previous feedback exists, the feedback.json on disk is stale from
+      // the prior iteration and should not pre-fill the textareas.
+      const hasPrevious = Object.keys(EMBEDDED_DATA.previous_feedback || {}).length > 0
+        || Object.keys(EMBEDDED_DATA.previous_outputs || {}).length > 0;
+      if (!hasPrevious) {
+        try {
+          const resp = await fetch("/api/feedback");
+          const data = await resp.json();
+          if (data.reviews) {
+            for (const r of data.reviews) feedbackMap[r.run_id] = r.feedback;
+          }
+        } catch { /* first run, no feedback yet */ }
+      }
+
+      document.getElementById("skill-name").textContent = EMBEDDED_DATA.skill_name;
+      showRun(0);
+
+      // Wire up feedback auto-save
+      const textarea = document.getElementById("feedback");
+      let saveTimeout = null;
+      textarea.addEventListener("input", () => {
+        clearTimeout(saveTimeout);
+        document.getElementById("feedback-status").textContent = "";
+        saveTimeout = setTimeout(() => saveCurrentFeedback(), 800);
+      });
+    }
+
+    // ---- Navigation ----
+    function navigate(delta) {
+      const newIndex = currentIndex + delta;
+      if (newIndex >= 0 && newIndex < EMBEDDED_DATA.runs.length) {
+        saveCurrentFeedback();
+        showRun(newIndex);
+      }
+    }
+
+    function updateNavButtons() {
+      document.getElementById("prev-btn").disabled = currentIndex === 0;
+      document.getElementById("next-btn").disabled =
+        currentIndex === EMBEDDED_DATA.runs.length - 1;
+    }
+
+    // ---- Show a run ----
+    function showRun(index) {
+      currentIndex = index;
+      const run = EMBEDDED_DATA.runs[index];
+
+      // Progress
+      document.getElementById("progress").textContent =
+        `${index + 1} of ${EMBEDDED_DATA.runs.length}`;
+
+      // Prompt
+      document.getElementById("prompt-text").textContent = run.prompt;
+
+      // Config badge
+      const badge = document.getElementById("config-badge");
+      const configMatch = run.id.match(/(with_skill|without_skill|new_skill|old_skill)/);
+      if (configMatch) {
+        const config = configMatch[1];
+        const isBaseline = config === "without_skill" || config === "old_skill";
+        badge.textContent = config.replace(/_/g, " ");
+        badge.className = "config-badge " + (isBaseline ? "config-baseline" : "config-primary");
+        badge.style.display = "inline-block";
+      } else {
+        badge.style.display = "none";
+      }
+
+      // Outputs
+      renderOutputs(run);
+
+      // Previous outputs
+      renderPrevOutputs(run);
+
+      // Grades
+      renderGrades(run);
+
+      // Previous feedback
+      const prevFb = (EMBEDDED_DATA.previous_feedback || {})[run.id];
+      const prevEl = document.getElementById("prev-feedback");
+      if (prevFb) {
+        document.getElementById("prev-feedback-text").textContent = prevFb;
+        prevEl.style.display = "block";
+      } else {
+        prevEl.style.display = "none";
+      }
+
+      // Feedback
+      document.getElementById("feedback").value = feedbackMap[run.id] || "";
+      document.getElementById("feedback-status").textContent = "";
+
+      updateNavButtons();
+
+      // Track visited runs and promote done button when all visited
+      visitedRuns.add(index);
+      const doneBtn = document.getElementById("done-btn");
+      if (visitedRuns.size >= EMBEDDED_DATA.runs.length) {
+        doneBtn.classList.add("ready");
+      }
+
+      // Scroll main content to top
+      document.querySelector(".main").scrollTop = 0;
+    }
+
+    // ---- Render outputs ----
+    function renderOutputs(run) {
+      const container = document.getElementById("outputs-body");
+      container.innerHTML = "";
+
+      const outputs = run.outputs || [];
+      if (outputs.length === 0) {
+        container.innerHTML = '<div class="empty-state">No output files</div>';
+        return;
+      }
+
+      for (const file of outputs) {
+        const fileDiv = document.createElement("div");
+        fileDiv.className = "output-file";
+
+        // Always show file header with download link
+        const header = document.createElement("div");
+        header.className = "output-file-header";
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = file.name;
+        header.appendChild(nameSpan);
+        const dlBtn = document.createElement("a");
+        dlBtn.className = "dl-btn";
+        dlBtn.textContent = "Download";
+        dlBtn.download = file.name;
+        dlBtn.href = getDownloadUri(file);
+        header.appendChild(dlBtn);
+        fileDiv.appendChild(header);
+
+        const content = document.createElement("div");
+        content.className = "output-file-content";
+
+        if (file.type === "text") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          content.appendChild(pre);
+        } else if (file.type === "image") {
+          const img = document.createElement("img");
+          img.src = file.data_uri;
+          img.alt = file.name;
+          content.appendChild(img);
+        } else if (file.type === "pdf") {
+          const iframe = document.createElement("iframe");
+          iframe.src = file.data_uri;
+          content.appendChild(iframe);
+        } else if (file.type === "xlsx") {
+          renderXlsx(content, file.data_b64);
+        } else if (file.type === "binary") {
+          const a = document.createElement("a");
+          a.className = "download-link";
+          a.href = file.data_uri;
+          a.download = file.name;
+          a.textContent = "Download " + file.name;
+          content.appendChild(a);
+        } else if (file.type === "error") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          pre.style.color = "var(--red)";
+          content.appendChild(pre);
+        }
+
+        fileDiv.appendChild(content);
+        container.appendChild(fileDiv);
+      }
+    }
+
+    // ---- XLSX rendering via SheetJS ----
+    function renderXlsx(container, b64Data) {
+      try {
+        const raw = Uint8Array.from(atob(b64Data), c => c.charCodeAt(0));
+        const wb = XLSX.read(raw, { type: "array" });
+
+        for (let i = 0; i < wb.SheetNames.length; i++) {
+          const sheetName = wb.SheetNames[i];
+          const ws = wb.Sheets[sheetName];
+
+          if (wb.SheetNames.length > 1) {
+            const sheetLabel = document.createElement("div");
+            sheetLabel.style.cssText =
+              "font-weight:600; font-size:0.8rem; color:#b0aea5; margin-top:0.5rem; margin-bottom:0.25rem;";
+            sheetLabel.textContent = "Sheet: " + sheetName;
+            container.appendChild(sheetLabel);
+          }
+
+          const htmlStr = XLSX.utils.sheet_to_html(ws, { editable: false });
+          const wrapper = document.createElement("div");
+          wrapper.innerHTML = htmlStr;
+          container.appendChild(wrapper);
+        }
+      } catch (err) {
+        container.textContent = "Error rendering spreadsheet: " + err.message;
+      }
+    }
+
+    // ---- Grades ----
+    function renderGrades(run) {
+      const section = document.getElementById("grades-section");
+      const content = document.getElementById("grades-content");
+
+      if (!run.grading) {
+        section.style.display = "none";
+        return;
+      }
+
+      const grading = run.grading;
+      section.style.display = "block";
+      // Reset to collapsed
+      content.classList.remove("open");
+      document.getElementById("grades-arrow").classList.remove("open");
+
+      const summary = grading.summary || {};
+      const expectations = grading.expectations || [];
+
+      let html = '<div style="padding: 1rem;">';
+
+      // Summary line
+      const passRate = summary.pass_rate != null
+        ? Math.round(summary.pass_rate * 100) + "%"
+        : "?";
+      const badgeClass = summary.pass_rate >= 0.8 ? "grade-pass" : summary.pass_rate >= 0.5 ? "" : "grade-fail";
+      html += '<div class="grades-summary">';
+      html += '<span class="grade-badge ' + badgeClass + '">' + passRate + '</span>';
+      html += '<span>' + escapeHtml(summary.passed || 0) + ' passed, ' + escapeHtml(summary.failed || 0) + ' failed of ' + escapeHtml(summary.total || 0) + '</span>';
+      html += '</div>';
+
+      // Assertions list
+      html += '<ul class="assertion-list">';
+      for (const exp of expectations) {
+        const statusClass = exp.passed ? "pass" : "fail";
+        const statusIcon = exp.passed ? "\u2713" : "\u2717";
+        html += '<li class="assertion-item">';
+        html += '<span class="assertion-status ' + statusClass + '">' + statusIcon + '</span>';
+        html += '<span>' + escapeHtml(exp.text) + '</span>';
+        if (exp.evidence) {
+          html += '<div class="assertion-evidence">' + escapeHtml(exp.evidence) + '</div>';
+        }
+        html += '</li>';
+      }
+      html += '</ul>';
+
+      html += '</div>';
+      content.innerHTML = html;
+    }
+
+    function toggleGrades() {
+      const content = document.getElementById("grades-content");
+      const arrow = document.getElementById("grades-arrow");
+      content.classList.toggle("open");
+      arrow.classList.toggle("open");
+    }
+
+    // ---- Previous outputs (collapsible) ----
+    function renderPrevOutputs(run) {
+      const section = document.getElementById("prev-outputs-section");
+      const content = document.getElementById("prev-outputs-content");
+      const prevOutputs = (EMBEDDED_DATA.previous_outputs || {})[run.id];
+
+      if (!prevOutputs || prevOutputs.length === 0) {
+        section.style.display = "none";
+        return;
+      }
+
+      section.style.display = "block";
+      // Reset to collapsed
+      content.classList.remove("open");
+      document.getElementById("prev-outputs-arrow").classList.remove("open");
+
+      // Render the files into the content area
+      content.innerHTML = "";
+      const wrapper = document.createElement("div");
+      wrapper.style.padding = "1rem";
+
+      for (const file of prevOutputs) {
+        const fileDiv = document.createElement("div");
+        fileDiv.className = "output-file";
+
+        const header = document.createElement("div");
+        header.className = "output-file-header";
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = file.name;
+        header.appendChild(nameSpan);
+        const dlBtn = document.createElement("a");
+        dlBtn.className = "dl-btn";
+        dlBtn.textContent = "Download";
+        dlBtn.download = file.name;
+        dlBtn.href = getDownloadUri(file);
+        header.appendChild(dlBtn);
+        fileDiv.appendChild(header);
+
+        const fc = document.createElement("div");
+        fc.className = "output-file-content";
+
+        if (file.type === "text") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          fc.appendChild(pre);
+        } else if (file.type === "image") {
+          const img = document.createElement("img");
+          img.src = file.data_uri;
+          img.alt = file.name;
+          fc.appendChild(img);
+        } else if (file.type === "pdf") {
+          const iframe = document.createElement("iframe");
+          iframe.src = file.data_uri;
+          fc.appendChild(iframe);
+        } else if (file.type === "xlsx") {
+          renderXlsx(fc, file.data_b64);
+        } else if (file.type === "binary") {
+          const a = document.createElement("a");
+          a.className = "download-link";
+          a.href = file.data_uri;
+          a.download = file.name;
+          a.textContent = "Download " + file.name;
+          fc.appendChild(a);
+        }
+
+        fileDiv.appendChild(fc);
+        wrapper.appendChild(fileDiv);
+      }
+
+      content.appendChild(wrapper);
+    }
+
+    function togglePrevOutputs() {
+      const content = document.getElementById("prev-outputs-content");
+      const arrow = document.getElementById("prev-outputs-arrow");
+      content.classList.toggle("open");
+      arrow.classList.toggle("open");
+    }
+
+    // ---- Feedback (saved to server -> feedback.json) ----
+    function saveCurrentFeedback() {
+      const run = EMBEDDED_DATA.runs[currentIndex];
+      const text = document.getElementById("feedback").value;
+
+      if (text.trim() === "") {
+        delete feedbackMap[run.id];
+      } else {
+        feedbackMap[run.id] = text;
+      }
+
+      // Build reviews array from map
+      const reviews = [];
+      for (const [run_id, feedback] of Object.entries(feedbackMap)) {
+        if (feedback.trim()) {
+          reviews.push({ run_id, feedback, timestamp: new Date().toISOString() });
+        }
+      }
+
+      fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reviews, status: "in_progress" }),
+      }).then(() => {
+        document.getElementById("feedback-status").textContent = "Saved";
+      }).catch(() => {
+        // Static mode or server unavailable — no-op on auto-save,
+        // feedback will be downloaded on final submit
+        document.getElementById("feedback-status").textContent = "Will download on submit";
+      });
+    }
+
+    // ---- Done ----
+    function showDoneDialog() {
+      // Save current textarea to feedbackMap (but don't POST yet)
+      const run = EMBEDDED_DATA.runs[currentIndex];
+      const text = document.getElementById("feedback").value;
+      if (text.trim() === "") {
+        delete feedbackMap[run.id];
+      } else {
+        feedbackMap[run.id] = text;
+      }
+
+      // POST once with status: complete — include ALL runs so the model
+      // can distinguish "no feedback" (looks good) from "not reviewed"
+      const reviews = [];
+      const ts = new Date().toISOString();
+      for (const r of EMBEDDED_DATA.runs) {
+        reviews.push({ run_id: r.id, feedback: feedbackMap[r.id] || "", timestamp: ts });
+      }
+      const payload = JSON.stringify({ reviews, status: "complete" }, null, 2);
+      fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: payload,
+      }).then(() => {
+        document.getElementById("done-overlay").classList.add("visible");
+      }).catch(() => {
+        // Server not available (static mode) — download as file
+        const blob = new Blob([payload], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "feedback.json";
+        a.click();
+        URL.revokeObjectURL(url);
+        document.getElementById("done-overlay").classList.add("visible");
+      });
+    }
+
+    function closeDoneDialog() {
+      // Reset status back to in_progress
+      saveCurrentFeedback();
+      document.getElementById("done-overlay").classList.remove("visible");
+    }
+
+    // ---- Toast ----
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("visible");
+      setTimeout(() => toast.classList.remove("visible"), 2000);
+    }
+
+    // ---- Keyboard nav ----
+    document.addEventListener("keydown", (e) => {
+      // Don't capture when typing in textarea
+      if (e.target.tagName === "TEXTAREA") return;
+
+      if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+        e.preventDefault();
+        navigate(-1);
+      } else if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+        e.preventDefault();
+        navigate(1);
+      }
+    });
+
+    // ---- Util ----
+    function getDownloadUri(file) {
+      if (file.data_uri) return file.data_uri;
+      if (file.data_b64) return "data:application/octet-stream;base64," + file.data_b64;
+      if (file.type === "text") return "data:text/plain;charset=utf-8," + encodeURIComponent(file.content);
+      return "#";
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement("div");
+      div.textContent = text;
+      return div.innerHTML.replace(/"/g, "&quot;");
+    }
+
+    // ---- View switching ----
+    function switchView(view) {
+      document.querySelectorAll(".view-tab").forEach(t => t.classList.remove("active"));
+      document.querySelectorAll(".view-panel").forEach(p => p.classList.remove("active"));
+      document.querySelector(`[onclick="switchView('${view}')"]`).classList.add("active");
+      document.getElementById("panel-" + view).classList.add("active");
+    }
+
+    // ---- Benchmark rendering ----
+    function renderBenchmark() {
+      const data = EMBEDDED_DATA.benchmark;
+      if (!data) return;
+
+      // Show the tabs
+      document.getElementById("view-tabs").style.display = "flex";
+
+      const container = document.getElementById("benchmark-content");
+      const summary = data.run_summary || {};
+      const metadata = data.metadata || {};
+      const notes = data.notes || [];
+
+      let html = "";
+
+      // Header
+      html += "<h2 style='font-family: Poppins, sans-serif; margin-bottom: 0.5rem;'>Benchmark Results</h2>";
+      html += "<p style='color: var(--text-muted); font-size: 0.875rem; margin-bottom: 1.25rem;'>";
+      if (metadata.skill_name) html += "<strong>" + escapeHtml(metadata.skill_name) + "</strong> &mdash; ";
+      if (metadata.timestamp) html += escapeHtml(metadata.timestamp) + " &mdash; ";
+      if (metadata.evals_run) html += "Evals: " + escapeHtml(metadata.evals_run.join(", ")) + " &mdash; ";
+      html += escapeHtml(metadata.runs_per_configuration || "?") + (metadata.runs_per_configuration === 1 ? " run" : " runs") + " per configuration";
+      html += "</p>";
+
+      // Summary table
+      html += '<table class="benchmark-table">';
+
+      function fmtStat(stat, pct) {
+        if (!stat) return "—";
+        const suffix = pct ? "%" : "";
+        const m = pct ? (stat.mean * 100).toFixed(0) : stat.mean.toFixed(1);
+        const s = pct ? (stat.stddev * 100).toFixed(0) : stat.stddev.toFixed(1);
+        return m + suffix + " ± " + s + suffix;
+      }
+
+      function deltaClass(val) {
+        if (!val) return "";
+        const n = parseFloat(val);
+        if (n > 0) return "benchmark-delta-positive";
+        if (n < 0) return "benchmark-delta-negative";
+        return "";
+      }
+
+      // Discover config names dynamically (everything except "delta")
+      const configs = Object.keys(summary).filter(k => k !== "delta");
+      const configA = configs[0] || "config_a";
+      const configB = configs[1] || "config_b";
+      const labelA = configA.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      const labelB = configB.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      const a = summary[configA] || {};
+      const b = summary[configB] || {};
+      const delta = summary.delta || {};
+      // With a single configuration there is nothing to compare: only its column is shown
+      const compare = cells => configs.length >= 2 ? cells : "";
+
+      html += "<thead><tr><th>Metric</th><th>" + escapeHtml(labelA) + "</th>" + compare("<th>" + escapeHtml(labelB) + "</th><th>Delta</th>") + "</tr></thead>";
+      html += "<tbody>";
+
+      html += "<tr><td><strong>Pass Rate</strong></td>";
+      html += "<td>" + fmtStat(a.pass_rate, true) + "</td>";
+      html += compare("<td>" + fmtStat(b.pass_rate, true) + "</td>");
+      html += compare('<td class="' + deltaClass(delta.pass_rate) + '">' + escapeHtml(delta.pass_rate || "—") + "</td>") + "</tr>";
+
+      // Time (only show row if data exists)
+      if (a.time_seconds || b.time_seconds) {
+        html += "<tr><td><strong>Time (s)</strong></td>";
+        html += "<td>" + fmtStat(a.time_seconds, false) + "</td>";
+        html += compare("<td>" + fmtStat(b.time_seconds, false) + "</td>");
+        html += compare('<td class="' + deltaClass(delta.time_seconds) + '">' + escapeHtml(delta.time_seconds ? delta.time_seconds + "s" : "—") + "</td>") + "</tr>";
+      }
+
+      // Tokens (only show row if data exists)
+      if (a.tokens || b.tokens) {
+        html += "<tr><td><strong>Tokens</strong></td>";
+        html += "<td>" + fmtStat(a.tokens, false) + "</td>";
+        html += compare("<td>" + fmtStat(b.tokens, false) + "</td>");
+        html += compare('<td class="' + deltaClass(delta.tokens) + '">' + escapeHtml(delta.tokens || "—") + "</td>") + "</tr>";
+      }
+
+      html += "</tbody></table>";
+
+      // Per-eval breakdown (if runs data available)
+      const runs = data.runs || [];
+      if (runs.length > 0) {
+        // Numeric ids first, then ids that are names
+        const rank = id => typeof id === "number" ? 0 : 1;
+        const evalIds = [...new Set(runs.map(r => r.eval_id))].sort((a, b) =>
+          rank(a) - rank(b) || (rank(a) ? String(a).localeCompare(String(b)) : a - b));
+
+        html += "<h3 style='font-family: Poppins, sans-serif; margin-bottom: 0.75rem;'>Per-Eval Breakdown</h3>";
+
+        const hasTime = runs.some(r => r.result && r.result.time_seconds != null);
+        const hasErrors = runs.some(r => r.result && r.result.errors > 0);
+
+        for (const evalId of evalIds) {
+          const evalRuns = runs.filter(r => r.eval_id === evalId);
+          const evalName = evalRuns[0] && evalRuns[0].eval_name ? evalRuns[0].eval_name : "Eval " + evalId;
+
+          html += "<h4 style='font-family: Poppins, sans-serif; margin: 1rem 0 0.5rem; color: var(--text);'>" + escapeHtml(evalName) + "</h4>";
+          html += '<table class="benchmark-table">';
+          html += "<thead><tr><th>Config</th><th>Run</th><th>Pass Rate</th>";
+          if (hasTime) html += "<th>Time (s)</th>";
+          if (hasErrors) html += "<th>Crashes During Execution</th>";
+          html += "</tr></thead>";
+          html += "<tbody>";
+
+          // Group by config and render with average rows
+          const configGroups = [...new Set(evalRuns.map(r => r.configuration))];
+          for (let ci = 0; ci < configGroups.length; ci++) {
+            const config = configGroups[ci];
+            const configRuns = evalRuns.filter(r => r.configuration === config);
+            if (configRuns.length === 0) continue;
+
+            const rowClass = ci === 0 ? "benchmark-row-with" : "benchmark-row-without";
+            const configLabel = escapeHtml(config.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase()));
+
+            for (const run of configRuns) {
+              const r = run.result || {};
+              const prClass = r.pass_rate >= 0.8 ? "benchmark-delta-positive" : r.pass_rate < 0.5 ? "benchmark-delta-negative" : "";
+              html += '<tr class="' + rowClass + '">';
+              html += "<td>" + configLabel + "</td>";
+              html += "<td>" + escapeHtml(run.run_number) + "</td>";
+              html += '<td class="' + prClass + '">' + ((r.pass_rate || 0) * 100).toFixed(0) + "% (" + escapeHtml(r.passed || 0) + "/" + escapeHtml(r.total || 0) + ")</td>";
+              if (hasTime) html += "<td>" + (r.time_seconds != null ? r.time_seconds.toFixed(1) : "—") + "</td>";
+              if (hasErrors) html += "<td>" + escapeHtml(r.errors || 0) + "</td>";
+              html += "</tr>";
+            }
+
+            // Average row
+            const rates = configRuns.map(r => (r.result || {}).pass_rate || 0);
+            const avgRate = rates.reduce((a, b) => a + b, 0) / rates.length;
+            const avgPrClass = avgRate >= 0.8 ? "benchmark-delta-positive" : avgRate < 0.5 ? "benchmark-delta-negative" : "";
+            html += '<tr class="benchmark-row-avg ' + rowClass + '">';
+            html += "<td>" + configLabel + "</td>";
+            html += "<td>Avg</td>";
+            html += '<td class="' + avgPrClass + '">' + (avgRate * 100).toFixed(0) + "%</td>";
+            if (hasTime) {
+              const times = configRuns.map(r => (r.result || {}).time_seconds).filter(t => t != null);
+              html += "<td>" + (times.length ? (times.reduce((a, b) => a + b, 0) / times.length).toFixed(1) : "—") + "</td>";
+            }
+            if (hasErrors) html += "<td></td>";
+            html += "</tr>";
+          }
+          html += "</tbody></table>";
+
+          // Per-assertion detail for this eval
+          const runsWithExpectations = {};
+          for (const config of configGroups) {
+            runsWithExpectations[config] = evalRuns.filter(r => r.configuration === config && r.expectations && r.expectations.length > 0);
+          }
+          const hasAnyExpectations = Object.values(runsWithExpectations).some(runs => runs.length > 0);
+          if (hasAnyExpectations) {
+            // Collect all unique assertion texts across all configs
+            const allAssertions = [];
+            const seen = new Set();
+            for (const config of configGroups) {
+              for (const run of runsWithExpectations[config]) {
+                for (const exp of (run.expectations || [])) {
+                  if (!seen.has(exp.text)) {
+                    seen.add(exp.text);
+                    allAssertions.push(exp.text);
+                  }
+                }
+              }
+            }
+
+            html += '<table class="benchmark-table" style="margin-top: 0.5rem;">';
+            html += "<thead><tr><th>Assertion</th>";
+            for (const config of configGroups) {
+              const label = config.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+              html += "<th>" + escapeHtml(label) + "</th>";
+            }
+            html += "</tr></thead><tbody>";
+
+            for (const assertionText of allAssertions) {
+              html += "<tr><td>" + escapeHtml(assertionText) + "</td>";
+
+              for (const config of configGroups) {
+                html += "<td>";
+                for (const run of runsWithExpectations[config]) {
+                  const exp = (run.expectations || []).find(e => e.text === assertionText);
+                  if (exp) {
+                    const cls = exp.passed ? "benchmark-delta-positive" : "benchmark-delta-negative";
+                    const icon = exp.passed ? "\u2713" : "\u2717";
+                    html += '<span class="' + cls + '" title="Run ' + escapeHtml(run.run_number) + ': ' + escapeHtml(exp.evidence || "") + '">' + icon + "</span> ";
+                  } else {
+                    html += "— ";
+                  }
+                }
+                html += "</td>";
+              }
+              html += "</tr>";
+            }
+            html += "</tbody></table>";
+          }
+        }
+      }
+
+      // Notes
+      if (notes.length > 0) {
+        html += '<div class="benchmark-notes">';
+        html += "<h3>Analysis Notes</h3>";
+        html += "<ul>";
+        for (const note of notes) {
+          html += "<li>" + escapeHtml(note) + "</li>";
+        }
+        html += "</ul></div>";
+      }
+
+      container.innerHTML = html;
+    }
+
+    // ---- Start ----
+    init();
+    renderBenchmark();
+  </script>
+</body>
+</html>

@@ -1,7 +1,35 @@
-{"expectations":[
-{"text":"Lists six cans: tithe, finish free, educate, save, have fun, pay bills","passed":true,"evidence":"Table lists 'I can tithe', 'I can finish free', 'I can educate myself', 'I can save for what I want', 'I can have fun', 'I can pay my bills' - exact names and order from SKILL.md chapter 13."},
-{"text":"Uses the percentages (10/10/10/10/10/50 or as stated)","passed":true,"evidence":"10% / 10% / 10% / ~10% / ~10% / 50%, with footnote that cans 1-3 and 6 are stated and cans 4-5 split the remaining 20% - exactly matching SKILL.md's note."},
-{"text":"Applies them to $500 with dollar amounts","passed":true,"evidence":"$50 x5 and $250 for bills, total $500; also flags the revenue-vs-profit question for gross tithing."},
-{"text":"Explains purpose of each can","passed":true,"evidence":"Each can has its own section: tithe 10% of gross to church/charity; finish free 'never spend it', only buys IPAs or businesses, may spend profits; educate for books/seminars/audio; save for vacations, down payments, furniture, emergencies; fun 'must be spent every month'; bills 50% living costs - all consistent with SKILL.md."},
-{"text":"Mentions a mental trap or 'you are in the marketing business'","passed":true,"evidence":"Can 3: 'Golden also says \"you're in the marketing business\"' and cites traps 'don't invest in their greatest asset' and 'entertain themselves more than educate themselves'; can 4 cites practical trap #13 'don't use good debt; bad debt uses them' - correctly numbered per SKILL.md."}
-],"summary":{"passed":5,"failed":0,"total":5,"pass_rate":1.0}}
+{
+ "expectations": [
+  {
+   "text": "Lists six cans: tithe, finish free, educate, save, have fun, pay bills",
+   "passed": true,
+   "evidence": "Table lists 'I can tithe', 'I can finish free', 'I can educate myself', 'I can save for what I want', 'I can have fun', 'I can pay my bills' - exact names and order from SKILL.md chapter 13."
+  },
+  {
+   "text": "Uses the percentages (10/10/10/10/10/50 or as stated)",
+   "passed": true,
+   "evidence": "10% / 10% / 10% / ~10% / ~10% / 50%, with footnote that cans 1-3 and 6 are stated and cans 4-5 split the remaining 20% - exactly matching SKILL.md's note."
+  },
+  {
+   "text": "Applies them to $500 with dollar amounts",
+   "passed": true,
+   "evidence": "$50 x5 and $250 for bills, total $500; also flags the revenue-vs-profit question for gross tithing."
+  },
+  {
+   "text": "Explains purpose of each can",
+   "passed": true,
+   "evidence": "Each can has its own section: tithe 10% of gross to church/charity; finish free 'never spend it', only buys IPAs or businesses, may spend profits; educate for books/seminars/audio; save for vacations, down payments, furniture, emergencies; fun 'must be spent every month'; bills 50% living costs - all consistent with SKILL.md."
+  },
+  {
+   "text": "Mentions a mental trap or 'you are in the marketing business'",
+   "passed": true,
+   "evidence": "Can 3: 'Golden also says \"you're in the marketing business\"' and cites traps 'don't invest in their greatest asset' and 'entertain themselves more than educate themselves'; can 4 cites practical trap #13 'don't use good debt; bad debt uses them' - correctly numbered per SKILL.md."
+  }
+ ],
+ "summary": {
+  "passed": 5,
+  "failed": 0,
+  "total": 5,
+  "pass_rate": 1.0
+ }
+}

@@ -1,0 +1,35 @@
+{
+ "expectations": [
+  {
+   "text": "Identifies possible specific knowledge for a flipper",
+   "passed": true,
+   "evidence": "Section 1 quotes the definition \"knowledge you cannot be trained for\" (matches SKILL.md) and lists flipper-specific candidates: 'The eye' (solid wood vs particleboard, maker's marks), 'Local price intuition', 'Transformation skill', 'Market psychology', 'Taste', plus the play-vs-work diagnostic."
+  },
+  {
+   "text": "Names leverage types and highlights code/media as permissionless",
+   "passed": true,
+   "evidence": "'Naval names four kinds: labor, capital, code and media, and he calls code and media \"permissionless leverage.\"' Each gets a subsection; code and media are labeled '(permissionless, zero marginal cost)'. Matches SKILL.md."
+  },
+  {
+   "text": "Moves toward equity/ownership rather than trading hours",
+   "passed": true,
+   "evidence": "Opens with \"You're not going to get rich renting out your time\"; 'Step 4: Own equity, meaning a business that runs partly without you' (curated shop, consignment, wholesale, restoration studio) and 'Equity partnerships'."
+  },
+  {
+   "text": "Uses accountability or long-term games",
+   "passed": true,
+   "evidence": "'Step 2: Move from transactions to long-term games with long-term people' quotes \"Play iterated games... compound interest\" (exact SKILL.md wording); 'Step 3: Take on accountability by building a name' (risk under your own name)."
+  },
+  {
+   "text": "Gives concrete next steps",
+   "passed": true,
+   "evidence": "Five ordered steps: compute real profit/hour and set an aspirational rate (e.g. $75/hr) and delegate below it, build supply/demand relationships (estate agents, designers), named brand, equity business forms, media/courses/tools."
+  }
+ ],
+ "summary": {
+  "passed": 5,
+  "failed": 0,
+  "total": 5,
+  "pass_rate": 1.0
+ }
+}

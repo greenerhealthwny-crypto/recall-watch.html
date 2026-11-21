@@ -1,0 +1,35 @@
+{
+ "expectations": [
+  {
+   "text": "Defines Occam's razor correctly",
+   "passed": true,
+   "evidence": "'When several explanations fit the facts, prefer the simplest one, the one that needs the fewest assumptions.' This is correct and consistent with SKILL.md."
+  },
+  {
+   "text": "Defines Hanlon's razor correctly",
+   "passed": true,
+   "evidence": "'Never attribute to malice that which is adequately explained by stupidity... It's about intent'. This is correct and consistent with SKILL.md (no book examples given)."
+  },
+  {
+   "text": "Applies both to the ghosting scenario",
+   "passed": true,
+   "evidence": "Lists 6 stories, then 'Apply Occam's Razor' (stories 1-3 need 'a motive, a plan, and a reason to target you') and 'Apply Hanlon's Razor' (story 3 is a malice story), each with its own verdict and actions."
+  },
+  {
+   "text": "Uses first principles (breaking down to fundamentals, Socratic questioning or Five Whys) on pricing",
+   "passed": true,
+   "evidence": "'breaking a problem down to its basic truths and building up from there, instead of copying'. Steps 1-7 derive what a price must do, list every cost ($135), price the hours (10h x $25), find the buyer ceiling, and compare floor vs ceiling. This is genuine decomposition; it has no Socratic questioning or Five Whys, but the assertion allows any of them."
+  },
+  {
+   "text": "Notes limits of the razors",
+   "passed": true,
+   "evidence": "'Both razors are rules of thumb, not laws... At that point the simplest explanation really is fraud. The razors help you default to the likely answer. They don't tell you to ignore evidence.'"
+  }
+ ],
+ "summary": {
+  "passed": 5,
+  "failed": 0,
+  "total": 5,
+  "pass_rate": 1.0
+ }
+}

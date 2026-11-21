@@ -1,7 +1,35 @@
-{"expectations":[
-{"text":"Names the four window panes: Have A Job, Own A Job, Sow Money Seeds, Own A System","passed":true,"evidence":"Section 1 table lists H.A.J. Have A Job, O.A.J. Own A Job (self-employment), S.M.S. Sow Money Seeds (investing), O.A.S. Own A System, ranked 'One of the two worst' / 'Second best' / 'Best', matching SKILL.md key idea 3."},
-{"text":"Places the user's starting point correctly and maps the steps","passed":true,"evidence":"Phase 0 'Keep the H.A.J.', then states Marketplace reselling 'is O.A.J. If you stop, the money stops', then Phase 2 S.M.S. via can #2, Phase 3 O.A.S. and roadmap table; correctly notes Golden ranks panes rather than prescribing an order."},
-{"text":"Explains why O.A.S. is best","passed":true,"evidence":"Table: O.A.S. 'Best' because 'The system makes money whether you are there or not'; Phase 3 ties it to the Hands-Free Money plan ($10,000/month within two years, 'one finger's worth of effort', then start another), matching SKILL.md."},
-{"text":"Uses the financial house (income, outgo, wealth reducing liabilities, income producing assets)","passed":true,"evidence":"Section 2 names 'Income, Outgo, WRL (Wealth Reducing Liabilities), and IPA (Income Producing Assets)' with poor/middle class/rich descriptions and 'the difference is not how much you make' - consistent with SKILL.md key idea 4; Phase 4 returns to asset cash flow covering Outgo."},
-{"text":"Gives concrete Marketplace-based steps","passed":true,"evidence":"Phase 1: sell what you own, free-to-flip curbside items, consignment, reinvest profits; photos/titles/pricing from sold listings; Phase 3: checklist, outsource pickups, templates, add channels, 'two weeks off' test. Trap numbers cited (mental #4,#5,#7,#11; practical #5,#6,#9,#13) all match SKILL.md."}
-],"summary":{"passed":5,"failed":0,"total":5,"pass_rate":1.0}}
+{
+ "expectations": [
+  {
+   "text": "Names the four window panes: Have A Job, Own A Job, Sow Money Seeds, Own A System",
+   "passed": true,
+   "evidence": "Section 1 table lists H.A.J. Have A Job, O.A.J. Own A Job (self-employment), S.M.S. Sow Money Seeds (investing), O.A.S. Own A System, ranked 'One of the two worst' / 'Second best' / 'Best', matching SKILL.md key idea 3."
+  },
+  {
+   "text": "Places the user's starting point correctly and maps the steps",
+   "passed": true,
+   "evidence": "Phase 0 'Keep the H.A.J.', then states Marketplace reselling 'is O.A.J. If you stop, the money stops', then Phase 2 S.M.S. via can #2, Phase 3 O.A.S. and roadmap table; correctly notes Golden ranks panes rather than prescribing an order."
+  },
+  {
+   "text": "Explains why O.A.S. is best",
+   "passed": true,
+   "evidence": "Table: O.A.S. 'Best' because 'The system makes money whether you are there or not'; Phase 3 ties it to the Hands-Free Money plan ($10,000/month within two years, 'one finger's worth of effort', then start another), matching SKILL.md."
+  },
+  {
+   "text": "Uses the financial house (income, outgo, wealth reducing liabilities, income producing assets)",
+   "passed": true,
+   "evidence": "Section 2 names 'Income, Outgo, WRL (Wealth Reducing Liabilities), and IPA (Income Producing Assets)' with poor/middle class/rich descriptions and 'the difference is not how much you make' - consistent with SKILL.md key idea 4; Phase 4 returns to asset cash flow covering Outgo."
+  },
+  {
+   "text": "Gives concrete Marketplace-based steps",
+   "passed": true,
+   "evidence": "Phase 1: sell what you own, free-to-flip curbside items, consignment, reinvest profits; photos/titles/pricing from sold listings; Phase 3: checklist, outsource pickups, templates, add channels, 'two weeks off' test. Trap numbers cited (mental #4,#5,#7,#11; practical #5,#6,#9,#13) all match SKILL.md."
+  }
+ ],
+ "summary": {
+  "passed": 5,
+  "failed": 0,
+  "total": 5,
+  "pass_rate": 1.0
+ }
+}

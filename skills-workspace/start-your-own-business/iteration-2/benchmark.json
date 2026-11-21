@@ -1,0 +1,223 @@
+{
+  "metadata": {
+    "skill_name": "start-your-own-business",
+    "skill_path": "<path/to/skill>",
+    "executor_model": "<model-name>",
+    "analyzer_model": "<model-name>",
+    "timestamp": "2026-11-21T22:00:49Z",
+    "evals_run": [
+      1,
+      2
+    ],
+    "runs_per_configuration": 1
+  },
+  "runs": [
+    {
+      "eval_id": 1,
+      "eval_name": "adv-angle",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Poses Levitt's core question: why should customers come to me instead of where they go now",
+          "passed": true,
+          "evidence": "Section 1 quotes 'the one important question' verbatim: 'Why should customers come to me for their goods/service/whatever, instead of continuing to go where they have been going?' and notes most fail for lack of a 'substantive answer' - matches SKILL.md framework #1. Applies it to buyers and suppliers."
+        },
+        {
+          "text": "Applies 'giving more without charging more' with concrete furniture-shop examples",
+          "passed": true,
+          "evidence": "Section 2 quotes the credo exactly as in SKILL.md and maps Levitt's mechanisms (mill-direct 40% saving, three-shirt minimum, cash and carry, 31-operation assembly line, deposits - all match principles.md \u00a73) to furniture: free pickup for consignment, standard intake routine, batched delivery runs, room-set bundle price, markdown schedule."
+        },
+        {
+          "text": "Walks through the complete package elements (presentation, service, product, finance, timing, execution) and flags the riskiest",
+          "passed": true,
+          "evidence": "Section 3 table covers all six elements (product, finance, execution, presentation, service, timing) and flags Product as 'Highest' and Finance 'Very high', citing undercapitalization as the most common cause - matches SKILL.md."
+        },
+        {
+          "text": "Draws a lesson from Levitt's own failures (e.g. advertising that did not pay, weak name, no second-in-command)",
+          "passed": true,
+          "evidence": "Cites $84 per new customer from a NYT ad on a $200 sale with $20 profit, the catalogue fix ($100,000 to $700,000), the impersonal 'The Custom Shop' name, and the 18-year failure to develop a second-in-command - all match principles.md \u00a74."
+        },
+        {
+          "text": "Ends with a concrete go/no-go test or next steps rather than generic encouragement",
+          "passed": true,
+          "evidence": "Section 5 'Before signing a lease' gives six concrete steps: one-sentence answers, a 4-6 week supply test (15-20 good pieces/week), costing every 'more', visiting competitors as seller, a cash cushion, a second person; plus a candid verdict that the idea does not yet answer the question."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "adv-eq",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "References the Entrepreneurial Quotient quiz/self-assessment",
+          "passed": true,
+          "evidence": "Opens with the E.Q. quiz 'prepared by Northwestern Mutual Life' and scores the user's traits against actual items (cautious youngster minus, enjoyed group activities -1, willing to spend savings +2, top student -4, childhood enterprises +2/-2) and score bands ('might make a go of it if you work extra hard', 'talents probably lie elsewhere'). All match capital-and-protection.md \u00a74."
+        },
+        {
+          "text": "Addresses obsessive drive as a requirement",
+          "passed": true,
+          "evidence": "The 'Obsessive drive' section quotes 'It should be obsessive', 'a will to shine, not merely survive' and 'no such thing as a nine-to-five entrepreneur', cites Imperatore, and notes the user has named no obsession. Matches SKILL.md and case-studies.md."
+        },
+        {
+          "text": "Explains the X factor and/or happenstance in founders' stories",
+          "passed": true,
+          "evidence": "Defines the X factor as 'the single, totally unexpected situation that no research can uncover' (matches SKILL.md). Gives happenstance via the 550-acre rezoning and the Fifth Avenue building ('No brains, just happenstance'), plus the 1937 crash cutting Levitt's savings from $10,000 to $1,000. All match principles.md."
+        },
+        {
+          "text": "Gives advice consistent with keeping risk low (starting small, protecting capital) tied to the user's situation",
+          "passed": true,
+          "evidence": "Keep the job, spend a few hundred dollars at most, no leases or loans, $2,000 is for testing and not opening, 'an inclination to gamble' as a failure cause, the Raveis part-time lesson (matches case-studies.md), and a preset risk rule."
+        },
+        {
+          "text": "Is honest that the quiz is self-assessment, not a verdict",
+          "passed": true,
+          "evidence": "Says Levitt was 'not suggesting that you take this test too seriously', that it 'can't predict your success', to treat it as 'a conversation starter... not a verdict', and that a full numeric score isn't possible from what the user gave."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 1,
+      "eval_name": "adv-angle",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.6,
+        "passed": 3,
+        "failed": 2,
+        "total": 5,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Poses Levitt's core question: why should customers come to me instead of where they go now",
+          "passed": true,
+          "evidence": "Section 1 poses '\"Why would a customer buy from me instead of from the competition?\"' and says demand already being met is not an answer. This paraphrase, shown in quotation marks, is not Levitt's wording ('...instead of continuing to go where they have been going'), but the substance matches."
+        },
+        {
+          "text": "Applies 'giving more without charging more' with concrete furniture-shop examples",
+          "passed": true,
+          "evidence": "Section 2 table gives concrete extras: free delivery over $150, a 'cleaned, sanitized and inspected' tag, a 7-day exchange, measurements on tags, a hold service, a want list, free seller pickup. It has no Levitt mechanism, but the assertion only asks for concrete furniture examples."
+        },
+        {
+          "text": "Walks through the complete package elements (presentation, service, product, finance, timing, execution) and flags the riskiest",
+          "passed": false,
+          "evidence": "It describes Levitt's package as '(product, price, location, service, store, people)', which is not the book's list (presentation, service, product, finance, timing, execution per SKILL.md). Its ranked list (supply, location, price, logistics, presentation, service, marketing) leaves out timing and execution."
+        },
+        {
+          "text": "Draws a lesson from Levitt's own failures (e.g. advertising that did not pay, weak name, no second-in-command)",
+          "passed": false,
+          "evidence": "It draws no lesson from Levitt's own failures. There is no mention of the advertising that did not pay, the name, the window ad, succession or staff turnover."
+        },
+        {
+          "text": "Ends with a concrete go/no-go test or next steps rather than generic encouragement",
+          "passed": true,
+          "evidence": "Section 4 gives a concrete test: run online/pop-up for 3-6 months, track cost per piece, days to sell and margin, and open only if pieces sell in under 30 days; also '40-60 good pieces in 60 days... If you can't, stop here.'"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "adv-eq",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.6,
+        "passed": 3,
+        "failed": 2,
+        "total": 5,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "References the Entrepreneurial Quotient quiz/self-assessment",
+          "passed": false,
+          "evidence": "It names an 'Entrepreneurial Quotient' but invents its content: 'a self-check built on traits like obsessive drive, the X factor, and happenstance', with made-up 4/10, 6/10 and 2/10 sub-scores. Per capital-and-protection.md \u00a74 it is a Northwestern Mutual Life quiz of background and habit items. That is an invented framework, so it fails."
+        },
+        {
+          "text": "Addresses obsessive drive as a requirement",
+          "passed": true,
+          "evidence": "'Obsessive drive... For Levitt, this is the trait that matters most' and asks whether the user would give up evenings and weekends. This is consistent with SKILL.md #4."
+        },
+        {
+          "text": "Explains the X factor and/or happenstance in founders' stories",
+          "passed": false,
+          "evidence": "It defines the X factor as 'the hard-to-name quality some people have: judgment, instinct...', which is wrong; SKILL.md defines it as an unexpected external situation no research can uncover. Its happenstance section is generic and gives no founders' stories."
+        },
+        {
+          "text": "Gives advice consistent with keeping risk low (starting small, protecting capital) tied to the user's situation",
+          "passed": true,
+          "evidence": "Keep the job ('your salary is your investor'), pick a low-capital people idea with no lease or stock, run a 90-day test, set a milestone and build savings. All of it is tied to the $2,000 and the job."
+        },
+        {
+          "text": "Is honest that the quiz is self-assessment, not a verdict",
+          "passed": true,
+          "evidence": "Says 'Treat the scores below as an honest reading of what you told me, not a precise test' and calls the result a 'Rough EQ' that is 'provisional'. The scores themselves are invented, but the response does not present them as a verdict."
+        }
+      ],
+      "notes": []
+    }
+  ],
+  "run_summary": {
+    "with_skill": {
+      "pass_rate": {
+        "mean": 1.0,
+        "stddev": 0.0,
+        "min": 1.0,
+        "max": 1.0
+      },
+      "time_seconds": null,
+      "tokens": null
+    },
+    "without_skill": {
+      "pass_rate": {
+        "mean": 0.6,
+        "stddev": 0.0,
+        "min": 0.6,
+        "max": 0.6
+      },
+      "time_seconds": null,
+      "tokens": null
+    },
+    "delta": {
+      "pass_rate": "+0.40",
+      "time_seconds": null,
+      "tokens": null
+    }
+  },
+  "notes": [
+    "Time recorded for 0 of 2 with_skill runs, 0 of 2 without_skill runs, so there is no time delta.",
+    "Token count recorded for 0 of 2 with_skill runs, 0 of 2 without_skill runs, so there is no token count delta."
+  ]
+}

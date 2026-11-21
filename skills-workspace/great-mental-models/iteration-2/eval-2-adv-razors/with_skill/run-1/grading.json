@@ -1,0 +1,35 @@
+{
+ "expectations": [
+  {
+   "text": "Defines Occam's razor correctly",
+   "passed": true,
+   "evidence": "'Simpler explanations are more likely to be true. Prefer the one with the fewest moving parts.' This matches SKILL.md exactly."
+  },
+  {
+   "text": "Defines Hanlon's razor correctly",
+   "passed": true,
+   "evidence": "'Don't put down to malice what is more easily explained by stupidity. The likeliest explanation has the least intent.' This matches SKILL.md. The road-rage example and 'the Devil Fallacy' are correctly cited."
+  },
+  {
+   "text": "Applies both to the ghosting scenario",
+   "passed": true,
+   "evidence": "Part 2 lists 7 explanations, scores them by assumptions under Occam (Step 2) and by intent under Hanlon (Step 3), and shows where the razors diverge (Step 4: '#4 is fairly simple, so Occam alone doesn't rule it out. It's Hanlon that pushes it down')."
+  },
+  {
+   "text": "Uses first principles (breaking down to fundamentals, Socratic questioning or Five Whys) on pricing",
+   "passed": true,
+   "evidence": "Part 3 breaks price into irreducible parts (cost floor, time, holding cost, buyer value ceiling, demand). It applies the book's six Socratic steps, matching SKILL.md ('consider other views' ~ 'consider alternatives'), runs a Five Whys chain ending in 'Root cause: presentation, not price', and rebuilds a $375 price."
+  },
+  {
+   "text": "Notes limits of the razors",
+   "passed": true,
+   "evidence": "Table caveats: Occam 'Some things really aren't simple' (matches SKILL.md's caveat and medical sidebar); Hanlon 'Malice does exist. The razor sets your default'. Closing caveat: 'some people really are acting in bad faith'. Note: the claim that the book's Occam example is 'Medicine: the common cause of a symptom is more likely than a rare one' goes beyond SKILL.md, which only names a 'medical-field sidebar', but it does not contradict it."
+  }
+ ],
+ "summary": {
+  "passed": 5,
+  "failed": 0,
+  "total": 5,
+  "pass_rate": 1.0
+ }
+}

@@ -1,0 +1,223 @@
+{
+  "metadata": {
+    "skill_name": "hormozi-offers",
+    "skill_path": "<path/to/skill>",
+    "executor_model": "<model-name>",
+    "analyzer_model": "<model-name>",
+    "timestamp": "2026-11-21T22:00:50Z",
+    "evals_run": [
+      1,
+      2
+    ],
+    "runs_per_configuration": 1
+  },
+  "runs": [
+    {
+      "eval_id": 1,
+      "eval_name": "adv-offer",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Follows the five-step build: dream outcome, problems, solutions, delivery vehicles, trim and stack",
+          "passed": true,
+          "evidence": "Explicit sections 'Step 1: The dream outcome', 'Step 2: Every problem in the way (before, during and after)', 'Step 3: Solutions (reverse each problem with \"how to\u2026\", then name it)', 'Step 4: Delivery vehicles (the \"cheat codes\")' covering one-to-one/group, DIY/DWY/DFY, medium, response speed and the 10x/one-tenth test, and 'Step 5: Trim and stack' keeping 'low cost / high value and high cost / high value'. All match offer-framework.md \u00a74, including 'Create flow. Monetize flow. Then add friction.'"
+        },
+        {
+          "text": "Uses the Value Equation (dream outcome, likelihood, time delay, effort)",
+          "passed": true,
+          "evidence": "Each problem is scored on 'O = isn't worth it (outcome), L = won't work for me (likelihood), T = takes too long (time delay), E = too hard (effort and sacrifice)', which matches the four drivers and their buyer objections in offer-framework.md \u00a74 Step 2. The launch section also cites 'perceived likelihood, the Value Equation driver'."
+        },
+        {
+          "text": "Recommends premium pricing rather than undercutting $300",
+          "passed": true,
+          "evidence": "'Core \"Listing-Ready Garage Reset\": $1,497', with tiers at $2,997 and 'from $4,500'. It quotes '99 percent of businesses need to raise their prices to grow', 'virtuous cycle of price' and 'Profit is oxygen', all matching SKILL.md. The $300 load is kept only as a downsell: 'Never lead with it.'"
+        },
+        {
+          "text": "Includes a specific guarantee and scarcity/urgency and bonuses",
+          "passed": true,
+          "evidence": "Uses the guarantee formula 'If you do not get X result in Y time period, we will Z' with a specific Listing-Date Guarantee: 'not empty, clean and photo-ready by the date we lock in\u2026 you don't pay\u2026 and we'll pay $250'. Its conditions are tied to key actions, consistent with enhancers.md \u00a74. The 23% refund math is correct. Named and priced bonuses each answer a doubt, and the partner-bonus idea matches \u00a73. Real capacity scarcity ('[N] Listing-Ready Resets per week') plus rolling and seasonal urgency are given, with the ethics caveat."
+        },
+        {
+          "text": "Gives a name using M-A-G-I-C",
+          "passed": true,
+          "evidence": "The M-A-G-I-C breakdown is correct: Magnetic reason why, Announce the avatar, Give a goal, Indicate a time interval, Container word (matches enhancers.md \u00a75). The name 'The Home Seller's 1-Day Listing-Ready Garage Reset' is annotated with A, I, G and C."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "adv-market",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Uses the four criteria: massive pain, purchasing power, easy to target, growing",
+          "passed": true,
+          "evidence": "Lists 'four indicators': Massive pain ('The pain is the pitch'), Purchasing power (the resume-service-for-the-unemployed example), Easy to target, and Growing (newspapers had three of four). All match the offer-framework.md \u00a71 table."
+        },
+        {
+          "text": "Scores each market on the criteria",
+          "passed": true,
+          "evidence": "The scorecard table scores all three markets 1\u20135 on each indicator, with reasons. Totals: dentists 18, moms 14, teens 6. The scoring is presented as a judgment call ('The scores are judgment calls\u2026 not market data') and is not attributed to Hormozi."
+        },
+        {
+          "text": "Ranks dentists high on purchasing power and targetability and teens low on purchasing power",
+          "passed": true,
+          "evidence": "Dentists get 'Purchasing power 5' and 'Easy to target 5'; teens get 'Purchasing power 1: teens have little money. Parents are the real buyers'. This is tied to the resume-service trap."
+        },
+        {
+          "text": "Notes market matters more than offer or persuasion (order of importance)",
+          "passed": true,
+          "evidence": "Opens with 'Starving Crowd (market) > Offer Strength > Persuasion Skills. A great market can save a weak offer, and a bad market sinks even a brilliant one', matching SKILL.md item 3. It closes with 'persuasion can't fix a bad market'."
+        },
+        {
+          "text": "Gives a clear final ranking with reasoning",
+          "passed": true,
+          "evidence": "'Rank: (b) Dentists > (a) Busy moms > (c) Teen guitarists', with a reasoned section per market. Minor: 'Rich doctors are easy to find' is the book's easy-to-target example, cited here under purchasing power, but it is not a factual error."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 1,
+      "eval_name": "adv-offer",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.8,
+        "passed": 4,
+        "failed": 1,
+        "total": 5,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Follows the five-step build: dream outcome, problems, solutions, delivery vehicles, trim and stack",
+          "passed": true,
+          "evidence": "Has sections '1. Dream Outcome', '2. Problems' (before/during/after), '3. Solutions (turn each problem into a \"how to\")', '4. Delivery Vehicles' (DFY/DWY/DIY, one-on-one or group, medium, speed tiers) and '5. Trim and Stack'. Minor deviation: its trim rule is only 'high value, low cost = keep; low value, high cost = cut', and it cuts 'Epoxy floor | High | High' to an upsell, whereas the book keeps high-cost/high-value items. That one row does not undo the overall five-step build."
+        },
+        {
+          "text": "Uses the Value Equation (dream outcome, likelihood, time delay, effort)",
+          "passed": true,
+          "evidence": "States 'Value = (Dream Outcome x Perceived Likelihood of Achievement) / (Time Delay x Effort and Sacrifice)', which matches SKILL.md. It also includes a lever table comparing competitors with the user on all four drivers."
+        },
+        {
+          "text": "Recommends premium pricing rather than undercutting $300",
+          "passed": true,
+          "evidence": "'Do not compete with the $300 load\u2026 Charge a premium and use that margin to deliver more.' Tiers are $795 / $1,295 / $2,495, priced against a value anchor of '$1,300-$1,850'."
+        },
+        {
+          "text": "Includes a specific guarantee and scarcity/urgency and bonuses",
+          "passed": false,
+          "evidence": "There is a specific guarantee ('Garage done in one day, or it's free') and there are bonuses (a 6-month 'Reset Visit' and a checklist). But no scarcity or urgency appears anywhere: no capacity limits, deadlines, cohorts or expiring bonuses. A 'rush fee' is a price add-on, not urgency. The guarantee is also mislabelled 'conditional, unconditional feel', which does not match the book's four types. The scarcity/urgency part of the assertion fails."
+        },
+        {
+          "text": "Gives a name using M-A-G-I-C",
+          "passed": true,
+          "evidence": "'MAGIC = Magnetic reason why, Avatar (who it's for), Goal (dream outcome), Interval (time frame), Container word', which matches enhancers.md \u00a75. Several names are annotated by component, for example 'Pre-Sale Garage Blitz for Home Sellers: Show-Ready in 24 Hours' (Avatar + Goal + Interval + Container)."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "adv-market",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.8,
+        "passed": 4,
+        "failed": 1,
+        "total": 5,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Uses the four criteria: massive pain, purchasing power, easy to target, growing",
+          "passed": true,
+          "evidence": "Lists 'Massive pain', 'Purchasing power', 'Easy to target' ('associations, publications, groups, lists') and 'Growing' ('a tailwind'). These match offer-framework.md \u00a71."
+        },
+        {
+          "text": "Scores each market on the criteria",
+          "passed": false,
+          "evidence": "It does score each market (8/10/10/7, 8/6/7/7, 3/2/6/4). But it attributes the method to the book: 'He suggests scoring each 1-10' and 'a zero on any one\u2026 can sink the market'. Neither is in SKILL.md or the references, so it is an invented framework misattributed to Hormozi, which fails under the grading rules."
+        },
+        {
+          "text": "Ranks dentists high on purchasing power and targetability and teens low on purchasing power",
+          "passed": true,
+          "evidence": "Dentists: 'Purchasing power (10)', 'Easy to target (10)'. Teens: 'Purchasing power (2): Teens have little money of their own; parents pay'."
+        },
+        {
+          "text": "Notes market matters more than offer or persuasion (order of importance)",
+          "passed": true,
+          "evidence": "'Hormozi says the market matters more than the offer or the persuasion skill. A great offer to the wrong market fails; a decent offer to a starving crowd wins.' This is consistent with the order of importance in SKILL.md."
+        },
+        {
+          "text": "Gives a clear final ranking with reasoning",
+          "passed": true,
+          "evidence": "A clear 'Ranking: 1. Dentists 2. Busy moms 3. Teenagers' with per-criterion reasoning and verdicts. Note: it includes the unsupported claim 'Hormozi himself points to selling business-growth services to businesses with clear ROI as the easiest route', which is not in the skill files. The ranking and the reasoning built on the criteria still hold."
+        }
+      ],
+      "notes": []
+    }
+  ],
+  "run_summary": {
+    "with_skill": {
+      "pass_rate": {
+        "mean": 1.0,
+        "stddev": 0.0,
+        "min": 1.0,
+        "max": 1.0
+      },
+      "time_seconds": null,
+      "tokens": null
+    },
+    "without_skill": {
+      "pass_rate": {
+        "mean": 0.8,
+        "stddev": 0.0,
+        "min": 0.8,
+        "max": 0.8
+      },
+      "time_seconds": null,
+      "tokens": null
+    },
+    "delta": {
+      "pass_rate": "+0.20",
+      "time_seconds": null,
+      "tokens": null
+    }
+  },
+  "notes": [
+    "Time recorded for 0 of 2 with_skill runs, 0 of 2 without_skill runs, so there is no time delta.",
+    "Token count recorded for 0 of 2 with_skill runs, 0 of 2 without_skill runs, so there is no token count delta."
+  ]
+}

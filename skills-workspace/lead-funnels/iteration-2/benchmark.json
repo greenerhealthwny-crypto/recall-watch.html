@@ -1,0 +1,223 @@
+{
+  "metadata": {
+    "skill_name": "lead-funnels",
+    "skill_path": "<path/to/skill>",
+    "executor_model": "<model-name>",
+    "analyzer_model": "<model-name>",
+    "timestamp": "2026-11-21T22:01:09Z",
+    "evals_run": [
+      1,
+      2
+    ],
+    "runs_per_configuration": 1
+  },
+  "runs": [
+    {
+      "eval_id": 1,
+      "eval_name": "adv-funnel",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Covers all five parts: lead magnet, landing page, thank-you page, sales page, follow-up",
+          "passed": true,
+          "evidence": "Sections '## 1. Lead magnet', '## 2. Landing page', '## 3. Thank-you page', '## 4. Sales page', '## 5. Follow-up funnel', plus a one-page summary table of all five. Matches SKILL.md's five parts."
+        },
+        {
+          "text": "Lead magnet uses a curiosity/pain hook (e.g. 'The # Biggest Mistakes...')",
+          "passed": true,
+          "evidence": "Uses the book's formula verbatim ('The (#) Biggest Mistakes (audience) Make (when doing X)') to produce 'The 7 Biggest Mistakes People Make Buying Used Furniture on Facebook Marketplace', lists 5 hooks with a required Mistakes hook, and cites the pain focus; matches SKILL.md."
+        },
+        {
+          "text": "Includes a thank-you-page offer or self-liquidating offer",
+          "passed": true,
+          "evidence": "Thank-you page delivers the PDF then one next step '[See This Week's Pieces]'; section 4 explains the SLO ('front-end sales pay for the ads') and proposes $39-$79 delivery / $15-$20 care-kit add-ons, citing #27 '44 Sensational Salads' -> $15 (matches examples.md)."
+        },
+        {
+          "text": "Includes list math (e.g. $1 per name per month) with an estimate",
+          "passed": true,
+          "evidence": "Section 6 cites '$1 per name per month ... $2-$50 with a strong relationship (book)' and '$1-$3' leads / month-3 break-even (all match SKILL.md), then estimates 500 names x 2% x $110 = $1,260 \u2248 $2.52/name/month with weak/base/strong scenarios."
+        },
+        {
+          "text": "Includes a follow-up sequence or daily publishing plan",
+          "passed": true,
+          "evidence": "Day 0/1/3/5/7 buyer email table plus weekly 'Thursday Drop', seller sequence, RFMS scoring (recency, frequency, monetary, social \u2014 correct per SKILL.md) and a 'Daily publishing (book)' section ('one or two steps ahead')."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "adv-economics",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Explains self-liquidating offer",
+          "passed": true,
+          "evidence": "'An SLO is a low-priced product offered right after the opt-in ... priced so that front-end sales pay back the ad spend'; gives the book's example '$100 of ads brings 100 leads ... 10% buy a $10 product ... break-even' \u2014 matches SKILL.md exactly."
+        },
+        {
+          "text": "Explains break-even day",
+          "passed": true,
+          "evidence": "'Break-even day is the day on which total revenue from a group of leads equals what you paid'; cites book's 5% + another 5% by day 3 example and the $1/name/month vs $3 lead = month 3 version \u2014 both match SKILL.md."
+        },
+        {
+          "text": "Explains RFMS scoring (recency, frequency, monetary, social)",
+          "passed": true,
+          "evidence": "Explains RFMS as 'Recency, Frequency, Monetary, Social' with a table and a 0-3 per-factor routing scheme labelled (adapted). SKILL.md defines S as 'social', so this is correct per the source of truth; the assertion's parenthetical 'source' conflicts with SKILL.md and is not treated as the book's definition."
+        },
+        {
+          "text": "Does concrete math on $2/lead with a conversion rate and price",
+          "passed": true,
+          "evidence": "Table of conversion needed at $2 CPL ($7 -> 30.8%, $17 -> 12.3% ...) and a per-100-leads model: $17 front end at 10%, $9.95 bump at 30%, $47 OTO at 15% -> net $2.46/lead; break-even \u2248 8.2% conversion."
+        },
+        {
+          "text": "Suggests a fast info product to sell (one of the nine fast ways)",
+          "passed": true,
+          "evidence": "Core SLO suggested as 'a short course, template pack, or workshop recording' with the book's 'make the full product, give away the best piece' tip; workshop recording is #9 of the nine fast ways in SKILL.md, and an 'audio version' bump. Not framed explicitly as the nine-ways list, but a qualifying item is clearly suggested."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 1,
+      "eval_name": "adv-funnel",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Covers all five parts: lead magnet, landing page, thank-you page, sales page, follow-up",
+          "passed": true,
+          "evidence": "Sections '## 1. Lead Magnet', '## 2. Landing (Opt-in) Page', '## 3. Thank-You Page', '## 4. Sales Page / Offer', '## 5. Follow-Up Sequence' cover all five parts."
+        },
+        {
+          "text": "Lead magnet uses a curiosity/pain hook (e.g. 'The # Biggest Mistakes...')",
+          "passed": true,
+          "evidence": "Magnet 'The 7-Point Used Furniture Checklist: How to Spot Solid Wood, Bedbugs, and Overpriced Junk in 60 Seconds' is a pain-focused curiosity hook ('Fixes a real fear. Buying used is scary'); early access is called 'the real hook'. No book attribution claimed, so no misattribution; no 'Biggest Mistakes' formula, but the assertion's example is only an e.g."
+        },
+        {
+          "text": "Includes a thank-you-page offer or self-liquidating offer",
+          "passed": true,
+          "evidence": "Thank-you page item 4: 'Immediate offer (tripwire / self-liquidator): \"Available right now for VIPs only:\" ... \"Claim It \u2014 $20 Hold Deposit\"'; section 6 also does an SLO sanity check (15 sales x ~$80 vs $250 ad spend)."
+        },
+        {
+          "text": "Includes list math (e.g. $1 per name per month) with an estimate",
+          "passed": true,
+          "evidence": "Section 6 list math: 300 subs/month, 5% churn, 4% buying, $100 profit -> 'Value per subscriber per month = 4% x $100 profit = $4.00', month-by-month growth table, LTV \u2248 $80. Concrete estimate given (does not cite the book's $1/name figure, but the assertion's example is an e.g.)."
+        },
+        {
+          "text": "Includes a follow-up sequence or daily publishing plan",
+          "passed": true,
+          "evidence": "'Welcome / indoctrination (first 7 days)' table (Day 0,1,2,3,5,7), weekly Wed/Thu/Sat broadcast rhythm, and behavioral triggers."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "adv-economics",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.6,
+        "passed": 3,
+        "failed": 2,
+        "total": 5,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Explains self-liquidating offer",
+          "passed": true,
+          "evidence": "'A self-liquidating offer is a low-priced front-end product, plus its order bump and upsells, whose revenue pays back (liquidates) the ad cost'; 'self-liquidates when net front-end revenue per lead \u2265 cost per lead'. Correct and consistent with SKILL.md."
+        },
+        {
+          "text": "Explains break-even day",
+          "passed": true,
+          "evidence": "'Break-even day is the number of days after acquisition when a cohort's cumulative net revenue equals what you spent', with day 0/1, 30 and never scenarios. Consistent with SKILL.md (no book example used)."
+        },
+        {
+          "text": "Explains RFMS scoring (recency, frequency, monetary, social)",
+          "passed": false,
+          "evidence": "Defines the S as 'S: Source (often used this way) \u2014 Which ad, channel or lead magnet brought them in?' and builds scoring around Source. SKILL.md defines RFMS as recency, frequency, monetary, social; the book-specific factor is wrong (the response itself admits it lacks the book). Matches the assertion's parenthetical but fails the source-of-truth accuracy rule."
+        },
+        {
+          "text": "Does concrete math on $2/lead with a conversion rate and price",
+          "passed": true,
+          "evidence": "1,000 leads x $2 = $2,000; $9 tripwire at 7%, $19 bump 40%, $97 OTO 12%, $37 downsell 20% -> net $2,213.30, net EPL $2.21; break-even conversion \u2248 6.3%; sensitivity table at 5/7/10%."
+        },
+        {
+          "text": "Suggests a fast info product to sell (one of the nine fast ways)",
+          "passed": false,
+          "evidence": "Suggests generic products: 'Quick-win product (template pack, mini-course, starter kit)', 'swipe pack', 'Core implementation course / toolkit'. None is clearly one of SKILL.md's nine fast ways (crowd-sourced/example/public-domain books, audiobooks, interviews, audio compilations, screen captures, iPhone how-tos, workshops), and no fast-creation method is given."
+        }
+      ],
+      "notes": []
+    }
+  ],
+  "run_summary": {
+    "with_skill": {
+      "pass_rate": {
+        "mean": 1.0,
+        "stddev": 0.0,
+        "min": 1.0,
+        "max": 1.0
+      },
+      "time_seconds": null,
+      "tokens": null
+    },
+    "without_skill": {
+      "pass_rate": {
+        "mean": 0.8,
+        "stddev": 0.2828,
+        "min": 0.6,
+        "max": 1.0
+      },
+      "time_seconds": null,
+      "tokens": null
+    },
+    "delta": {
+      "pass_rate": "+0.20",
+      "time_seconds": null,
+      "tokens": null
+    }
+  },
+  "notes": [
+    "Time recorded for 0 of 2 with_skill runs, 0 of 2 without_skill runs, so there is no time delta.",
+    "Token count recorded for 0 of 2 with_skill runs, 0 of 2 without_skill runs, so there is no token count delta."
+  ]
+}

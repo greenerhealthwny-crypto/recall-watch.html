@@ -1,0 +1,35 @@
+{
+ "expectations": [
+  {
+   "text": "Quotes or paraphrases the desire contract idea",
+   "passed": true,
+   "evidence": "Quotes exactly: \"Desire is a contract you make with yourself to be unhappy until you get what you want.\" (matches SKILL.md)."
+  },
+  {
+   "text": "States the seek-wealth idea",
+   "passed": true,
+   "evidence": "\"Seek wealth, not money or status.\" with definitions: wealth = assets that earn while you sleep, money = how we transfer time and wealth, status = place in the social hierarchy (all match SKILL.md)."
+  },
+  {
+   "text": "Explains one-desire-at-a-time or choosing desires carefully",
+   "passed": true,
+   "evidence": "Thread 1: 'His advice is to choose your desires carefully and keep them few, ideally one at a time'; frames wealth as 'one deliberately chosen desire'. Matches SKILL.md 'Pick desires carefully, one at a time'."
+  },
+  {
+   "text": "Explains wealth as freedom/means to stop playing games",
+   "passed": true,
+   "evidence": "Thread 3: wealth is worth seeking because it 'solves money problems and buys back your time and freedom: freedom from having to rent out your hours'; Thread 2 contrasts positive-sum wealth with zero-sum status games; Thread 5 uses the retirement quote (matches SKILL.md)."
+  },
+  {
+   "text": "Mentions peace/happiness being separate from success",
+   "passed": true,
+   "evidence": "'The book insists that success does not earn happiness'; happiness as 'the state when nothing is missing, with peace as happiness at rest'; table separating Wealth (Part I) from Happiness (Part II). All match SKILL.md."
+  }
+ ],
+ "summary": {
+  "passed": 5,
+  "failed": 0,
+  "total": 5,
+  "pass_rate": 1.0
+ }
+}

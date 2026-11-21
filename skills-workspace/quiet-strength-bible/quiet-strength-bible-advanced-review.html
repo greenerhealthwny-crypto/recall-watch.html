@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eval Review</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&family=Lora:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js" integrity="sha384-EnyY0/GSHQGSxSgMwaIPzSESbqoOLSexfnSMN2AP+39Ckmn92stwABZynq1JyzdT" crossorigin="anonymous"></script>
+  <style>
+    :root {
+      --bg: #faf9f5;
+      --surface: #ffffff;
+      --border: #e8e6dc;
+      --text: #141413;
+      --text-muted: #b0aea5;
+      --accent: #d97757;
+      --accent-hover: #c4613f;
+      --green: #788c5d;
+      --green-bg: #eef2e8;
+      --red: #c44;
+      --red-bg: #fceaea;
+      --header-bg: #141413;
+      --header-text: #faf9f5;
+      --radius: 6px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Lora', Georgia, serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ---- Header ---- */
+    .header {
+      background: var(--header-bg);
+      color: var(--header-text);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .header h1 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+    .header .instructions {
+      font-size: 0.8rem;
+      opacity: 0.7;
+      margin-top: 0.25rem;
+    }
+    .header .progress {
+      font-size: 0.875rem;
+      opacity: 0.8;
+      text-align: right;
+    }
+
+    /* ---- Main content ---- */
+    .main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.5rem 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    /* ---- Sections ---- */
+    .section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      flex-shrink: 0;
+    }
+    .section-header {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.75rem 1rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+    }
+    .section-body {
+      padding: 1rem;
+    }
+
+    /* ---- Config badge ---- */
+    .config-badge {
+      display: inline-block;
+      padding: 0.2rem 0.625rem;
+      border-radius: 9999px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      margin-left: 0.75rem;
+      vertical-align: middle;
+    }
+    .config-badge.config-primary {
+      background: rgba(33, 150, 243, 0.12);
+      color: #1976d2;
+    }
+    .config-badge.config-baseline {
+      background: rgba(255, 193, 7, 0.15);
+      color: #f57f17;
+    }
+
+    /* ---- Prompt ---- */
+    .prompt-text {
+      white-space: pre-wrap;
+      font-size: 0.9375rem;
+      line-height: 1.6;
+    }
+
+    /* ---- Outputs ---- */
+    .output-file {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .output-file + .output-file {
+      margin-top: 1rem;
+    }
+    .output-file-header {
+      padding: 0.5rem 0.75rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .output-file-header .dl-btn {
+      font-size: 0.7rem;
+      color: var(--accent);
+      text-decoration: none;
+      cursor: pointer;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-weight: 500;
+      opacity: 0.8;
+    }
+    .output-file-header .dl-btn:hover {
+      opacity: 1;
+      text-decoration: underline;
+    }
+    .output-file-content {
+      padding: 0.75rem;
+      overflow-x: auto;
+    }
+    .output-file-content pre {
+      font-size: 0.8125rem;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+    }
+    .output-file-content img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 4px;
+    }
+    .output-file-content iframe {
+      width: 100%;
+      height: 600px;
+      border: none;
+    }
+    .output-file-content table {
+      border-collapse: collapse;
+      font-size: 0.8125rem;
+      width: 100%;
+    }
+    .output-file-content table td,
+    .output-file-content table th {
+      border: 1px solid var(--border);
+      padding: 0.375rem 0.5rem;
+      text-align: left;
+    }
+    .output-file-content table th {
+      background: var(--bg);
+      font-weight: 600;
+    }
+    .output-file-content .download-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 0.875rem;
+      cursor: pointer;
+    }
+    .output-file-content .download-link:hover {
+      background: var(--border);
+    }
+    .empty-state {
+      color: var(--text-muted);
+      font-style: italic;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    /* ---- Feedback ---- */
+    .prev-feedback {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.625rem 0.75rem;
+      margin-top: 0.75rem;
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+    .prev-feedback-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.25rem;
+      color: var(--text-muted);
+    }
+    .feedback-textarea {
+      width: 100%;
+      min-height: 100px;
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 0.9375rem;
+      line-height: 1.5;
+      resize: vertical;
+      color: var(--text);
+    }
+    .feedback-textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    .feedback-status {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.5rem;
+      min-height: 1.1em;
+    }
+
+    /* ---- Grades (collapsible) ---- */
+    .grades-toggle {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+    }
+    .grades-toggle:hover {
+      color: var(--accent);
+    }
+    .grades-toggle .arrow {
+      margin-right: 0.5rem;
+      transition: transform 0.15s;
+      font-size: 0.75rem;
+    }
+    .grades-toggle .arrow.open {
+      transform: rotate(90deg);
+    }
+    .grades-content {
+      display: none;
+      margin-top: 0.75rem;
+    }
+    .grades-content.open {
+      display: block;
+    }
+    .grades-summary {
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .grade-badge {
+      display: inline-block;
+      padding: 0.125rem 0.5rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .grade-pass { background: var(--green-bg); color: var(--green); }
+    .grade-fail { background: var(--red-bg); color: var(--red); }
+    .assertion-list {
+      list-style: none;
+    }
+    .assertion-item {
+      padding: 0.625rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.8125rem;
+    }
+    .assertion-item:last-child { border-bottom: none; }
+    .assertion-status {
+      font-weight: 600;
+      margin-right: 0.5rem;
+    }
+    .assertion-status.pass { color: var(--green); }
+    .assertion-status.fail { color: var(--red); }
+    .assertion-evidence {
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      margin-top: 0.25rem;
+      padding-left: 1.5rem;
+    }
+
+    /* ---- View tabs ---- */
+    .view-tabs {
+      display: flex;
+      gap: 0;
+      padding: 0 2rem;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .view-tab {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.625rem 1.25rem;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      background: none;
+      color: var(--text-muted);
+      border-bottom: 2px solid transparent;
+      transition: all 0.15s;
+    }
+    .view-tab:hover { color: var(--text); }
+    .view-tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+    .view-panel { display: none; }
+    .view-panel.active { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
+
+    /* ---- Benchmark view ---- */
+    .benchmark-view {
+      padding: 1.5rem 2rem;
+      overflow-y: auto;
+      flex: 1;
+    }
+    .benchmark-table {
+      border-collapse: collapse;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 0.8125rem;
+      width: 100%;
+      margin-bottom: 1.5rem;
+    }
+    .benchmark-table th, .benchmark-table td {
+      padding: 0.625rem 0.75rem;
+      text-align: left;
+      border: 1px solid var(--border);
+    }
+    .benchmark-table th {
+      font-family: 'Poppins', sans-serif;
+      background: var(--header-bg);
+      color: var(--header-text);
+      font-weight: 500;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .benchmark-table tr:hover { background: var(--bg); }
+    .benchmark-table tr.benchmark-row-with { background: rgba(33, 150, 243, 0.06); }
+    .benchmark-table tr.benchmark-row-without { background: rgba(255, 193, 7, 0.06); }
+    .benchmark-table tr.benchmark-row-with:hover { background: rgba(33, 150, 243, 0.12); }
+    .benchmark-table tr.benchmark-row-without:hover { background: rgba(255, 193, 7, 0.12); }
+    .benchmark-table tr.benchmark-row-avg { font-weight: 600; border-top: 2px solid var(--border); }
+    .benchmark-table tr.benchmark-row-avg.benchmark-row-with { background: rgba(33, 150, 243, 0.12); }
+    .benchmark-table tr.benchmark-row-avg.benchmark-row-without { background: rgba(255, 193, 7, 0.12); }
+    .benchmark-delta-positive { color: var(--green); font-weight: 600; }
+    .benchmark-delta-negative { color: var(--red); font-weight: 600; }
+    .benchmark-notes {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem;
+    }
+    .benchmark-notes h3 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+    }
+    .benchmark-notes ul {
+      list-style: disc;
+      padding-left: 1.25rem;
+    }
+    .benchmark-notes li {
+      font-size: 0.8125rem;
+      line-height: 1.6;
+      margin-bottom: 0.375rem;
+    }
+    .benchmark-empty {
+      color: var(--text-muted);
+      font-style: italic;
+      text-align: center;
+      padding: 3rem;
+    }
+
+    /* ---- Navigation ---- */
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+      flex-shrink: 0;
+    }
+    .nav-btn {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.5rem 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text);
+      transition: all 0.15s;
+    }
+    .nav-btn:hover:not(:disabled) {
+      background: var(--bg);
+      border-color: var(--text-muted);
+    }
+    .nav-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    .done-btn {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.5rem 1.5rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: all 0.15s;
+    }
+    .done-btn:hover {
+      background: var(--bg);
+      border-color: var(--text-muted);
+    }
+    .done-btn.ready {
+      border: none;
+      background: var(--accent);
+      color: white;
+      font-weight: 600;
+    }
+    .done-btn.ready:hover {
+      background: var(--accent-hover);
+    }
+    /* ---- Done overlay ---- */
+    .done-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 100;
+      justify-content: center;
+      align-items: center;
+    }
+    .done-overlay.visible {
+      display: flex;
+    }
+    .done-card {
+      background: var(--surface);
+      border-radius: 12px;
+      padding: 2rem 3rem;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      max-width: 500px;
+    }
+    .done-card h2 {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .done-card p {
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
+    }
+    .done-card .btn-row {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+    }
+    .done-card button {
+      padding: 0.5rem 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 0.875rem;
+    }
+    .done-card button:hover {
+      background: var(--bg);
+    }
+    /* ---- Toast ---- */
+    .toast {
+      position: fixed;
+      bottom: 5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--header-bg);
+      color: var(--header-text);
+      padding: 0.625rem 1.25rem;
+      border-radius: var(--radius);
+      font-size: 0.875rem;
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+      z-index: 200;
+    }
+    .toast.visible {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <div id="app" style="height:100vh; display:flex; flex-direction:column;">
+    <div class="header">
+      <div>
+        <h1>Eval Review: <span id="skill-name"></span></h1>
+        <div class="instructions">Review each output and leave feedback below. Navigate with arrow keys or buttons. When done, copy feedback and paste into Claude Code.</div>
+      </div>
+      <div class="progress" id="progress"></div>
+    </div>
+
+    <!-- View tabs (only shown when benchmark data exists) -->
+    <div class="view-tabs" id="view-tabs" style="display:none;">
+      <button class="view-tab active" onclick="switchView('outputs')">Outputs</button>
+      <button class="view-tab" onclick="switchView('benchmark')">Benchmark</button>
+    </div>
+
+    <!-- Outputs panel (qualitative review) -->
+    <div class="view-panel active" id="panel-outputs">
+    <div class="main">
+      <!-- Prompt -->
+      <div class="section">
+        <div class="section-header">Prompt <span class="config-badge" id="config-badge" style="display:none;"></span></div>
+        <div class="section-body">
+          <div class="prompt-text" id="prompt-text"></div>
+        </div>
+      </div>
+
+      <!-- Outputs -->
+      <div class="section">
+        <div class="section-header">Output</div>
+        <div class="section-body" id="outputs-body">
+          <div class="empty-state">No output files found</div>
+        </div>
+      </div>
+
+      <!-- Previous Output (collapsible) -->
+      <div class="section" id="prev-outputs-section" style="display:none;">
+        <div class="section-header">
+          <div class="grades-toggle" onclick="togglePrevOutputs()">
+            <span class="arrow" id="prev-outputs-arrow">&#9654;</span>
+            Previous Output
+          </div>
+        </div>
+        <div class="grades-content" id="prev-outputs-content"></div>
+      </div>
+
+      <!-- Grades (collapsible) -->
+      <div class="section" id="grades-section" style="display:none;">
+        <div class="section-header">
+          <div class="grades-toggle" onclick="toggleGrades()">
+            <span class="arrow" id="grades-arrow">&#9654;</span>
+            Formal Grades
+          </div>
+        </div>
+        <div class="grades-content" id="grades-content"></div>
+      </div>
+
+      <!-- Feedback -->
+      <div class="section">
+        <div class="section-header">Your Feedback</div>
+        <div class="section-body">
+          <textarea
+            class="feedback-textarea"
+            id="feedback"
+            placeholder="What do you think of this output? Any issues, suggestions, or things that look great?"
+          ></textarea>
+          <div class="feedback-status" id="feedback-status"></div>
+          <div class="prev-feedback" id="prev-feedback" style="display:none;">
+            <div class="prev-feedback-label">Previous feedback</div>
+            <div id="prev-feedback-text"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav" id="outputs-nav">
+      <button class="nav-btn" id="prev-btn" onclick="navigate(-1)">&#8592; Previous</button>
+      <button class="done-btn" id="done-btn" onclick="showDoneDialog()">Submit All Reviews</button>
+      <button class="nav-btn" id="next-btn" onclick="navigate(1)">Next &#8594;</button>
+    </div>
+    </div><!-- end panel-outputs -->
+
+    <!-- Benchmark panel (quantitative stats) -->
+    <div class="view-panel" id="panel-benchmark">
+      <div class="benchmark-view" id="benchmark-content">
+        <div class="benchmark-empty">No benchmark data available. Run a benchmark to see quantitative results here.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Done overlay -->
+  <div class="done-overlay" id="done-overlay">
+    <div class="done-card">
+      <h2>Review Complete</h2>
+      <p>Your feedback has been saved. Go back to your Claude Code session and tell Claude you're done reviewing.</p>
+      <div class="btn-row">
+        <button onclick="closeDoneDialog()">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ---- Embedded data (injected by generate_review.py) ----
+    const EMBEDDED_DATA = {"skill_name": "quiet-strength-bible", "runs": [{"id": "eval-1-adv-study-with_skill-run-1", "prompt": "Using the Quiet Strength Bible's study method, walk me through a full study of Philippians 4:6-7 on anxiety, and give related verses from the Verse Finder.", "eval_id": 1, "outputs": [{"name": "response.md", "type": "text", "content": "# A Quiet Strength Study of Philippians 4:6\u20137 (Anxiety)\n\nThis study uses the three-step method from the edition's \"A Life of Quiet Strength\" feature: **Observation, Interpretation, Application**. Tony Dungy calls the Bible \"God's playbook\". His advice is to study it *before* the game, not after you've fallen behind. That fits anxiety well. The best time to learn this play is before the next anxious moment comes.\n\n> **Before you start:** open your Bible to **Philippians 4** (page 169 in the Quiet Strength edition), or use an authorized online NLT, and read **all of chapter 4**. I give only brief phrases below because the NLT text is copyrighted. Reading the passage in context is part of the method anyway.\n\n---\n\n## Step 1: Observation (what does the passage actually say?)\n\nThe edition asks you to restate the passage in your own words, or to underline key phrases. Read verses 6\u20137 slowly two or three times, then notice the following.\n\n**The structure.** The passage gives one command to stop, one command to start, and then a promise.\n\n| Part | What it says (short phrases and my paraphrase) |\n|---|---|\n| **Stop** | \"Don't worry about anything.\" The command covers *anything*, not just small things. |\n| **Start** | Pray about *everything* instead. Tell God what you need. |\n| **With** | Thank him for all he has done. Thanksgiving goes *with* the request, not after the answer. |\n| **Promise** | You will experience God's peace, a peace beyond understanding. |\n| **What the peace does** | It will **guard** your hearts and minds. |\n| **Where** | \"in Christ Jesus\". The guarding happens inside a relationship. |\n\n**Things to underline:**\n- \"anything\" and \"everything\". These matching words leave nothing out.\n- \"instead\". Prayer *replaces* worry. It doesn't just sit beside it.\n- \"guard\". This is a protection word.\n- \"hearts and minds\". Both feelings and thoughts are covered.\n\n**Observe the surroundings (context):**\n- **4:4.** \"Always be full of joy in the Lord.\" The Verse Finder uses this as its key verse for **Joy**.\n- **4:5.** The Lord is near. This is the reason given just before \"don't worry\".\n- **4:8.** Fix your thoughts on what is true, honorable and right. The Verse Finder lists this under **Purity**.\n- **4:9.** Put into practice what you've learned, and the God of peace will be with you.\n- **4:11\u201313.** Paul has learned to be content in any circumstance. The Verse Finder lists 4:11\u201313 under **Simplicity**.\n\n**Restate it in your own words.** Try writing one sentence, for example:\n*\"Instead of turning my worries over and over, I turn them into specific requests to God, with thanks for what he's already done, and he guards my heart and mind with a peace I can't explain.\"*\n\n---\n\n## Step 2: Interpretation (what did the author mean?)\n\nThe edition says to ask *why* the passage was written. It suggests using the book summaries in its Overview, and a commentary or Bible dictionary if you need one.\n\n**Who, when, what kind of writing.** According to the edition's Overview of Philippians:\n- **Author:** Paul.\n- **Date:** around AD 61. These are the edition's traditional views, and scholars debate some details.\n- **Genre:** a letter.\n- **Summary:** it is about \"the mind-set, attitude and outlook a believer needs to experience the joy of the Lord in a troubled world.\"\n\nThat summary is the key to this passage. Philippians 4:6\u20137 is not a promise of a trouble-free life. It is about the **mind-set** a believer can have *in* a troubled world.\n\n**Things to think through:**\n1. **Paul's own situation.** Paul wrote Philippians while in custody (see Philippians 1:12\u201314). He wasn't writing \"don't worry\" from a comfortable chair. That gives his words weight. He had reasons to be anxious and was practicing what he taught.\n2. **\"Don't worry\" is not \"don't care.\"** In the same letter Paul says he is concerned for the churches and for Timothy's welfare (Philippians 2:20). The command is not about switching off concern. It is about what you *do* with concern: you bring it to God, rather than carrying it alone and going round in circles.\n3. **Thanksgiving matters.** Thanks reminds the anxious person of God's past faithfulness. That fits the Verse Finder's practice **\"Thankfulness must be cultivated\"**: choose to be thankful in all circumstances, and God will give you peace.\n4. **Peace as a guard.** The picture is of a guard posted at a gate. God's peace stands watch over the heart (emotions) and the mind (thoughts). The promise is that God will guard you. It is not that circumstances will change right away.\n5. **\"Beyond understanding\".** This peace doesn't depend on having worked out a solution. You can have it before the problem is solved.\n\n**Check your interpretation.** Does it fit 4:4\u20139 and the letter's theme of joy in a troubled world? Yes. Verses 6\u20137 (pray instead of worry) lead straight into verse 8 (what to think about) and verse 9 (what to practice). Taken together: **pray, think, practice \u2192 peace.**\n\n*Optional deeper study:* look up \"anxiety\" or \"peace\" in a Bible dictionary, or read a commentary on Philippians 4. The NLT is a readable, meaning-based translation. For close word study you could compare a more literal translation (ESV, NASB or NKJV) to see how \"guard\" and \"hearts and minds\" are rendered.\n\n---\n\n## Step 3: Application (so what?)\n\nThe edition's question is: **\"So what? What difference does this passage make in my life?\"** It cites 2 Timothy 3:16: scripture is useful to teach, correct and train. Here is a practical playbook for this passage.\n\n**1. Name the worry (be specific).** Write down what you're anxious about right now. Vague worry is hard to pray about.\n\n**2. Turn each worry into a request.** \"Tell God what you need.\" Example: *worry*: \"What if I can't pay this bill?\" \u2192 *request*: \"Lord, I need provision for this bill, and wisdom on what to do next.\"\n\n**3. Attach a thank-you to each request.** List two or three specific ways God has been faithful before. This is the \"with thanksgiving\" part, and it is the Verse Finder practice **Thankfulness must be cultivated**.\n\n**4. Re-aim your thinking (4:8).** When the worry comes back, don't just try to push it away. Replace it. Ask what is *true* here, as opposed to what you fear might happen.\n\n**5. Do the next faithful thing (4:9).** Peace often comes as you take the next responsible step. Make the call, have the conversation, set the budget.\n\n**6. Repeat.** Dungy's rhythm is to read daily and pray daily. Worry tends to come back, so the prayer can come back too. Hand it over each time.\n\n**A one-week practice plan:**\n\n| Day | Read | Do |\n|---|---|---|\n| 1 | Philippians 4:4\u20139 | Write your own-words paraphrase of 4:6\u20137 |\n| 2 | Philippians 4:6\u20137 | Make a worry \u2192 request \u2192 thanks list |\n| 3 | 1 John 4:18; Psalm 27:1 | Name one fear and pray through it |\n| 4 | Psalm 46:1\u20133 | Write down one way God has been your refuge |\n| 5 | Romans 8:38\u201339 | Read it aloud when anxiety rises |\n| 6 | Philippians 4:8 | Write three things that are true about your situation |\n| 7 | Philippians 4:11\u201313 | Reflect: where is God teaching you contentment? |\n\n**Memory phrase:** \"Pray about everything.\" Say it whenever you notice you're worrying.\n\n---\n\n## Related verses from the Quiet Strength Verse Finder\n\nThe Verse Finder's quick-topic guide points anxiety and fear to **Assurance, Courage/Fear, Peace, Protection, and Psalm 46:1\u20133**. These are the entries it gives for those topics, with paraphrased principle statements:\n\n**Courage / Fear.** *God's perfect love expels all fear. If I belong to God, I have no reason to fear.*\n- **1 John 4:18.** Perfect love expels fear.\n- **Psalm 27:1.** The Lord is my light and salvation, so whom should I fear?\n\n**Assurance.** *In times of doubt, cling to God's promises. Nothing can separate us from God's love.*\n- **Romans 8:38\u201339.** Nothing can separate us from God's love.\n- **John 6:37\u201340; John 10:27\u201329.** Those who come to Jesus are kept safe and held securely.\n- **Romans 5:1\u20135.** Peace with God, and a hope that does not disappoint.\n- **Ephesians 3:12.** We can come boldly and confidently into God's presence.\n- **2 Timothy 1:12.** God is able to guard what we have entrusted to him.\n\n**Protection.** *The Lord is faithful; he will strengthen and guard you.*\n- **2 Thessalonians 3:3.**\n\n**Refuge (the Verse Finder's opening verse).** *God is our refuge and strength, always ready to help in times of trouble.*\n- **Psalm 46:1\u20133.**\n\n**Hope.** *Christians always have hope.*\n- **Romans 8:28.** God works all things together for good for those who love him.\n\n**Strength.** *He renews my strength.*\n- **Psalm 23** (the Verse Finder cites 23:3).\n\n**Joy.** *Always be full of joy in the Lord.*\n- **Philippians 4:4.** This is the verse just before our passage.\n\n**Practices that fit this passage:**\n- **Prayer must be sincere and persistent.** Prayer is talking with God. Call out to him consistently, believing he knows what's best. References: Matthew 7:7\u20138; **Hebrews 4:16** (come boldly to God's throne for help); James 5:16.\n- **Thankfulness must be cultivated.** Choose to be thankful in all circumstances, and God will give you peace. References: **1 Thessalonians 5:18**; Colossians 4:2; Ephesians 5:20; 2 Corinthians 1:3\u20134 (the God of all comfort).\n- **Simplicity must be sought.** The less we depend on worldly things, the more we can focus on God. References: **Matthew 6:33**; Philippians 4:11\u201313; Hebrews 13:5 (\"I will never fail you\").\n\n*A note on accuracy:* the Verse Finder lists **Peace** as a topic, but I can't give its specific references with confidence, so I haven't listed them. Philippians 4:6\u20137 itself isn't one of the references I can confirm in the Verse Finder. The entries above are the ones I could confirm. Some print in the source was faint, so please check each reference in your Bible before you memorize or quote it.\n\n**Other well-known passages on anxiety** (these are not from the Verse Finder):\n- **Matthew 6:25\u201334.** Jesus on not worrying about tomorrow.\n- **1 Peter 5:7.** Give all your worries to God, because he cares for you.\n- **John 14:27.** Jesus gives a peace the world cannot give. The edition's \"How to Know Jesus Personally\" uses this verse for \"God's plan brings peace\".\n\n---\n\n## A gentle word\n\nThis passage invites you to bring anxiety to God. It does not say you should never need help. If anxiety is heavy or constant, or affects your sleep, work or relationships, please talk with a doctor, a counselor or a pastor. Getting that help is one of the \"next faithful things\" from Step 3. If you are ever in crisis or having thoughts of harming yourself, in the US you can **call or text 988** (Suicide & Crisis Lifeline) at any time.\n\n---\n\n### Study tips from the edition\n- Underline key statements, and note verses that have special meaning for you.\n- Join a Bible study group to share what you're learning.\n- Dungy's reminder applies here: a good head coach is always there to answer questions about the plays we don't understand, and God is always there through prayer.\n"}], "grading": {"expectations": [{"text": "Uses the three-step method: observation, interpretation, application", "passed": true, "evidence": "Line 3 names the edition's 'A Life of Quiet Strength' method 'Observation, Interpretation, Application'; sections 'Step 1: Observation', 'Step 2: Interpretation', 'Step 3: Application' match SKILL.md (restate in own words/underline; ask why written, use Overview/commentary; 'So what?' with 2 Timothy 3:16)."}, {"text": "Applies each step to Philippians 4:6-7 specifically", "passed": true, "evidence": "Observation table breaks down 4:6-7 (Stop/Start/With/Promise/guard/'in Christ Jesus') with underline words; Interpretation uses the edition's Philippians overview (Paul, around AD 61, letter, 'mind-set, attitude and outlook... joy of the Lord in a troubled world' - matches book-overviews.md, p.169 correct); Application turns 4:6-7 into worry->request->thanks steps."}, {"text": "Gives related verses on fear/anxiety or prayer", "passed": true, "evidence": "'Related verses from the Quiet Strength Verse Finder' lists Courage/Fear 1 John 4:18, Psalm 27:1; Assurance Romans 8:38-39, John 6:37-40, 10:27-29, Romans 5:1-5, Eph 3:12, 2 Tim 1:12; Protection 2 Thess 3:3; Psalm 46:1-3; Prayer practice (Matt 7:7-8, Heb 4:16, James 5:16). All match verse-finder.md; non-VF verses (Matt 6:25-34, 1 Pet 5:7) are clearly labeled 'not from the Verse Finder'."}, {"text": "Connects to Dungy's 'God's playbook' framing or the Principles/Practices/Priorities structure", "passed": true, "evidence": "Line 3: 'Tony Dungy calls the Bible \"God's playbook\". His advice is to study it before the game, not after you've fallen behind'; closing tip on the head coach answering questions about plays; Dungy's 'read daily and pray daily' rhythm - all match SKILL.md. Also uses VF practice wording ('Thankfulness must be cultivated', 'Prayer must be sincere and persistent')."}, {"text": "Gives a concrete personal application", "passed": true, "evidence": "Step 3 gives concrete steps (name the worry, convert 'What if I can't pay this bill?' into a request, attach thanks, re-aim thinking per 4:8, do the next faithful thing) plus a 7-day practice table and memory phrase."}], "summary": {"passed": 5, "failed": 0, "total": 5, "pass_rate": 1.0}}}, {"id": "eval-1-adv-study-without_skill-run-1", "prompt": "Using the Quiet Strength Bible's study method, walk me through a full study of Philippians 4:6-7 on anxiety, and give related verses from the Verse Finder.", "eval_id": 1, "outputs": [{"name": "response.md", "type": "text", "content": "# A Full Study of Philippians 4:6-7: Anxiety and the Peace of God\n\n> **A note before we begin:** I don't have the *Quiet Strength Bible*'s own study-method pages or its Verse Finder index in front of me. So I can't promise this matches its exact steps or its verse lists word for word. Below I use a common inductive study pattern that most study Bibles follow: **Read \u2192 Observe \u2192 Interpret \u2192 Apply \u2192 Pray**. The related verses are ones Bible indexes usually list under \"Anxiety / Worry.\" If you have your copy handy, check the Verse Finder's \"Anxiety,\" \"Worry,\" \"Fear,\" or \"Peace\" entry and add anything I've missed.\n\n---\n\n## The Passage\n\n> \"Do not be anxious about anything, but in every situation, by prayer and petition, with thanksgiving, present your requests to God. And the peace of God, which transcends all understanding, will guard your hearts and your minds in Christ Jesus.\"\n> \u2014 Philippians 4:6-7 (NIV)\n\n---\n\n## Step 1: Prepare and Read\n\n- **Quiet your heart.** Take a minute of silence first. Ask God to open your understanding (Psalm 119:18).\n- **Read it slowly three times.** Read once for the whole sense. Read again aloud, stressing a different word each time (\"Do not be *anxious*\u2026 in *every* situation\u2026 *with thanksgiving*\"). Read a third time in another translation (ESV, NLT, or KJV).\n- **Read the context.** Read all of Philippians 4:1-13, and if you can, the whole letter. It takes about 15 minutes.\n\n### Context Notes\n- **Author and setting:** Paul wrote this letter while in chains, probably in Rome, around AD 60-62 (Philippians 1:12-14). He had real reasons to worry, including possible execution (1:20-23).\n- **Audience:** The church at Philippi was a church he loved. It had supported him with money (4:14-18) and faced opposition of its own (1:28-30).\n- **Theme of the letter:** Joy. Forms of \"joy\" and \"rejoice\" appear about 16 times. It's a letter about contentment in hard places.\n- **Just before:** Paul urges two women, Euodia and Syntyche, to settle a conflict (4:2-3). Then come \"Rejoice in the Lord always\" (4:4) and \"The Lord is near\" (4:5). Verse 6 grows out of verse 5: *because* the Lord is near, you don't need to be anxious.\n- **Just after:** \"Whatever is true, whatever is noble\u2026think about such things\" (4:8). Then \"I have learned\u2026to be content\" (4:11-13). So prayer (v. 6) leads into renewed thinking (v. 8) and learned contentment (v. 11).\n\n---\n\n## Step 2: Observe (What does it say?)\n\nAsk the basic questions: who, what, when, how, and why.\n\n| Question | Observation |\n|---|---|\n| **What's commanded?** | Don't be anxious; present your requests to God. |\n| **How much?** | \"Anything\" (nothing excluded) and \"every situation\" (nothing too small). |\n| **How?** | Prayer, petition, *and* thanksgiving. |\n| **What's promised?** | The peace *of God*, not just peace *with* God. |\n| **What does the peace do?** | It *guards* hearts and minds. |\n| **Where?** | \"In Christ Jesus.\" |\n\n### Key Words\n- **\"Anxious\" (Greek *merimna\u014d*):** To be pulled in different directions or divided in mind. Jesus uses the same word in Matthew 6:25-34 (\"do not worry\") and with Martha in Luke 10:41. Paul uses it in a *good* sense in Philippians 2:20, for Timothy's real concern for the church. So the problem isn't caring. It's care that hasn't been handed over to God.\n- **\"Prayer\" (*proseuch\u0113*):** General word for talking with God. It stresses worship and closeness.\n- **\"Petition\" (*de\u0113sis*):** A specific request for a specific need. God invites the details.\n- **\"Thanksgiving\" (*eucharistia*):** Gratitude. It's the attitude you pray *with*, not an extra step after.\n- **\"Requests\" (*ait\u0113mata*):** The actual things asked for. Be concrete.\n- **\"Transcends all understanding\":** Goes beyond what your mind can explain or produce.\n- **\"Guard\" (*phroure\u014d*):** A military word for a garrison standing watch. Philippi was a Roman colony with retired soldiers living there, so readers would have pictured soldiers guarding a city gate.\n- **\"Hearts and minds\":** Your emotions and will (heart) and your thoughts (mind). The whole inner person.\n\n### Structure\n1. **A command against** \u2014 \"Do not be anxious about anything.\"\n2. **A command for** \u2014 \"In every situation\u2026present your requests to God.\"\n3. **A promise** \u2014 \"The peace of God\u2026will guard\u2026\"\n\nNotice that Paul doesn't just say \"stop worrying.\" He swaps one activity (worrying) for another (praying).\n\n---\n\n## Step 3: Interpret (What does it mean?)\n\n- **Worry is replaced, not just resisted.** Anxiety is energy aimed at a problem you can't control. Paul redirects that energy toward God, who can.\n- **Nothing is too small or too big.** \"Anything\" and \"every situation\" mean you don't have to sort your worries into \"worth bothering God with\" and \"not.\"\n- **Thanksgiving changes the posture.** Thanking God while asking reminds you of what He has already done. It keeps prayer from becoming a nervous list of demands.\n- **The promise is peace, not a guaranteed outcome.** Paul doesn't say God will give you every request. He says God's peace will guard you *while* you wait. Paul himself was still in prison when he wrote this.\n- **The peace is God's own.** It's the settled calm God Himself has, shared with you. That's why it \"transcends understanding\": circumstances may not explain it.\n- **The guard is \"in Christ Jesus.\"** The peace isn't a technique. It comes through union with Christ, which ties back to \"The Lord is near\" (v. 5).\n\n### A Word of Care\nThis passage isn't a rebuke to people with anxiety disorders. Feeling anxious isn't the same as failing spiritually. Paul admits his own \"anxiety for all the churches\" (2 Corinthians 11:28) and speaks of sorrow (Philippians 2:27). Prayer and professional help, counseling or medical care, can work together. Using a doctor isn't a lack of faith.\n\n---\n\n## Step 4: Apply (What does it mean for me?)\n\nQuestions to reflect on or journal:\n1. What am I anxious about right now? Name each one specifically.\n2. Have I been \"praying\" about it, or mostly replaying it in my head?\n3. What can I thank God for, even in this situation?\n4. Am I asking God for peace, or only for a specific outcome?\n5. What thoughts do I need to replace with \"whatever is true\u2026noble\u2026right\" (4:8)?\n\n### A Practical Exercise: The Worry-to-Prayer Swap\n1. **Write it down.** List what's worrying you on paper.\n2. **Turn each worry into a request.** Change \"What if I lose my job?\" into \"Lord, please provide for us and give me wisdom at work.\"\n3. **Add a thank-you to each one.** \"Thank You that You have provided before.\"\n4. **Release it.** Some people physically fold the paper or set it down as a sign of handing it over.\n5. **Repeat as often as needed.** When the worry returns, pray again. Peace often comes as a practice, not a single moment.\n\n### Memorize It\nWrite Philippians 4:6-7 on a card. Read it morning and night for a week. Say it out loud whenever worry starts.\n\n---\n\n## Step 5: Pray\n\n> Father, You know everything I'm carrying today. Instead of holding it alone, I bring it to You: [name your worries]. Thank You for being near and for every way You have cared for me before. I ask for Your peace, the peace I can't explain, to guard my heart and mind in Christ Jesus. Help me trust You with the outcome. Amen.\n\n---\n\n## Related Verses on Anxiety and Worry\n\n*(Verses that Verse Finder\u2013style indexes usually group under Anxiety, Worry, Fear, and Peace. Check your edition's index for its exact list.)*\n\n### God's Invitation to Hand Over Worry\n- **1 Peter 5:7** \u2014 \"Cast all your anxiety on him because he cares for you.\"\n- **Psalm 55:22** \u2014 \"Cast your cares on the Lord and he will sustain you.\"\n- **Matthew 11:28-30** \u2014 \"Come to me, all you who are weary and burdened, and I will give you rest.\"\n\n### Jesus on Worry\n- **Matthew 6:25-34** \u2014 Look at the birds and the lilies; \"seek first his kingdom\"; \"do not worry about tomorrow.\"\n- **Luke 12:22-26** \u2014 \"Who of you by worrying can add a single hour to your life?\"\n- **John 14:27** \u2014 \"Peace I leave with you; my peace I give you\u2026Do not let your hearts be troubled and do not be afraid.\"\n- **John 16:33** \u2014 \"In this world you will have trouble. But take heart! I have overcome the world.\"\n\n### God's Presence and Strength\n- **Isaiah 41:10** \u2014 \"So do not fear, for I am with you\u2026I will strengthen you and help you.\"\n- **Joshua 1:9** \u2014 \"Do not be afraid\u2026for the Lord your God will be with you wherever you go.\"\n- **Psalm 46:1-2, 10** \u2014 \"God is our refuge and strength\u2026Be still, and know that I am God.\"\n- **Deuteronomy 31:8** \u2014 \"He will never leave you nor forsake you.\"\n\n### Peace and a Steady Mind\n- **Isaiah 26:3** \u2014 \"You will keep in perfect peace those whose minds are steadfast, because they trust in you.\"\n- **Colossians 3:15** \u2014 \"Let the peace of Christ rule in your hearts\u2026And be thankful.\"\n- **2 Timothy 1:7** \u2014 \"For God has not given us a spirit of fear, but of power and of love and of a sound mind\" (NKJV).\n- **Romans 8:6** \u2014 \"The mind governed by the Spirit is life and peace.\"\n\n### Honest Prayer in Distress\n- **Psalm 94:19** \u2014 \"When anxiety was great within me, your consolation brought me joy.\"\n- **Psalm 34:4** \u2014 \"I sought the Lord, and he answered me; he delivered me from all my fears.\"\n- **Psalm 56:3** \u2014 \"When I am afraid, I put my trust in you.\"\n- **Psalm 139:23-24** \u2014 \"Search me, God, and know my heart; test me and know my anxious thoughts.\"\n- **Proverbs 12:25** \u2014 \"Anxiety weighs down the heart, but a kind word cheers it up.\"\n\n### The Rest of Philippians 4\n- **Philippians 4:8** \u2014 Think on what is true, noble, right, pure, lovely, admirable.\n- **Philippians 4:11-13** \u2014 \"I have learned to be content\u2026I can do all this through him who gives me strength.\"\n- **Philippians 4:19** \u2014 \"My God will meet all your needs according to the riches of his glory in Christ Jesus.\"\n\n---\n\n## A Simple 7-Day Follow-Up Plan\n\n| Day | Read | Focus |\n|---|---|---|\n| 1 | Philippians 4:4-9 | Read the passage in context; memorize verse 6. |\n| 2 | Matthew 6:25-34 | Jesus' teaching on worry. |\n| 3 | 1 Peter 5:6-11 | Humility and casting cares. |\n| 4 | Psalm 46 | God as refuge. |\n| 5 | Isaiah 26:1-4 | Perfect peace through trust. |\n| 6 | John 14:1, 25-27 | Christ's own peace. |\n| 7 | Philippians 4:10-20 | Learned contentment and God's supply. |\n\n---\n\n**Bottom line:** Philippians 4:6-7 doesn't ask you to pretend you're fine. It asks you to take *everything* to God, specifically and with thanks, and it promises that His peace will stand guard over you even before the situation changes.\n"}], "grading": {"expectations": [{"text": "Uses the three-step method: observation, interpretation, application", "passed": false, "evidence": "Line 3 disclaims not having the edition's study-method pages and substitutes a generic five-step 'Read -> Observe -> Interpret -> Apply -> Pray' pattern. Observe/Interpret/Apply appear, but not as the book's three-step method of 'A Life of Quiet Strength' (no own-words restatement step, no use of the Overview, no 'So what?' framing)."}, {"text": "Applies each step to Philippians 4:6-7 specifically", "passed": true, "evidence": "Observe table and key-word list (merimnao, phroureo, 'hearts and minds'), Interpret bullets ('promise is peace, not a guaranteed outcome'), and Apply questions/Worry-to-Prayer Swap are all specific to Philippians 4:6-7."}, {"text": "Gives related verses on fear/anxiety or prayer", "passed": true, "evidence": "Long list of anxiety/fear/peace verses (1 Peter 5:7, Matthew 6:25-34, John 14:27, Psalm 46:1-2, Isaiah 26:3, etc.). None are presented as confirmed Verse Finder entries (hedged as 'Verse Finder-style indexes usually'), and most are not in the VF per verse-finder.md, but the assertion only requires related verses."}, {"text": "Connects to Dungy's 'God's playbook' framing or the Principles/Practices/Priorities structure", "passed": false, "evidence": "No mention of Tony Dungy, 'God's playbook', or the Principles/Practices/Priorities structure anywhere in the response."}, {"text": "Gives a concrete personal application", "passed": true, "evidence": "'A Practical Exercise: The Worry-to-Prayer Swap' (write worries down, convert 'What if I lose my job?' into a request, add thanks, release, repeat) plus memorization and journaling questions."}], "summary": {"passed": 3, "failed": 2, "total": 5, "pass_rate": 0.6}}}, {"id": "eval-2-adv-work-with_skill-run-1", "prompt": "I'm starting a side business and worried about money and integrity. Build a 7-day devotional using Proverbs and the NT on work, wealth and integrity.", "eval_id": 2, "outputs": [{"name": "response.md", "type": "text", "content": "# Seven-Day Devotional: Work, Wealth and Integrity for a New Side Business\n\n*Built on the Quiet Strength New Testament with Psalms and Proverbs (NLT)*\n\nStarting a business brings two pressures at once. **Money** pushes you to worry, rush or cut corners. **Integrity** asks whether you'll do it right when nobody's checking. Tony Dungy calls the Bible \"God's playbook\". You study a playbook *before* the game, so this week is a good time to settle your plays before the pressure gets heavy.\n\n**How each day works.** The edition's \"A Life of Quiet Strength\" teaches a three-step method, and each day follows it:\n1. **Observe.** What does the passage say? Write it in your own words.\n2. **Interpret.** What did the author mean, and why was it written?\n3. **Apply.** So what? What changes in my business this week?\n\n**Each day includes:**\n- one Proverbs reading and one New Testament reading;\n- the Quiet Strength Verse Finder's principle statement where one applies;\n- reflection questions, a business action step, and a short prayer.\n\nPlease read each passage in full in your Bible or an authorized online NLT. Proverbs starts on page 301 of this edition. I quote only short phrases here because the NLT text is copyrighted.\n\n> **Source note.** References marked **(VF)** come from the edition's Verse Finder entries on *Work, Wealth, Integrity, Responsibility, Simplicity* and related topics. Unmarked Proverbs are well-known passages I've added on the same themes. They aren't from the Verse Finder listing. Some Verse Finder print was faint, so check each reference before you memorize or share it.\n\n---\n\n## Day 1. Who is the real boss? Commit the work to God\n\n**Verse Finder practice:** *Work must be done with God in mind.* Do your best at work, because God is ultimately your true boss.\n\n- **Proverbs 16:3.** Commit your actions to the Lord, and your plans will succeed.\n- **Ephesians 6:5\u20137 (VF).** Work with sincerity, as if you were serving the Lord rather than people.\n- **1 Corinthians 15:58 (VF).** Work for the Lord is never useless.\n\n**Observe.** Ephesians says to work wholeheartedly \"as though you were working for the Lord\" (my paraphrase), whether or not anyone is watching.\n\n**Interpret.** Paul wrote this to workers who often had little power or recognition. His point is that whoever your earthly boss is, your real accountability is to God. As a business owner, *you* are now the boss. These verses remind you that you still answer to Someone.\n\n**Apply.**\n- Write a one-paragraph \"mission\" for your business that includes how it serves people and honors God.\n- Ask yourself: if God were my client, what would I change about how I work?\n\n**Prayer.** *Lord, this business is yours before it is mine. Help me work with sincerity, as for you.*\n\n---\n\n## Day 2. Integrity: honest scales and a secure path\n\n**Verse Finder practice:** *Integrity must be protected.* Living with integrity requires personal sacrifice, but the eternal rewards outweigh what we give up.\n\n- **Proverbs 10:9 (VF).** People with integrity walk safely, but crooked paths are exposed.\n- **Proverbs 11:1.** The Lord detests dishonest scales but delights in accurate weights.\n- **Titus 2:7 (VF).** Be an example of good works and integrity in everything you do.\n- **Psalm 119:1\u20132 (VF).** Joyful are people of integrity.\n\n**Observe.** Proverbs 10:9 contrasts two paths. One is *safe*. The other will be *exposed*.\n\n**Interpret.** The \"scales\" in Proverbs 11:1 were the business tools of the day. Merchants could cheat with weights that looked fair. So integrity in Proverbs is not abstract. It is about pricing, measuring, invoicing and delivering what you promised.\n\n**Apply.** Do an \"honest scales\" check of your business:\n- Is your **pricing** clear, with no hidden fees?\n- Does your **marketing** promise only what you deliver?\n- Do you keep honest **records** and report income properly on your taxes?\n- Are you clear with your **day-job employer**? Check any contract terms on side work, conflicts of interest, and the use of company time or equipment.\n\nPick the one area where you feel most tempted to blur the line, and fix it this week.\n\n**Prayer.** *Lord, make my scales honest even when no one would catch me. I'd rather walk safely than get ahead crookedly.*\n\n---\n\n## Day 3. Wealth: a tool, not a master\n\n**Verse Finder practice:** *Wealth must be used wisely.* Thinking wealth can make you happy is foolish. Only a right relationship with God brings fulfillment. Use all the resources God provides wisely and unselfishly.\n\n- **Proverbs 30:8\u20139.** Give me neither poverty nor riches, just enough. This is Agur's prayer. The edition's Overview lists Agur as one of the authors of Proverbs.\n- **Matthew 6:19\u201321, 24 (VF).** Store treasure in heaven. You can't serve both God and money.\n- **Luke 12:21 (VF).** The man who was rich toward himself but not toward God.\n\n**Observe.** Jesus says no one can serve *two masters* (Matthew 6:24).\n\n**Interpret.** Jesus isn't condemning money. He is warning about what it can turn into: a master that sets your priorities and your peace. A side business is often started for good reasons, such as debt, family or freedom. But it can slowly start to rule your time, mood and identity.\n\n**Apply.**\n- Write down *why* you want this income, and what \"enough\" looks like for you.\n- Decide now on a generosity plan, for example a percentage of profit you'll give. Deciding before the money arrives is easier than deciding after.\n\n**Prayer.** *Lord, money can serve me, but it will not rule me. Show me what \"enough\" is.*\n\n---\n\n## Day 4. Worry about money: seek first\n\n**Verse Finder practice:** *Simplicity must be sought.* The less we depend on worldly things, the more we can focus on God.\n\n- **Proverbs 3:5\u20136.** Trust in the Lord with all your heart, and he will show you which path to take.\n- **Matthew 6:33 (VF).** Seek the Kingdom of God above all else, and he will give you everything you need. Read **6:25\u201334** for the full passage on not worrying.\n- **Philippians 4:11\u201313 (VF).** Paul learned contentment in plenty and in want.\n- **Hebrews 13:5 (VF).** Don't love money; be satisfied with what you have, for God says he will never fail you.\n\n**Observe.** Matthew 6 repeats \"don't worry\" several times and gives a reason each time.\n\n**Interpret.** Jesus' answer to money worry is not \"you'll get rich\". It is about *order*: seek God first, and trust him for what you need. Paul's \"I can do everything\" (Philippians 4:13) is about being content in *any* circumstance, including lean months. It isn't a promise of business success.\n\n**Apply.**\n- List your top three money worries about the business. Turn each one into a prayer request (Philippians 4:6\u20137 goes well with this).\n- Then take one practical step on each, such as a budget, a savings buffer, or limiting how much you risk.\n\nTrusting God and planning carefully work together.\n\n**Prayer.** *Lord, I put you first. Replace my worry with trust and my panic with a plan.*\n\n---\n\n## Day 5. Diligence and planning: steady work over quick money\n\n- **Proverbs 21:5.** Good planning and hard work lead to prosperity; hasty shortcuts lead to poverty.\n- **Proverbs 13:11.** Wealth from get-rich-quick schemes quickly disappears; wealth from hard work grows over time.\n- **Proverbs 14:23.** Work brings profit, but mere talk leads to poverty.\n- **Luke 14:28\u201330.** Count the cost before you build a tower.\n\n**Observe.** Proverbs keeps contrasting *steady and planned* with *hasty and quick*.\n\n**Interpret.** Proverbs is wisdom literature: practical wisdom for every area of life, as the edition's Overview describes it. It shows what is generally true, not guaranteed formulas. Its message for a new business owner is patience. Build slowly and honestly, and be wary of shortcuts that promise fast money.\n\n**Apply.**\n- Write a simple 90-day plan: three goals, the hours you can realistically give each week, and costs you'll spend only if a certain milestone is met.\n- Be wary of any opportunity that promises fast returns with little work.\n\n**Prayer.** *Lord, give me patience to build slowly and wisely, and the discipline to do today's work.*\n\n---\n\n## Day 6. Faithful in small things; wise counsel\n\n**Verse Finder practice:** *Responsibility must be accepted.* If you are faithful in small things, God will trust you with greater responsibilities.\n\n- **Proverbs 15:22.** Plans go wrong for lack of advice; many advisers bring success.\n- **Luke 16:10 (VF).** Faithful in little, faithful in much. Dishonest in little, dishonest in much.\n- **Matthew 25:21, 23 (VF).** \"Well done, my good and faithful servant.\" Read the whole parable of the talents, Matthew 25:14\u201330.\n\n**Observe.** Luke 16:10 links small honesty and big honesty. They grow together.\n\n**Interpret.** The parable of the talents praises the servants who *put resources to work* faithfully, not the one who buried his out of fear. That speaks to both worry and stewardship. God expects you to use what you've been given, carefully and responsibly.\n\n**Apply.**\n- Pick one \"small thing\" to be faithful in this week, such as answering every customer on time, keeping receipts, or meeting a deadline.\n- Find advisers. That might be a mentor who runs a business, a tax professional or accountant for the side income, and a trusted friend who will ask you hard questions about integrity.\n\n**Prayer.** *Lord, make me faithful in the small things, and humble enough to ask for advice.*\n\n---\n\n## Day 7. A good name and the long view\n\n- **Proverbs 22:1.** Choose a good reputation over great riches.\n- **Proverbs 2:6\u20138 (VF, 2:6\u20137).** The Lord grants wisdom and is a shield to those who walk with integrity.\n- **1 Timothy 6:6\u201310, 17\u201319 (VF, 6:6\u20137 and 6:17\u201319).** Godliness with contentment is great wealth. The love of money is a root of evil. The rich should be generous and ready to share.\n- **Colossians 3:23\u201324.** Work willingly at whatever you do, as for the Lord.\n\n**Observe.** 1 Timothy 6 doesn't tell the rich to stop having money. It tells them to be *generous* and to put their hope in God.\n\n**Interpret.** In the edition's Overview, 1 Timothy is about conduct for the church and its leaders, and \"applies to anyone wanting to be used by God.\" A business is a platform: your reputation becomes your testimony. The edition's Verse Finder also says, under **Leadership**, to ask God to develop honesty, kindness, patience, purity and integrity in you (Titus 2:7\u20138).\n\n**Apply.** Write your \"Business Playbook\". This is a short list of non-negotiables to look at whenever a decision gets hard. For example:\n1. I will tell the truth in pricing, marketing and records.\n2. I won't let this business crowd out God, family or my current job commitments.\n3. I'll give generously from what I earn.\n4. I'll do excellent work as for the Lord, and leave the results to him.\n\n**Prayer.** *Lord, I want a good name more than great riches. Let this business reflect you.*\n\n---\n\n## Going further\n\n- **Keep reading Proverbs.** It has 31 chapters, so reading one a day takes about a month. Watch for verses on work, money, words and honesty.\n- **Related Verse Finder practices:**\n  - *Humility must be pursued.*\n  - *Service must be practiced.*\n  - *Self-control must be pursued.*\n  - *Thankfulness must be cultivated.*\n  - *Hypocrisy must be avoided:* don't pretend to be what you are not (Luke 12:1\u20132).\n- **Study with others.** The edition encourages joining a Bible study. Even one friend who reads these verses with you and checks in on your business integrity is valuable.\n\n**A practical note.** These devotions are about character and trust. They aren't financial, tax or legal advice. For things like business structure, taxes on side income, and employment-contract questions, talk to a qualified professional. Proverbs 15:22 would agree.\n"}], "grading": {"expectations": [{"text": "Provides a 7-day structure", "passed": true, "evidence": "Seven headed days: 'Day 1. Who is the real boss?' through 'Day 7. A good name and the long view', each with readings, Observe/Interpret/Apply, and prayer."}, {"text": "Uses Proverbs passages on work or wealth", "passed": true, "evidence": "Proverbs 16:3, 10:9, 11:1, 30:8-9, 3:5-6, 21:5, 13:11, 14:23, 15:22, 22:1, 2:6-8. Book-specific claims check out: Proverbs p.301, Agur listed as a Proverbs author, Proverbs 10:9 and 2:6-7 correctly marked (VF) under Integrity, Proverbs as 'practical wisdom for every area of life'."}, {"text": "Uses NT passages on money/integrity", "passed": true, "evidence": "Matthew 6:19-21,24; Luke 12:21; Matthew 6:33; Hebrews 13:5; 1 Timothy 6:6-10,17-19; Luke 16:10; Titus 2:7; Ephesians 6:5-7. VF principle statements quoted accurately ('Wealth must be used wisely', 'Integrity must be protected', 'Work must be done with God in mind... God is ultimately your true boss', 'Responsibility must be accepted', 'Simplicity must be sought'); minor range extensions (Matt 6:19-21 vs VF 6:19; Matt 25:21,23 vs VF 25:23) are not errors of substance."}, {"text": "Each day includes an application or reflection question", "passed": true, "evidence": "Every day has an 'Apply' section with concrete actions (e.g., Day 2 'honest scales' checklist; Day 3 define 'enough' and a generosity plan; Day 5 90-day plan; Day 7 'Business Playbook'), several with reflection questions ('if God were my client, what would I change?')."}, {"text": "Stays faithful to scripture rather than prosperity-gospel promises", "passed": true, "evidence": "Day 4: 'Jesus' answer to money worry is not \"you'll get rich\"... Philippians 4:13 ... isn't a promise of business success.' Day 5: Proverbs 'shows what is generally true, not guaranteed formulas.' Day 3: money as tool, not master."}], "summary": {"passed": 5, "failed": 0, "total": 5, "pass_rate": 1.0}}}, {"id": "eval-2-adv-work-without_skill-run-1", "prompt": "I'm starting a side business and worried about money and integrity. Build a 7-day devotional using Proverbs and the NT on work, wealth and integrity.", "eval_id": 2, "outputs": [{"name": "response.md", "type": "text", "content": "# Faithful in Business: A 7-Day Devotional on Work, Wealth, and Integrity\n\n*For anyone starting a side business who feels the pull between money worries and wanting to do things right.*\n\nStarting something new is exciting and scary. You may be asking: *Will this make enough money? Will I cut corners when it gets tight? Will this take over my life?* Scripture speaks directly to all of these. Each day below pairs a passage from **Proverbs** with one from the **New Testament**. It includes a short reflection, questions, a practical step for your business, and a prayer.\n\n**How to use it:** Set aside 15-20 minutes, ideally before you work on the business. Keep a notebook or a note on your phone for the \"Business Step\" each day.\n\n---\n\n## Day 1: Commit the Work to God\n\n**Proverbs 16:3** \u2014 \"Commit to the Lord whatever you do, and he will establish your plans.\"\n**Also read:** Proverbs 16:1-9\n\n**Colossians 3:23-24** \u2014 \"Whatever you do, work at it with all your heart, as working for the Lord, not for human masters\u2026 It is the Lord Christ you are serving.\"\n\n### Reflection\nBefore this business is a source of income, it can be an act of worship. \"Commit\" in Proverbs 16:3 is literally \"roll onto.\" You roll the weight of your plans onto God. That doesn't mean you stop planning. Proverbs 16:9 says, \"In their hearts humans plan their course, but the Lord establishes their steps.\" You plan; God directs.\n\nColossians 3 was first written to slaves, people with almost no control over their work. If *they* could work \"as for the Lord,\" so can you, whether you're filling orders at midnight or answering a cranky customer email.\n\n### Reflect\n- Why am I starting this business? Write down your real motives, the good ones and the mixed ones.\n- What would it look like to see this business as service to God, not just a way to make money?\n\n### Business Step\nWrite a one-paragraph \"purpose statement\" for your business. Include whom you serve and how it honors God. Keep it where you'll see it.\n\n### Prayer\n*Lord, I roll this business onto You. Establish my plans where they're good, and change them where they're not. Let me work for You first. Amen.*\n\n---\n\n## Day 2: Diligence and Honest Hard Work\n\n**Proverbs 10:4** \u2014 \"Lazy hands make for poverty, but diligent hands bring wealth.\"\n**Proverbs 21:5** \u2014 \"The plans of the diligent lead to profit as surely as haste leads to poverty.\"\n**Also read:** Proverbs 6:6-11 (the ant)\n\n**2 Thessalonians 3:10-13** \u2014 \"\u2026We hear that some among you are idle\u2026 Such people we command\u2026to settle down and earn the food they eat\u2026 Never tire of doing what is good.\"\n\n### Reflection\nProverbs praises diligence, but notice it contrasts diligence not only with laziness but with *haste* (21:5). Get-rich-quick thinking is just as dangerous as idleness. The ant in Proverbs 6 works steadily, stores up in season, and needs no boss to push it. That's a side-business picture: small, steady, consistent effort.\n\nPaul worked as a tentmaker so he wouldn't be a burden (Acts 18:3; 2 Thessalonians 3:8). Work with your hands isn't less spiritual than ministry.\n\n### Reflect\n- Am I tempted more toward laziness or toward rushing?\n- Where do I need steady, boring consistency instead of big bursts?\n\n### Business Step\nSet a realistic weekly schedule for the business. Block specific hours. Protect them, and also protect the time *outside* them (see Day 6).\n\n### Prayer\n*Father, make me diligent like the ant and patient instead of hasty. Help me be faithful in small daily tasks. Amen.*\n\n---\n\n## Day 3: Integrity When No One Is Watching\n\n**Proverbs 11:1** \u2014 \"The Lord detests dishonest scales, but accurate weights find favor with him.\"\n**Proverbs 10:9** \u2014 \"Whoever walks in integrity walks securely, but whoever takes crooked paths will be found out.\"\n**Proverbs 11:3** \u2014 \"The integrity of the upright guides them, but the unfaithful are destroyed by their duplicity.\"\n\n**Luke 16:10** \u2014 \"Whoever can be trusted with very little can also be trusted with much, and whoever is dishonest with very little will also be dishonest with much.\"\n\n### Reflection\nIn ancient markets, merchants could cheat with two sets of weights: one for buying, one for selling. God says He *detests* that. Modern versions look like overstated product claims, hidden fees, fudged hours, skipped taxes, \"borrowing\" someone's design, or fake reviews.\n\nJesus says integrity in small things predicts integrity in big things. A side business is \"very little\" right now. That makes it the perfect place to build honest habits before the stakes get higher.\n\nIntegrity also brings *security* (10:9). You don't have to remember which story you told whom.\n\n### Reflect\n- Where might I be tempted to shade the truth: pricing, marketing, taxes, or my employer's time and resources?\n- Does my day job have rules about side businesses? Am I keeping them?\n\n### Business Step\nDo an \"honest scales\" check:\n- Are your product descriptions and claims accurate?\n- Are prices and fees clear up front?\n- Are you tracking income for taxes?\n- Are you working on the business only on your own time and equipment, not your employer's?\n\nFix one thing this week.\n\n### Prayer\n*Lord, give me accurate scales in every part of my business. Let me be trustworthy in little things so I can be trusted with more. Amen.*\n\n---\n\n## Day 4: The Right Place for Money\n\n**Proverbs 30:8-9** \u2014 \"Give me neither poverty nor riches, but give me only my daily bread. Otherwise, I may have too much and disown you\u2026 Or I may become poor and steal, and so dishonor the name of my God.\"\n**Proverbs 23:4-5** \u2014 \"Do not wear yourself out to get rich\u2026 Cast but a glance at riches, and they are gone, for they will surely sprout wings and fly off to the sky like an eagle.\"\n\n**1 Timothy 6:6-10, 17-19** \u2014 \"Godliness with contentment is great gain\u2026 The love of money is a root of all kinds of evil\u2026 Command those who are rich\u2026not to be arrogant nor to put their hope in wealth\u2026but to put their hope in God\u2026 to be rich in good deeds, and to be generous and willing to share.\"\n\n### Reflection\nScripture doesn't call money evil. It calls the *love* of money a root of evil. Proverbs 30 gives a wise prayer: both too little and too much carry spiritual risks. Poverty can tempt you to steal; wealth can tempt you to forget God.\n\nWanting your business to succeed is fine. Proverbs often links diligence with profit. The question is whether money is a *tool* or a *master*. Jesus said, \"You cannot serve both God and money\" (Matthew 6:24).\n\n### Reflect\n- What number would feel like \"enough\" from this business? Have I ever defined it?\n- If the business took off, what would I be tempted to do or become?\n\n### Business Step\nWrite down a specific financial goal for the business and what it's *for* (debt payoff, family needs, savings, giving). Having a defined \"enough\" helps protect you from endless striving.\n\n### Prayer\n*God, give me my daily bread. Keep me from loving money, and let me hold whatever You give with an open hand. Amen.*\n\n---\n\n## Day 5: Trusting God With Money Worries\n\n**Proverbs 3:5-6, 9-10** \u2014 \"Trust in the Lord with all your heart and lean not on your own understanding\u2026 Honor the Lord with your wealth, with the firstfruits of all your crops; then your barns will be filled to overflowing.\"\n\n**Matthew 6:25-34** \u2014 \"Do not worry about your life, what you will eat or drink\u2026 Look at the birds\u2026 your heavenly Father feeds them\u2026 Seek first his kingdom and his righteousness, and all these things will be given to you as well. Therefore do not worry about tomorrow.\"\n\n**Philippians 4:6-7, 19** \u2014 \"Do not be anxious about anything, but in every situation, by prayer and petition, with thanksgiving, present your requests to God\u2026 And my God will meet all your needs.\"\n\n### Reflection\nNew business owners worry: slow sales, unexpected costs, the fear of having wasted money. Jesus doesn't say these needs aren't real. He says your Father *knows* you need them (Matthew 6:32). Worry can't add an hour to your life, but it can steal joy and judgment.\n\nProverbs 3 pairs trust with action: honor God with your \"firstfruits.\" Giving first, before you see how things turn out, is a practical way to declare that God, not the business, is your provider.\n\nTrust isn't the same as being careless. Proverbs also says, \"The prudent see danger and take refuge\" (22:3). Plan wisely, then let go of the outcome.\n\n### Reflect\n- What specific money fear about this business keeps coming back?\n- What would \"seeking first the kingdom\" look like this week in my business?\n\n### Business Step\nTurn worries into a plan and a prayer:\n1. List your top three financial fears.\n2. For each, write one prudent action (for example, a small emergency buffer, a cap on startup spending, or not quitting your day job too early).\n3. Pray over each one and hand the outcome to God.\n\nAlso consider deciding now what portion of business profit you'll give.\n\n### Prayer\n*Father, You know what I need. I bring You my fears about money. Help me plan wisely and then trust You fully. Amen.*\n\n---\n\n## Day 6: Wise Counsel, Rest, and Boundaries\n\n**Proverbs 15:22** \u2014 \"Plans fail for lack of counsel, but with many advisers they succeed.\"\n**Proverbs 27:23-24** \u2014 \"Be sure you know the condition of your flocks, give careful attention to your herds; for riches do not endure forever.\"\n**Proverbs 22:7** \u2014 \"The borrower is slave to the lender.\"\n\n**Luke 14:28-30** \u2014 \"Suppose one of you wants to build a tower. Won't you first sit down and estimate the cost\u2026?\"\n**Mark 6:31** \u2014 \"Come with me by yourselves to a quiet place and get some rest.\"\n\n### Reflection\nWisdom in Proverbs is practical. Get advice. Know your numbers (\"the condition of your flocks\"). Be careful with debt. Jesus Himself uses a building project to teach counting the cost.\n\nA side business can quietly eat up family time, sleep, church, and rest. Jesus pulled His tired disciples away to rest even when crowds were waiting. Sabbath (Exodus 20:8-10) is a weekly reminder that the world, and your business, doesn't depend on you working nonstop.\n\n### Reflect\n- Who could I ask for honest advice, such as a mentor, an experienced business owner, or an accountant?\n- Do I really know my costs, margins, and cash flow?\n- What is this business costing my family, health, or faith life?\n\n### Business Step\n- Schedule one conversation with a wise adviser this month.\n- Set up a simple monthly money review: income, expenses, profit.\n- Choose one weekly day or block that is fully off from the business.\n- Talk with your spouse or family about boundaries, if that applies.\n\n### Prayer\n*Lord, give me humility to seek counsel, wisdom to count the cost, and faith to rest. Guard my family and my soul from being consumed by work. Amen.*\n\n---\n\n## Day 7: Generosity and a Lasting Legacy\n\n**Proverbs 11:24-25** \u2014 \"One person gives freely, yet gains even more; another withholds unduly, but comes to poverty. A generous person will prosper; whoever refreshes others will be refreshed.\"\n**Proverbs 22:1** \u2014 \"A good name is more desirable than great riches; to be esteemed is better than silver or gold.\"\n**Proverbs 3:27** \u2014 \"Do not withhold good from those to whom it is due, when it is in your power to act.\"\n\n**2 Corinthians 9:6-8** \u2014 \"Whoever sows generously will also reap generously\u2026 God loves a cheerful giver. And God is able to bless you abundantly, so that in all things at all times, having all that you need, you will abound in every good work.\"\n**Matthew 6:19-21** \u2014 \"Store up for yourselves treasures in heaven\u2026 For where your treasure is, there your heart will be also.\"\n\n### Reflection\nThe end goal of a godly business isn't a bigger bank balance. It's a good name and an open hand. Proverbs 22:1 says reputation matters more than riches. Your business can bless customers through good products, suppliers and helpers through fair and *prompt* payment (Proverbs 3:27-28; James 5:4), and others through generosity.\n\nPaul says God gives \"so that\" you can abound in good work. Blessing flows *through* you, not just *to* you. Where your treasure goes, your heart follows.\n\n### Reflect\n- What do I want people to say about how I did business?\n- How could this business be generous right now, even in a small way?\n\n### Business Step\nWrite a short \"integrity and generosity commitment\" for your business. For example:\n- \"We tell the truth in all marketing and pricing.\"\n- \"We pay people fairly and on time.\"\n- \"We give ___% of profit to ___.\"\n- \"We keep one day a week free for rest and family.\"\n\nSign and date it. Revisit it every three months.\n\n### Prayer\n*God, let this business build a good name that honors You. Make me a cheerful, generous giver. Let my treasure, and my heart, be with You. Amen.*\n\n---\n\n## Quick Reference: Key Verses by Theme\n\n| Theme | Proverbs | New Testament |\n|---|---|---|\n| Purpose in work | 16:3, 16:9 | Colossians 3:23-24 |\n| Diligence | 10:4, 21:5, 6:6-11, 12:11 | 2 Thessalonians 3:10-13, Acts 18:3 |\n| Integrity | 11:1, 10:9, 11:3, 20:23 | Luke 16:10, Ephesians 4:28 |\n| Money's proper place | 30:8-9, 23:4-5, 28:20 | 1 Timothy 6:6-10, 17-19; Matthew 6:24 |\n| Trust and anxiety | 3:5-6, 3:9-10 | Matthew 6:25-34, Philippians 4:6-7, 19 |\n| Counsel and planning | 15:22, 27:23-24, 22:3, 22:7 | Luke 14:28-30 |\n| Rest | \u2014 | Mark 6:31, Matthew 11:28 |\n| Generosity and reputation | 11:24-25, 22:1, 3:27 | 2 Corinthians 9:6-8, Matthew 6:19-21 |\n\n---\n\n## A Verse to Memorize This Week\n\n> \"Commit to the Lord whatever you do, and he will establish your plans.\" \u2014 Proverbs 16:3\n\n*A practical note:* This devotional offers spiritual encouragement, not financial, legal, or tax advice. For things like business registration, taxes, and any rules your employer has about outside work, check with a qualified professional.\n\n*Scripture quotations are from the NIV unless otherwise noted.*\n"}], "grading": {"expectations": [{"text": "Provides a 7-day structure", "passed": true, "evidence": "Seven headed days, 'Day 1: Commit the Work to God' through 'Day 7: Generosity and a Lasting Legacy', each with readings, Reflection, Reflect questions, Business Step and Prayer."}, {"text": "Uses Proverbs passages on work or wealth", "passed": true, "evidence": "Proverbs 16:3, 10:4, 21:5, 6:6-11, 11:1, 10:9, 11:3, 30:8-9, 23:4-5, 3:5-10, 15:22, 27:23-24, 22:7, 11:24-25, 22:1 - all on work, wealth or integrity. No book-specific claims made, so nothing to contradict the skill files."}, {"text": "Uses NT passages on money/integrity", "passed": true, "evidence": "Luke 16:10, 1 Timothy 6:6-10,17-19, Matthew 6:19-21,24-34, 2 Thessalonians 3:10-13, Colossians 3:23-24, 2 Corinthians 9:6-8 on money/integrity/work."}, {"text": "Each day includes an application or reflection question", "passed": true, "evidence": "Each day has a 'Reflect' section with questions (e.g., Day 3 'Where might I be tempted to shade the truth...?', Day 4 'What number would feel like \"enough\"?') plus a 'Business Step'."}, {"text": "Stays faithful to scripture rather than prosperity-gospel promises", "passed": true, "evidence": "Day 4: 'Scripture doesn't call money evil. It calls the love of money a root of evil... a tool or a master'; Day 5: 'Trust isn't the same as being careless'; Day 7 reads 2 Cor 9:8 as blessing 'so that you can abound in good work... through you, not just to you'. Proverbs 3:9-10 and 11:24-25 are quoted but not turned into wealth guarantees."}], "summary": {"passed": 5, "failed": 0, "total": 5, "pass_rate": 1.0}}}], "previous_feedback": {}, "previous_outputs": {}, "benchmark": {"metadata": {"skill_name": "quiet-strength-bible", "skill_path": "\u003cpath/to/skill>", "executor_model": "\u003cmodel-name>", "analyzer_model": "\u003cmodel-name>", "timestamp": "2026-11-21T22:00:50Z", "evals_run": [1, 2], "runs_per_configuration": 1}, "runs": [{"eval_id": 1, "eval_name": "adv-study", "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 5, "failed": 0, "total": 5, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Uses the three-step method: observation, interpretation, application", "passed": true, "evidence": "Line 3 names the edition's 'A Life of Quiet Strength' method 'Observation, Interpretation, Application'; sections 'Step 1: Observation', 'Step 2: Interpretation', 'Step 3: Application' match SKILL.md (restate in own words/underline; ask why written, use Overview/commentary; 'So what?' with 2 Timothy 3:16)."}, {"text": "Applies each step to Philippians 4:6-7 specifically", "passed": true, "evidence": "Observation table breaks down 4:6-7 (Stop/Start/With/Promise/guard/'in Christ Jesus') with underline words; Interpretation uses the edition's Philippians overview (Paul, around AD 61, letter, 'mind-set, attitude and outlook... joy of the Lord in a troubled world' - matches book-overviews.md, p.169 correct); Application turns 4:6-7 into worry->request->thanks steps."}, {"text": "Gives related verses on fear/anxiety or prayer", "passed": true, "evidence": "'Related verses from the Quiet Strength Verse Finder' lists Courage/Fear 1 John 4:18, Psalm 27:1; Assurance Romans 8:38-39, John 6:37-40, 10:27-29, Romans 5:1-5, Eph 3:12, 2 Tim 1:12; Protection 2 Thess 3:3; Psalm 46:1-3; Prayer practice (Matt 7:7-8, Heb 4:16, James 5:16). All match verse-finder.md; non-VF verses (Matt 6:25-34, 1 Pet 5:7) are clearly labeled 'not from the Verse Finder'."}, {"text": "Connects to Dungy's 'God's playbook' framing or the Principles/Practices/Priorities structure", "passed": true, "evidence": "Line 3: 'Tony Dungy calls the Bible \"God's playbook\". His advice is to study it before the game, not after you've fallen behind'; closing tip on the head coach answering questions about plays; Dungy's 'read daily and pray daily' rhythm - all match SKILL.md. Also uses VF practice wording ('Thankfulness must be cultivated', 'Prayer must be sincere and persistent')."}, {"text": "Gives a concrete personal application", "passed": true, "evidence": "Step 3 gives concrete steps (name the worry, convert 'What if I can't pay this bill?' into a request, attach thanks, re-aim thinking per 4:8, do the next faithful thing) plus a 7-day practice table and memory phrase."}], "notes": []}, {"eval_id": 2, "eval_name": "adv-work", "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 5, "failed": 0, "total": 5, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Provides a 7-day structure", "passed": true, "evidence": "Seven headed days: 'Day 1. Who is the real boss?' through 'Day 7. A good name and the long view', each with readings, Observe/Interpret/Apply, and prayer."}, {"text": "Uses Proverbs passages on work or wealth", "passed": true, "evidence": "Proverbs 16:3, 10:9, 11:1, 30:8-9, 3:5-6, 21:5, 13:11, 14:23, 15:22, 22:1, 2:6-8. Book-specific claims check out: Proverbs p.301, Agur listed as a Proverbs author, Proverbs 10:9 and 2:6-7 correctly marked (VF) under Integrity, Proverbs as 'practical wisdom for every area of life'."}, {"text": "Uses NT passages on money/integrity", "passed": true, "evidence": "Matthew 6:19-21,24; Luke 12:21; Matthew 6:33; Hebrews 13:5; 1 Timothy 6:6-10,17-19; Luke 16:10; Titus 2:7; Ephesians 6:5-7. VF principle statements quoted accurately ('Wealth must be used wisely', 'Integrity must be protected', 'Work must be done with God in mind... God is ultimately your true boss', 'Responsibility must be accepted', 'Simplicity must be sought'); minor range extensions (Matt 6:19-21 vs VF 6:19; Matt 25:21,23 vs VF 25:23) are not errors of substance."}, {"text": "Each day includes an application or reflection question", "passed": true, "evidence": "Every day has an 'Apply' section with concrete actions (e.g., Day 2 'honest scales' checklist; Day 3 define 'enough' and a generosity plan; Day 5 90-day plan; Day 7 'Business Playbook'), several with reflection questions ('if God were my client, what would I change?')."}, {"text": "Stays faithful to scripture rather than prosperity-gospel promises", "passed": true, "evidence": "Day 4: 'Jesus' answer to money worry is not \"you'll get rich\"... Philippians 4:13 ... isn't a promise of business success.' Day 5: Proverbs 'shows what is generally true, not guaranteed formulas.' Day 3: money as tool, not master."}], "notes": []}, {"eval_id": 1, "eval_name": "adv-study", "configuration": "without_skill", "run_number": 1, "result": {"pass_rate": 0.6, "passed": 3, "failed": 2, "total": 5, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Uses the three-step method: observation, interpretation, application", "passed": false, "evidence": "Line 3 disclaims not having the edition's study-method pages and substitutes a generic five-step 'Read -> Observe -> Interpret -> Apply -> Pray' pattern. Observe/Interpret/Apply appear, but not as the book's three-step method of 'A Life of Quiet Strength' (no own-words restatement step, no use of the Overview, no 'So what?' framing)."}, {"text": "Applies each step to Philippians 4:6-7 specifically", "passed": true, "evidence": "Observe table and key-word list (merimnao, phroureo, 'hearts and minds'), Interpret bullets ('promise is peace, not a guaranteed outcome'), and Apply questions/Worry-to-Prayer Swap are all specific to Philippians 4:6-7."}, {"text": "Gives related verses on fear/anxiety or prayer", "passed": true, "evidence": "Long list of anxiety/fear/peace verses (1 Peter 5:7, Matthew 6:25-34, John 14:27, Psalm 46:1-2, Isaiah 26:3, etc.). None are presented as confirmed Verse Finder entries (hedged as 'Verse Finder-style indexes usually'), and most are not in the VF per verse-finder.md, but the assertion only requires related verses."}, {"text": "Connects to Dungy's 'God's playbook' framing or the Principles/Practices/Priorities structure", "passed": false, "evidence": "No mention of Tony Dungy, 'God's playbook', or the Principles/Practices/Priorities structure anywhere in the response."}, {"text": "Gives a concrete personal application", "passed": true, "evidence": "'A Practical Exercise: The Worry-to-Prayer Swap' (write worries down, convert 'What if I lose my job?' into a request, add thanks, release, repeat) plus memorization and journaling questions."}], "notes": []}, {"eval_id": 2, "eval_name": "adv-work", "configuration": "without_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 5, "failed": 0, "total": 5, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Provides a 7-day structure", "passed": true, "evidence": "Seven headed days, 'Day 1: Commit the Work to God' through 'Day 7: Generosity and a Lasting Legacy', each with readings, Reflection, Reflect questions, Business Step and Prayer."}, {"text": "Uses Proverbs passages on work or wealth", "passed": true, "evidence": "Proverbs 16:3, 10:4, 21:5, 6:6-11, 11:1, 10:9, 11:3, 30:8-9, 23:4-5, 3:5-10, 15:22, 27:23-24, 22:7, 11:24-25, 22:1 - all on work, wealth or integrity. No book-specific claims made, so nothing to contradict the skill files."}, {"text": "Uses NT passages on money/integrity", "passed": true, "evidence": "Luke 16:10, 1 Timothy 6:6-10,17-19, Matthew 6:19-21,24-34, 2 Thessalonians 3:10-13, Colossians 3:23-24, 2 Corinthians 9:6-8 on money/integrity/work."}, {"text": "Each day includes an application or reflection question", "passed": true, "evidence": "Each day has a 'Reflect' section with questions (e.g., Day 3 'Where might I be tempted to shade the truth...?', Day 4 'What number would feel like \"enough\"?') plus a 'Business Step'."}, {"text": "Stays faithful to scripture rather than prosperity-gospel promises", "passed": true, "evidence": "Day 4: 'Scripture doesn't call money evil. It calls the love of money a root of evil... a tool or a master'; Day 5: 'Trust isn't the same as being careless'; Day 7 reads 2 Cor 9:8 as blessing 'so that you can abound in good work... through you, not just to you'. Proverbs 3:9-10 and 11:24-25 are quoted but not turned into wealth guarantees."}], "notes": []}], "run_summary": {"with_skill": {"pass_rate": {"mean": 1.0, "stddev": 0.0, "min": 1.0, "max": 1.0}, "time_seconds": null, "tokens": null}, "without_skill": {"pass_rate": {"mean": 0.8, "stddev": 0.2828, "min": 0.6, "max": 1.0}, "time_seconds": null, "tokens": null}, "delta": {"pass_rate": "+0.20", "time_seconds": null, "tokens": null}}, "notes": ["Time recorded for 0 of 2 with_skill runs, 0 of 2 without_skill runs, so there is no time delta.", "Token count recorded for 0 of 2 with_skill runs, 0 of 2 without_skill runs, so there is no token count delta."]}};
+
+    // ---- State ----
+    let feedbackMap = {};  // run_id -> feedback text
+    let currentIndex = 0;
+    let visitedRuns = new Set();
+
+    // ---- Init ----
+    async function init() {
+      // Load saved feedback from server — but only if this isn't a fresh
+      // iteration (indicated by previous_feedback being present). When
+      // previous feedback exists, the feedback.json on disk is stale from
+      // the prior iteration and should not pre-fill the textareas.
+      const hasPrevious = Object.keys(EMBEDDED_DATA.previous_feedback || {}).length > 0
+        || Object.keys(EMBEDDED_DATA.previous_outputs || {}).length > 0;
+      if (!hasPrevious) {
+        try {
+          const resp = await fetch("/api/feedback");
+          const data = await resp.json();
+          if (data.reviews) {
+            for (const r of data.reviews) feedbackMap[r.run_id] = r.feedback;
+          }
+        } catch { /* first run, no feedback yet */ }
+      }
+
+      document.getElementById("skill-name").textContent = EMBEDDED_DATA.skill_name;
+      showRun(0);
+
+      // Wire up feedback auto-save
+      const textarea = document.getElementById("feedback");
+      let saveTimeout = null;
+      textarea.addEventListener("input", () => {
+        clearTimeout(saveTimeout);
+        document.getElementById("feedback-status").textContent = "";
+        saveTimeout = setTimeout(() => saveCurrentFeedback(), 800);
+      });
+    }
+
+    // ---- Navigation ----
+    function navigate(delta) {
+      const newIndex = currentIndex + delta;
+      if (newIndex >= 0 && newIndex < EMBEDDED_DATA.runs.length) {
+        saveCurrentFeedback();
+        showRun(newIndex);
+      }
+    }
+
+    function updateNavButtons() {
+      document.getElementById("prev-btn").disabled = currentIndex === 0;
+      document.getElementById("next-btn").disabled =
+        currentIndex === EMBEDDED_DATA.runs.length - 1;
+    }
+
+    // ---- Show a run ----
+    function showRun(index) {
+      currentIndex = index;
+      const run = EMBEDDED_DATA.runs[index];
+
+      // Progress
+      document.getElementById("progress").textContent =
+        `${index + 1} of ${EMBEDDED_DATA.runs.length}`;
+
+      // Prompt
+      document.getElementById("prompt-text").textContent = run.prompt;
+
+      // Config badge
+      const badge = document.getElementById("config-badge");
+      const configMatch = run.id.match(/(with_skill|without_skill|new_skill|old_skill)/);
+      if (configMatch) {
+        const config = configMatch[1];
+        const isBaseline = config === "without_skill" || config === "old_skill";
+        badge.textContent = config.replace(/_/g, " ");
+        badge.className = "config-badge " + (isBaseline ? "config-baseline" : "config-primary");
+        badge.style.display = "inline-block";
+      } else {
+        badge.style.display = "none";
+      }
+
+      // Outputs
+      renderOutputs(run);
+
+      // Previous outputs
+      renderPrevOutputs(run);
+
+      // Grades
+      renderGrades(run);
+
+      // Previous feedback
+      const prevFb = (EMBEDDED_DATA.previous_feedback || {})[run.id];
+      const prevEl = document.getElementById("prev-feedback");
+      if (prevFb) {
+        document.getElementById("prev-feedback-text").textContent = prevFb;
+        prevEl.style.display = "block";
+      } else {
+        prevEl.style.display = "none";
+      }
+
+      // Feedback
+      document.getElementById("feedback").value = feedbackMap[run.id] || "";
+      document.getElementById("feedback-status").textContent = "";
+
+      updateNavButtons();
+
+      // Track visited runs and promote done button when all visited
+      visitedRuns.add(index);
+      const doneBtn = document.getElementById("done-btn");
+      if (visitedRuns.size >= EMBEDDED_DATA.runs.length) {
+        doneBtn.classList.add("ready");
+      }
+
+      // Scroll main content to top
+      document.querySelector(".main").scrollTop = 0;
+    }
+
+    // ---- Render outputs ----
+    function renderOutputs(run) {
+      const container = document.getElementById("outputs-body");
+      container.innerHTML = "";
+
+      const outputs = run.outputs || [];
+      if (outputs.length === 0) {
+        container.innerHTML = '<div class="empty-state">No output files</div>';
+        return;
+      }
+
+      for (const file of outputs) {
+        const fileDiv = document.createElement("div");
+        fileDiv.className = "output-file";
+
+        // Always show file header with download link
+        const header = document.createElement("div");
+        header.className = "output-file-header";
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = file.name;
+        header.appendChild(nameSpan);
+        const dlBtn = document.createElement("a");
+        dlBtn.className = "dl-btn";
+        dlBtn.textContent = "Download";
+        dlBtn.download = file.name;
+        dlBtn.href = getDownloadUri(file);
+        header.appendChild(dlBtn);
+        fileDiv.appendChild(header);
+
+        const content = document.createElement("div");
+        content.className = "output-file-content";
+
+        if (file.type === "text") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          content.appendChild(pre);
+        } else if (file.type === "image") {
+          const img = document.createElement("img");
+          img.src = file.data_uri;
+          img.alt = file.name;
+          content.appendChild(img);
+        } else if (file.type === "pdf") {
+          const iframe = document.createElement("iframe");
+          iframe.src = file.data_uri;
+          content.appendChild(iframe);
+        } else if (file.type === "xlsx") {
+          renderXlsx(content, file.data_b64);
+        } else if (file.type === "binary") {
+          const a = document.createElement("a");
+          a.className = "download-link";
+          a.href = file.data_uri;
+          a.download = file.name;
+          a.textContent = "Download " + file.name;
+          content.appendChild(a);
+        } else if (file.type === "error") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          pre.style.color = "var(--red)";
+          content.appendChild(pre);
+        }
+
+        fileDiv.appendChild(content);
+        container.appendChild(fileDiv);
+      }
+    }
+
+    // ---- XLSX rendering via SheetJS ----
+    function renderXlsx(container, b64Data) {
+      try {
+        const raw = Uint8Array.from(atob(b64Data), c => c.charCodeAt(0));
+        const wb = XLSX.read(raw, { type: "array" });
+
+        for (let i = 0; i < wb.SheetNames.length; i++) {
+          const sheetName = wb.SheetNames[i];
+          const ws = wb.Sheets[sheetName];
+
+          if (wb.SheetNames.length > 1) {
+            const sheetLabel = document.createElement("div");
+            sheetLabel.style.cssText =
+              "font-weight:600; font-size:0.8rem; color:#b0aea5; margin-top:0.5rem; margin-bottom:0.25rem;";
+            sheetLabel.textContent = "Sheet: " + sheetName;
+            container.appendChild(sheetLabel);
+          }
+
+          const htmlStr = XLSX.utils.sheet_to_html(ws, { editable: false });
+          const wrapper = document.createElement("div");
+          wrapper.innerHTML = htmlStr;
+          container.appendChild(wrapper);
+        }
+      } catch (err) {
+        container.textContent = "Error rendering spreadsheet: " + err.message;
+      }
+    }
+
+    // ---- Grades ----
+    function renderGrades(run) {
+      const section = document.getElementById("grades-section");
+      const content = document.getElementById("grades-content");
+
+      if (!run.grading) {
+        section.style.display = "none";
+        return;
+      }
+
+      const grading = run.grading;
+      section.style.display = "block";
+      // Reset to collapsed
+      content.classList.remove("open");
+      document.getElementById("grades-arrow").classList.remove("open");
+
+      const summary = grading.summary || {};
+      const expectations = grading.expectations || [];
+
+      let html = '<div style="padding: 1rem;">';
+
+      // Summary line
+      const passRate = summary.pass_rate != null
+        ? Math.round(summary.pass_rate * 100) + "%"
+        : "?";
+      const badgeClass = summary.pass_rate >= 0.8 ? "grade-pass" : summary.pass_rate >= 0.5 ? "" : "grade-fail";
+      html += '<div class="grades-summary">';
+      html += '<span class="grade-badge ' + badgeClass + '">' + passRate + '</span>';
+      html += '<span>' + escapeHtml(summary.passed || 0) + ' passed, ' + escapeHtml(summary.failed || 0) + ' failed of ' + escapeHtml(summary.total || 0) + '</span>';
+      html += '</div>';
+
+      // Assertions list
+      html += '<ul class="assertion-list">';
+      for (const exp of expectations) {
+        const statusClass = exp.passed ? "pass" : "fail";
+        const statusIcon = exp.passed ? "\u2713" : "\u2717";
+        html += '<li class="assertion-item">';
+        html += '<span class="assertion-status ' + statusClass + '">' + statusIcon + '</span>';
+        html += '<span>' + escapeHtml(exp.text) + '</span>';
+        if (exp.evidence) {
+          html += '<div class="assertion-evidence">' + escapeHtml(exp.evidence) + '</div>';
+        }
+        html += '</li>';
+      }
+      html += '</ul>';
+
+      html += '</div>';
+      content.innerHTML = html;
+    }
+
+    function toggleGrades() {
+      const content = document.getElementById("grades-content");
+      const arrow = document.getElementById("grades-arrow");
+      content.classList.toggle("open");
+      arrow.classList.toggle("open");
+    }
+
+    // ---- Previous outputs (collapsible) ----
+    function renderPrevOutputs(run) {
+      const section = document.getElementById("prev-outputs-section");
+      const content = document.getElementById("prev-outputs-content");
+      const prevOutputs = (EMBEDDED_DATA.previous_outputs || {})[run.id];
+
+      if (!prevOutputs || prevOutputs.length === 0) {
+        section.style.display = "none";
+        return;
+      }
+
+      section.style.display = "block";
+      // Reset to collapsed
+      content.classList.remove("open");
+      document.getElementById("prev-outputs-arrow").classList.remove("open");
+
+      // Render the files into the content area
+      content.innerHTML = "";
+      const wrapper = document.createElement("div");
+      wrapper.style.padding = "1rem";
+
+      for (const file of prevOutputs) {
+        const fileDiv = document.createElement("div");
+        fileDiv.className = "output-file";
+
+        const header = document.createElement("div");
+        header.className = "output-file-header";
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = file.name;
+        header.appendChild(nameSpan);
+        const dlBtn = document.createElement("a");
+        dlBtn.className = "dl-btn";
+        dlBtn.textContent = "Download";
+        dlBtn.download = file.name;
+        dlBtn.href = getDownloadUri(file);
+        header.appendChild(dlBtn);
+        fileDiv.appendChild(header);
+
+        const fc = document.createElement("div");
+        fc.className = "output-file-content";
+
+        if (file.type === "text") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          fc.appendChild(pre);
+        } else if (file.type === "image") {
+          const img = document.createElement("img");
+          img.src = file.data_uri;
+          img.alt = file.name;
+          fc.appendChild(img);
+        } else if (file.type === "pdf") {
+          const iframe = document.createElement("iframe");
+          iframe.src = file.data_uri;
+          fc.appendChild(iframe);
+        } else if (file.type === "xlsx") {
+          renderXlsx(fc, file.data_b64);
+        } else if (file.type === "binary") {
+          const a = document.createElement("a");
+          a.className = "download-link";
+          a.href = file.data_uri;
+          a.download = file.name;
+          a.textContent = "Download " + file.name;
+          fc.appendChild(a);
+        }
+
+        fileDiv.appendChild(fc);
+        wrapper.appendChild(fileDiv);
+      }
+
+      content.appendChild(wrapper);
+    }
+
+    function togglePrevOutputs() {
+      const content = document.getElementById("prev-outputs-content");
+      const arrow = document.getElementById("prev-outputs-arrow");
+      content.classList.toggle("open");
+      arrow.classList.toggle("open");
+    }
+
+    // ---- Feedback (saved to server -> feedback.json) ----
+    function saveCurrentFeedback() {
+      const run = EMBEDDED_DATA.runs[currentIndex];
+      const text = document.getElementById("feedback").value;
+
+      if (text.trim() === "") {
+        delete feedbackMap[run.id];
+      } else {
+        feedbackMap[run.id] = text;
+      }
+
+      // Build reviews array from map
+      const reviews = [];
+      for (const [run_id, feedback] of Object.entries(feedbackMap)) {
+        if (feedback.trim()) {
+          reviews.push({ run_id, feedback, timestamp: new Date().toISOString() });
+        }
+      }
+
+      fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reviews, status: "in_progress" }),
+      }).then(() => {
+        document.getElementById("feedback-status").textContent = "Saved";
+      }).catch(() => {
+        // Static mode or server unavailable — no-op on auto-save,
+        // feedback will be downloaded on final submit
+        document.getElementById("feedback-status").textContent = "Will download on submit";
+      });
+    }
+
+    // ---- Done ----
+    function showDoneDialog() {
+      // Save current textarea to feedbackMap (but don't POST yet)
+      const run = EMBEDDED_DATA.runs[currentIndex];
+      const text = document.getElementById("feedback").value;
+      if (text.trim() === "") {
+        delete feedbackMap[run.id];
+      } else {
+        feedbackMap[run.id] = text;
+      }
+
+      // POST once with status: complete — include ALL runs so the model
+      // can distinguish "no feedback" (looks good) from "not reviewed"
+      const reviews = [];
+      const ts = new Date().toISOString();
+      for (const r of EMBEDDED_DATA.runs) {
+        reviews.push({ run_id: r.id, feedback: feedbackMap[r.id] || "", timestamp: ts });
+      }
+      const payload = JSON.stringify({ reviews, status: "complete" }, null, 2);
+      fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: payload,
+      }).then(() => {
+        document.getElementById("done-overlay").classList.add("visible");
+      }).catch(() => {
+        // Server not available (static mode) — download as file
+        const blob = new Blob([payload], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "feedback.json";
+        a.click();
+        URL.revokeObjectURL(url);
+        document.getElementById("done-overlay").classList.add("visible");
+      });
+    }
+
+    function closeDoneDialog() {
+      // Reset status back to in_progress
+      saveCurrentFeedback();
+      document.getElementById("done-overlay").classList.remove("visible");
+    }
+
+    // ---- Toast ----
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("visible");
+      setTimeout(() => toast.classList.remove("visible"), 2000);
+    }
+
+    // ---- Keyboard nav ----
+    document.addEventListener("keydown", (e) => {
+      // Don't capture when typing in textarea
+      if (e.target.tagName === "TEXTAREA") return;
+
+      if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+        e.preventDefault();
+        navigate(-1);
+      } else if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+        e.preventDefault();
+        navigate(1);
+      }
+    });
+
+    // ---- Util ----
+    function getDownloadUri(file) {
+      if (file.data_uri) return file.data_uri;
+      if (file.data_b64) return "data:application/octet-stream;base64," + file.data_b64;
+      if (file.type === "text") return "data:text/plain;charset=utf-8," + encodeURIComponent(file.content);
+      return "#";
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement("div");
+      div.textContent = text;
+      return div.innerHTML.replace(/"/g, "&quot;");
+    }
+
+    // ---- View switching ----
+    function switchView(view) {
+      document.querySelectorAll(".view-tab").forEach(t => t.classList.remove("active"));
+      document.querySelectorAll(".view-panel").forEach(p => p.classList.remove("active"));
+      document.querySelector(`[onclick="switchView('${view}')"]`).classList.add("active");
+      document.getElementById("panel-" + view).classList.add("active");
+    }
+
+    // ---- Benchmark rendering ----
+    function renderBenchmark() {
+      const data = EMBEDDED_DATA.benchmark;
+      if (!data) return;
+
+      // Show the tabs
+      document.getElementById("view-tabs").style.display = "flex";
+
+      const container = document.getElementById("benchmark-content");
+      const summary = data.run_summary || {};
+      const metadata = data.metadata || {};
+      const notes = data.notes || [];
+
+      let html = "";
+
+      // Header
+      html += "<h2 style='font-family: Poppins, sans-serif; margin-bottom: 0.5rem;'>Benchmark Results</h2>";
+      html += "<p style='color: var(--text-muted); font-size: 0.875rem; margin-bottom: 1.25rem;'>";
+      if (metadata.skill_name) html += "<strong>" + escapeHtml(metadata.skill_name) + "</strong> &mdash; ";
+      if (metadata.timestamp) html += escapeHtml(metadata.timestamp) + " &mdash; ";
+      if (metadata.evals_run) html += "Evals: " + escapeHtml(metadata.evals_run.join(", ")) + " &mdash; ";
+      html += escapeHtml(metadata.runs_per_configuration || "?") + (metadata.runs_per_configuration === 1 ? " run" : " runs") + " per configuration";
+      html += "</p>";
+
+      // Summary table
+      html += '<table class="benchmark-table">';
+
+      function fmtStat(stat, pct) {
+        if (!stat) return "—";
+        const suffix = pct ? "%" : "";
+        const m = pct ? (stat.mean * 100).toFixed(0) : stat.mean.toFixed(1);
+        const s = pct ? (stat.stddev * 100).toFixed(0) : stat.stddev.toFixed(1);
+        return m + suffix + " ± " + s + suffix;
+      }
+
+      function deltaClass(val) {
+        if (!val) return "";
+        const n = parseFloat(val);
+        if (n > 0) return "benchmark-delta-positive";
+        if (n < 0) return "benchmark-delta-negative";
+        return "";
+      }
+
+      // Discover config names dynamically (everything except "delta")
+      const configs = Object.keys(summary).filter(k => k !== "delta");
+      const configA = configs[0] || "config_a";
+      const configB = configs[1] || "config_b";
+      const labelA = configA.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      const labelB = configB.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      const a = summary[configA] || {};
+      const b = summary[configB] || {};
+      const delta = summary.delta || {};
+      // With a single configuration there is nothing to compare: only its column is shown
+      const compare = cells => configs.length >= 2 ? cells : "";
+
+      html += "<thead><tr><th>Metric</th><th>" + escapeHtml(labelA) + "</th>" + compare("<th>" + escapeHtml(labelB) + "</th><th>Delta</th>") + "</tr></thead>";
+      html += "<tbody>";
+
+      html += "<tr><td><strong>Pass Rate</strong></td>";
+      html += "<td>" + fmtStat(a.pass_rate, true) + "</td>";
+      html += compare("<td>" + fmtStat(b.pass_rate, true) + "</td>");
+      html += compare('<td class="' + deltaClass(delta.pass_rate) + '">' + escapeHtml(delta.pass_rate || "—") + "</td>") + "</tr>";
+
+      // Time (only show row if data exists)
+      if (a.time_seconds || b.time_seconds) {
+        html += "<tr><td><strong>Time (s)</strong></td>";
+        html += "<td>" + fmtStat(a.time_seconds, false) + "</td>";
+        html += compare("<td>" + fmtStat(b.time_seconds, false) + "</td>");
+        html += compare('<td class="' + deltaClass(delta.time_seconds) + '">' + escapeHtml(delta.time_seconds ? delta.time_seconds + "s" : "—") + "</td>") + "</tr>";
+      }
+
+      // Tokens (only show row if data exists)
+      if (a.tokens || b.tokens) {
+        html += "<tr><td><strong>Tokens</strong></td>";
+        html += "<td>" + fmtStat(a.tokens, false) + "</td>";
+        html += compare("<td>" + fmtStat(b.tokens, false) + "</td>");
+        html += compare('<td class="' + deltaClass(delta.tokens) + '">' + escapeHtml(delta.tokens || "—") + "</td>") + "</tr>";
+      }
+
+      html += "</tbody></table>";
+
+      // Per-eval breakdown (if runs data available)
+      const runs = data.runs || [];
+      if (runs.length > 0) {
+        // Numeric ids first, then ids that are names
+        const rank = id => typeof id === "number" ? 0 : 1;
+        const evalIds = [...new Set(runs.map(r => r.eval_id))].sort((a, b) =>
+          rank(a) - rank(b) || (rank(a) ? String(a).localeCompare(String(b)) : a - b));
+
+        html += "<h3 style='font-family: Poppins, sans-serif; margin-bottom: 0.75rem;'>Per-Eval Breakdown</h3>";
+
+        const hasTime = runs.some(r => r.result && r.result.time_seconds != null);
+        const hasErrors = runs.some(r => r.result && r.result.errors > 0);
+
+        for (const evalId of evalIds) {
+          const evalRuns = runs.filter(r => r.eval_id === evalId);
+          const evalName = evalRuns[0] && evalRuns[0].eval_name ? evalRuns[0].eval_name : "Eval " + evalId;
+
+          html += "<h4 style='font-family: Poppins, sans-serif; margin: 1rem 0 0.5rem; color: var(--text);'>" + escapeHtml(evalName) + "</h4>";
+          html += '<table class="benchmark-table">';
+          html += "<thead><tr><th>Config</th><th>Run</th><th>Pass Rate</th>";
+          if (hasTime) html += "<th>Time (s)</th>";
+          if (hasErrors) html += "<th>Crashes During Execution</th>";
+          html += "</tr></thead>";
+          html += "<tbody>";
+
+          // Group by config and render with average rows
+          const configGroups = [...new Set(evalRuns.map(r => r.configuration))];
+          for (let ci = 0; ci < configGroups.length; ci++) {
+            const config = configGroups[ci];
+            const configRuns = evalRuns.filter(r => r.configuration === config);
+            if (configRuns.length === 0) continue;
+
+            const rowClass = ci === 0 ? "benchmark-row-with" : "benchmark-row-without";
+            const configLabel = escapeHtml(config.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase()));
+
+            for (const run of configRuns) {
+              const r = run.result || {};
+              const prClass = r.pass_rate >= 0.8 ? "benchmark-delta-positive" : r.pass_rate < 0.5 ? "benchmark-delta-negative" : "";
+              html += '<tr class="' + rowClass + '">';
+              html += "<td>" + configLabel + "</td>";
+              html += "<td>" + escapeHtml(run.run_number) + "</td>";
+              html += '<td class="' + prClass + '">' + ((r.pass_rate || 0) * 100).toFixed(0) + "% (" + escapeHtml(r.passed || 0) + "/" + escapeHtml(r.total || 0) + ")</td>";
+              if (hasTime) html += "<td>" + (r.time_seconds != null ? r.time_seconds.toFixed(1) : "—") + "</td>";
+              if (hasErrors) html += "<td>" + escapeHtml(r.errors || 0) + "</td>";
+              html += "</tr>";
+            }
+
+            // Average row
+            const rates = configRuns.map(r => (r.result || {}).pass_rate || 0);
+            const avgRate = rates.reduce((a, b) => a + b, 0) / rates.length;
+            const avgPrClass = avgRate >= 0.8 ? "benchmark-delta-positive" : avgRate < 0.5 ? "benchmark-delta-negative" : "";
+            html += '<tr class="benchmark-row-avg ' + rowClass + '">';
+            html += "<td>" + configLabel + "</td>";
+            html += "<td>Avg</td>";
+            html += '<td class="' + avgPrClass + '">' + (avgRate * 100).toFixed(0) + "%</td>";
+            if (hasTime) {
+              const times = configRuns.map(r => (r.result || {}).time_seconds).filter(t => t != null);
+              html += "<td>" + (times.length ? (times.reduce((a, b) => a + b, 0) / times.length).toFixed(1) : "—") + "</td>";
+            }
+            if (hasErrors) html += "<td></td>";
+            html += "</tr>";
+          }
+          html += "</tbody></table>";
+
+          // Per-assertion detail for this eval
+          const runsWithExpectations = {};
+          for (const config of configGroups) {
+            runsWithExpectations[config] = evalRuns.filter(r => r.configuration === config && r.expectations && r.expectations.length > 0);
+          }
+          const hasAnyExpectations = Object.values(runsWithExpectations).some(runs => runs.length > 0);
+          if (hasAnyExpectations) {
+            // Collect all unique assertion texts across all configs
+            const allAssertions = [];
+            const seen = new Set();
+            for (const config of configGroups) {
+              for (const run of runsWithExpectations[config]) {
+                for (const exp of (run.expectations || [])) {
+                  if (!seen.has(exp.text)) {
+                    seen.add(exp.text);
+                    allAssertions.push(exp.text);
+                  }
+                }
+              }
+            }
+
+            html += '<table class="benchmark-table" style="margin-top: 0.5rem;">';
+            html += "<thead><tr><th>Assertion</th>";
+            for (const config of configGroups) {
+              const label = config.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+              html += "<th>" + escapeHtml(label) + "</th>";
+            }
+            html += "</tr></thead><tbody>";
+
+            for (const assertionText of allAssertions) {
+              html += "<tr><td>" + escapeHtml(assertionText) + "</td>";
+
+              for (const config of configGroups) {
+                html += "<td>";
+                for (const run of runsWithExpectations[config]) {
+                  const exp = (run.expectations || []).find(e => e.text === assertionText);
+                  if (exp) {
+                    const cls = exp.passed ? "benchmark-delta-positive" : "benchmark-delta-negative";
+                    const icon = exp.passed ? "\u2713" : "\u2717";
+                    html += '<span class="' + cls + '" title="Run ' + escapeHtml(run.run_number) + ': ' + escapeHtml(exp.evidence || "") + '">' + icon + "</span> ";
+                  } else {
+                    html += "— ";
+                  }
+                }
+                html += "</td>";
+              }
+              html += "</tr>";
+            }
+            html += "</tbody></table>";
+          }
+        }
+      }
+
+      // Notes
+      if (notes.length > 0) {
+        html += '<div class="benchmark-notes">';
+        html += "<h3>Analysis Notes</h3>";
+        html += "<ul>";
+        for (const note of notes) {
+          html += "<li>" + escapeHtml(note) + "</li>";
+        }
+        html += "</ul></div>";
+      }
+
+      container.innerHTML = html;
+    }
+
+    // ---- Start ----
+    init();
+    renderBenchmark();
+  </script>
+</body>
+</html>

@@ -1,0 +1,223 @@
+{
+  "metadata": {
+    "skill_name": "trash-man-to-cash-man",
+    "skill_path": "<path/to/skill>",
+    "executor_model": "<model-name>",
+    "analyzer_model": "<model-name>",
+    "timestamp": "2026-11-21T22:00:51Z",
+    "evals_run": [
+      1,
+      2
+    ],
+    "runs_per_configuration": 1
+  },
+  "runs": [
+    {
+      "eval_id": 1,
+      "eval_name": "adv-window",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Names the four window panes: Have A Job, Own A Job, Sow Money Seeds, Own A System",
+          "passed": true,
+          "evidence": "Section 1 table lists H.A.J. Have A Job, O.A.J. Own A Job (self-employment), S.M.S. Sow Money Seeds (investing), O.A.S. Own A System, ranked 'One of the two worst' / 'Second best' / 'Best', matching SKILL.md key idea 3."
+        },
+        {
+          "text": "Places the user's starting point correctly and maps the steps",
+          "passed": true,
+          "evidence": "Phase 0 'Keep the H.A.J.', then states Marketplace reselling 'is O.A.J. If you stop, the money stops', then Phase 2 S.M.S. via can #2, Phase 3 O.A.S. and roadmap table; correctly notes Golden ranks panes rather than prescribing an order."
+        },
+        {
+          "text": "Explains why O.A.S. is best",
+          "passed": true,
+          "evidence": "Table: O.A.S. 'Best' because 'The system makes money whether you are there or not'; Phase 3 ties it to the Hands-Free Money plan ($10,000/month within two years, 'one finger's worth of effort', then start another), matching SKILL.md."
+        },
+        {
+          "text": "Uses the financial house (income, outgo, wealth reducing liabilities, income producing assets)",
+          "passed": true,
+          "evidence": "Section 2 names 'Income, Outgo, WRL (Wealth Reducing Liabilities), and IPA (Income Producing Assets)' with poor/middle class/rich descriptions and 'the difference is not how much you make' - consistent with SKILL.md key idea 4; Phase 4 returns to asset cash flow covering Outgo."
+        },
+        {
+          "text": "Gives concrete Marketplace-based steps",
+          "passed": true,
+          "evidence": "Phase 1: sell what you own, free-to-flip curbside items, consignment, reinvest profits; photos/titles/pricing from sold listings; Phase 3: checklist, outsource pickups, templates, add channels, 'two weeks off' test. Trap numbers cited (mental #4,#5,#7,#11; practical #5,#6,#9,#13) all match SKILL.md."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "adv-cans",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Lists six cans: tithe, finish free, educate, save, have fun, pay bills",
+          "passed": true,
+          "evidence": "Table lists 'I can tithe', 'I can finish free', 'I can educate myself', 'I can save for what I want', 'I can have fun', 'I can pay my bills' - exact names and order from SKILL.md chapter 13."
+        },
+        {
+          "text": "Uses the percentages (10/10/10/10/10/50 or as stated)",
+          "passed": true,
+          "evidence": "10% / 10% / 10% / ~10% / ~10% / 50%, with footnote that cans 1-3 and 6 are stated and cans 4-5 split the remaining 20% - exactly matching SKILL.md's note."
+        },
+        {
+          "text": "Applies them to $500 with dollar amounts",
+          "passed": true,
+          "evidence": "$50 x5 and $250 for bills, total $500; also flags the revenue-vs-profit question for gross tithing."
+        },
+        {
+          "text": "Explains purpose of each can",
+          "passed": true,
+          "evidence": "Each can has its own section: tithe 10% of gross to church/charity; finish free 'never spend it', only buys IPAs or businesses, may spend profits; educate for books/seminars/audio; save for vacations, down payments, furniture, emergencies; fun 'must be spent every month'; bills 50% living costs - all consistent with SKILL.md."
+        },
+        {
+          "text": "Mentions a mental trap or 'you are in the marketing business'",
+          "passed": true,
+          "evidence": "Can 3: 'Golden also says \"you're in the marketing business\"' and cites traps 'don't invest in their greatest asset' and 'entertain themselves more than educate themselves'; can 4 cites practical trap #13 'don't use good debt; bad debt uses them' - correctly numbered per SKILL.md."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 1,
+      "eval_name": "adv-window",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.4,
+        "passed": 2,
+        "failed": 3,
+        "total": 5,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Names the four window panes: Have A Job, Own A Job, Sow Money Seeds, Own A System",
+          "passed": false,
+          "evidence": "Table names H.A.J., O.A.J., O.A.S., but the fourth pane is 'Investor / money works', not S.M.S. Sow Money Seeds; response admits 'check the exact labels and quadrant names against' the book."
+        },
+        {
+          "text": "Places the user's starting point correctly and maps the steps",
+          "passed": true,
+          "evidence": "Starts in H.A.J. ('Keep the job the whole way through'), Stage 1 side flipping, Stage 2 'O.A.J., you're a business but you are the business', Stage 3 bridge, Stage 4 O.A.S., with a summary timeline table. Start and path are correctly placed, though the investing pane is put after O.A.S. ('Golden's final step...'), which is not in SKILL.md."
+        },
+        {
+          "text": "Explains why O.A.S. is best",
+          "passed": false,
+          "evidence": "Never states O.A.S. is Golden's best way; table describes it as 'the real business. Your value comes from solving problems at scale' (generic, not the book's reason) and then places investing 'Beyond O.A.S.' as the final step. No Hands-Free Money plan or 'runs without you' ranking from SKILL.md."
+        },
+        {
+          "text": "Uses the financial house (income, outgo, wealth reducing liabilities, income producing assets)",
+          "passed": false,
+          "evidence": "No mention of the financial house, Outgo, WRL or IPA windows anywhere in the response."
+        },
+        {
+          "text": "Gives concrete Marketplace-based steps",
+          "passed": true,
+          "evidence": "Stage 0-4: source from Marketplace 'Free' listings, curb alerts, Buy Nothing groups; clean/photograph/price below comps; add haul-away and delivery; buyer list; document steps, pay helper $20-$40 per pickup, canned replies, multiple channels."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "adv-cans",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.2,
+        "passed": 1,
+        "failed": 4,
+        "total": 5,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Lists six cans: tithe, finish free, educate, save, have fun, pay bills",
+          "passed": false,
+          "evidence": "Cans are 'Giving / Tithe', 'Savings', 'Investing', 'Education', 'Business reinvestment / Opportunity', 'Living'. No 'finish free' or 'have fun' can; 'Business reinvestment' is invented. Response admits 'I can't confirm his exact can names or percentages'."
+        },
+        {
+          "text": "Uses the percentages (10/10/10/10/10/50 or as stated)",
+          "passed": false,
+          "evidence": "Numbers are 10/10/10/10/10/50, but they are attached to invented cans (e.g. 10% to 'Business reinvestment') and presented as 'a reasonable example'; it also offers an alternate 10/15/25/15/25/10 split. The book's percentages are not applied to the book's cans."
+        },
+        {
+          "text": "Applies them to $500 with dollar amounts",
+          "passed": true,
+          "evidence": "Table gives $50 x5 and $250, totaling $500, arithmetic correct."
+        },
+        {
+          "text": "Explains purpose of each can",
+          "passed": false,
+          "evidence": "Purposes describe its own cans, not Golden's: no 'have fun' can that must be spent monthly (fun folded into 'Living'); finish-free's rule only partly echoed under 'Investing'; 'Business reinvestment' purpose is invented. The quote-like claim 'a person who can't give $50 out of $500 won't give $5,000...' is not in SKILL.md."
+        },
+        {
+          "text": "Mentions a mental trap or 'you are in the marketing business'",
+          "passed": false,
+          "evidence": "No money trap is named and the 'you are in the marketing business' principle is absent; only a generic 'especially in sales, marketing and offers' under Education."
+        }
+      ],
+      "notes": []
+    }
+  ],
+  "run_summary": {
+    "with_skill": {
+      "pass_rate": {
+        "mean": 1.0,
+        "stddev": 0.0,
+        "min": 1.0,
+        "max": 1.0
+      },
+      "time_seconds": null,
+      "tokens": null
+    },
+    "without_skill": {
+      "pass_rate": {
+        "mean": 0.3,
+        "stddev": 0.1414,
+        "min": 0.2,
+        "max": 0.4
+      },
+      "time_seconds": null,
+      "tokens": null
+    },
+    "delta": {
+      "pass_rate": "+0.70",
+      "time_seconds": null,
+      "tokens": null
+    }
+  },
+  "notes": [
+    "Time recorded for 0 of 2 with_skill runs, 0 of 2 without_skill runs, so there is no time delta.",
+    "Token count recorded for 0 of 2 with_skill runs, 0 of 2 without_skill runs, so there is no token count delta."
+  ]
+}

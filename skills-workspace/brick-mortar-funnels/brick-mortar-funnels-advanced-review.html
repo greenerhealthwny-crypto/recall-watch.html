@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eval Review</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&family=Lora:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js" integrity="sha384-EnyY0/GSHQGSxSgMwaIPzSESbqoOLSexfnSMN2AP+39Ckmn92stwABZynq1JyzdT" crossorigin="anonymous"></script>
+  <style>
+    :root {
+      --bg: #faf9f5;
+      --surface: #ffffff;
+      --border: #e8e6dc;
+      --text: #141413;
+      --text-muted: #b0aea5;
+      --accent: #d97757;
+      --accent-hover: #c4613f;
+      --green: #788c5d;
+      --green-bg: #eef2e8;
+      --red: #c44;
+      --red-bg: #fceaea;
+      --header-bg: #141413;
+      --header-text: #faf9f5;
+      --radius: 6px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Lora', Georgia, serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ---- Header ---- */
+    .header {
+      background: var(--header-bg);
+      color: var(--header-text);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .header h1 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+    .header .instructions {
+      font-size: 0.8rem;
+      opacity: 0.7;
+      margin-top: 0.25rem;
+    }
+    .header .progress {
+      font-size: 0.875rem;
+      opacity: 0.8;
+      text-align: right;
+    }
+
+    /* ---- Main content ---- */
+    .main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.5rem 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    /* ---- Sections ---- */
+    .section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      flex-shrink: 0;
+    }
+    .section-header {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.75rem 1rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+    }
+    .section-body {
+      padding: 1rem;
+    }
+
+    /* ---- Config badge ---- */
+    .config-badge {
+      display: inline-block;
+      padding: 0.2rem 0.625rem;
+      border-radius: 9999px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      margin-left: 0.75rem;
+      vertical-align: middle;
+    }
+    .config-badge.config-primary {
+      background: rgba(33, 150, 243, 0.12);
+      color: #1976d2;
+    }
+    .config-badge.config-baseline {
+      background: rgba(255, 193, 7, 0.15);
+      color: #f57f17;
+    }
+
+    /* ---- Prompt ---- */
+    .prompt-text {
+      white-space: pre-wrap;
+      font-size: 0.9375rem;
+      line-height: 1.6;
+    }
+
+    /* ---- Outputs ---- */
+    .output-file {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .output-file + .output-file {
+      margin-top: 1rem;
+    }
+    .output-file-header {
+      padding: 0.5rem 0.75rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .output-file-header .dl-btn {
+      font-size: 0.7rem;
+      color: var(--accent);
+      text-decoration: none;
+      cursor: pointer;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-weight: 500;
+      opacity: 0.8;
+    }
+    .output-file-header .dl-btn:hover {
+      opacity: 1;
+      text-decoration: underline;
+    }
+    .output-file-content {
+      padding: 0.75rem;
+      overflow-x: auto;
+    }
+    .output-file-content pre {
+      font-size: 0.8125rem;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+    }
+    .output-file-content img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 4px;
+    }
+    .output-file-content iframe {
+      width: 100%;
+      height: 600px;
+      border: none;
+    }
+    .output-file-content table {
+      border-collapse: collapse;
+      font-size: 0.8125rem;
+      width: 100%;
+    }
+    .output-file-content table td,
+    .output-file-content table th {
+      border: 1px solid var(--border);
+      padding: 0.375rem 0.5rem;
+      text-align: left;
+    }
+    .output-file-content table th {
+      background: var(--bg);
+      font-weight: 600;
+    }
+    .output-file-content .download-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 0.875rem;
+      cursor: pointer;
+    }
+    .output-file-content .download-link:hover {
+      background: var(--border);
+    }
+    .empty-state {
+      color: var(--text-muted);
+      font-style: italic;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    /* ---- Feedback ---- */
+    .prev-feedback {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.625rem 0.75rem;
+      margin-top: 0.75rem;
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+    .prev-feedback-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.25rem;
+      color: var(--text-muted);
+    }
+    .feedback-textarea {
+      width: 100%;
+      min-height: 100px;
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 0.9375rem;
+      line-height: 1.5;
+      resize: vertical;
+      color: var(--text);
+    }
+    .feedback-textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    .feedback-status {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.5rem;
+      min-height: 1.1em;
+    }
+
+    /* ---- Grades (collapsible) ---- */
+    .grades-toggle {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+    }
+    .grades-toggle:hover {
+      color: var(--accent);
+    }
+    .grades-toggle .arrow {
+      margin-right: 0.5rem;
+      transition: transform 0.15s;
+      font-size: 0.75rem;
+    }
+    .grades-toggle .arrow.open {
+      transform: rotate(90deg);
+    }
+    .grades-content {
+      display: none;
+      margin-top: 0.75rem;
+    }
+    .grades-content.open {
+      display: block;
+    }
+    .grades-summary {
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .grade-badge {
+      display: inline-block;
+      padding: 0.125rem 0.5rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .grade-pass { background: var(--green-bg); color: var(--green); }
+    .grade-fail { background: var(--red-bg); color: var(--red); }
+    .assertion-list {
+      list-style: none;
+    }
+    .assertion-item {
+      padding: 0.625rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.8125rem;
+    }
+    .assertion-item:last-child { border-bottom: none; }
+    .assertion-status {
+      font-weight: 600;
+      margin-right: 0.5rem;
+    }
+    .assertion-status.pass { color: var(--green); }
+    .assertion-status.fail { color: var(--red); }
+    .assertion-evidence {
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      margin-top: 0.25rem;
+      padding-left: 1.5rem;
+    }
+
+    /* ---- View tabs ---- */
+    .view-tabs {
+      display: flex;
+      gap: 0;
+      padding: 0 2rem;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .view-tab {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.625rem 1.25rem;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      background: none;
+      color: var(--text-muted);
+      border-bottom: 2px solid transparent;
+      transition: all 0.15s;
+    }
+    .view-tab:hover { color: var(--text); }
+    .view-tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+    .view-panel { display: none; }
+    .view-panel.active { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
+
+    /* ---- Benchmark view ---- */
+    .benchmark-view {
+      padding: 1.5rem 2rem;
+      overflow-y: auto;
+      flex: 1;
+    }
+    .benchmark-table {
+      border-collapse: collapse;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 0.8125rem;
+      width: 100%;
+      margin-bottom: 1.5rem;
+    }
+    .benchmark-table th, .benchmark-table td {
+      padding: 0.625rem 0.75rem;
+      text-align: left;
+      border: 1px solid var(--border);
+    }
+    .benchmark-table th {
+      font-family: 'Poppins', sans-serif;
+      background: var(--header-bg);
+      color: var(--header-text);
+      font-weight: 500;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .benchmark-table tr:hover { background: var(--bg); }
+    .benchmark-table tr.benchmark-row-with { background: rgba(33, 150, 243, 0.06); }
+    .benchmark-table tr.benchmark-row-without { background: rgba(255, 193, 7, 0.06); }
+    .benchmark-table tr.benchmark-row-with:hover { background: rgba(33, 150, 243, 0.12); }
+    .benchmark-table tr.benchmark-row-without:hover { background: rgba(255, 193, 7, 0.12); }
+    .benchmark-table tr.benchmark-row-avg { font-weight: 600; border-top: 2px solid var(--border); }
+    .benchmark-table tr.benchmark-row-avg.benchmark-row-with { background: rgba(33, 150, 243, 0.12); }
+    .benchmark-table tr.benchmark-row-avg.benchmark-row-without { background: rgba(255, 193, 7, 0.12); }
+    .benchmark-delta-positive { color: var(--green); font-weight: 600; }
+    .benchmark-delta-negative { color: var(--red); font-weight: 600; }
+    .benchmark-notes {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem;
+    }
+    .benchmark-notes h3 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+    }
+    .benchmark-notes ul {
+      list-style: disc;
+      padding-left: 1.25rem;
+    }
+    .benchmark-notes li {
+      font-size: 0.8125rem;
+      line-height: 1.6;
+      margin-bottom: 0.375rem;
+    }
+    .benchmark-empty {
+      color: var(--text-muted);
+      font-style: italic;
+      text-align: center;
+      padding: 3rem;
+    }
+
+    /* ---- Navigation ---- */
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+      flex-shrink: 0;
+    }
+    .nav-btn {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.5rem 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text);
+      transition: all 0.15s;
+    }
+    .nav-btn:hover:not(:disabled) {
+      background: var(--bg);
+      border-color: var(--text-muted);
+    }
+    .nav-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    .done-btn {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.5rem 1.5rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: all 0.15s;
+    }
+    .done-btn:hover {
+      background: var(--bg);
+      border-color: var(--text-muted);
+    }
+    .done-btn.ready {
+      border: none;
+      background: var(--accent);
+      color: white;
+      font-weight: 600;
+    }
+    .done-btn.ready:hover {
+      background: var(--accent-hover);
+    }
+    /* ---- Done overlay ---- */
+    .done-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 100;
+      justify-content: center;
+      align-items: center;
+    }
+    .done-overlay.visible {
+      display: flex;
+    }
+    .done-card {
+      background: var(--surface);
+      border-radius: 12px;
+      padding: 2rem 3rem;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      max-width: 500px;
+    }
+    .done-card h2 {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .done-card p {
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
+    }
+    .done-card .btn-row {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+    }
+    .done-card button {
+      padding: 0.5rem 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 0.875rem;
+    }
+    .done-card button:hover {
+      background: var(--bg);
+    }
+    /* ---- Toast ---- */
+    .toast {
+      position: fixed;
+      bottom: 5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--header-bg);
+      color: var(--header-text);
+      padding: 0.625rem 1.25rem;
+      border-radius: var(--radius);
+      font-size: 0.875rem;
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+      z-index: 200;
+    }
+    .toast.visible {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <div id="app" style="height:100vh; display:flex; flex-direction:column;">
+    <div class="header">
+      <div>
+        <h1>Eval Review: <span id="skill-name"></span></h1>
+        <div class="instructions">Review each output and leave feedback below. Navigate with arrow keys or buttons. When done, copy feedback and paste into Claude Code.</div>
+      </div>
+      <div class="progress" id="progress"></div>
+    </div>
+
+    <!-- View tabs (only shown when benchmark data exists) -->
+    <div class="view-tabs" id="view-tabs" style="display:none;">
+      <button class="view-tab active" onclick="switchView('outputs')">Outputs</button>
+      <button class="view-tab" onclick="switchView('benchmark')">Benchmark</button>
+    </div>
+
+    <!-- Outputs panel (qualitative review) -->
+    <div class="view-panel active" id="panel-outputs">
+    <div class="main">
+      <!-- Prompt -->
+      <div class="section">
+        <div class="section-header">Prompt <span class="config-badge" id="config-badge" style="display:none;"></span></div>
+        <div class="section-body">
+          <div class="prompt-text" id="prompt-text"></div>
+        </div>
+      </div>
+
+      <!-- Outputs -->
+      <div class="section">
+        <div class="section-header">Output</div>
+        <div class="section-body" id="outputs-body">
+          <div class="empty-state">No output files found</div>
+        </div>
+      </div>
+
+      <!-- Previous Output (collapsible) -->
+      <div class="section" id="prev-outputs-section" style="display:none;">
+        <div class="section-header">
+          <div class="grades-toggle" onclick="togglePrevOutputs()">
+            <span class="arrow" id="prev-outputs-arrow">&#9654;</span>
+            Previous Output
+          </div>
+        </div>
+        <div class="grades-content" id="prev-outputs-content"></div>
+      </div>
+
+      <!-- Grades (collapsible) -->
+      <div class="section" id="grades-section" style="display:none;">
+        <div class="section-header">
+          <div class="grades-toggle" onclick="toggleGrades()">
+            <span class="arrow" id="grades-arrow">&#9654;</span>
+            Formal Grades
+          </div>
+        </div>
+        <div class="grades-content" id="grades-content"></div>
+      </div>
+
+      <!-- Feedback -->
+      <div class="section">
+        <div class="section-header">Your Feedback</div>
+        <div class="section-body">
+          <textarea
+            class="feedback-textarea"
+            id="feedback"
+            placeholder="What do you think of this output? Any issues, suggestions, or things that look great?"
+          ></textarea>
+          <div class="feedback-status" id="feedback-status"></div>
+          <div class="prev-feedback" id="prev-feedback" style="display:none;">
+            <div class="prev-feedback-label">Previous feedback</div>
+            <div id="prev-feedback-text"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav" id="outputs-nav">
+      <button class="nav-btn" id="prev-btn" onclick="navigate(-1)">&#8592; Previous</button>
+      <button class="done-btn" id="done-btn" onclick="showDoneDialog()">Submit All Reviews</button>
+      <button class="nav-btn" id="next-btn" onclick="navigate(1)">Next &#8594;</button>
+    </div>
+    </div><!-- end panel-outputs -->
+
+    <!-- Benchmark panel (quantitative stats) -->
+    <div class="view-panel" id="panel-benchmark">
+      <div class="benchmark-view" id="benchmark-content">
+        <div class="benchmark-empty">No benchmark data available. Run a benchmark to see quantitative results here.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Done overlay -->
+  <div class="done-overlay" id="done-overlay">
+    <div class="done-card">
+      <h2>Review Complete</h2>
+      <p>Your feedback has been saved. Go back to your Claude Code session and tell Claude you're done reviewing.</p>
+      <div class="btn-row">
+        <button onclick="closeDoneDialog()">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ---- Embedded data (injected by generate_review.py) ----
+    const EMBEDDED_DATA = {"skill_name": "brick-mortar-funnels", "runs": [{"id": "eval-1-adv-100days-with_skill-run-1", "prompt": "I run a one-person junk-removal service. Using Brick & Mortar Funnels, build a 100-day plan to get 100 customers, borrowing from the home-services chapter (Joshua Latimer) and at least one other expert.", "eval_id": 1, "outputs": [{"name": "response.md", "type": "text", "content": "# 100 Customers in 100 Days: One-Person Junk Removal\n\n*A plan built from* Brick & Mortar Funnels *(ClickFunnels, about 2020)*. The main source is **Joshua Latimer** (home services: max CAC, front-end offers, one page per offer, test and measure). Three other experts fill gaps a solo hauler has:\n\n- **Tyler Shaule:** the Phone Funnel System. Reactivation, a text-a-photo-for-a-quote survey funnel, and a rate, review and referral funnel.\n- **David Frey:** the \"local celebrity\" Facebook referral machine, plus a Dream 100 of local partners.\n- **Dr. Chad Woolner:** the \"portfolio of proof\", meaning one filmed success story a week.\n\nTags: **(book)** means the idea comes from the book. **(adapt)** means I've applied a book idea to junk removal. **(assume)** means a placeholder number you should swap for your own.\n\n---\n\n## 0. The constraint that shapes everything: you are one person\n\n100 customers in 100 days is about **7 jobs a week**, or 1\u20132 a day on a 5\u20136 day week. One truck and one person can do that. It's also close to the limit once you count dump runs, estimates and marketing time. So the plan has to do three things:\n\n1. **Fill the calendar with jobs that pay well.** Don't fill it with tiny jobs that eat a whole morning.\n2. **Batch work by area and time slot.** For example, morning jobs on the north side, afternoons on the south side, and a dump run between them *(adapt)*.\n3. **Automate the follow-up** with text and email templates, so marketing doesn't stop when you're on a job. Shaule: \"Conversations = Conversions\" *(book)*.\n\nShaule's point fits you well: for a business that sells in person, **\"the closest to the customer wins\"** *(book)*. Your edge over national franchises is that you're the owner, you answer the text, and you show up yourself. Market that. Make your face and name the brand (Frey's \"local celebrity\") *(book / adapt)*.\n\n---\n\n## 1. Know your numbers first (Latimer's maximum CAC)\n\nLatimer's rule: before you spend a dollar, know the most you can afford to pay to get one customer *(book)*. Junk removal is mostly **one-off jobs**, so use his one-off formula: decide what share of a job's profit you'll give up to win it. Then add the **back end** (repeat jobs and referrals), because \"amateurs focus on the front end but professionals focus on the back end\" *(book)*.\n\nFill this in with your own figures. The numbers below are placeholders *(assume)*:\n\n| Item | Placeholder | Your number |\n|---|---|---|\n| Average job revenue | $325 | |\n| Direct costs per job (dump fees, fuel, wear, helper if used) | $135 | |\n| Gross profit per job | **$190** (about 58%) | |\n| Share of first-job profit you'll give up to acquire a customer | 35% | |\n| **Max CAC on the first job** | **about $65** | |\n| Expected extra jobs per customer in 12 months (repeat and referral) | 0.5 | |\n| Back-end profit per customer (0.5 \u00d7 $190) | $95 | |\n| **Max CAC counting the back end** | **about $100** (stretch limit) | |\n\nHow to use it:\n- **Day-to-day rule:** keep blended cost per booked job under **about $65**. Go up toward **about $100** only for channels that bring repeat or referral customers, such as realtors, property managers and contractors *(adapt)*.\n- **Hormozi's test** *(book)*: \"spend $1 to make $3\". If $65 in ads brings a $190-profit job, you're well over that.\n- **Latimer's step 7:** record every lead's source, quote, close and revenue in a simple sheet. Read it \"unemotionally\" every week *(book)*.\n\n### Working backward from 100 customers\n\nThe book's logic (Hormozi and Argue's funnel math) is leads \u2192 quotes \u2192 booked jobs. Placeholder rates *(assume)*:\n\n| Stage | Rate | Needed |\n|---|---|---|\n| **Customers (completed jobs)** | | **100** |\n| Quotes or estimates given (photo or on-site) | 55% close | about 180 |\n| Leads (texts, calls, form fills) | 70% get a quote | about 260 |\n\nThat's about **18\u201320 leads a week** for 14 weeks. The target mix by channel is in section 6.\n\n---\n\n## 2. The value ladder and front-end offers (Latimer)\n\nLatimer says to lead with **low-priced, irresistible front-end offers**, each tied to a reason to act now (he uses holidays), and then move customers up the ladder *(book)*. His home-services examples were a $20 45-minute power clean, a free spot clean, and 10 exterior windows for $99 *(book)*.\n\n**Your ladder** *(adapt)*:\n\n| Rung | Offer | Purpose |\n|---|---|---|\n| Front end A | **\"Single-Item Pickup, $59\"**: one mattress, sofa, fridge (where you can legally take it), or hot tub cover | A low-risk first job, easy to say yes to. Often turns into \"while you're here, can you also take\u2026\" |\n| Front end B | **\"Garage Corner Clear-Out, $129\"**: up to 1/6 of a truckload | Holiday and New Year declutter hook |\n| Front end C | **\"Free Text-a-Photo Quote in 15 Minutes\"** | The main lead offer for everything else (Shaule's survey idea, see section 4) |\n| Core | Partial and full truckloads | Where most of the profit is |\n| Upper | Garage, basement and estate clean-outs; move-out and eviction clean-outs | Big tickets, often through partners |\n| Back end | **Partner accounts**: realtors, property managers, landlords, contractors, senior-move managers, storage facilities | Repeat jobs. Latimer says one good client moving up the ladder can be worth about $3,850 a year in his trade *(book)* |\n\n**Price discipline:** the front-end offer has to be small and clearly bounded (\"one item\", \"1/6 load\"), so it can't turn into an unpaid full haul. Upsell on site with a clear price from your load-size chart *(adapt)*.\n\n**Hooks by season.** If you start about now (late November), roughly in order *(adapt)*:\n- \"Make room before the holiday guests arrive.\"\n- \"Post-holiday haul-away: boxes, old TVs, the sofa the new one replaced.\"\n- \"New Year, empty garage.\"\n- \"Spring head start / moving season.\"\n\nLatimer's own example ties the offer to a holiday such as the 4th of July *(book)*.\n\n---\n\n## 3. One offer, one landing page (Latimer's 7 steps)\n\nLatimer: \"your broad website is failing you\". Build **one simple page per offer** *(book)*. Repeat his seven steps for each offer:\n\n1. **Pick one irresistible front-end offer**, for example \"Single-Item Pickup $59\".\n2. **Write the copy:** a hook headline, body text, benefits, and urgency or scarcity *(book)*. With one truck, scarcity is real: \"Only 10 single-item slots this week\".\n3. **Build a page for that one offer only:** headline, before-and-after photos, 3 benefits, price, \"Text a photo to book\", a form (name, phone, email, address or zip, photo upload), and a scheduler.\n4. **Use strong images, especially before-and-after shots** *(book)*. You'll shoot these on every job (section 5).\n5. **Repeat** for offers B and C.\n6. **Drive traffic:** 3\u20135 emails to existing clients, Facebook Live and posts, Facebook ads *(book)*.\n7. **Measure and record** in your sheet *(book)*.\n\n**Sample page copy** *(adapt; Latimer's elements plus Arce's audience call-out and specificity)*:\n\n> **[TOWN] HOMEOWNERS: That old couch is gone by Friday for $59.**\n> One item. One flat price. Picked up by the owner, not a call center. I do the lifting, you point.\n> \u2713 Flat price, no surprise \"load fees\" \u2713 Usable items donated where possible \u2713 Same-week slots\n> **Only 10 single-item slots this week.** Text a photo to [number] or book below.\n\nFrey suggests a memorable URL with \"free\" and the city name in it *(book)*. For example, `[Town]JunkQuote.com` or `Free[Town]JunkQuote.com` for the photo-quote offer.\n\n---\n\n## 4. The phone funnel (Shaule): built for a one-person business\n\nShaule's three funnels fit a solo hauler well, because most of the work is done by text *(book)*:\n\n### 4a. Reactivation funnel (week 1, your quickest customers)\n- Upload every past customer and every old lead with a mobile number *(book)*. **Only text people who agreed to receive texts.** Under TCPA you need prior express written consent for marketing texts *(std)*. If you don't have it, call, email or mail them instead.\n- Text a repackaged offer *(adapt)*:\n  > \"Hi [Name], it's [You] from [Business], I hauled your old [item] last spring. I'm doing holiday clear-outs in [area] next week: anything up to a garage corner for $129. Want me to save you a slot? Reply STOP to opt out.\"\n- Shaule says to **repackage the offer every 90 days** *(book)*. For you, that's one fresh offer per season.\n\n### 4b. Survey-to-appointment funnel (\"Text a photo for a quote\")\nShaule recommends a survey funnel for businesses that need an estimate, such as contractors. Use 3\u20135 questions: the first two easy, then one or two that qualify *(book)*. Yours *(adapt)*:\n1. What do you need gone? (furniture / appliances / yard debris / mixed / full clean-out)\n2. Where is it? (curb / garage / inside, upstairs / basement)\n3. Roughly how much? (one item / a pickup-bed's worth / a room / a whole house)\n4. When do you need it gone? (this week / this month / just pricing)\n5. Upload or text a photo.\n\nThen reply with a price range and two time slots within 15 minutes when you can. \"This week\" answers are your hottest leads.\n\n**SMS entry points** (Shaule's tips) *(book)*: a text extension on Google ads, a \"Text Me\" button on Instagram and Facebook, your texting number printed large on the truck, yard signs and door hangers, and the number on every landing page.\n\n### 4c. Rate, review and referral funnel (start in week 1, not week 10)\n- After every job, send a short survey: \"How likely are you to recommend us (1\u201310)?\" and \"What would make it a 10?\" *(book)*.\n- **Ask every customer for a Google review, not only the 9s and 10s.** The book suggests sending only high scorers to Google, but Google prohibits that kind of \"review gating\" *(std, verify)*. Use low scores to follow up personally and fix the problem.\n- Then ask for a referral: \"Know a neighbor with a garage like yours? They get $20 off and you get a $20 gift card.\" *(adapt)*. Check local rules on referral rewards.\n- Shaule's long-term target is about **300 five-star reviews** *(book)*. In 100 days, aim for **60 or more** (a 60% review rate on 100 jobs) *(assume)*.\n\n---\n\n## 5. Proof portfolio (Woolner)\n\nWoolner's \"marathon\" phase builds a **portfolio of proof**: film at least one success story a week and send traffic to \"proof pages\" *(book)*. Junk removal suits this, because before-and-after shots are very visual *(adapt)*:\n- **On every job:** a 10-second \"before\" pan, a 10-second \"after\" pan, and the truck loaded. Ask permission, and leave out house numbers and faces unless the customer agrees.\n- **Each week:** one 60-second customer story video, for example \"Linda's late mom's garage: 3 hours, 2 loads, 40% donated\". Real customers only, with their consent. **Never invent or stage testimonials** *(skill caveat; FTC rules, std)*.\n- Post them to your Facebook profile, page, local groups and Google Business Profile. Run them as retargeting ads to people who visited your landing pages *(Jennifer Sewell and Holmes on retargeting with testimonials, book)*.\n- Build a \"Recent Clear-Outs in [Town]\" proof page, and link it from every offer page.\n\nWoolner's **Position Ascension Loop** *(book)* is positioning \u2192 perception \u2192 expectation \u2192 anticipation \u2192 superior outcomes \u2192 reputation. Applied to you: become \"the [Town] junk guy who actually shows up, sweeps up and donates\" *(adapt)*.\n\n---\n\n## 6. Local referral machine (Frey) and partner accounts\n\nFrey's play is a lead-generating personal Facebook profile, friend everyone local, friend your **Dream 100**, join local groups, send **20 friend requests a day**, post positive content, and use referral methods *(book)*. Frey himself warns you to **check Facebook's Terms of Service** before creating a second personal profile *(book)*. The safest route is to use your one real profile.\n\n**Your Dream 100** (the people who send repeat jobs) *(adapt)*:\n- Realtors and listing agents (pre-sale clean-outs)\n- Property managers and landlords (move-out and eviction clean-outs)\n- Estate-sale companies, senior-move managers, estate attorneys\n- Self-storage managers (abandoned units)\n- Remodelers, flooring and roofing contractors (debris)\n- HOA managers, church and PTA leaders (community clean-up days)\n\nFor each: comment on their posts for a couple of days, then send a friend request and keep engaging for 30 days *(Frey, book)*. Then offer a **partner deal**, for example \"Your clients get priority same-week slots and a 10% client discount. You get one call and it's handled, with photos sent to you when it's done.\" *(adapt)*.\n\n**Frey's referral methods, adapted** *(book / adapt)*:\n- **Share a post:** ask happy customers to share their before-and-after post.\n- **Refer a friend:** the $20 / $20 offer above.\n- **\"Team 12\":** a referral group of 12 local trades (a realtor, organizer, cleaner, handyman, mover, painter\u2026) who pass jobs to each other.\n- **The \"viral deal\":** for example, \"Free curbside pickup of one Christmas tree with any paid job in January.\" It's cheap for you and easy to share.\n\n**Fishbowl twist** (Frey's restaurant fishbowl, adapted): put a \"Win a free garage clear-out ($300 value)\" box at a hardware store, coffee shop or storage facility. Draw once a month, and build your list from the entries *(adapt)*. Check local sweepstakes rules (free entry, posted rules) and only text entrants who ticked a consent box *(std)*.\n\n### Target mix: where the 100 customers come from *(assume; replace with your data by week 6)*\n\n| Channel | Customers |\n|---|---|\n| Reactivation of past customers and old leads (Shaule) | 10 |\n| Facebook profile, local groups and \"share a post\" (Frey) | 15 |\n| Referrals and the review funnel (Shaule, Frey) | 15 |\n| Dream 100 partner accounts (realtors, property managers, contractors) | 20 |\n| Paid ads to one-offer pages (Latimer) plus Google search with a text extension | 30 |\n| Truck, yard signs, door hangers next to jobs, the fishbowl | 10 |\n| **Total** | **100** |\n\n---\n\n## 7. The 100-day calendar\n\nOrganized into the skill's blocks: list and warm audience, then funnels and paid traffic, then scale and proof.\n\n### Weeks 1\u20132 (days 1\u201314): Numbers, offers, existing list, warm audience\n- [ ] Fill in the maximum CAC table and the funnel math (section 1). Set up the tracking sheet: source, quote, booked, revenue, review, referral.\n- [ ] Choose offer A for the current season. Write it using Latimer's copy elements.\n- [ ] Set up a business texting number with two-way SMS, saved reply templates and a consent line on every form (Shaule; TCPA) *(book / std)*.\n- [ ] **Reactivation blast** to consented past customers and leads (section 4a). *Goal: 5\u20138 jobs.*\n- [ ] Turn on the NPS, review and referral sequence now (section 4c).\n- [ ] Polish your Facebook profile: a banner with your face, the truck and the offer URL. Fill in the \"Details About You\" section (Frey) *(book)*.\n- [ ] Start **20 local friend requests a day** and join 5\u201310 local groups (Frey) *(book)*. Post a helpful tip, a before-and-after, and a \"here's who I am\" story.\n- [ ] Make your Dream 100 list. Start engaging with 10 a day.\n- [ ] Google Business Profile: photos, services, the text number, and the first reviews from past customers.\n- **Target by day 14:** about 10 customers.\n\n### Weeks 3\u20134 (days 15\u201328): One-offer pages and the photo-quote funnel\n- [ ] Build landing pages for offers A and C (Latimer steps 3\u20135). Add a pixel so you can retarget (Arce's reason for using a landing page rather than a lead-form ad) *(book)*.\n- [ ] Build the text-a-photo survey (section 4b) and put the \"Text Me\" entry points everywhere.\n- [ ] Send 3\u20135 emails to your existing list about the offer (Latimer step 6) *(book)*.\n- [ ] Facebook Live or posts: \"Clearing a garage in [neighborhood] today, I have 2 slots left this week.\"\n- [ ] Door hangers on 20\u201330 houses around every job: \"I was just at your neighbor's\" *(adapt)*.\n- [ ] First Dream 100 partner offers: 5 realtors, 5 property managers, 3 contractors.\n- [ ] Film the first weekly proof story (Woolner) *(book)*.\n- **Target by day 28:** about 25 customers in total.\n\n### Weeks 5\u20136 (days 29\u201342): Paid traffic within your maximum CAC\n- [ ] Launch Facebook and Instagram ads to the offer A page, aimed at homeowners within your service radius. Run **at least 2 ads that differ in one thing** (the photo or the headline), and judge each after about $50 of spend (Arce) *(book)*.\n- [ ] Google search ads for \"junk removal [town]\" with a text extension (Shaule) *(book)*. Cap spend so **cost per booked job stays under about $65** *(Latimer, applied)*.\n- [ ] Retargeting: show proof videos to page visitors who didn't book (J. Sewell, Holmes) *(book)*.\n- [ ] Speed-to-lead: answer every text within 15 minutes during working hours. Send automated replies while you're lifting.\n- [ ] Follow up every unbooked quote 3 times over 10 days. McCall's rule is that 90% of business comes from follow-up (6\u20137 touches over 3\u20134 months) *(book)*.\n- **Target by day 42:** about 42 customers in total.\n\n### Weeks 7\u201310 (days 43\u201370): Scale what works and add a second offer\n- [ ] Read the sheet unemotionally (Latimer step 7). Stop the worst channel and put that budget into the best.\n- [ ] Launch offer B with its own page (Latimer step 5: repeat for each offer) *(book)*.\n- [ ] Sign up 3\u20135 partner accounts with a simple \"priority slot\" agreement. Send photos to the partner after each job.\n- [ ] **Run a community clean-up day** with an HOA, church or neighborhood group. This adapts Woolner's \"Epic Event\". Haul one curb pile for each house for a flat fee. Raffle a free garage clear-out, with prizes donated by Team 12 partners, to collect names. Give a \"book within 7 days\" price (his \"Glue and Offer\") *(adapt)*.\n- [ ] Batch the schedule by area. If demand passes capacity, raise prices before adding hours, and think about a part-time helper for big jobs only *(adapt)*.\n- **Target by day 70:** about 72 customers in total.\n\n### Weeks 11\u201314 (days 71\u2013100): Proof, reviews, referrals, and the back end\n- [ ] Publish the \"Recent Clear-Outs\" proof page with 8\u201310 real stories (Woolner) *(book)*.\n- [ ] Push for reviews: a personal text to every customer who hasn't left one yet (to everyone, with no gating).\n- [ ] Referral push: \"Know someone moving or downsizing this spring?\"\n- [ ] Partner check-in: give each Dream 100 partner a recap of the jobs you did for their clients.\n- [ ] Repackage the offer for the next 90 days (Shaule) *(book)*.\n- [ ] Plan the next 100 days from your real close, show and cost numbers.\n- **Target by day 100:** 100 customers. **Stretch:** 60+ new reviews and 5+ active partner accounts.\n\n### Daily rhythm (about 60\u201390 minutes a day of marketing)\n- **Before the first job:** answer texts and quotes. Do 20 friend requests and 10 Dream 100 engagements (Frey) *(book)*.\n- **On every job:** before-and-after shots, door hangers next door, and ask \"anything else while I'm here?\"\n- **Evening:** post one piece of proof, send review and referral texts, and update the sheet.\n- Mashore's **6 must-dos a day, hardest first** works well for a solo owner *(book)*.\n\n---\n\n## 8. Weekly scorecard\n\n| Metric | Weekly target |\n|---|---|\n| New leads | 18\u201320 |\n| Quotes sent | 13\u201314 |\n| Jobs completed | 7\u20138 |\n| Cost per booked job (paid channels) | under about $65 |\n| Average job revenue | at or above $325 |\n| Reviews requested / received | 7 / 4+ |\n| Referrals asked / received | 7 / 1\u20132 |\n| Proof videos posted | at least 1 |\n| Dream 100 touches | 50+ |\n\n---\n\n## 9. Compliance and cautions\n\n- **Texting and calls:** get prior express written consent for marketing texts (TCPA), honor STOP, and follow email law (CAN-SPAM) *(std)*.\n- **Reviews:** ask everyone. No gating, no incentives in exchange for reviews, and no fake testimonials (Google policy and FTC rules) *(std, verify)*.\n- **Facebook:** check the Terms of Service before running a second personal profile (Frey's own warning). Follow platform rules for contests and promotions *(book / std)*.\n- **Sweepstakes and raffles:** offer free entry and post the rules. Raffles that require a purchase can be illegal gambling in some states *(std)*.\n- **Disposal:** know what you legally can't take or must handle in a special way (paint, chemicals, tires, refrigerant appliances, e-waste), and keep dump and recycling receipts *(std)*.\n- **Business basics:** liability insurance, a commercial vehicle policy, any local hauling license, and a written price chart so on-site upsells are clear *(std)*.\n- **Numbers:** the experts' results are their own claims, not guarantees. Ad costs have risen since the book (Arce's lead costs of $5\u201335 on Facebook date from about 2019) *(book / std)*. Replace every placeholder in this plan with your real data by week 6.\n\n---\n\n### The plan on one page\n1. **Numbers:** maximum CAC is about $65 per job (about $100 with the back end), and 100 customers needs about 260 leads (Latimer, Hormozi).\n2. **Offers:** a bounded $59 single-item pickup, a $129 garage corner, and a free text-a-photo quote. One page each, with seasonal hooks (Latimer).\n3. **Phone funnel:** reactivate past customers in week 1, run the photo survey to booking, and ask every customer for a review and a referral (Shaule).\n4. **Local celebrity:** your face on everything, 20 friend requests a day, a Dream 100 of realtors, property managers and contractors, a Team 12, and a viral deal (Frey).\n5. **Proof:** one real before-and-after story a week, used on a proof page and in retargeting (Woolner).\n6. **Measure weekly, scale the winners, and protect your one truck's calendar.**\n"}], "grading": {"expectations": [{"text": "Uses Joshua Latimer's home-services ideas (max CAC and/or front-end offer)", "passed": true, "evidence": "Section 1 'Know your numbers first (Latimer's maximum CAC)' uses his one-off formula ('decide what share of a job's profit you'll give up'), matching references/experts.md; Section 2 cites his real front-end examples ('$20 45-minute power clean, a free spot clean, and 10 exterior windows for $99'), the value ladder quote 'amateurs focus on the front end but professionals focus on the back end', the ~$3,850/yr client, and Section 3 lists his seven steps correctly."}, {"text": "Borrows from at least one other named expert (e.g. David Frey referrals, Tyler Shaule SMS, Hormozi client-financed acquisition)", "passed": true, "evidence": "Section 4 uses Tyler Shaule's Phone Funnel System (reactivation, survey-to-appointment with 3-5 questions, NPS rate/review/referral, ~300 reviews, repackage every 90 days); Section 6 uses David Frey's Dream 100, 20 friend requests/day, Team 12, viral deal, fishbowl; Section 5 uses Woolner's portfolio of proof and Position Ascension Loop. All match the skill files."}, {"text": "Breaks the plan into phases across 100 days", "passed": true, "evidence": "Section 7 '100-day calendar' splits into Weeks 1-2 (days 1-14), 3-4 (15-28), 5-6 (29-42), 7-10 (43-70), 11-14 (71-100), each with cumulative customer targets (10, 25, 42, 72, 100)."}, {"text": "Includes acquisition-cost math", "passed": true, "evidence": "Max CAC table: $325 job, $190 gross profit, 35% share -> 'Max CAC on the first job about $65', back-end-adjusted 'about $100'; working-backward funnel (100 customers / 55% close = ~180 quotes / 70% = ~260 leads); Hormozi's 'spend $1 to make $3' check, correctly attributed."}, {"text": "Includes reviews/referrals or reactivation", "passed": true, "evidence": "Section 4a reactivation funnel ('Upload every past customer and every old lead'), 4c NPS review/referral funnel (with correct no-gating caution), Section 6 referral methods ($20/$20 refer-a-friend, share a post, Team 12)."}], "summary": {"passed": 5, "failed": 0, "total": 5, "pass_rate": 1.0}}}, {"id": "eval-1-adv-100days-without_skill-run-1", "prompt": "I run a one-person junk-removal service. Using Brick & Mortar Funnels, build a 100-day plan to get 100 customers, borrowing from the home-services chapter (Joshua Latimer) and at least one other expert.", "eval_id": 1, "outputs": [{"name": "response.md", "type": "text", "content": "# 100 Customers in 100 Days: A Funnel Plan for a One-Person Junk-Removal Business\n\n## A note on sources first\n\nI can't reliably quote the *Brick & Mortar Funnels* chapters word for word. I don't have the exact text of Joshua Latimer's home-services chapter or the other contributors' chapters in front of me. So I won't put numbers or quotes in their mouths. This plan uses the ideas that home-services funnel experts (Latimer among them) are known for:\n\n- an irresistible front-end offer\n- fast, local, trust-heavy follow-up\n- reviews and referrals as the engine that keeps growing\n\nThe second borrowed idea is the event/workshop approach of using a local \"moment\" to collect lots of leads at once. It's tied to contributors like Chad Woolner and Jaime Cross. If you have the book, check each tactic against the chapter text and swap in the author's exact scripts where they differ.\n\n## The math: what \"100 customers in 100 days\" actually needs\n\n| Metric | Target | Notes |\n|---|---|---|\n| Customers | 100 (about 1 per day, about 7 per week) | You're one person, so 1\u20132 jobs a day is realistic capacity |\n| Booked quotes needed | ~160 | Assumes about 60\u201365% of on-site or photo quotes close |\n| Leads needed | ~400 | Assumes about 40% of leads book a quote |\n| Leads per week | ~28 \u2192 ramping from 10 (wk 1\u20132) to 40+ (wk 8+) | |\n| Avg ticket | $250\u2013$450 | Mix of single items, half loads and full loads |\n| Revenue goal | $30k\u2013$40k | Use it to fund ads in phase 2 |\n\nYour bottleneck is capacity, not leads. Make every job count three times: the job itself, a review and a referral.\n\n---\n\n## The funnel (home-services style)\n\n### 1. Front-end offer (the \"hook\")\nDon't sell \"junk removal.\" Sell an outcome with no risk attached:\n\n> **\"Garage Back in 1 Afternoon \u2014 Guaranteed. Upfront photo quote in 15 minutes, no surprise fees, and we donate or recycle what we can. If we're late, $50 off.\"**\n\nPieces of the offer:\n- **Photo/text quote**: the lead texts 3 photos and gets a price range within 15 minutes. That's low friction and faster than competitors.\n- **Price anchor**: \"Single-item pickups from $89. Truckload pricing by volume (1/8, 1/4, 1/2, full).\"\n- **Risk reversal**: on-time guarantee, a price-lock (the quote is the price unless the volume changes) and a sweep-up included.\n- **Bonus stack**: free donation receipt, a free \"one more item\" add-on under 50 lb, and a photo of the empty space.\n- **Scarcity (true)**: \"I'm a one-truck operation, so I book only 8 jobs a week.\" This is honest and builds urgency.\n\n### 2. Lead capture\n- A one-page landing page: headline, before/after photos, a 3-step \"how it works,\" \"Text photos to (xxx)\" plus a 3-field form, reviews and a guarantee.\n- Google Business Profile (GBP): this is your #1 free asset. Pick the right categories, add service areas and post 3 times a week.\n- Click-to-text and click-to-call on everything.\n\n### 3. Speed-to-lead follow-up\n- Reply within 5 minutes (auto-text: \"Got it! Send 2\u20133 photos and I'll price it in 15 min. \u2014 [Name], owner\").\n- If they don't book, follow up on day 1, day 3 and day 7. Then put them in a monthly \"clean-out season\" text.\n- Confirm the day before, text \"on my way,\" and send the review request within 2 hours after the job.\n\n### 4. Back end: reviews, referrals, repeat\n- **Review ask**: leave a card on site with a QR code. Ask by text the same day. Goal: 1 review per 2 jobs.\n- **Referral offer**: \"$25 off your next haul or a $25 gift card for every friend who books.\"\n- **Partner referrals** (covered below): realtors, property managers, estate-sale companies, contractors and storage facilities.\n- **Repeat**: offer a seasonal clean-out reminder in spring and fall, and \"move-out week\" packages.\n\n---\n\n## Borrowed expert #2: the event / \"one-day\" funnel\n\nEvent and workshop funnels work by giving people a reason to act now and a place to gather. You can adapt that for junk removal like this:\n\n- **\"Neighborhood Clean-Out Day\"**: pick one subdivision or HOA. Drop door hangers and post in the neighborhood Facebook group or Nextdoor. Run it like this: \"On Saturday the truck is in [Neighborhood]. Shared-load pricing: 30% off when 3+ neighbors book the same day.\" This puts many small jobs on one route and spreads by word of mouth.\n- **A free mini-workshop with a partner**: \"Downsizing Without the Stress,\" held at a senior center, library or realtor office with an estate-sale or organizing partner. Collect sign-ups and offer an attendee-only bundle.\n- **A charity tie-in**: \"Every haul this month donates X to [local food bank or habitat store].\" This gives you PR, a story to share in Facebook groups and goodwill.\n\n---\n\n## The 100-day plan\n\n### Phase 1 \u2014 Days 1\u201320: Foundation and first 15 customers (warm market + free channels)\n**Goal: 15 customers, 10 reviews**\n\n| Days | Actions |\n|---|---|\n| 1\u20133 | Build the landing page, GBP, a text-quote number and simple CRM/spreadsheet tracking (lead source \u2192 quote \u2192 booked \u2192 review). Write the offer. |\n| 1\u20135 | **Warm launch**: text or call 100 people you know. \"I just launched; first 10 jobs are 20% off and I'd love a review.\" Post the same on your personal Facebook. |\n| 3\u201310 | Join 5\u201310 local Facebook groups, Nextdoor and buy/sell groups. Post before/after photos (not ads). Respond to every \"anyone know a hauler?\" post within an hour. |\n| 5\u201320 | Drop 500 door hangers in 2\u20133 target neighborhoods (older homes, high owner-occupancy, near move-out zones). |\n| 7\u201320 | Make a list of 30 referral partners (realtors, property managers, estate-sale companies, storage facilities, contractors, cleaning services). Visit 2 a day with a one-page \"partner sheet\" and a priority-booking promise. |\n| Ongoing | After every job: before/after photos, a review ask and a referral card. |\n\n### Phase 2 \u2014 Days 21\u201350: Turn on paid lead flow plus the first event\n**Goal: running total of 45 customers, 30 reviews**\n\n| Days | Actions |\n|---|---|\n| 21 | Launch Google Local Services Ads (pay-per-lead, \"Google Guaranteed\" badge) and/or Google Search ads on \"junk removal [city]\" and similar terms. Start at $20\u2013$30 a day. |\n| 21\u201330 | Run a Facebook/Instagram ad with a before/after carousel, the offer headline and a \"Text photos for a 15-min quote\" button. Target homeowners within a 15-mile radius. |\n| 25\u201335 | Plan the **first Neighborhood Clean-Out Day** (scheduled for about day 35): door hangers, an HOA newsletter and a Nextdoor post. |\n| 30\u201350 | Partner follow-ups: send every realtor a \"move-out ready\" package (a flat-rate 1/2-truck offer for listings). Ask each partner for 1 intro. |\n| Weekly | Review your numbers: cost per lead, quote-to-close rate and capacity. Kill ad sets that cost more than $40 per booked job. |\n\n### Phase 3 \u2014 Days 51\u201380: Scale what works and stack events\n**Goal: running total of 75 customers, 50+ reviews**\n\n| Days | Actions |\n|---|---|\n| 51\u201360 | Run the **Downsizing workshop** with an estate-sale or organizer partner. Offer attendees a bundle (clean-out plus donation run plus a haul-away at a flat rate). |\n| 55\u201370 | Clean-Out Day #2 and #3 in new neighborhoods. Retarget ad viewers with \"Truck in your area Saturday.\" |\n| 60\u201380 | Double the budget on the best lead source. Send the \"seasonal clean-out\" text to every past lead who didn't book. |\n| 60\u201380 | Ask your top 5 partners for a standing arrangement (for example, every vacancy turn for a property manager). |\n\n### Phase 4 \u2014 Days 81\u2013100: Close out, systematize, set up the next 100\n**Goal: 100 customers**\n\n| Days | Actions |\n|---|---|\n| 81\u201390 | Run a \"last call\" campaign to all open leads and past customers: \"Fall clean-out: 3 Saturday slots left.\" |\n| 85\u201395 | Hold a customer-appreciation or charity month. Every job donates and gets posted (social proof). |\n| 90\u2013100 | Document your SOPs (quoting, routing, dump/donation runs, follow-up). Decide on a part-time helper or a second truck day. Rebuild the plan for the next 100 days with the channel data. |\n\n---\n\n## Weekly scorecard (track every Friday)\n\n- Leads (by source)\n- Quotes sent / jobs booked / close %\n- Jobs done, revenue, avg ticket\n- Reviews received (goal: 50%+ of jobs)\n- Referrals received (goal: 1 in 5 jobs)\n- Ad spend \u2192 cost per booked job\n- Partner touches this week\n\n## Scripts you can use today\n\n**Speed-to-lead text:**\n> \"Hi [Name], it's [You] with [Business]. Thanks for reaching out! Text me 2\u20133 photos of what's going and I'll send a price in 15 minutes. I've got openings [day] and [day].\"\n\n**Review ask (same day):**\n> \"Thanks again, [Name]! If you were happy with the job, a quick Google review helps a one-man business more than you know: [link]. Know anyone moving or cleaning out? They get $25 off, and so do you.\"\n\n**Partner pitch (realtor):**\n> \"I help listings go on the market faster. Flat-rate half-truck clean-outs, booked within 48 hours, with photos sent to you when it's done. Want me to be your go-to?\"\n\n## Biggest risks and fixes\n\n- **Capacity crunch**: if you hit 10+ jobs a week, raise prices or require minimums rather than burn out.\n- **Ad leads that are low quality**: require photos before quoting, and use a price-range anchor in ads.\n- **Dump fees eating margin**: build disposal costs into your volume pricing, and donate or recycle to cut tipping fees.\n- **Weather and seasonality**: front-load events in good-weather months and keep a backlog of leads.\n\n**Bottom line:** the home-services lesson is irresistible offer + speed + reviews/referrals. Add the event lesson of creating a local moment that gathers demand all at once. As a one-person shop, that combination can realistically reach about 1 job a day by day 100. Check the specific tactics against the book's chapters and use the authors' exact scripts where you have them.\n"}], "grading": {"expectations": [{"text": "Uses Joshua Latimer's home-services ideas (max CAC and/or front-end offer)", "passed": false, "evidence": "The response admits 'I don't have the exact text of Joshua Latimer's home-services chapter' and offers only ideas 'home-services funnel experts (Latimer among them) are known for'. No maximum CAC concept appears anywhere. The 'front-end offer' is a generic risk-reversal hook ('Garage Back in 1 Afternoon \u2014 Guaranteed... If we're late, $50 off') with no Latimer value ladder, low-priced entry offer, one-offer landing page rationale or seven-step test loop. This is generic advice loosely attributed to Latimer."}, {"text": "Borrows from at least one other named expert (e.g. David Frey referrals, Tyler Shaule SMS, Hormozi client-financed acquisition)", "passed": true, "evidence": "'Borrowed expert #2: the event / \"one-day\" funnel' is attributed to 'contributors like Chad Woolner and Jaime Cross', which correctly matches the skill (Woolner's workshop/Epic Event funnels, Cross's ticketed events), and it is adapted into a 'Neighborhood Clean-Out Day' and partner mini-workshop. Thin on book specifics but the attribution is not wrong."}, {"text": "Breaks the plan into phases across 100 days", "passed": true, "evidence": "Phase 1 (Days 1-20), Phase 2 (Days 21-50), Phase 3 (Days 51-80), Phase 4 (Days 81-100), each with customer/review goals."}, {"text": "Includes acquisition-cost math", "passed": false, "evidence": "Only volume funnel math is given ('Booked quotes needed ~160... Leads needed ~400'). There is no cost-per-customer derivation: no margin, no max CAC, no value-per-customer calculation. The single cost figure, 'Kill ad sets that cost more than $40 per booked job', is an unexplained cap, not acquisition-cost math."}, {"text": "Includes reviews/referrals or reactivation", "passed": true, "evidence": "'Back end: reviews, referrals, repeat' section (review ask by text, '$25 off... for every friend who books', partner referrals) plus a Phase 3 text to 'every past lead who didn't book' and Phase 4 'last call' campaign to past customers."}], "summary": {"passed": 3, "failed": 2, "total": 5, "pass_rate": 0.6}}}, {"id": "eval-2-adv-event-with_skill-run-1", "prompt": "Adapt Jaime Cross's retail event idea and Chad Woolner's workshop funnel for a small vintage-furniture pop-up.", "eval_id": 2, "outputs": [{"name": "response.md", "type": "text", "content": "# Event Funnel for a Vintage-Furniture Pop-Up\n\n*Combining Jaime Cross's ticketed retail class and Dr. Chad Woolner's workshop funnel and \"Epic Event\", from* Brick & Mortar Funnels *(ClickFunnels, about 2020).*\n\nTags: **(book)** means the idea comes from the book. **(adapt)** means my translation of it to a vintage pop-up. **(assume)** means a placeholder number to replace with yours.\n\n---\n\n## 1. What each expert brings, and why it fits a pop-up\n\n| Expert | What the book says | What it solves for a pop-up |\n|---|---|---|\n| **Jaime Cross** (MIG Soap, retail) | **Experience wins.** Her \"Director of Happiness\" takes customers' calls, and small bad experiences send customers elsewhere. A **ticketed in-store class ($47\u2013$97)** includes a factory tour and origin story, a teaching framework (\"Seven Pillars of True Beauty\"), hands-on stations, and a **free 14-Day True Beauty Challenge** on the thank-you page. **Bring a friend** and get a free full-size serum. **Refer two friends** and get free products. A **memorable URL** (DiscoverTrueBeauty.com) with testimonials *(book)* | A pop-up is open for a short time. A **paid ticket** turns \"maybe I'll stop by\" into a commitment, pre-qualifies buyers, and builds a list *before* the doors open |\n| **Dr. Chad Woolner** (chiropractic) | **Sprint:** \"The 30-Minute Reboot\" lunch workshop gives real value, \"not a thinly veiled sales pitch\", and starts an ongoing conversation rather than \"one shot is all you got\". Book workshops through existing relationships first, then **lead boxes** (\"win a free lunch\") in restaurants, then **\"welcome guest\"** outreach to businesses weekly, expecting a 90% failure rate. Know your **case value** (collections \u00f7 new patients). **Surge:** an **\"Epic Event\"** movie night: **3 email invites \u2192 RSVP page (name, email, phone, number of guests) \u2192 reminders**, then **\"Glue and Offer\"**, a raffle with prizes donated by **local joint-venture partners** that keeps people seated for a **limited-time offer**. **Marathon:** a **portfolio of proof** and the Position Ascension Loop *(book)* | Gives you a **repeatable way to build an audience** between pop-ups (small workshops at partner venues), plus a structure for a **big opening night** that ends with a reason to buy *tonight* |\n\n**The combined idea** *(adapt)*: run small free \"Vintage 101\" workshops at partner venues (Woolner's sprint) to fill a **ticketed Opening Night \"First Look\"** (Cross's class plus Woolner's Epic Event). Then use proof and the list to sell out the rest of the pop-up and the next one (Woolner's marathon).\n\n---\n\n## 2. Numbers first: the \"case value\" for a pop-up\n\nWoolner: know what one new customer is worth before deciding what an event is worth *(book)*. Hormozi's related rule is to know what you can spend per person who shows up *(book)*. Placeholders *(assume)*:\n\n| Item | Placeholder | Yours |\n|---|---|---|\n| Average order value (a piece plus small add-ons) | $420 | |\n| Gross margin after sourcing and restoration | 55%, so **about $230 profit** per order | |\n| Expected repeat purchases in 12 months (next pop-ups, online drops) | 0.6 | |\n| **\"Case value\" in profit per buyer (12 months)** | about $230 + (0.6 \u00d7 $230) \u2248 **$370** | |\n| Opening Night: ticket holders who buy that night | 35% | |\n| **Profit value per attendee** | 35% \u00d7 $230 \u2248 **$80**, plus ticket income | |\n\nWhat this tells you:\n- You can spend up to roughly **$40 to get one attendee** (half of their value, Hormozi's spend-per-show logic) *(book / adapt)*. Ticket income covers a large part of that.\n- One-of-a-kind stock **limits revenue**. If 60 attendees each wanted the same sideboard, you'd make one sale. Plan stock: about 3\u20134 sellable pieces per expected buyer, plus small, low-cost add-ons (lamps, mirrors, prints, barware) so everyone can buy *something* *(adapt)*.\n\n---\n\n## 3. The front-end offer: a Cross-style ticketed \"First Look\"\n\n### The ticket\n**\"First Look: Vintage Opening Night\", $25 per ticket, fully credited toward any purchase that night** *(adapt)*.\n\n- Cross charged **$47\u2013$97** for her class *(book)*. For furniture, where the real money is in the piece, a lower ticket that **turns into store credit** keeps the commitment, filters out casual visitors, and removes the \"I paid to shop?\" objection. Test $25 against $45. You could also offer a \"$45 with a vintage cocktail glass to take home\" tier.\n- **Scarcity is built in:** limited capacity (fire code plus comfort), and every piece is one of a kind. Ticket holders get **first pick before public doors open**.\n\n### What happens inside (Cross's class structure, translated)\n\n| Cross's class element *(book)* | Vintage pop-up version *(adapt)* |\n|---|---|\n| Factory tour and origin story | \"Where this came from\": the story of 3 hero pieces (the estate they came from, the maker, the restoration). Show before photos on a screen or easel |\n| \"Seven Pillars of True Beauty\" (a teaching framework) | **\"The 5 Tells of Real Vintage\"**: joinery, maker's marks, wood and veneer, hardware, wear patterns. Spend 15 minutes on it. This is the education-first part Woolner also stresses |\n| Detox and juicing for skin (a lifestyle tie-in) | \"Styling one vintage piece into a modern room\": a 10-minute live styling demo |\n| Hand massage and sampling stations | **Hands-on stations:** a \"Spot the Reproduction\" challenge table, a free wax-and-polish demo (a staff member finishes a small item), and a fabric and upholstery swatch bar |\n| \"Director of Happiness\" | One named host whose only job is guests: greets, answers delivery questions, holds pieces, and follows up after the event |\n\n### The thank-you-page bonus (Cross's free 14-day challenge)\nAfter buying a ticket, the buyer immediately gets **\"The 14-Day Room Refresh Challenge\"** *(adapt)*: one short email or text a day (where they opted in) with tasks such as \"Measure your one awkward wall\", \"Pick your wood tone\", and \"Send us a photo of your space\". On day 14 it ends with \"Bring your measurements to Opening Night and we'll pull 3 pieces that fit.\"\n\nThis warms them up *and* gives you their room sizes, which raises the chance they buy that night.\n\n### Bring-a-friend and refer-two (Cross's referral mechanics)\n- **Bring a friend** (a second ticket): both get a **free small vintage item** at the door, such as a brass candlestick, a vintage print or a coupe glass. They cost you little and feel valuable *(adapt of Cross's free full-size serum)*.\n- **Refer two friends who buy tickets:** get **$50 more store credit** or **free local delivery** *(adapt of Cross's free products)*.\n\n### The URL\nA memorable, offer-specific domain, as Cross did *(book)* and Frey recommends (city name included) *(book)*. For example **`[City]VintageFirstLook.com`**, pointing to a one-offer landing page: hero photo of the best piece, date, ticket price and credit, \"5 Tells\" teaser, the bonus challenge, a photo gallery, ticket counter (\"38 of 60 left\"), and **real testimonials only** from past buyers or pop-ups.\n\n---\n\n## 4. Filling the room: Woolner's workshop funnel, adapted\n\nWoolner's sprint phase is about **3 small workshops a week**, giving real value, booked through relationships before outreach *(book)*. For you, that means short free talks at other people's venues that send people to Opening Night tickets.\n\n### The mini-workshop: \"Vintage 101: How to Buy Vintage Without Getting Burned\" (30 minutes) *(adapt of \"The 30-Minute Reboot\")*\n- **Where:** coffee shops, wine bars, breweries, coworking spaces, interior-design studios, realtor offices (for new homeowners), library or community-center events.\n- **Content:** 3 of the \"5 Tells\", one real-or-fake piece passed around, and how to measure your space. **No pitch.** End with: \"We're doing a First Look night on [date]. Anyone here gets $10 off the ticket with code VINTAGE101.\"\n- **Collect:** name, email, phone and a consent checkbox on a sign-up sheet or QR code. This is the start of Woolner's \"ongoing conversation\".\n\n### How to book workshops (Woolner's order) *(book \u2192 adapt)*\n1. **Existing relationships first:** your past customers, Instagram followers, friends who run venues, and your email list.\n2. **Lead boxes:** Woolner uses \"win a free lunch\" boxes in restaurants. Yours is a **\"Win a restored mid-century side table\"** box at partner caf\u00e9s and shops. Entries go on your list. Use free entry and posted rules. Text only people who tick the consent box *(std)*.\n3. **\"Welcome guest\" outreach:** each week, contact 10\u201315 businesses and offer the free talk to their customers or staff. **Expect about 90% to say no**, as Woolner says *(book)*. Two yeses a week is enough.\n\n### Target math *(assume)*\n- 6 weeks \u00d7 2\u20133 mini-workshops \u00d7 about 12 people = about 180 people reached in person.\n- At a 20% ticket conversion, that's about 36 tickets. Add the list, social and ads (section 6) to reach **60 tickets**.\n\n---\n\n## 5. Opening Night as Woolner's \"Epic Event\"\n\nWoolner's Epic Event was a **free movie screening** with about 200\u2013300 attendees and about 20 new patients *(book)*. Your version is a **ticketed First Look night**, with an optional **\"Vintage Movie Night\"** later in the pop-up's run to bring people back *(adapt)*.\n\n### Invite sequence (Woolner: 3 email invites \u2192 RSVP \u2192 reminders) *(book \u2192 adapt)*\n\n**Invite 1 (about 21 days out): the story.**\n> Subject: The sideboard that came out of a 1962 Palm Springs estate\n> We're opening a 10-day vintage pop-up at [venue] on [date], and the night before, 60 people get first pick. Ticket is $25, **and it's fully credited to anything you buy that night.** Plus, the moment you grab a ticket, you'll start our free 14-Day Room Refresh Challenge. \u2192 [City]VintageFirstLook.com\n\n**Invite 2 (about 10 days out): the proof and scarcity.**\n> Subject: 22 tickets left, and a sneak peek\n> Here are 6 pieces you'll only see at First Look (photos). Bring a friend and you both get a free vintage keepsake at the door.\n\n**Invite 3 (about 3 days out): last call.**\n> Subject: Last call: First Look is Thursday\n> Doors 6:30, \"5 Tells of Real Vintage\" at 7:00, raffle at 8:15. Your $25 comes back as credit. [Link]\n\n**RSVP / ticket form:** name, email, mobile (with a consent checkbox), **number of guests** (Woolner's field), and \"What room are you shopping for?\" so the host can prepare a shortlist *(book / adapt)*.\n\n**Reminders:** 2 days before (email), the morning of (text), and 1 hour before (text with parking info). Every reminder is from the host, with their name (\"This is Maya, your host\").\n\n### Run of show *(adapt)*\n\n| Time | Segment | Source |\n|---|---|---|\n| 6:30 | Doors. Welcome drink, name tag, bring-a-friend gifts. Ticket holders get **first-pick shopping**, and pieces can be put on a 30-minute hold | Cross (experience), A. Sewell's \"serve food first\" |\n| 7:00 | 15-minute \"5 Tells of Real Vintage\" talk plus the stories behind 3 hero pieces | Cross (class and origin story), Woolner (value, not a pitch) |\n| 7:20 | Stations: Spot the Reproduction, polish demo, swatch bar, styling demo | Cross (hands-on stations) |\n| 7:45 | Open shopping. The host goes to people's held items and shortlists. Delivery booking table | |\n| 8:15 | **Glue and Offer:** a raffle with prizes donated by **joint-venture partners** (an upholsterer's gift card, a florist arrangement, a coffee roaster's bag, an interior designer's 1-hour consult). People must be present to win | Woolner *(book)* |\n| 8:20 | **Tonight-only offer:** \"Buy tonight and get **free local delivery** plus your ticket credit, or reserve any piece with 25% down until Sunday.\" | Woolner's limited-time offer *(book \u2192 adapt)* |\n| 8:45 | Final sales and delivery scheduling. Take before-and-after \"in your home\" photo requests | Woolner (proof) |\n\n**Why the raffle matters:** Woolner uses it as \"glue\" to keep people in the room until the offer *(book)*. Partners also promote the night to their own audiences, because their prize gets mentioned. **Legal caution:** a raffle where tickets are bought can be regulated gambling in many places. Make entry free with attendance (your ticket is store credit, not a raffle ticket), post the rules, and check local law *(std)*.\n\n---\n\n## 6. Other ways to fill tickets (from other chapters)\n\n- **Instagram and Facebook ads** to the one-offer page. Use 2 creatives that differ in one thing (a hero piece versus a room shot), judged after about $50 of spend (Arce). Call out the audience and city: \"[CITY] VINTAGE LOVERS: 60 people get first pick.\" *(book)*. Keep cost per ticket under about $40 (section 2).\n- **Retarget** page visitors with real testimonial and before-and-after videos (J. Sewell, Holmes) *(book)*.\n- **Local partner giveaway before the event** (Holmes's 12-day gift-card giveaway, adapted): a \"12 Days of Vintage\" run, with one small piece or partner prize given away each day on Instagram Live. Follow platform promotion rules *(book / std)*.\n- **Frey's Dream 100:** local interior designers, stagers, realtors, boutique owners and lifestyle influencers. Engage with them before asking, then invite them as VIP guests *(book)*.\n\n---\n\n## 7. After the event: Woolner's marathon (the portfolio of proof)\n\nA pop-up's biggest risk is starting from nothing every time. Woolner's answer is a **portfolio of proof** and an ongoing communication system *(book)*:\n- **Film at least one story a week:** a piece's restoration, a customer's room after delivery (with permission), or the backstory of a find. Post it, and add it to a **proof page** on the event URL *(book \u2192 adapt)*.\n- **Position Ascension Loop** *(book)*: positioning (\"the pop-up where every piece has a story and is checked for authenticity\") \u2192 perception \u2192 expectation \u2192 anticipation (a waitlist for the next drop) \u2192 superior outcomes (the delivery experience, the Director of Happiness follow-up) \u2192 reputation \u2192 stronger positioning.\n- **Follow-up for non-buyers:** in the 7 days after, text or email the shortlist the host made for them, with \"still available\" or \"sold, but here's a similar one\". McCall's rule: most business comes from follow-up *(book)*.\n- **Reviews and referrals** (Shaule's NPS idea): \"How likely are you to recommend us (1\u201310)?\", then **ask everyone** for a Google or Instagram review. Don't gate requests by score *(book; std, verify)*.\n- **Next pop-up:** past ticket holders get first access before the public. Repackage the offer every time (Shaule's 90-day repackaging) *(book)*.\n\n---\n\n## 8. Timeline: 8 weeks to opening night\n\n| Week | Actions |\n|---|---|\n| **\u22128** | Book the venue and check permits, insurance, capacity and liquor rules. Set the case-value numbers. Choose and photograph 3 hero pieces. Name the host (\"Director of Happiness\") |\n| **\u22127** | Build the one-offer page and URL, the ticket checkout, the 14-day challenge emails or texts, and the referral codes. Line up 4\u20136 joint-venture raffle partners |\n| **\u22126** | Ticket launch to your existing list and followers (relationships first, as Woolner says). Place lead boxes. Start welcome-guest outreach (10\u201315 businesses a week) |\n| **\u22126 to \u22121** | 2\u20133 \"Vintage 101\" mini-workshops a week. Post daily on Instagram (finds, restorations). Ads to the page from week \u22125 |\n| **\u22123** | Invite 1. Start the \"12 Days of Vintage\" giveaway |\n| **\u22122** | Invite 2 with sneak-peek photos. Confirm partner prizes and the delivery crew. Final stock plan with plenty of low-price add-ons |\n| **Event week** | Invite 3. Reminders at 2 days, the morning of, and 1 hour before. Run the night. Afterwards: shortlist follow-ups, review asks and proof content |\n| **During the pop-up's run** | Daily \"new piece just out\" posts. An optional **Vintage Movie Night** mid-run (Woolner's original Epic Event format) to bring people back |\n| **After closing** | Proof page, waitlist for the next pop-up, and a debrief using the numbers: tickets sold, attendance, buyers, average order value, cost per attendee |\n\n---\n\n## 9. Scorecard *(assume; replace with yours)*\n\n| Metric | Target |\n|---|---|\n| Opening Night tickets | 60 (sold out) |\n| Show rate | 85%+, so about 51 attendees |\n| Buyers on the night | about 18 (35%) |\n| Average order value | $420 \u2192 about $7,500 in sales on the night |\n| List growth (workshops, lead boxes, giveaway, tickets) | 400+ contacts with consent |\n| Cost per ticket from paid channels | under about $40 |\n| Proof stories published | at least 1 a week |\n| Reviews requested / received | every buyer / 50%+ |\n\n---\n\n## 10. Cautions\n\n- **Raffles and giveaways:** free entry, posted rules, and platform promotion rules. Paid raffles may count as gambling *(std)*.\n- **Texting and email:** get consent before marketing texts (TCPA) and include opt-outs (CAN-SPAM) *(std)*.\n- **Pop-up operations:** temporary event or vendor permits, sales tax registration, venue insurance, fire-code capacity, and a liquor license or caterer if you serve alcohol *(std)*.\n- **Honest descriptions:** describe age, maker and condition accurately. \"Authentic mid-century\" needs evidence. Use only real testimonials (FTC) *(std)*.\n- **Results:** Cross's and Woolner's figures (for example, about 200\u2013300 attendees and 20 new patients at Woolner's event) are the authors' own claims, not guarantees *(book)*. Ad costs have risen since the book *(std)*.\n\n---\n\n### The plan in one paragraph\nSell a **$25 ticket, credited to purchases, for a \"First Look\" opening night** on a one-offer URL. Include a **free 14-Day Room Refresh Challenge** and **bring-a-friend and refer-two gifts** (Cross). Fill it with **free 30-minute \"Vintage 101\" talks** at partner venues, **lead boxes**, and weekly **welcome-guest outreach** (Woolner's sprint). Run the night as an **Epic Event**: 3 invites, an RSVP, reminders, teaching first, then a **partner-donated raffle as glue for a tonight-only offer**. Then build a **portfolio of proof** and a waitlist, so every later pop-up starts warm (Woolner's marathon).\n"}], "grading": {"expectations": [{"text": "Uses Jaime Cross's ticketed-event concept", "passed": true, "evidence": "Section 3 'a Cross-style ticketed First Look' cites her accurate details: '$47\u2013$97' class, factory tour and origin story, 'Seven Pillars of True Beauty', hand massage/sampling stations, free 14-Day True Beauty Challenge on the thank-you page, bring-a-friend free full-size serum, refer-two free products, DiscoverTrueBeauty.com, 'Director of Happiness' - all matching references/experts.md."}, {"text": "Uses Chad Woolner's workshop/event funnel", "passed": true, "evidence": "Section 4 adapts 'The 30-Minute Reboot' (real value, 'not a thinly veiled sales pitch'), booking order (existing relationships -> lead boxes -> 'welcome guest' outreach with ~90% failure), ~3 workshops/week; Section 5 runs the 'Epic Event' with '3 email invites \u2192 RSVP (name, email, phone, number of guests) \u2192 reminders' and 'Glue and Offer' raffle with JV-partner prizes; Section 7 portfolio of proof and Position Ascension Loop. All accurate to the skill."}, {"text": "Adapts both concretely to a vintage-furniture pop-up", "passed": true, "evidence": "Concrete translations: '$25 ticket, fully credited toward any purchase', 'The 5 Tells of Real Vintage' replacing Seven Pillars, 'Spot the Reproduction' station, '14-Day Room Refresh Challenge', 'Vintage 101' talks at caf\u00e9s/breweries, 'Win a restored mid-century side table' lead box, upholsterer/florist raffle prizes, stock-planning note on one-of-a-kind inventory."}, {"text": "Includes promotion and follow-up steps", "passed": true, "evidence": "Section 8 week -8 to after-closing timeline; three drafted invite emails at ~21/10/3 days out, reminders at 2 days/morning/1 hour; Section 6 ads, retargeting, giveaway; Section 7 non-buyer follow-up within 7 days, NPS/review asks (no gating), waitlist for next pop-up."}, {"text": "Includes pricing or attendance targets", "passed": true, "evidence": "Ticket price $25 (test vs $45), 60 tickets, 85% show -> ~51 attendees, ~18 buyers at 35%, AOV $420 -> ~$7,500, cost per ticket under ~$40 (derived from Hormozi's spend-per-show logic), 400+ contacts, workshop math 6 weeks \u00d7 2\u20133 \u00d7 ~12 people \u2248 180 reached."}], "summary": {"passed": 5, "failed": 0, "total": 5, "pass_rate": 1.0}}}, {"id": "eval-2-adv-event-without_skill-run-1", "prompt": "Adapt Jaime Cross's retail event idea and Chad Woolner's workshop funnel for a small vintage-furniture pop-up.", "eval_id": 2, "outputs": [{"name": "response.md", "type": "text", "content": "# Retail Event and Workshop Funnel for a Small Vintage-Furniture Pop-Up\n\n## A note on sources first\n\nI don't have the exact text of Jaime Cross's or Chad Woolner's chapters in *Brick & Mortar Funnels*, so I won't quote them. Below I adapt the core mechanics their approaches are known for:\n\n- **Retail event (Cross-style):** a ticketed or limited \"experience\" for VIPs that creates urgency, builds a list and drives a big sales day. You give people a reason to show up on one specific day, not \"whenever.\"\n- **Workshop funnel (Woolner-style):** a low-cost or free educational workshop is the front-end offer. It builds trust and authority, and attendees then get a special offer at the end.\n\nCheck the details (pricing, scripts, timelines) against the book if you have it.\n\n---\n\n## The big idea\n\nPop-ups already have built-in scarcity: you're only open on certain days. Vintage furniture also has built-in scarcity: every piece is one of a kind. The funnel's job is to turn those two facts into a crowd at the door on opening hour, and to keep those people as buyers for the next pop-up.\n\n**Combined funnel:**\n`Ad / social / partner promo \u2192 VIP Early Access list (lead) \u2192 paid workshop or VIP preview ticket (front end) \u2192 pop-up sale day (core offer) \u2192 post-event follow-up and \"next drop\" list (back end)`\n\n---\n\n## Part 1: The retail event, adapted \u2014 \"VIP Preview Night\"\n\n### The offer\n> **\"VIP First-Look Night \u2014 Friday 6\u20138pm, the night before we open to the public. 40 tickets. $15, credited toward any purchase. Includes a drink, first pick of every piece, and 10% off all night.\"**\n\nWhy this works for vintage:\n- **First pick is the real value.** Collectors know the best pieces go in the first hour. You're selling access, not a discount.\n- **A ticket credited toward a purchase** filters for serious buyers and makes the ticket feel free, while still getting people to commit.\n- **A hard cap (40)** is honest scarcity in a small space. It also keeps the room comfortable to shop.\n\n### Building the event\n| Element | Vintage-pop-up version |\n|---|---|\n| Theme | \"Mid-Century Night,\" \"Moody Maximalist,\" \"Cabin Modern.\" Curate each drop around a story. |\n| Sneak peeks | Post 1\u20132 hero pieces a day for 10 days before (\"This 1962 teak credenza will be there Friday. VIPs see it first.\") |\n| Hold requests | No holds before the event. That keeps the urgency real. VIP ticket holders can *reserve* 1 piece that night with a deposit. |\n| Experience | Local DJ or vinyl, a wine/coffee partner, a styling corner, a \"story card\" on each piece (maker, era, provenance) |\n| Logistics | Delivery partner on site with flat-rate local delivery, plus a \"sold\" tag system and a \"pay now, pick up Sunday\" option |\n| Public day | Saturday open to everyone. Announce \"VIPs were here last night,\" which shows social proof *and* sets up FOMO for the next drop |\n\n### Promotion timeline (3 weeks)\n- **Week -3:** Announce the date. Open the free \"Early Access List\" (email and SMS). Partner with 2\u20133 local businesses (coffee shop, plant store, interior designer) for cross-promo.\n- **Week -2:** Open VIP tickets to the list first (24 hours), then to the public. Run a small local Instagram/Facebook ad ($10\u2013$20 a day, 10-mile radius, interests in vintage, mid-century and interior design) to the ticket page.\n- **Week -1:** Post daily sneak peeks. Send a \"12 tickets left\" update. Send a reminder text the day before and the day of.\n- **Event week:** Go live on Instagram Stories during setup. Post \"just sold\" pieces to drive Saturday traffic.\n\n---\n\n## Part 2: The workshop funnel, adapted \u2014 \"Vintage Hunting and Styling Workshop\"\n\n### The workshop (front end)\n> **\"How to Spot, Score & Style Vintage Furniture \u2014 a 75-minute hands-on workshop. $25 (or free with VIP ticket). Learn to date a piece, spot quality joinery and veneer vs. solid wood, price-check like a dealer, and style one statement piece in a small space.\"**\n\nWorkshop ideas (rotate them):\n1. **Spot & Score:** identifying makers, joinery, condition red flags and fair pricing\n2. **Refresh, Don't Ruin:** basic cleaning, oiling teak, fixing wobbly legs (with a \"never do this\" list)\n3. **Style One Piece:** how to build a room around a single vintage anchor\n4. **Small-Space Vintage:** apartments and rentals\n\n### Workshop structure (Woolner-style teach \u2192 offer)\n1. **Welcome and quick win (10 min):** everyone learns one trick right away (for example, how to tell a dovetail from a dowel joint)\n2. **Teach (45 min):** hands-on with real pieces from the inventory. Every example piece is for sale.\n3. **Story/proof (5 min):** before and after rooms from past customers\n4. **Offer (10 min):** \"Workshop attendees only: 15% off today, plus first shot at the 'held for workshop' pieces, plus free local delivery this weekend.\"\n5. **Q&A and shop (open-ended):** people stay and buy, because they now understand *why* the pieces are worth the price\n\nWhy this fits vintage: the main objection is \"it's used/old, why does it cost that?\" Teaching people to recognize quality removes that objection on its own. It also turns casual browsers into confident buyers and future repeat customers.\n\n---\n\n## Part 3: Putting them together \u2014 one pop-up cycle\n\n| When | Step | Goal |\n|---|---|---|\n| Ongoing | Instagram/TikTok sourcing stories and \"the hunt\" content | Build an audience |\n| Week -3 | Free Early Access List (lead magnet: \"Vintage Buying Cheat Sheet: 10 signs of quality\" PDF) | Collect emails and SMS numbers |\n| Week -2 | Sell VIP Preview tickets and workshop seats (bundle: $35 for both, or VIP includes the workshop) | Front-end revenue and commitment |\n| Friday 5pm | Workshop (5\u20136pm) \u2192 VIP Preview Night (6\u20138pm) | Warmest buyers, highest-value sales |\n| Saturday\u2013Sunday | Public pop-up | Volume, new list sign-ups at checkout (QR code) |\n| Week +1 | Thank-you email, \"what sold\" recap, unsold-piece flash sale to the list, review ask | Close leftovers, social proof |\n| Ongoing | \"Next Drop\" list and monthly sneak peeks | Repeat buyers for the next pop-up |\n\n### Back-end and repeat offers\n- **\"Hunt List\" sourcing service:** customers tell you what they're looking for (for example, \"a walnut dresser under $600\"), pay a $20 deposit, and you text them first when you find one.\n- **Membership/\"Collector's Club\":** $10\u2013$15 a month or $99 a year for VIP night access every drop, 10% off and first look at new finds.\n- **Partner revenue:** an interior designer referral fee, plus delivery and refinishing upsells.\n\n---\n\n## Numbers to plan around (example for one pop-up)\n\n| Item | Estimate |\n|---|---|\n| Early Access List sign-ups | 300\u2013500 |\n| VIP tickets (40 \u00d7 $15, credited to purchases) | $600 committed |\n| Workshop seats (20 \u00d7 $25) | $500 |\n| VIP Night conversion | 60\u201370% buy something; avg $350 |\n| Public weekend | 150\u2013300 visitors; 15\u201325% buy |\n| Ad spend | $200\u2013$400 |\n\nTrack: list growth, ticket sell-through, revenue per attendee (VIP vs. workshop vs. public), sell-through % of inventory and list sign-ups at checkout.\n\n## Common mistakes to avoid\n- **Selling out the best pieces online beforehand.** That kills the reason to come to VIP night. Show sneak peeks, but don't sell those pieces early.\n- **Making the workshop a sales pitch.** Teach for real. The offer works *because* the teaching was valuable.\n- **No capture at the door.** Every visitor should get a reason to join the list (a raffle for a small piece or the cheat sheet).\n- **Fake scarcity.** You don't need it. One-of-a-kind inventory and a limited room are real constraints, so say so plainly.\n- **Forgetting logistics.** Big furniture needs a delivery or pickup plan on the spot, or sales stall.\n\n**Bottom line:** use the retail-event idea to create a *moment* (a ticketed VIP first-look with real scarcity). Use the workshop funnel to build *trust and buying confidence* (teach people to recognize quality, then make attendees an offer). Together they turn a small pop-up into a repeatable launch cycle with a growing list of collectors who show up every drop.\n"}], "grading": {"expectations": [{"text": "Uses Jaime Cross's ticketed-event concept", "passed": true, "evidence": "Part 1 'VIP Preview Night' is a ticketed experience ('40 tickets. $15, credited toward any purchase'), and the opener characterizes Cross's approach as 'a ticketed or limited \"experience\"', which matches the skill's core idea (ticketed in-store class). It omits Cross's specifics (the $47\u2013$97 class, the free 14-day challenge, bring-a-friend/refer-two gifts) but the ticketed-event concept itself is used and nothing stated is wrong."}, {"text": "Uses Chad Woolner's workshop/event funnel", "passed": false, "evidence": "Part 2's 'Woolner-style teach \u2192 offer' is a generic paid $25 in-store workshop ending in a 15%-off offer. None of Woolner's distinctive funnel appears: the free lunch 'Reboot' workshop held at other businesses, booking through existing relationships, lead boxes, 'welcome guest' outreach, case value, or the Epic Event's 3 invites \u2192 RSVP \u2192 reminders \u2192 'Glue and Offer' raffle. The response itself says 'I don't have the exact text of... Chad Woolner's chapters'. Generic workshop advice labeled as Woolner's."}, {"text": "Adapts both concretely to a vintage-furniture pop-up", "passed": true, "evidence": "Concrete vintage adaptations: theme nights ('Mid-Century Night'), sneak-peek hero pieces ('1962 teak credenza'), 'story card' on each piece, 'How to Spot, Score & Style Vintage Furniture' workshop, delivery partner logistics, 'Hunt List' sourcing service."}, {"text": "Includes promotion and follow-up steps", "passed": true, "evidence": "'Promotion timeline (3 weeks)' (Early Access List, list-first ticket release, $10\u2013$20/day local ads, '12 tickets left' update, reminder texts) and Part 3 'Week +1: Thank-you email, \"what sold\" recap, unsold-piece flash sale to the list, review ask' plus ongoing 'Next Drop' list."}, {"text": "Includes pricing or attendance targets", "passed": true, "evidence": "'Numbers to plan around': 40 VIP tickets \u00d7 $15, 20 workshop seats \u00d7 $25, 300\u2013500 list sign-ups, 60\u201370% VIP conversion at avg $350, 150\u2013300 public visitors at 15\u201325%, $200\u2013$400 ad spend."}], "summary": {"passed": 4, "failed": 1, "total": 5, "pass_rate": 0.8}}}], "previous_feedback": {}, "previous_outputs": {}, "benchmark": {"metadata": {"skill_name": "brick-mortar-funnels", "skill_path": "\u003cpath/to/skill>", "executor_model": "\u003cmodel-name>", "analyzer_model": "\u003cmodel-name>", "timestamp": "2026-11-21T22:00:50Z", "evals_run": [1, 2], "runs_per_configuration": 1}, "runs": [{"eval_id": 1, "eval_name": "adv-100days", "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 5, "failed": 0, "total": 5, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Uses Joshua Latimer's home-services ideas (max CAC and/or front-end offer)", "passed": true, "evidence": "Section 1 'Know your numbers first (Latimer's maximum CAC)' uses his one-off formula ('decide what share of a job's profit you'll give up'), matching references/experts.md; Section 2 cites his real front-end examples ('$20 45-minute power clean, a free spot clean, and 10 exterior windows for $99'), the value ladder quote 'amateurs focus on the front end but professionals focus on the back end', the ~$3,850/yr client, and Section 3 lists his seven steps correctly."}, {"text": "Borrows from at least one other named expert (e.g. David Frey referrals, Tyler Shaule SMS, Hormozi client-financed acquisition)", "passed": true, "evidence": "Section 4 uses Tyler Shaule's Phone Funnel System (reactivation, survey-to-appointment with 3-5 questions, NPS rate/review/referral, ~300 reviews, repackage every 90 days); Section 6 uses David Frey's Dream 100, 20 friend requests/day, Team 12, viral deal, fishbowl; Section 5 uses Woolner's portfolio of proof and Position Ascension Loop. All match the skill files."}, {"text": "Breaks the plan into phases across 100 days", "passed": true, "evidence": "Section 7 '100-day calendar' splits into Weeks 1-2 (days 1-14), 3-4 (15-28), 5-6 (29-42), 7-10 (43-70), 11-14 (71-100), each with cumulative customer targets (10, 25, 42, 72, 100)."}, {"text": "Includes acquisition-cost math", "passed": true, "evidence": "Max CAC table: $325 job, $190 gross profit, 35% share -> 'Max CAC on the first job about $65', back-end-adjusted 'about $100'; working-backward funnel (100 customers / 55% close = ~180 quotes / 70% = ~260 leads); Hormozi's 'spend $1 to make $3' check, correctly attributed."}, {"text": "Includes reviews/referrals or reactivation", "passed": true, "evidence": "Section 4a reactivation funnel ('Upload every past customer and every old lead'), 4c NPS review/referral funnel (with correct no-gating caution), Section 6 referral methods ($20/$20 refer-a-friend, share a post, Team 12)."}], "notes": []}, {"eval_id": 2, "eval_name": "adv-event", "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 5, "failed": 0, "total": 5, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Uses Jaime Cross's ticketed-event concept", "passed": true, "evidence": "Section 3 'a Cross-style ticketed First Look' cites her accurate details: '$47\u2013$97' class, factory tour and origin story, 'Seven Pillars of True Beauty', hand massage/sampling stations, free 14-Day True Beauty Challenge on the thank-you page, bring-a-friend free full-size serum, refer-two free products, DiscoverTrueBeauty.com, 'Director of Happiness' - all matching references/experts.md."}, {"text": "Uses Chad Woolner's workshop/event funnel", "passed": true, "evidence": "Section 4 adapts 'The 30-Minute Reboot' (real value, 'not a thinly veiled sales pitch'), booking order (existing relationships -> lead boxes -> 'welcome guest' outreach with ~90% failure), ~3 workshops/week; Section 5 runs the 'Epic Event' with '3 email invites \u2192 RSVP (name, email, phone, number of guests) \u2192 reminders' and 'Glue and Offer' raffle with JV-partner prizes; Section 7 portfolio of proof and Position Ascension Loop. All accurate to the skill."}, {"text": "Adapts both concretely to a vintage-furniture pop-up", "passed": true, "evidence": "Concrete translations: '$25 ticket, fully credited toward any purchase', 'The 5 Tells of Real Vintage' replacing Seven Pillars, 'Spot the Reproduction' station, '14-Day Room Refresh Challenge', 'Vintage 101' talks at caf\u00e9s/breweries, 'Win a restored mid-century side table' lead box, upholsterer/florist raffle prizes, stock-planning note on one-of-a-kind inventory."}, {"text": "Includes promotion and follow-up steps", "passed": true, "evidence": "Section 8 week -8 to after-closing timeline; three drafted invite emails at ~21/10/3 days out, reminders at 2 days/morning/1 hour; Section 6 ads, retargeting, giveaway; Section 7 non-buyer follow-up within 7 days, NPS/review asks (no gating), waitlist for next pop-up."}, {"text": "Includes pricing or attendance targets", "passed": true, "evidence": "Ticket price $25 (test vs $45), 60 tickets, 85% show -> ~51 attendees, ~18 buyers at 35%, AOV $420 -> ~$7,500, cost per ticket under ~$40 (derived from Hormozi's spend-per-show logic), 400+ contacts, workshop math 6 weeks \u00d7 2\u20133 \u00d7 ~12 people \u2248 180 reached."}], "notes": []}, {"eval_id": 1, "eval_name": "adv-100days", "configuration": "without_skill", "run_number": 1, "result": {"pass_rate": 0.6, "passed": 3, "failed": 2, "total": 5, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Uses Joshua Latimer's home-services ideas (max CAC and/or front-end offer)", "passed": false, "evidence": "The response admits 'I don't have the exact text of Joshua Latimer's home-services chapter' and offers only ideas 'home-services funnel experts (Latimer among them) are known for'. No maximum CAC concept appears anywhere. The 'front-end offer' is a generic risk-reversal hook ('Garage Back in 1 Afternoon \u2014 Guaranteed... If we're late, $50 off') with no Latimer value ladder, low-priced entry offer, one-offer landing page rationale or seven-step test loop. This is generic advice loosely attributed to Latimer."}, {"text": "Borrows from at least one other named expert (e.g. David Frey referrals, Tyler Shaule SMS, Hormozi client-financed acquisition)", "passed": true, "evidence": "'Borrowed expert #2: the event / \"one-day\" funnel' is attributed to 'contributors like Chad Woolner and Jaime Cross', which correctly matches the skill (Woolner's workshop/Epic Event funnels, Cross's ticketed events), and it is adapted into a 'Neighborhood Clean-Out Day' and partner mini-workshop. Thin on book specifics but the attribution is not wrong."}, {"text": "Breaks the plan into phases across 100 days", "passed": true, "evidence": "Phase 1 (Days 1-20), Phase 2 (Days 21-50), Phase 3 (Days 51-80), Phase 4 (Days 81-100), each with customer/review goals."}, {"text": "Includes acquisition-cost math", "passed": false, "evidence": "Only volume funnel math is given ('Booked quotes needed ~160... Leads needed ~400'). There is no cost-per-customer derivation: no margin, no max CAC, no value-per-customer calculation. The single cost figure, 'Kill ad sets that cost more than $40 per booked job', is an unexplained cap, not acquisition-cost math."}, {"text": "Includes reviews/referrals or reactivation", "passed": true, "evidence": "'Back end: reviews, referrals, repeat' section (review ask by text, '$25 off... for every friend who books', partner referrals) plus a Phase 3 text to 'every past lead who didn't book' and Phase 4 'last call' campaign to past customers."}], "notes": []}, {"eval_id": 2, "eval_name": "adv-event", "configuration": "without_skill", "run_number": 1, "result": {"pass_rate": 0.8, "passed": 4, "failed": 1, "total": 5, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Uses Jaime Cross's ticketed-event concept", "passed": true, "evidence": "Part 1 'VIP Preview Night' is a ticketed experience ('40 tickets. $15, credited toward any purchase'), and the opener characterizes Cross's approach as 'a ticketed or limited \"experience\"', which matches the skill's core idea (ticketed in-store class). It omits Cross's specifics (the $47\u2013$97 class, the free 14-day challenge, bring-a-friend/refer-two gifts) but the ticketed-event concept itself is used and nothing stated is wrong."}, {"text": "Uses Chad Woolner's workshop/event funnel", "passed": false, "evidence": "Part 2's 'Woolner-style teach \u2192 offer' is a generic paid $25 in-store workshop ending in a 15%-off offer. None of Woolner's distinctive funnel appears: the free lunch 'Reboot' workshop held at other businesses, booking through existing relationships, lead boxes, 'welcome guest' outreach, case value, or the Epic Event's 3 invites \u2192 RSVP \u2192 reminders \u2192 'Glue and Offer' raffle. The response itself says 'I don't have the exact text of... Chad Woolner's chapters'. Generic workshop advice labeled as Woolner's."}, {"text": "Adapts both concretely to a vintage-furniture pop-up", "passed": true, "evidence": "Concrete vintage adaptations: theme nights ('Mid-Century Night'), sneak-peek hero pieces ('1962 teak credenza'), 'story card' on each piece, 'How to Spot, Score & Style Vintage Furniture' workshop, delivery partner logistics, 'Hunt List' sourcing service."}, {"text": "Includes promotion and follow-up steps", "passed": true, "evidence": "'Promotion timeline (3 weeks)' (Early Access List, list-first ticket release, $10\u2013$20/day local ads, '12 tickets left' update, reminder texts) and Part 3 'Week +1: Thank-you email, \"what sold\" recap, unsold-piece flash sale to the list, review ask' plus ongoing 'Next Drop' list."}, {"text": "Includes pricing or attendance targets", "passed": true, "evidence": "'Numbers to plan around': 40 VIP tickets \u00d7 $15, 20 workshop seats \u00d7 $25, 300\u2013500 list sign-ups, 60\u201370% VIP conversion at avg $350, 150\u2013300 public visitors at 15\u201325%, $200\u2013$400 ad spend."}], "notes": []}], "run_summary": {"with_skill": {"pass_rate": {"mean": 1.0, "stddev": 0.0, "min": 1.0, "max": 1.0}, "time_seconds": null, "tokens": null}, "without_skill": {"pass_rate": {"mean": 0.7, "stddev": 0.1414, "min": 0.6, "max": 0.8}, "time_seconds": null, "tokens": null}, "delta": {"pass_rate": "+0.30", "time_seconds": null, "tokens": null}}, "notes": ["Time recorded for 0 of 2 with_skill runs, 0 of 2 without_skill runs, so there is no time delta.", "Token count recorded for 0 of 2 with_skill runs, 0 of 2 without_skill runs, so there is no token count delta."]}};
+
+    // ---- State ----
+    let feedbackMap = {};  // run_id -> feedback text
+    let currentIndex = 0;
+    let visitedRuns = new Set();
+
+    // ---- Init ----
+    async function init() {
+      // Load saved feedback from server — but only if this isn't a fresh
+      // iteration (indicated by previous_feedback being present). When
+      // previous feedback exists, the feedback.json on disk is stale from
+      // the prior iteration and should not pre-fill the textareas.
+      const hasPrevious = Object.keys(EMBEDDED_DATA.previous_feedback || {}).length > 0
+        || Object.keys(EMBEDDED_DATA.previous_outputs || {}).length > 0;
+      if (!hasPrevious) {
+        try {
+          const resp = await fetch("/api/feedback");
+          const data = await resp.json();
+          if (data.reviews) {
+            for (const r of data.reviews) feedbackMap[r.run_id] = r.feedback;
+          }
+        } catch { /* first run, no feedback yet */ }
+      }
+
+      document.getElementById("skill-name").textContent = EMBEDDED_DATA.skill_name;
+      showRun(0);
+
+      // Wire up feedback auto-save
+      const textarea = document.getElementById("feedback");
+      let saveTimeout = null;
+      textarea.addEventListener("input", () => {
+        clearTimeout(saveTimeout);
+        document.getElementById("feedback-status").textContent = "";
+        saveTimeout = setTimeout(() => saveCurrentFeedback(), 800);
+      });
+    }
+
+    // ---- Navigation ----
+    function navigate(delta) {
+      const newIndex = currentIndex + delta;
+      if (newIndex >= 0 && newIndex < EMBEDDED_DATA.runs.length) {
+        saveCurrentFeedback();
+        showRun(newIndex);
+      }
+    }
+
+    function updateNavButtons() {
+      document.getElementById("prev-btn").disabled = currentIndex === 0;
+      document.getElementById("next-btn").disabled =
+        currentIndex === EMBEDDED_DATA.runs.length - 1;
+    }
+
+    // ---- Show a run ----
+    function showRun(index) {
+      currentIndex = index;
+      const run = EMBEDDED_DATA.runs[index];
+
+      // Progress
+      document.getElementById("progress").textContent =
+        `${index + 1} of ${EMBEDDED_DATA.runs.length}`;
+
+      // Prompt
+      document.getElementById("prompt-text").textContent = run.prompt;
+
+      // Config badge
+      const badge = document.getElementById("config-badge");
+      const configMatch = run.id.match(/(with_skill|without_skill|new_skill|old_skill)/);
+      if (configMatch) {
+        const config = configMatch[1];
+        const isBaseline = config === "without_skill" || config === "old_skill";
+        badge.textContent = config.replace(/_/g, " ");
+        badge.className = "config-badge " + (isBaseline ? "config-baseline" : "config-primary");
+        badge.style.display = "inline-block";
+      } else {
+        badge.style.display = "none";
+      }
+
+      // Outputs
+      renderOutputs(run);
+
+      // Previous outputs
+      renderPrevOutputs(run);
+
+      // Grades
+      renderGrades(run);
+
+      // Previous feedback
+      const prevFb = (EMBEDDED_DATA.previous_feedback || {})[run.id];
+      const prevEl = document.getElementById("prev-feedback");
+      if (prevFb) {
+        document.getElementById("prev-feedback-text").textContent = prevFb;
+        prevEl.style.display = "block";
+      } else {
+        prevEl.style.display = "none";
+      }
+
+      // Feedback
+      document.getElementById("feedback").value = feedbackMap[run.id] || "";
+      document.getElementById("feedback-status").textContent = "";
+
+      updateNavButtons();
+
+      // Track visited runs and promote done button when all visited
+      visitedRuns.add(index);
+      const doneBtn = document.getElementById("done-btn");
+      if (visitedRuns.size >= EMBEDDED_DATA.runs.length) {
+        doneBtn.classList.add("ready");
+      }
+
+      // Scroll main content to top
+      document.querySelector(".main").scrollTop = 0;
+    }
+
+    // ---- Render outputs ----
+    function renderOutputs(run) {
+      const container = document.getElementById("outputs-body");
+      container.innerHTML = "";
+
+      const outputs = run.outputs || [];
+      if (outputs.length === 0) {
+        container.innerHTML = '<div class="empty-state">No output files</div>';
+        return;
+      }
+
+      for (const file of outputs) {
+        const fileDiv = document.createElement("div");
+        fileDiv.className = "output-file";
+
+        // Always show file header with download link
+        const header = document.createElement("div");
+        header.className = "output-file-header";
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = file.name;
+        header.appendChild(nameSpan);
+        const dlBtn = document.createElement("a");
+        dlBtn.className = "dl-btn";
+        dlBtn.textContent = "Download";
+        dlBtn.download = file.name;
+        dlBtn.href = getDownloadUri(file);
+        header.appendChild(dlBtn);
+        fileDiv.appendChild(header);
+
+        const content = document.createElement("div");
+        content.className = "output-file-content";
+
+        if (file.type === "text") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          content.appendChild(pre);
+        } else if (file.type === "image") {
+          const img = document.createElement("img");
+          img.src = file.data_uri;
+          img.alt = file.name;
+          content.appendChild(img);
+        } else if (file.type === "pdf") {
+          const iframe = document.createElement("iframe");
+          iframe.src = file.data_uri;
+          content.appendChild(iframe);
+        } else if (file.type === "xlsx") {
+          renderXlsx(content, file.data_b64);
+        } else if (file.type === "binary") {
+          const a = document.createElement("a");
+          a.className = "download-link";
+          a.href = file.data_uri;
+          a.download = file.name;
+          a.textContent = "Download " + file.name;
+          content.appendChild(a);
+        } else if (file.type === "error") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          pre.style.color = "var(--red)";
+          content.appendChild(pre);
+        }
+
+        fileDiv.appendChild(content);
+        container.appendChild(fileDiv);
+      }
+    }
+
+    // ---- XLSX rendering via SheetJS ----
+    function renderXlsx(container, b64Data) {
+      try {
+        const raw = Uint8Array.from(atob(b64Data), c => c.charCodeAt(0));
+        const wb = XLSX.read(raw, { type: "array" });
+
+        for (let i = 0; i < wb.SheetNames.length; i++) {
+          const sheetName = wb.SheetNames[i];
+          const ws = wb.Sheets[sheetName];
+
+          if (wb.SheetNames.length > 1) {
+            const sheetLabel = document.createElement("div");
+            sheetLabel.style.cssText =
+              "font-weight:600; font-size:0.8rem; color:#b0aea5; margin-top:0.5rem; margin-bottom:0.25rem;";
+            sheetLabel.textContent = "Sheet: " + sheetName;
+            container.appendChild(sheetLabel);
+          }
+
+          const htmlStr = XLSX.utils.sheet_to_html(ws, { editable: false });
+          const wrapper = document.createElement("div");
+          wrapper.innerHTML = htmlStr;
+          container.appendChild(wrapper);
+        }
+      } catch (err) {
+        container.textContent = "Error rendering spreadsheet: " + err.message;
+      }
+    }
+
+    // ---- Grades ----
+    function renderGrades(run) {
+      const section = document.getElementById("grades-section");
+      const content = document.getElementById("grades-content");
+
+      if (!run.grading) {
+        section.style.display = "none";
+        return;
+      }
+
+      const grading = run.grading;
+      section.style.display = "block";
+      // Reset to collapsed
+      content.classList.remove("open");
+      document.getElementById("grades-arrow").classList.remove("open");
+
+      const summary = grading.summary || {};
+      const expectations = grading.expectations || [];
+
+      let html = '<div style="padding: 1rem;">';
+
+      // Summary line
+      const passRate = summary.pass_rate != null
+        ? Math.round(summary.pass_rate * 100) + "%"
+        : "?";
+      const badgeClass = summary.pass_rate >= 0.8 ? "grade-pass" : summary.pass_rate >= 0.5 ? "" : "grade-fail";
+      html += '<div class="grades-summary">';
+      html += '<span class="grade-badge ' + badgeClass + '">' + passRate + '</span>';
+      html += '<span>' + escapeHtml(summary.passed || 0) + ' passed, ' + escapeHtml(summary.failed || 0) + ' failed of ' + escapeHtml(summary.total || 0) + '</span>';
+      html += '</div>';
+
+      // Assertions list
+      html += '<ul class="assertion-list">';
+      for (const exp of expectations) {
+        const statusClass = exp.passed ? "pass" : "fail";
+        const statusIcon = exp.passed ? "\u2713" : "\u2717";
+        html += '<li class="assertion-item">';
+        html += '<span class="assertion-status ' + statusClass + '">' + statusIcon + '</span>';
+        html += '<span>' + escapeHtml(exp.text) + '</span>';
+        if (exp.evidence) {
+          html += '<div class="assertion-evidence">' + escapeHtml(exp.evidence) + '</div>';
+        }
+        html += '</li>';
+      }
+      html += '</ul>';
+
+      html += '</div>';
+      content.innerHTML = html;
+    }
+
+    function toggleGrades() {
+      const content = document.getElementById("grades-content");
+      const arrow = document.getElementById("grades-arrow");
+      content.classList.toggle("open");
+      arrow.classList.toggle("open");
+    }
+
+    // ---- Previous outputs (collapsible) ----
+    function renderPrevOutputs(run) {
+      const section = document.getElementById("prev-outputs-section");
+      const content = document.getElementById("prev-outputs-content");
+      const prevOutputs = (EMBEDDED_DATA.previous_outputs || {})[run.id];
+
+      if (!prevOutputs || prevOutputs.length === 0) {
+        section.style.display = "none";
+        return;
+      }
+
+      section.style.display = "block";
+      // Reset to collapsed
+      content.classList.remove("open");
+      document.getElementById("prev-outputs-arrow").classList.remove("open");
+
+      // Render the files into the content area
+      content.innerHTML = "";
+      const wrapper = document.createElement("div");
+      wrapper.style.padding = "1rem";
+
+      for (const file of prevOutputs) {
+        const fileDiv = document.createElement("div");
+        fileDiv.className = "output-file";
+
+        const header = document.createElement("div");
+        header.className = "output-file-header";
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = file.name;
+        header.appendChild(nameSpan);
+        const dlBtn = document.createElement("a");
+        dlBtn.className = "dl-btn";
+        dlBtn.textContent = "Download";
+        dlBtn.download = file.name;
+        dlBtn.href = getDownloadUri(file);
+        header.appendChild(dlBtn);
+        fileDiv.appendChild(header);
+
+        const fc = document.createElement("div");
+        fc.className = "output-file-content";
+
+        if (file.type === "text") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          fc.appendChild(pre);
+        } else if (file.type === "image") {
+          const img = document.createElement("img");
+          img.src = file.data_uri;
+          img.alt = file.name;
+          fc.appendChild(img);
+        } else if (file.type === "pdf") {
+          const iframe = document.createElement("iframe");
+          iframe.src = file.data_uri;
+          fc.appendChild(iframe);
+        } else if (file.type === "xlsx") {
+          renderXlsx(fc, file.data_b64);
+        } else if (file.type === "binary") {
+          const a = document.createElement("a");
+          a.className = "download-link";
+          a.href = file.data_uri;
+          a.download = file.name;
+          a.textContent = "Download " + file.name;
+          fc.appendChild(a);
+        }
+
+        fileDiv.appendChild(fc);
+        wrapper.appendChild(fileDiv);
+      }
+
+      content.appendChild(wrapper);
+    }
+
+    function togglePrevOutputs() {
+      const content = document.getElementById("prev-outputs-content");
+      const arrow = document.getElementById("prev-outputs-arrow");
+      content.classList.toggle("open");
+      arrow.classList.toggle("open");
+    }
+
+    // ---- Feedback (saved to server -> feedback.json) ----
+    function saveCurrentFeedback() {
+      const run = EMBEDDED_DATA.runs[currentIndex];
+      const text = document.getElementById("feedback").value;
+
+      if (text.trim() === "") {
+        delete feedbackMap[run.id];
+      } else {
+        feedbackMap[run.id] = text;
+      }
+
+      // Build reviews array from map
+      const reviews = [];
+      for (const [run_id, feedback] of Object.entries(feedbackMap)) {
+        if (feedback.trim()) {
+          reviews.push({ run_id, feedback, timestamp: new Date().toISOString() });
+        }
+      }
+
+      fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reviews, status: "in_progress" }),
+      }).then(() => {
+        document.getElementById("feedback-status").textContent = "Saved";
+      }).catch(() => {
+        // Static mode or server unavailable — no-op on auto-save,
+        // feedback will be downloaded on final submit
+        document.getElementById("feedback-status").textContent = "Will download on submit";
+      });
+    }
+
+    // ---- Done ----
+    function showDoneDialog() {
+      // Save current textarea to feedbackMap (but don't POST yet)
+      const run = EMBEDDED_DATA.runs[currentIndex];
+      const text = document.getElementById("feedback").value;
+      if (text.trim() === "") {
+        delete feedbackMap[run.id];
+      } else {
+        feedbackMap[run.id] = text;
+      }
+
+      // POST once with status: complete — include ALL runs so the model
+      // can distinguish "no feedback" (looks good) from "not reviewed"
+      const reviews = [];
+      const ts = new Date().toISOString();
+      for (const r of EMBEDDED_DATA.runs) {
+        reviews.push({ run_id: r.id, feedback: feedbackMap[r.id] || "", timestamp: ts });
+      }
+      const payload = JSON.stringify({ reviews, status: "complete" }, null, 2);
+      fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: payload,
+      }).then(() => {
+        document.getElementById("done-overlay").classList.add("visible");
+      }).catch(() => {
+        // Server not available (static mode) — download as file
+        const blob = new Blob([payload], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "feedback.json";
+        a.click();
+        URL.revokeObjectURL(url);
+        document.getElementById("done-overlay").classList.add("visible");
+      });
+    }
+
+    function closeDoneDialog() {
+      // Reset status back to in_progress
+      saveCurrentFeedback();
+      document.getElementById("done-overlay").classList.remove("visible");
+    }
+
+    // ---- Toast ----
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("visible");
+      setTimeout(() => toast.classList.remove("visible"), 2000);
+    }
+
+    // ---- Keyboard nav ----
+    document.addEventListener("keydown", (e) => {
+      // Don't capture when typing in textarea
+      if (e.target.tagName === "TEXTAREA") return;
+
+      if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+        e.preventDefault();
+        navigate(-1);
+      } else if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+        e.preventDefault();
+        navigate(1);
+      }
+    });
+
+    // ---- Util ----
+    function getDownloadUri(file) {
+      if (file.data_uri) return file.data_uri;
+      if (file.data_b64) return "data:application/octet-stream;base64," + file.data_b64;
+      if (file.type === "text") return "data:text/plain;charset=utf-8," + encodeURIComponent(file.content);
+      return "#";
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement("div");
+      div.textContent = text;
+      return div.innerHTML.replace(/"/g, "&quot;");
+    }
+
+    // ---- View switching ----
+    function switchView(view) {
+      document.querySelectorAll(".view-tab").forEach(t => t.classList.remove("active"));
+      document.querySelectorAll(".view-panel").forEach(p => p.classList.remove("active"));
+      document.querySelector(`[onclick="switchView('${view}')"]`).classList.add("active");
+      document.getElementById("panel-" + view).classList.add("active");
+    }
+
+    // ---- Benchmark rendering ----
+    function renderBenchmark() {
+      const data = EMBEDDED_DATA.benchmark;
+      if (!data) return;
+
+      // Show the tabs
+      document.getElementById("view-tabs").style.display = "flex";
+
+      const container = document.getElementById("benchmark-content");
+      const summary = data.run_summary || {};
+      const metadata = data.metadata || {};
+      const notes = data.notes || [];
+
+      let html = "";
+
+      // Header
+      html += "<h2 style='font-family: Poppins, sans-serif; margin-bottom: 0.5rem;'>Benchmark Results</h2>";
+      html += "<p style='color: var(--text-muted); font-size: 0.875rem; margin-bottom: 1.25rem;'>";
+      if (metadata.skill_name) html += "<strong>" + escapeHtml(metadata.skill_name) + "</strong> &mdash; ";
+      if (metadata.timestamp) html += escapeHtml(metadata.timestamp) + " &mdash; ";
+      if (metadata.evals_run) html += "Evals: " + escapeHtml(metadata.evals_run.join(", ")) + " &mdash; ";
+      html += escapeHtml(metadata.runs_per_configuration || "?") + (metadata.runs_per_configuration === 1 ? " run" : " runs") + " per configuration";
+      html += "</p>";
+
+      // Summary table
+      html += '<table class="benchmark-table">';
+
+      function fmtStat(stat, pct) {
+        if (!stat) return "—";
+        const suffix = pct ? "%" : "";
+        const m = pct ? (stat.mean * 100).toFixed(0) : stat.mean.toFixed(1);
+        const s = pct ? (stat.stddev * 100).toFixed(0) : stat.stddev.toFixed(1);
+        return m + suffix + " ± " + s + suffix;
+      }
+
+      function deltaClass(val) {
+        if (!val) return "";
+        const n = parseFloat(val);
+        if (n > 0) return "benchmark-delta-positive";
+        if (n < 0) return "benchmark-delta-negative";
+        return "";
+      }
+
+      // Discover config names dynamically (everything except "delta")
+      const configs = Object.keys(summary).filter(k => k !== "delta");
+      const configA = configs[0] || "config_a";
+      const configB = configs[1] || "config_b";
+      const labelA = configA.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      const labelB = configB.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      const a = summary[configA] || {};
+      const b = summary[configB] || {};
+      const delta = summary.delta || {};
+      // With a single configuration there is nothing to compare: only its column is shown
+      const compare = cells => configs.length >= 2 ? cells : "";
+
+      html += "<thead><tr><th>Metric</th><th>" + escapeHtml(labelA) + "</th>" + compare("<th>" + escapeHtml(labelB) + "</th><th>Delta</th>") + "</tr></thead>";
+      html += "<tbody>";
+
+      html += "<tr><td><strong>Pass Rate</strong></td>";
+      html += "<td>" + fmtStat(a.pass_rate, true) + "</td>";
+      html += compare("<td>" + fmtStat(b.pass_rate, true) + "</td>");
+      html += compare('<td class="' + deltaClass(delta.pass_rate) + '">' + escapeHtml(delta.pass_rate || "—") + "</td>") + "</tr>";
+
+      // Time (only show row if data exists)
+      if (a.time_seconds || b.time_seconds) {
+        html += "<tr><td><strong>Time (s)</strong></td>";
+        html += "<td>" + fmtStat(a.time_seconds, false) + "</td>";
+        html += compare("<td>" + fmtStat(b.time_seconds, false) + "</td>");
+        html += compare('<td class="' + deltaClass(delta.time_seconds) + '">' + escapeHtml(delta.time_seconds ? delta.time_seconds + "s" : "—") + "</td>") + "</tr>";
+      }
+
+      // Tokens (only show row if data exists)
+      if (a.tokens || b.tokens) {
+        html += "<tr><td><strong>Tokens</strong></td>";
+        html += "<td>" + fmtStat(a.tokens, false) + "</td>";
+        html += compare("<td>" + fmtStat(b.tokens, false) + "</td>");
+        html += compare('<td class="' + deltaClass(delta.tokens) + '">' + escapeHtml(delta.tokens || "—") + "</td>") + "</tr>";
+      }
+
+      html += "</tbody></table>";
+
+      // Per-eval breakdown (if runs data available)
+      const runs = data.runs || [];
+      if (runs.length > 0) {
+        // Numeric ids first, then ids that are names
+        const rank = id => typeof id === "number" ? 0 : 1;
+        const evalIds = [...new Set(runs.map(r => r.eval_id))].sort((a, b) =>
+          rank(a) - rank(b) || (rank(a) ? String(a).localeCompare(String(b)) : a - b));
+
+        html += "<h3 style='font-family: Poppins, sans-serif; margin-bottom: 0.75rem;'>Per-Eval Breakdown</h3>";
+
+        const hasTime = runs.some(r => r.result && r.result.time_seconds != null);
+        const hasErrors = runs.some(r => r.result && r.result.errors > 0);
+
+        for (const evalId of evalIds) {
+          const evalRuns = runs.filter(r => r.eval_id === evalId);
+          const evalName = evalRuns[0] && evalRuns[0].eval_name ? evalRuns[0].eval_name : "Eval " + evalId;
+
+          html += "<h4 style='font-family: Poppins, sans-serif; margin: 1rem 0 0.5rem; color: var(--text);'>" + escapeHtml(evalName) + "</h4>";
+          html += '<table class="benchmark-table">';
+          html += "<thead><tr><th>Config</th><th>Run</th><th>Pass Rate</th>";
+          if (hasTime) html += "<th>Time (s)</th>";
+          if (hasErrors) html += "<th>Crashes During Execution</th>";
+          html += "</tr></thead>";
+          html += "<tbody>";
+
+          // Group by config and render with average rows
+          const configGroups = [...new Set(evalRuns.map(r => r.configuration))];
+          for (let ci = 0; ci < configGroups.length; ci++) {
+            const config = configGroups[ci];
+            const configRuns = evalRuns.filter(r => r.configuration === config);
+            if (configRuns.length === 0) continue;
+
+            const rowClass = ci === 0 ? "benchmark-row-with" : "benchmark-row-without";
+            const configLabel = escapeHtml(config.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase()));
+
+            for (const run of configRuns) {
+              const r = run.result || {};
+              const prClass = r.pass_rate >= 0.8 ? "benchmark-delta-positive" : r.pass_rate < 0.5 ? "benchmark-delta-negative" : "";
+              html += '<tr class="' + rowClass + '">';
+              html += "<td>" + configLabel + "</td>";
+              html += "<td>" + escapeHtml(run.run_number) + "</td>";
+              html += '<td class="' + prClass + '">' + ((r.pass_rate || 0) * 100).toFixed(0) + "% (" + escapeHtml(r.passed || 0) + "/" + escapeHtml(r.total || 0) + ")</td>";
+              if (hasTime) html += "<td>" + (r.time_seconds != null ? r.time_seconds.toFixed(1) : "—") + "</td>";
+              if (hasErrors) html += "<td>" + escapeHtml(r.errors || 0) + "</td>";
+              html += "</tr>";
+            }
+
+            // Average row
+            const rates = configRuns.map(r => (r.result || {}).pass_rate || 0);
+            const avgRate = rates.reduce((a, b) => a + b, 0) / rates.length;
+            const avgPrClass = avgRate >= 0.8 ? "benchmark-delta-positive" : avgRate < 0.5 ? "benchmark-delta-negative" : "";
+            html += '<tr class="benchmark-row-avg ' + rowClass + '">';
+            html += "<td>" + configLabel + "</td>";
+            html += "<td>Avg</td>";
+            html += '<td class="' + avgPrClass + '">' + (avgRate * 100).toFixed(0) + "%</td>";
+            if (hasTime) {
+              const times = configRuns.map(r => (r.result || {}).time_seconds).filter(t => t != null);
+              html += "<td>" + (times.length ? (times.reduce((a, b) => a + b, 0) / times.length).toFixed(1) : "—") + "</td>";
+            }
+            if (hasErrors) html += "<td></td>";
+            html += "</tr>";
+          }
+          html += "</tbody></table>";
+
+          // Per-assertion detail for this eval
+          const runsWithExpectations = {};
+          for (const config of configGroups) {
+            runsWithExpectations[config] = evalRuns.filter(r => r.configuration === config && r.expectations && r.expectations.length > 0);
+          }
+          const hasAnyExpectations = Object.values(runsWithExpectations).some(runs => runs.length > 0);
+          if (hasAnyExpectations) {
+            // Collect all unique assertion texts across all configs
+            const allAssertions = [];
+            const seen = new Set();
+            for (const config of configGroups) {
+              for (const run of runsWithExpectations[config]) {
+                for (const exp of (run.expectations || [])) {
+                  if (!seen.has(exp.text)) {
+                    seen.add(exp.text);
+                    allAssertions.push(exp.text);
+                  }
+                }
+              }
+            }
+
+            html += '<table class="benchmark-table" style="margin-top: 0.5rem;">';
+            html += "<thead><tr><th>Assertion</th>";
+            for (const config of configGroups) {
+              const label = config.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+              html += "<th>" + escapeHtml(label) + "</th>";
+            }
+            html += "</tr></thead><tbody>";
+
+            for (const assertionText of allAssertions) {
+              html += "<tr><td>" + escapeHtml(assertionText) + "</td>";
+
+              for (const config of configGroups) {
+                html += "<td>";
+                for (const run of runsWithExpectations[config]) {
+                  const exp = (run.expectations || []).find(e => e.text === assertionText);
+                  if (exp) {
+                    const cls = exp.passed ? "benchmark-delta-positive" : "benchmark-delta-negative";
+                    const icon = exp.passed ? "\u2713" : "\u2717";
+                    html += '<span class="' + cls + '" title="Run ' + escapeHtml(run.run_number) + ': ' + escapeHtml(exp.evidence || "") + '">' + icon + "</span> ";
+                  } else {
+                    html += "— ";
+                  }
+                }
+                html += "</td>";
+              }
+              html += "</tr>";
+            }
+            html += "</tbody></table>";
+          }
+        }
+      }
+
+      // Notes
+      if (notes.length > 0) {
+        html += '<div class="benchmark-notes">';
+        html += "<h3>Analysis Notes</h3>";
+        html += "<ul>";
+        for (const note of notes) {
+          html += "<li>" + escapeHtml(note) + "</li>";
+        }
+        html += "</ul></div>";
+      }
+
+      container.innerHTML = html;
+    }
+
+    // ---- Start ----
+    init();
+    renderBenchmark();
+  </script>
+</body>
+</html>

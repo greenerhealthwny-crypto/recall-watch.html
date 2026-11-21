@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eval Review</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&family=Lora:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js" integrity="sha384-EnyY0/GSHQGSxSgMwaIPzSESbqoOLSexfnSMN2AP+39Ckmn92stwABZynq1JyzdT" crossorigin="anonymous"></script>
+  <style>
+    :root {
+      --bg: #faf9f5;
+      --surface: #ffffff;
+      --border: #e8e6dc;
+      --text: #141413;
+      --text-muted: #b0aea5;
+      --accent: #d97757;
+      --accent-hover: #c4613f;
+      --green: #788c5d;
+      --green-bg: #eef2e8;
+      --red: #c44;
+      --red-bg: #fceaea;
+      --header-bg: #141413;
+      --header-text: #faf9f5;
+      --radius: 6px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Lora', Georgia, serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ---- Header ---- */
+    .header {
+      background: var(--header-bg);
+      color: var(--header-text);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .header h1 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+    .header .instructions {
+      font-size: 0.8rem;
+      opacity: 0.7;
+      margin-top: 0.25rem;
+    }
+    .header .progress {
+      font-size: 0.875rem;
+      opacity: 0.8;
+      text-align: right;
+    }
+
+    /* ---- Main content ---- */
+    .main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.5rem 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    /* ---- Sections ---- */
+    .section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      flex-shrink: 0;
+    }
+    .section-header {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.75rem 1rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+    }
+    .section-body {
+      padding: 1rem;
+    }
+
+    /* ---- Config badge ---- */
+    .config-badge {
+      display: inline-block;
+      padding: 0.2rem 0.625rem;
+      border-radius: 9999px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      margin-left: 0.75rem;
+      vertical-align: middle;
+    }
+    .config-badge.config-primary {
+      background: rgba(33, 150, 243, 0.12);
+      color: #1976d2;
+    }
+    .config-badge.config-baseline {
+      background: rgba(255, 193, 7, 0.15);
+      color: #f57f17;
+    }
+
+    /* ---- Prompt ---- */
+    .prompt-text {
+      white-space: pre-wrap;
+      font-size: 0.9375rem;
+      line-height: 1.6;
+    }
+
+    /* ---- Outputs ---- */
+    .output-file {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .output-file + .output-file {
+      margin-top: 1rem;
+    }
+    .output-file-header {
+      padding: 0.5rem 0.75rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .output-file-header .dl-btn {
+      font-size: 0.7rem;
+      color: var(--accent);
+      text-decoration: none;
+      cursor: pointer;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-weight: 500;
+      opacity: 0.8;
+    }
+    .output-file-header .dl-btn:hover {
+      opacity: 1;
+      text-decoration: underline;
+    }
+    .output-file-content {
+      padding: 0.75rem;
+      overflow-x: auto;
+    }
+    .output-file-content pre {
+      font-size: 0.8125rem;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+    }
+    .output-file-content img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 4px;
+    }
+    .output-file-content iframe {
+      width: 100%;
+      height: 600px;
+      border: none;
+    }
+    .output-file-content table {
+      border-collapse: collapse;
+      font-size: 0.8125rem;
+      width: 100%;
+    }
+    .output-file-content table td,
+    .output-file-content table th {
+      border: 1px solid var(--border);
+      padding: 0.375rem 0.5rem;
+      text-align: left;
+    }
+    .output-file-content table th {
+      background: var(--bg);
+      font-weight: 600;
+    }
+    .output-file-content .download-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 0.875rem;
+      cursor: pointer;
+    }
+    .output-file-content .download-link:hover {
+      background: var(--border);
+    }
+    .empty-state {
+      color: var(--text-muted);
+      font-style: italic;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    /* ---- Feedback ---- */
+    .prev-feedback {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.625rem 0.75rem;
+      margin-top: 0.75rem;
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+    .prev-feedback-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.25rem;
+      color: var(--text-muted);
+    }
+    .feedback-textarea {
+      width: 100%;
+      min-height: 100px;
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 0.9375rem;
+      line-height: 1.5;
+      resize: vertical;
+      color: var(--text);
+    }
+    .feedback-textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    .feedback-status {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.5rem;
+      min-height: 1.1em;
+    }
+
+    /* ---- Grades (collapsible) ---- */
+    .grades-toggle {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+    }
+    .grades-toggle:hover {
+      color: var(--accent);
+    }
+    .grades-toggle .arrow {
+      margin-right: 0.5rem;
+      transition: transform 0.15s;
+      font-size: 0.75rem;
+    }
+    .grades-toggle .arrow.open {
+      transform: rotate(90deg);
+    }
+    .grades-content {
+      display: none;
+      margin-top: 0.75rem;
+    }
+    .grades-content.open {
+      display: block;
+    }
+    .grades-summary {
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .grade-badge {
+      display: inline-block;
+      padding: 0.125rem 0.5rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .grade-pass { background: var(--green-bg); color: var(--green); }
+    .grade-fail { background: var(--red-bg); color: var(--red); }
+    .assertion-list {
+      list-style: none;
+    }
+    .assertion-item {
+      padding: 0.625rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.8125rem;
+    }
+    .assertion-item:last-child { border-bottom: none; }
+    .assertion-status {
+      font-weight: 600;
+      margin-right: 0.5rem;
+    }
+    .assertion-status.pass { color: var(--green); }
+    .assertion-status.fail { color: var(--red); }
+    .assertion-evidence {
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      margin-top: 0.25rem;
+      padding-left: 1.5rem;
+    }
+
+    /* ---- View tabs ---- */
+    .view-tabs {
+      display: flex;
+      gap: 0;
+      padding: 0 2rem;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .view-tab {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.625rem 1.25rem;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      background: none;
+      color: var(--text-muted);
+      border-bottom: 2px solid transparent;
+      transition: all 0.15s;
+    }
+    .view-tab:hover { color: var(--text); }
+    .view-tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+    .view-panel { display: none; }
+    .view-panel.active { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
+
+    /* ---- Benchmark view ---- */
+    .benchmark-view {
+      padding: 1.5rem 2rem;
+      overflow-y: auto;
+      flex: 1;
+    }
+    .benchmark-table {
+      border-collapse: collapse;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 0.8125rem;
+      width: 100%;
+      margin-bottom: 1.5rem;
+    }
+    .benchmark-table th, .benchmark-table td {
+      padding: 0.625rem 0.75rem;
+      text-align: left;
+      border: 1px solid var(--border);
+    }
+    .benchmark-table th {
+      font-family: 'Poppins', sans-serif;
+      background: var(--header-bg);
+      color: var(--header-text);
+      font-weight: 500;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .benchmark-table tr:hover { background: var(--bg); }
+    .benchmark-table tr.benchmark-row-with { background: rgba(33, 150, 243, 0.06); }
+    .benchmark-table tr.benchmark-row-without { background: rgba(255, 193, 7, 0.06); }
+    .benchmark-table tr.benchmark-row-with:hover { background: rgba(33, 150, 243, 0.12); }
+    .benchmark-table tr.benchmark-row-without:hover { background: rgba(255, 193, 7, 0.12); }
+    .benchmark-table tr.benchmark-row-avg { font-weight: 600; border-top: 2px solid var(--border); }
+    .benchmark-table tr.benchmark-row-avg.benchmark-row-with { background: rgba(33, 150, 243, 0.12); }
+    .benchmark-table tr.benchmark-row-avg.benchmark-row-without { background: rgba(255, 193, 7, 0.12); }
+    .benchmark-delta-positive { color: var(--green); font-weight: 600; }
+    .benchmark-delta-negative { color: var(--red); font-weight: 600; }
+    .benchmark-notes {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem;
+    }
+    .benchmark-notes h3 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+    }
+    .benchmark-notes ul {
+      list-style: disc;
+      padding-left: 1.25rem;
+    }
+    .benchmark-notes li {
+      font-size: 0.8125rem;
+      line-height: 1.6;
+      margin-bottom: 0.375rem;
+    }
+    .benchmark-empty {
+      color: var(--text-muted);
+      font-style: italic;
+      text-align: center;
+      padding: 3rem;
+    }
+
+    /* ---- Navigation ---- */
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+      flex-shrink: 0;
+    }
+    .nav-btn {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.5rem 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text);
+      transition: all 0.15s;
+    }
+    .nav-btn:hover:not(:disabled) {
+      background: var(--bg);
+      border-color: var(--text-muted);
+    }
+    .nav-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    .done-btn {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.5rem 1.5rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: all 0.15s;
+    }
+    .done-btn:hover {
+      background: var(--bg);
+      border-color: var(--text-muted);
+    }
+    .done-btn.ready {
+      border: none;
+      background: var(--accent);
+      color: white;
+      font-weight: 600;
+    }
+    .done-btn.ready:hover {
+      background: var(--accent-hover);
+    }
+    /* ---- Done overlay ---- */
+    .done-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 100;
+      justify-content: center;
+      align-items: center;
+    }
+    .done-overlay.visible {
+      display: flex;
+    }
+    .done-card {
+      background: var(--surface);
+      border-radius: 12px;
+      padding: 2rem 3rem;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      max-width: 500px;
+    }
+    .done-card h2 {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .done-card p {
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
+    }
+    .done-card .btn-row {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+    }
+    .done-card button {
+      padding: 0.5rem 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 0.875rem;
+    }
+    .done-card button:hover {
+      background: var(--bg);
+    }
+    /* ---- Toast ---- */
+    .toast {
+      position: fixed;
+      bottom: 5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--header-bg);
+      color: var(--header-text);
+      padding: 0.625rem 1.25rem;
+      border-radius: var(--radius);
+      font-size: 0.875rem;
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+      z-index: 200;
+    }
+    .toast.visible {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <div id="app" style="height:100vh; display:flex; flex-direction:column;">
+    <div class="header">
+      <div>
+        <h1>Eval Review: <span id="skill-name"></span></h1>
+        <div class="instructions">Review each output and leave feedback below. Navigate with arrow keys or buttons. When done, copy feedback and paste into Claude Code.</div>
+      </div>
+      <div class="progress" id="progress"></div>
+    </div>
+
+    <!-- View tabs (only shown when benchmark data exists) -->
+    <div class="view-tabs" id="view-tabs" style="display:none;">
+      <button class="view-tab active" onclick="switchView('outputs')">Outputs</button>
+      <button class="view-tab" onclick="switchView('benchmark')">Benchmark</button>
+    </div>
+
+    <!-- Outputs panel (qualitative review) -->
+    <div class="view-panel active" id="panel-outputs">
+    <div class="main">
+      <!-- Prompt -->
+      <div class="section">
+        <div class="section-header">Prompt <span class="config-badge" id="config-badge" style="display:none;"></span></div>
+        <div class="section-body">
+          <div class="prompt-text" id="prompt-text"></div>
+        </div>
+      </div>
+
+      <!-- Outputs -->
+      <div class="section">
+        <div class="section-header">Output</div>
+        <div class="section-body" id="outputs-body">
+          <div class="empty-state">No output files found</div>
+        </div>
+      </div>
+
+      <!-- Previous Output (collapsible) -->
+      <div class="section" id="prev-outputs-section" style="display:none;">
+        <div class="section-header">
+          <div class="grades-toggle" onclick="togglePrevOutputs()">
+            <span class="arrow" id="prev-outputs-arrow">&#9654;</span>
+            Previous Output
+          </div>
+        </div>
+        <div class="grades-content" id="prev-outputs-content"></div>
+      </div>
+
+      <!-- Grades (collapsible) -->
+      <div class="section" id="grades-section" style="display:none;">
+        <div class="section-header">
+          <div class="grades-toggle" onclick="toggleGrades()">
+            <span class="arrow" id="grades-arrow">&#9654;</span>
+            Formal Grades
+          </div>
+        </div>
+        <div class="grades-content" id="grades-content"></div>
+      </div>
+
+      <!-- Feedback -->
+      <div class="section">
+        <div class="section-header">Your Feedback</div>
+        <div class="section-body">
+          <textarea
+            class="feedback-textarea"
+            id="feedback"
+            placeholder="What do you think of this output? Any issues, suggestions, or things that look great?"
+          ></textarea>
+          <div class="feedback-status" id="feedback-status"></div>
+          <div class="prev-feedback" id="prev-feedback" style="display:none;">
+            <div class="prev-feedback-label">Previous feedback</div>
+            <div id="prev-feedback-text"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav" id="outputs-nav">
+      <button class="nav-btn" id="prev-btn" onclick="navigate(-1)">&#8592; Previous</button>
+      <button class="done-btn" id="done-btn" onclick="showDoneDialog()">Submit All Reviews</button>
+      <button class="nav-btn" id="next-btn" onclick="navigate(1)">Next &#8594;</button>
+    </div>
+    </div><!-- end panel-outputs -->
+
+    <!-- Benchmark panel (quantitative stats) -->
+    <div class="view-panel" id="panel-benchmark">
+      <div class="benchmark-view" id="benchmark-content">
+        <div class="benchmark-empty">No benchmark data available. Run a benchmark to see quantitative results here.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Done overlay -->
+  <div class="done-overlay" id="done-overlay">
+    <div class="done-card">
+      <h2>Review Complete</h2>
+      <p>Your feedback has been saved. Go back to your Claude Code session and tell Claude you're done reviewing.</p>
+      <div class="btn-row">
+        <button onclick="closeDoneDialog()">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ---- Embedded data (injected by generate_review.py) ----
+    const EMBEDDED_DATA = {"skill_name": "great-mental-models", "runs": [{"id": "eval-1-adv-decision-with_skill-run-1", "prompt": "I'm deciding whether to quit my job to flip furniture full-time. Run it through at least five of the nine models in The Great Mental Models, Vol. 1.", "eval_id": 1, "outputs": [{"name": "response.md", "type": "text", "content": "# Should You Quit Your Job to Flip Furniture Full-Time?\n### Run through *The Great Mental Models, Vol. 1* (Shane Parrish and Rhiannon Beaubien, Farnam Street)\n\nThe book's main point is that one model gives you one view and leaves blind spots. Using several models from different angles is what makes you see more. Below I use **all nine** models from Volume 1, in the order of the decision workflow. Each one gives you its core idea, the book's example, and what it means for you.\n\nYou didn't give me your numbers, so I've marked assumptions and left blanks for you to fill in. The answer comes from your numbers, not from the models alone.\n\n---\n\n## 1. The Map Is Not the Territory\n**Core idea:** a model is a reduction of reality. It's useful, but it leaves things out and goes out of date (Alfred Korzybski, 1931). The book gives three tools: **reality is the ultimate update**, **consider the cartographer**, and **maps can influence territories**.\n\n**Your map:** \"I flip furniture on the side, I make $X per piece, so full-time I'd make $X \u00d7 more pieces.\" That map leaves out a lot of the territory:\n- **Scale doesn't come free.** Side-hustle margins come from cherry-picking the best deals in your free time. Full-time volume means taking weaker deals, so your average margin per piece will probably fall.\n- **Hidden costs** your side-hustle map ignores: health insurance, retirement match, paid time off, self-employment tax, storage or a workshop, a van or trailer, insurance, and supplies bought in bulk.\n- **Your time isn't counted.** Sourcing, haggling, hauling, cleaning, repairs, photos, listings, messaging buyers, no-shows and delivery all take hours. Real hourly pay = (revenue \u2212 all costs) \u00f7 *all* hours, not just workshop hours.\n\n**Consider the cartographer:** who drew your map? If it's TikTok and YouTube \"I made $10k a month flipping\" videos, those makers have a reason to show wins (views, courses, affiliate links). Survivorship bias is built into that source. You don't see the people who quit.\n\n**Reality is the ultimate update:** your own track record beats any online map. Pull your actual numbers from the last 6\u201312 months (see the table in section 6).\n\n---\n\n## 2. Circle of Competence\n**Core idea:** know what you really know (the book's \"Lifer\" who knows the territory) versus what you only think you know (the \"Stranger\"). Ego creates blind spots. You build the circle with **curiosity and a desire to learn**, **monitoring** (an honest record of your results), and **feedback** from others.\n\n**Inside your circle (probably):** spotting undervalued pieces, refinishing, staging photos, pricing what you know sells.\n\n**Likely outside your circle:**\n- Running a *business*: bookkeeping, taxes, cash flow, quarterly estimated payments.\n- Sourcing at volume: estate-sale relationships, auctions, wholesale.\n- Logistics: storage, delivery, damage, liability.\n- Riding out slow seasons with no paycheck.\n\n**What the book says to do outside your circle:** (1) learn at least the basics (one free course on small-business accounting; read your local rules on home businesses and resale permits); (2) **talk to someone with a strong circle there**: find 2\u20133 people who have done full-time flipping for 2+ years, and ask about their worst year, not their best month; (3) use broad mental models, which is what this document is.\n\n**Monitoring test:** do you keep a written log of every flip, including the losers? If not, start now. The book warns that we remember wins and forget losses.\n\n---\n\n## 3. First Principles Thinking\n**Core idea:** separate the basic facts from the assumptions, then rebuild from what you can't reduce further. The book's tools are **Socratic questioning** and the **Five Whys**.\n\n**Socratic questioning on the belief \"I should go full-time\":**\n1. **Clarify your thinking:** what does \"full-time\" mean? Replacing your salary? Beating it? Being your own boss? Those are different goals.\n2. **Challenge assumptions:** \"Demand will hold.\" \"I can find enough stock.\" \"I'll keep enjoying it when it's a must, not a hobby.\"\n3. **Look for evidence:** what do *your* sales data, sell-through times and local market say?\n4. **Consider other views:** what would a skeptical accountant, or someone who quit flipping, say?\n5. **Examine consequences:** what happens if it works? What if it doesn't?\n6. **Question the original question:** is \"quit or don't quit\" even the right question? Maybe the real question is \"how do I find out, cheaply, whether this can replace my income?\"\n\n**Five Whys on the urge to quit:**\n- Why quit? \u2192 I want to flip full-time.\n- Why? \u2192 I enjoy it more than my job.\n- Why? \u2192 I like making things and I don't like my boss.\n- Why does that matter? \u2192 I want control over my time and work I'm proud of.\n- Why? \u2192 **Autonomy and craft.**\n\nIf the root is \"I hate this job,\" a different job could fix that with far less risk. If the root is \"I want autonomy and craft,\" flipping is one path, and there may be others. Know which one you're actually solving.\n\n**The basic business facts (rebuild from here):**\nMonthly profit = (pieces sold \u00d7 average sale price) \u2212 (cost of goods + supplies + fuel + storage + fees + insurance + taxes).\nPieces sold is capped by: your hours, sourcing supply, storage space and local demand. Find which of these is the real bottleneck.\n\n---\n\n## 4. Thought Experiment\n**Core idea:** \"devices of the imagination used to investigate the nature of things.\" The book's steps: ask a question \u2192 do background research \u2192 form a hypothesis \u2192 test with thought experiments \u2192 analyze and conclude \u2192 compare and adjust.\n\n- **Question:** can flipping replace my income within 12 months without draining my savings?\n- **Background research:** your sales log; local resale prices; what full-time flippers report.\n- **Hypothesis:** \"At N pieces a month with $Y average profit, I clear my target income.\"\n- **Test by imagining it:**\n  - *A normal Tuesday in February.* It's cold, sales are slow, two buyers ghost you, a dresser has hidden water damage. How do you feel? How do the numbers look?\n  - *A rival appears.* A second flipper starts working your estate sales and bids up prices. What happens to margins?\n  - *You hurt your back.* You can't lift for 6 weeks. Is there any income? (Your job may have had disability cover; this business doesn't.)\n  - *Marketplace changes its algorithm* or starts charging fees, and your reach drops 40%.\n- **Analyze and adjust:** which scenarios break you? Those are the ones to plan against before you quit.\n\nThe book's example of a good vs bad thought experiment helps: \"LeBron James vs Woody Allen at basketball\" is easy and teaches nothing. \"James vs Kevin Durant\" is hard and useful. So don't imagine the easy case (\"a great month\"). Imagine the hard, close case (\"an average month in a slow season\").\n\n---\n\n## 5. Second-Order Thinking\n**Core idea:** think about the effects of the effects. Ask \"and then what?\" The book uses it for (1) putting long-term interests ahead of quick wins and (2) making strong arguments. Its example is the British cobra bounty in Delhi: people bred cobras to collect the reward, and when the bounty stopped, they released them. There were more cobras than before.\n\n**First-order effect of quitting:** freedom, more time to flip, no boss.\n\n**Second-order effects (and then what?):**\n- **10 minutes:** relief and excitement.\n- **10 months:** your income now *has* to come from furniture. You start taking deals you'd have passed on. The hobby becomes a job, with pressure. Healthcare costs show up. Seasonal dips hit your rent. Your partner's or family's stress may go up.\n- **10 years:** either (a) you've built a real business with a brand, repeat buyers and maybe staff or a storefront, or (b) you're tired, your body is worn from lifting, and you have a gap on your r\u00e9sum\u00e9 and less retirement saved.\n\n**The cobra trap for you:** the thing you love (craft, choosing pieces) may be what gets squeezed out when you need volume. Full-time flippers often spend most time on sourcing, hauling and messaging, not on refinishing. Make sure the full-time version still has the parts you enjoy.\n\n**For the argument with your partner, family or yourself:** second-order thinking also helps you make the case. \"Here's what happens in month 1, month 6 and month 12, here's the backup plan\" is far more convincing than \"I just know it'll work.\"\n\n---\n\n## 6. Probabilistic Thinking\n**Core idea:** the future is uncertain, so estimate likelihoods using math and logic. The book's three tools: **Bayesian thinking**, **fat-tailed curves** and **asymmetries**.\n\n**Bayesian thinking (start with a base rate, then update):**\n- **Prior (base rate):** most small businesses struggle in their first few years. Treat that as your starting point: the default is \"harder than I think.\"\n- **Update with your evidence:** consistent profit for 12+ months, a growing buyer list, steady sourcing and a waitlist for pieces all move the odds in your favor. A few lucky big flips do not.\n\n**Fill in this table from your real records:**\n\n| Metric | Last 6\u201312 months (actual) | Full-time plan |\n|---|---|---|\n| Pieces sold per month | | |\n| Average profit per piece (after all costs) | | |\n| Total hours per piece (source \u2192 sale) | | |\n| True hourly profit | | |\n| Worst month's profit | | |\n| Average days to sell | | |\n| Needed monthly income (incl. insurance, taxes, retirement) | | |\n\nIf the \"worst month\" times 12 can't cover your needs, you need a bigger cushion.\n\n**Fat tails:** this business has rare but large outcomes in both directions. A great find can make a month. One bad event can wipe out a quarter: an injury, a van crash, a bedbug infestation in your storage, a lawsuit, a platform ban. Plan for the bad tail, not the average.\n\n**Asymmetries (\"metaprobability\"):** the book notes that people's estimates are usually skewed one way. Investors routinely forecast 20\u201340% returns that rarely happen. You'll probably overestimate sales and underestimate costs and hours too. A simple fix: cut your projected revenue by 20\u201330% and add 20\u201330% to your costs and hours. If the plan still works, it's solid.\n\n**Asymmetry of the decision itself:** quitting is hard to undo (your old job may not take you back). Testing first is easy to undo. When one path can be reversed and the other can't, lean toward the one you can reverse until the evidence is strong.\n\n---\n\n## 7. Inversion\n**Core idea:** approach the problem from the other end. The book quotes Carl Jacobi: \"invert, always invert,\" and makes the point that \"avoiding stupidity is easier than seeking brilliance.\"\n\n**Invert the question:** \"How would I *guarantee* this fails?\"\n- Quit with less than 3 months of savings.\n- Don't track numbers; go on feel.\n- Spend heavily on a van and workshop before proving demand.\n- Rely on one sales platform and one sourcing channel.\n- Skip health insurance.\n- Ignore taxes until April.\n- Price by gut and refuse to cut slow stock.\n- Burn out by working 7 days a week in the first month.\n\nNow do the opposite of each one. That list *is* your plan.\n\n**Force field analysis (Kurt Lewin), from the book's 5 steps:**\n1. **Problem:** I'm unhappy in my job and want independence.\n2. **Objective:** replace my income through flipping, with a safety net, within 12 months.\n3. **Forces for change:** proven side-hustle profit; skills; enjoyment; local demand; low startup costs.\n4. **Forces against change:** loss of steady pay and benefits; seasonality; physical strain; limited storage; sourcing competition; no business experience.\n5. **Strategy:** strengthen the forces for (build a buyer email list, add a second sales channel, grow sourcing contacts) and reduce the forces against (save 6\u201312 months of expenses, line up insurance, rent storage only when volume proves it, learn basic bookkeeping).\n\n---\n\n## 8. Occam's Razor\n**Core idea:** the simpler explanation is more likely true; prefer the one with fewer moving parts. The book adds a warning: some things really aren't simple.\n\n**Use it two ways:**\n- **On your reasons:** if your main reason is \"I hate my job,\" the simple fix is a different job, not a new business. Don't build a complicated answer to a simple problem.\n- **On your plan:** the simplest plan that tests the idea is usually best. Don't start with an LLC, a storefront, a brand and a website. Start with \"flip more on weekends and see if the numbers hold.\"\n\n---\n\n## 9. Hanlon's Razor\n**Core idea:** don't put down to malice what is more easily explained by stupidity, or here, by carelessness. The likeliest explanation usually has the least intent behind it. The book uses road rage as an example and warns against \"the Devil Fallacy.\"\n\n**Why it matters for you:** full-time flipping means far more contact with buyers who ghost, haggle or don't show up, and with sellers who misdescribe items. If you read every no-show as disrespect, you'll burn out fast. Most of it is busy, forgetful people. Build systems (deposits, confirmation messages, clear pickup windows) instead of carrying resentment. This is a quality-of-life factor in your decision.\n\n---\n\n## Supporting ideas from the book\n- **Falsifiability (Karl Popper):** turn \"flipping can support me\" into a claim that can be proven wrong. \"If I can't clear $___ profit a month for 3 months in a row while working ~20 hrs/week, I don't go full-time.\"\n- **Necessity vs sufficiency:** skill at refinishing is *necessary* but not *sufficient*. You also need steady supply, demand, cash flow and business habits.\n- **Correlation vs causation:** \"I made more money last spring\" may be the season, not your skill growing. Compare the same months year over year.\n\n---\n\n## Bringing it together: a recommendation\n\nThe models mostly point the same way: **don't make this a one-step jump. Make it a staged test.**\n\n1. **Track for 3 months** (monitoring, reality updates the map): log every piece, every cost, every hour.\n2. **Set a falsifiable go/no-go rule:** for example, \"3 months in a row of profit \u2265 60\u201370% of my take-home pay, working part-time hours.\"\n3. **Build the safety net** (inversion, fat tails): 6\u201312 months of living costs saved, a health insurance plan priced, and a list of the gear you'd need.\n4. **Reduce the risk of the jump** (asymmetry): ask about going part-time or taking unpaid leave instead of quitting outright, so the move is partly reversible.\n5. **Talk to 2\u20133 full-time flippers** (circle of competence): ask about their worst year.\n6. **Decide on a date, with a fallback:** \"If by month 9 I'm below $___, I start applying for jobs.\" Deciding this now, while calm, beats deciding it later under stress.\n\n**If your numbers already clear the bar, you have savings and the downside is survivable, going full-time can be a sound bet.** If you're working from a few great flips and a hunch, the models say test longer first.\n\n---\n\n### Caveats\n- These models are thinking aids, not answers. The book itself warns that maps are always imperfect.\n- I don't know your finances, local market, health or family situation. Those facts decide this more than any model does.\n- This is not financial, tax or legal advice. A short meeting with an accountant before you quit is worth the cost.\n\n**What would help most next:** share your last 6 months of numbers (pieces sold, average profit, hours) and your monthly expenses, and I can run the probability and second-order sections with real figures.\n"}], "grading": {"expectations": [{"text": "Applies at least five named models", "passed": true, "evidence": "Sections 1-9 apply all nine Vol. 1 models by their correct names (Map Is Not the Territory, Circle of Competence, First Principles, Thought Experiment, Second-Order, Probabilistic, Inversion, Occam's, Hanlon's), each with book tools matching SKILL.md (e.g. the three map tools, Lifer/Stranger, LeBron vs Woody Allen/Durant)."}, {"text": "Uses second-order thinking with concrete consequences", "passed": true, "evidence": "Section 5: 'your income now has to come from furniture. You start taking deals you'd have passed on... Healthcare costs show up. Seasonal dips hit your rent'; 10-year 'gap on your r\u00e9sum\u00e9 and less retirement saved'. Cobra bounty example matches SKILL.md. The 10/10/10 framing is SKILL.md's '(std framing)' and is not credited to the book."}, {"text": "Uses inversion (e.g. what would guarantee failure)", "passed": true, "evidence": "Section 7: 'How would I guarantee this fails?' with 8 failure conditions ('Quit with less than 3 months of savings', 'Skip health insurance'), then 'do the opposite'. Jacobi quote and Lewin's 5-step force field analysis match SKILL.md."}, {"text": "Uses circle of competence and/or probabilistic thinking with numbers", "passed": true, "evidence": "Circle of competence: Lifer vs Stranger, curiosity/monitoring/feedback, and the three outside-the-circle steps all match SKILL.md. Probabilistic section has numbers: 'cut your projected revenue by 20-30% and add 20-30% to your costs', and the book's '20-40% returns' asymmetry example. Small embellishment: 'The book warns that we remember wins and forget losses' is not in SKILL.md, but it fits the monitoring idea and does not drive the assertion."}, {"text": "Ends with a decision rule or test, not just a list", "passed": true, "evidence": "Ends with 'a falsifiable go/no-go rule: 3 months in a row of profit >= 60-70% of my take-home pay' and the fallback 'If by month 9 I'm below $___, I start applying for jobs'."}], "summary": {"passed": 5, "failed": 0, "total": 5, "pass_rate": 1.0}}}, {"id": "eval-1-adv-decision-without_skill-run-1", "prompt": "I'm deciding whether to quit my job to flip furniture full-time. Run it through at least five of the nine models in The Great Mental Models, Vol. 1.", "eval_id": 1, "outputs": [{"name": "response.md", "type": "text", "content": "# Should You Quit Your Job to Flip Furniture Full-Time?\n\n*Run through the nine models in Shane Parrish's* The Great Mental Models, Vol. 1: General Thinking Concepts\n\nVol. 1 has nine models: **The Map Is Not the Territory, Circle of Competence, First Principles Thinking, Thought Experiment, Second-Order Thinking, Probabilistic Thinking, Inversion, Occam's Razor, and Hanlon's Razor.** You asked for at least five. Below I use seven that bear directly on this decision. The two razors get a short note at the end.\n\nI don't know your numbers (salary, savings, current flipping income, hours, local market), so I can't hand you a verdict. What I can give you is the questions each model forces, plus a decision rule you can fill in with your own figures.\n\n---\n\n## 1. The Map Is Not the Territory\n\n**The idea:** Every model, plan, or story is a simplified map of reality. Maps are useful, but they leave things out, and they go out of date.\n\n**Your maps:**\n- **Your weekend results.** If you flip on the side, you have real data. But side-gig data is a map drawn under side-gig conditions. You picked only the best deals, you had a salary to cover slow months, and your time cost \"felt free.\"\n- **Social media flippers.** YouTube and TikTok show the $40 dresser that sold for $600. They don't show the pieces that sat for 8 weeks, the ones that needed $90 of supplies, the no-show buyers, or the sore back.\n- **\"Full-time = side gig \u00d7 5.\"** That's the most dangerous map. Supply doesn't scale that way. Good underpriced pieces near you are limited. Buyer demand for refinished furniture in your area is limited too.\n\n**What to do:** Check your map against the territory. Pull your real numbers from the last 6\u201312 months: pieces sold, average purchase price, average sale price, supplies, gas, platform fees, and the **hours per piece**, counting sourcing, pickup, repair, painting, photos, listing, messaging, and delivery. That gives you real profit per hour. It's the only number that matters here.\n\n---\n\n## 2. Circle of Competence\n\n**The idea:** Know where your real expertise ends. Inside the circle you can make good calls. Outside it, you're guessing and may not know it.\n\n**Inside your circle (maybe):** spotting good pieces, refinishing, and knowing what sells.\n\n**Probably outside your circle (for now):**\n- Running a business: self-employment taxes, quarterly estimates, bookkeeping, sales tax, business licenses, insurance\n- Health insurance and retirement savings without an employer\n- Scaling: storage space, a vehicle, maybe a helper, inventory risk\n- Diversified sales channels: Marketplace, Craigslist, OfferUp, Etsy, consignment, a booth, your own site\n- Steady sourcing at volume\n\n**What to do:** Be honest about which side of the line each item sits on. For each item outside the circle, either learn it before you quit, or pay someone who knows it (an accountant, an insurance broker). Talk to two or three people who flip full-time. Ask about their worst year, not their best month.\n\n---\n\n## 3. First Principles Thinking\n\n**The idea:** Break the problem down to basic truths and rebuild from there, instead of reasoning by analogy (\"she did it, so I can\").\n\n**The basic truths:**\n1. **Monthly need.** What do you actually need each month? Rent or mortgage, food, debt payments, health insurance (often $400\u2013$900+/month if you buy it yourself in the US), taxes, and retirement savings. Self-employment tax alone is about 15.3% of net earnings in the US.\n2. **Profit per piece** = sale price \u2212 purchase \u2212 supplies \u2212 fees \u2212 transport.\n3. **Pieces per month** is capped by *sourcing* (how many good buys you can find), *labor* (hours per piece), *space* (how many fit in your garage), and *demand* (how many buyers your area has).\n4. **Required pieces per month** = monthly need \u00f7 profit per piece.\n\n**Worked example (made-up numbers, swap in yours):**\n- Need: $4,500/month (including health insurance and taxes set aside)\n- Average profit per piece: $150\n- Required: 30 pieces/month, about 7 per week\n- At 8 hours per piece, that's 240 hours/month, or about 60 hours/week\n\nIf that math only works at 60+ hours a week, the business doesn't work yet as designed. That's useful to know. Then the first-principles question becomes: *what would have to change?* Higher-value pieces, faster methods, a higher price tier, a second channel like custom refinishing for customers' own furniture, or cheaper sourcing.\n\n---\n\n## 4. Thought Experiment\n\n**The idea:** Run the scenario in your head, carefully and honestly, before you run it in real life.\n\n**Try these:**\n- **A bad Tuesday in month 4.** It's February. Marketplace is slow. You have nine pieces sitting in the garage and $1,200 tied up in inventory. Your car needs a $700 repair. What do you do? How does it feel?\n- **The injury case.** You throw out your back and can't lift for 6 weeks. Where does the income come from?\n- **The platform case.** Facebook changes its algorithm or limits your account. What percent of your sales disappear?\n- **The success case.** Demand is great and you're turning away buyers. What limits you then: space, time, or sourcing? What would it cost to fix?\n- **The \"pretend you already quit\" test.** For one or two months, live on only what flipping makes. Bank your full paycheck. Could you have paid your bills?\n\nThe last one is the most useful. It's a thought experiment you can partly run for real.\n\n---\n\n## 5. Second-Order Thinking\n\n**The idea:** Ask \"and then what?\" First-order effects are obvious. Second-order effects are where most surprises live.\n\n| Decision | First-order effect | Second-order effects |\n|---|---|---|\n| Quit job | More time to flip; more freedom | Lose employer health insurance and 401(k) match. Income becomes lumpy. Harder to get a mortgage or loan (lenders often want 2 years of self-employment history). |\n| Flip full-time | More pieces sold | A hobby you love becomes a job you *have to* do. Burnout risk rises. You might start to accept lower-margin pieces just to keep volume up. |\n| Scale up volume | More revenue | You need more space and maybe a truck or trailer. You may push local prices down by flooding your own market. |\n| Leave your field | Freedom now | Your career skills and network fade. Going back after 2 years may mean a lower title or pay. |\n\n**Also positive second-order effects:** you build a real business you own, you gain sales and marketing skills, and you may find better niches (mid-century pieces, custom work, staging rentals for realtors) you'd never find with only weekends.\n\n---\n\n## 6. Probabilistic Thinking\n\n**The idea:** The future is a range of outcomes, not one outcome. Estimate the odds and weigh them by how much each one costs or pays.\n\n**Sketch three scenarios for year one (assign your own odds):**\n- **Bad case (say 30%):** You earn 50\u201360% of what you need. You burn through savings and go back to a job in 9\u201312 months.\n- **Base case (say 50%):** You roughly match your old take-home pay, but work more hours with less stability.\n- **Good case (say 20%):** You find a niche or channel that beats your old income within 12\u201318 months.\n\n**Watch for fat tails.** Small businesses usually fail from one big hit, not slow decline: injury, a vehicle dying, losing your storage space, or a platform ban. Ask whether any one event could wipe you out.\n\n**Base rates matter.** Many small businesses don't survive their first few years. You aren't doomed, but the starting assumption should not be \"it'll work out.\" It should be \"most don't, so what makes mine different?\" Your answer should be in numbers, not hope.\n\n---\n\n## 7. Inversion\n\n**The idea:** Instead of asking \"how do I succeed?\", ask \"what would guarantee failure?\" Then avoid those things.\n\n**How to make sure this fails:**\n- Quit with less than 3 months of savings\n- Never calculate true profit per hour\n- Depend 100% on one platform (Facebook Marketplace)\n- Skip health insurance\n- Don't set aside money for taxes, and get a big bill in April\n- Buy inventory faster than you can sell it\n- Keep the same low prices you charged as a hobbyist\n- Burn bridges at your current job on the way out\n\n**Flip each one into a rule:**\n- Have **6\u201312 months** of living expenses saved, *plus* a separate inventory and tools fund.\n- Track every piece in a simple spreadsheet: cost, hours, sale price, days to sell.\n- Sell on at least **two or three channels**.\n- Get health insurance lined up *before* your last day.\n- Set aside **25\u201330%** of profit for taxes in a separate account.\n- Set a cap on unsold inventory (a dollar amount or number of pieces).\n- Price as a business, not a hobby.\n- Leave on good terms so going back is a real option.\n\n---\n\n## 8 & 9. The Razors (briefly)\n\n- **Occam's Razor:** The simplest explanation is usually right. If flipping is doing well as a side gig, the simplest reason may be that you're good at it *and* you're only taking the best deals. Don't make up a complex story about why it will scale. Test whether it does.\n- **Hanlon's Razor:** Don't assume malice when carelessness explains it. Flaky buyers, lowballers, and no-shows aren't a plot against you. They're normal Marketplace friction. Build that friction into your time estimates rather than letting it shake your confidence.\n\n---\n\n## Putting It Together: A Decision Rule\n\nThe models agree on one thing: **don't make this a single leap. Make it a staircase.** Turn a one-way door into a two-way door.\n\n**Quit when all of these are true:**\n1. **Proof of income:** For 3\u20136 months in a row, your *net* flipping profit has been at least **60\u201375%** of your take-home pay, while still working your job (or at a pace you know you could double with full-time hours).\n2. **Runway:** You have **6\u201312 months** of expenses saved, plus an inventory fund.\n3. **Basics covered:** Health insurance, a tax plan, and any needed business license are set.\n4. **Channels:** At least two sales channels bring in real sales.\n5. **Capacity:** Your bottleneck (space, sourcing, or time) has a clear fix that full-time hours actually solve.\n6. **Exit ramp:** You've written down what would make you go back to a job, for example \"if savings drop below 3 months\" or \"if I'm under X profit for 3 months in a row.\"\n\n**Ways to shrink the risk before you jump:**\n- Ask about cutting to 4 days a week or part-time at your current job.\n- Take a short unpaid leave or use vacation for a 2\u20134 week full-time \"trial run.\"\n- Raise prices now to see whether demand holds.\n\n**Bottom line:** The question isn't \"should I quit?\" It's \"have I shown, with my own numbers, that full-time flipping covers my real costs, and do I have a safety net if I'm wrong?\" If yes, the models support the jump. If you're not sure yet, the next step isn't quitting. It's building the spreadsheet.\n\nIf you share your numbers (take-home pay, monthly costs, savings, and your last few months of flipping results), I can run the math with you.\n"}], "grading": {"expectations": [{"text": "Applies at least five named models", "passed": true, "evidence": "Lists all nine Vol. 1 models correctly and applies seven in depth (sections 1-7), plus the razors briefly in '8 & 9'. The names match SKILL.md."}, {"text": "Uses second-order thinking with concrete consequences", "passed": true, "evidence": "Section 5 table: 'Lose employer health insurance and 401(k) match... Harder to get a mortgage (lenders often want 2 years of self-employment history)', 'push local prices down by flooding your own market', 'career skills and network fade'."}, {"text": "Uses inversion (e.g. what would guarantee failure)", "passed": true, "evidence": "Section 7 'How to make sure this fails': 8 items ('Quit with less than 3 months of savings', 'Depend 100% on one platform'), each turned into a rule. This is generic; it has no Jacobi or force field, but it is correct inversion."}, {"text": "Uses circle of competence and/or probabilistic thinking with numbers", "passed": true, "evidence": "Probabilistic section with numbers: 'Bad case (say 30%)... Base case (say 50%)... Good case (say 20%)', plus fat tails and base rates. Circle of competence is applied correctly but generically (no Lifer/Stranger or the book's three steps)."}, {"text": "Ends with a decision rule or test, not just a list", "passed": true, "evidence": "'Putting It Together: A Decision Rule' - 'Quit when all of these are true' with 6 testable conditions (e.g. 3-6 months net profit >= 60-75% of take-home, 6-12 months runway) and a written exit ramp. The 'one-way/two-way door' framing is not presented as the book's."}], "summary": {"passed": 5, "failed": 0, "total": 5, "pass_rate": 1.0}}}, {"id": "eval-2-adv-razors-with_skill-run-1", "prompt": "Explain the difference between Occam's and Hanlon's razors with a scenario where a Marketplace buyer ghosts me, then show first-principles thinking on pricing.", "eval_id": 2, "outputs": [{"name": "response.md", "type": "text", "content": "# Occam's Razor vs Hanlon's Razor: The Ghosting Marketplace Buyer\n### Plus first-principles thinking on pricing\n*Based on* The Great Mental Models, Vol. 1 *(Shane Parrish and Rhiannon Beaubien, Farnam Street)*\n\n---\n\n## Part 1: The two razors\n\nBoth are \"razors\": rules of thumb that cut away unlikely explanations so you can act on the likely one. They cut along different lines.\n\n| | **Occam's Razor** | **Hanlon's Razor** |\n|---|---|---|\n| **The rule (from the book)** | Simpler explanations are more likely to be true. Prefer the one with the fewest moving parts. | Don't put down to malice what is more easily explained by stupidity. The likeliest explanation has the least intent. |\n| **What it cuts** | **Complexity**: explanations that need many things to all be true at once. | **Intent**: explanations that assume someone *meant* to harm you. |\n| **The question it asks** | \"How many assumptions does this story need?\" | \"Does this story need someone to be against me?\" |\n| **The trap it guards against** | Overthinking; building elaborate theories. | Paranoia; taking things personally (what the book calls \"the Devil Fallacy\"). |\n| **The book's caveat** | Some things really aren't simple. Don't force a simple answer onto a complex reality (the book's medical sidebar makes this point). | Malice does exist. The razor sets your *default*, not your conclusion. |\n| **The book's example** | Medicine: the common cause of a symptom is more likely than a rare one. | Road rage: the driver who cut you off was most likely distracted, not out to get you. |\n\n**The short version:** Occam asks *how complicated* your story is. Hanlon asks *how hostile* it is. A story can be simple and malicious (\"he's a jerk\"), so Occam alone won't save you from taking things personally. A story can be harmless and still complicated, so Hanlon alone won't stop overthinking. You need both.\n\n---\n\n## Part 2: The scenario\n\nYou list a mid-century dresser on Facebook Marketplace for $250. A buyer messages: *\"Is this still available? I can pick up Saturday at 2.\"* You say yes, hold it, turn down two other people, and send your address. Saturday at 2 comes and goes. No message. You send \"Still coming?\" and get nothing. They've ghosted you.\n\n### Step 1: List the possible explanations\n1. They found a cheaper dresser and didn't bother to tell you.\n2. Something came up (work, kids, car trouble) and they forgot to message.\n3. They changed their mind or couldn't afford it and felt awkward saying so.\n4. They're a scammer or troll wasting sellers' time on purpose.\n5. A rival seller is fake-booking your items to keep you off the market.\n6. They saw your address, are casing your house, and plan to come back.\n7. They never saw your last message (notifications off, Messenger glitch).\n\n### Step 2: Apply Occam's razor (cut the complexity)\nCount what each story needs to be true:\n\n- **#2, #3, #7 (forgot, changed mind, missed the message):** need one ordinary thing to happen. Very few assumptions.\n- **#1 (found a cheaper one):** needs a competing listing plus not bothering to cancel. Still simple and common.\n- **#4 (deliberate time-waster):** needs a person who gets something out of wasting your time, with no gain to them. More assumptions.\n- **#5 (rival seller plot):** needs a rival who knows you, watches your listings, creates fake accounts, and thinks this is worth the effort. Many moving parts.\n- **#6 (casing your house):** needs a criminal who chose Marketplace furniture as the cover story, chose you, and is planning a crime. Many moving parts.\n\n**Occam's verdict:** #1, #2, #3 and #7 are the most likely. #5 and #6 need too many things to line up.\n\n### Step 3: Apply Hanlon's razor (cut the intent)\nNow sort by how much hostile intent each story needs:\n\n- **No intent against you:** #2 (forgot), #7 (missed the message).\n- **Thoughtless, not hostile:** #1 (cheaper option, didn't cancel), #3 (awkward, avoided the message). This is the \"stupidity\" end in the book's sense: carelessness, poor manners, avoiding discomfort.\n- **Hostile intent:** #4 (time-waster), #5 (rival), #6 (casing).\n\n**Hanlon's verdict:** the likeliest story is carelessness, not malice. Ghosting usually happens because cancelling feels awkward and costs the buyer nothing.\n\n### Step 4: Notice where they differ\n- **#4 (deliberate time-waster)** is fairly simple, so Occam alone doesn't rule it out. It's Hanlon that pushes it down, because it needs intent when carelessness explains the same facts.\n- **#7 (missed the message)** has no malice, but it's slightly less common than \"forgot.\" Both razors are fine with it.\n- **#5 and #6** fail *both* tests: complicated *and* hostile. These are the stories your anxious brain may jump to at 2:15 on a Saturday, and they're the least likely.\n\n### Step 5: Act on the likely story without being naive\nThe book is clear that razors guide judgment; they don't replace it. You don't assume malice, but you also don't ignore real risk.\n\n- **Emotionally:** let it go. It's very likely not about you. That saves you a bad afternoon and a snippy message.\n- **Practically:** design for carelessness, since that's the common cause:\n  - Ask for a confirmation message the morning of pickup. No confirmation, no hold.\n  - Don't turn down other buyers until the first one confirms. Say \"first to show with cash gets it.\"\n  - For high-value items, ask for a small deposit (Venmo, PayPal or similar).\n  - Share your exact address only after the day-of confirmation.\n- **Safety:** for #6, you don't need to believe it to take cheap precautions. Meet in a public spot or porch pickup for small items; have someone home for big ones. That covers the rare bad case without assuming everyone is a threat.\n- **Update if evidence changes:** if the same account books and ghosts you three times, or the person shows up somewhere odd, the evidence has changed. Update your view (the book's \"reality is the ultimate update\").\n\n---\n\n## Part 3: First principles thinking on pricing\n\n**Core idea from the book:** separate the basic facts from the assumptions, then rebuild from the parts you can't reduce any further. The book's two tools are **Socratic questioning** and the **Five Whys**.\n\n### The usual approach (reasoning by copying)\n\"Similar dressers on Marketplace go for $200\u2013$300, so I'll list at $250.\" That's reasoning by comparison. It's quick and often fine, but it takes on other sellers' assumptions and mistakes. Many of those listings never sell, and you can't see the price they finally sold for.\n\n### Step 1: Strip it to the basic parts\nWhat is a price really made of? Break it into facts you can't reduce further:\n\n1. **Your cost floor:** what you paid + supplies (sandpaper, stain, hardware) + fuel + platform or payment fees.\n2. **Your time:** total hours (sourcing, hauling, cleaning, repair, refinishing, photos, listing, messaging, pickup) \u00d7 the hourly rate you want.\n3. **Holding cost:** storage space, capital tied up, and the risk of damage while it sits.\n4. **Buyer's value ceiling:** what *this* buyer would otherwise pay to get the same use: a new dresser of similar quality, delivery, the hassle of assembly, plus any premium for style, solid wood or brand (e.g., a mid-century look).\n5. **Demand and speed:** how many local buyers want this kind of piece right now, and how fast it sells at each price.\n\n**The basic truth:** your price must sit **between your full cost floor (1\u20133) and the buyer's value ceiling (4)**. Demand and speed (5) decide where in that range you land.\n\n### Step 2: Socratic questioning (the book's six steps)\nApplied to \"this dresser is worth $250\":\n\n1. **Clarify your thinking:** what does \"worth $250\" mean? That someone *might* pay it? That it sells within a week? That you earn $25/hour on it?\n2. **Challenge assumptions:** \"comparable listings show the market price.\" Do they? Listing prices aren't sale prices. Some listings sit for months.\n3. **Look for evidence:** what have *your* similar pieces actually sold for, and how fast? How many messages did you get in the first 24 hours? Lots of quick messages means you're probably too low. None in a week means too high or bad photos.\n4. **Consider other views:** how does a buyer see it? To someone who would otherwise buy a $600 new solid-wood dresser plus delivery, $350 may feel like a deal. To a student furnishing a first apartment, $250 is a lot.\n5. **Examine consequences:** if you price at $350 and it takes 3 weeks, what does that cost you in storage and in not buying the next piece? If you price at $200 and it sells in an hour, how much did you leave on the table?\n6. **Question the original question:** is \"what price?\" even the right question? Maybe it's \"which pieces should I buy at all, given what they'll sell for?\" Pricing really starts at the moment you *source*.\n\n### Step 3: Five Whys on a pricing problem\nSay your pieces are selling slowly.\n- **Why are they selling slowly?** \u2192 Few messages per listing.\n- **Why?** \u2192 Listings don't get many views or clicks.\n- **Why?** \u2192 The photos look like a garage and the first photo doesn't show the piece clearly.\n- **Why?** \u2192 I shoot them where I work on them, in poor light.\n- **Why?** \u2192 I never set up a simple photo spot.\n\n**Root cause:** presentation, not price. Cutting the price would have \"fixed\" the symptom and cost you money each time. That's the value of the Five Whys: it stops you from treating price as the answer to every problem.\n\n### Step 4: Rebuild a price from the ground up\nWorked example (swap in your own numbers):\n\n| Part | Amount |\n|---|---|\n| Bought dresser | $60 |\n| Supplies (stain, sandpaper, new pulls) | $35 |\n| Fuel + fees | $15 |\n| **Cash cost** | **$110** |\n| Time: 8 hours \u00d7 $20/hour target | $160 |\n| **Full cost floor (cash + your time)** | **$270** |\n| Buyer's alternative: new solid-wood dresser + delivery | ~$600\u2013$800 |\n| Local demand for mid-century style | High (fast replies on past listings) |\n\n**Rebuilt price:** list around **$375**, with a floor of about $300 you won't go below.\n- Notice that the copied $250 price would have sold the dresser **below your full cost**. You'd have made $140 over cash cost but paid yourself under $18/hour.\n- If no one bites at $375 after a week, cut the price on a set schedule (e.g., 10% per week), not on emotion.\n\n### Step 5: Rules that follow from the first-principles view\n- **Set the floor before you list.** Know the number you'll walk away from. This also makes haggling less stressful.\n- **Price for the buyer's alternative,** not for other flippers' listing prices.\n- **Track sale price and days-to-sell** for every piece. Over time your own data replaces guesswork (the book's \"reality is the ultimate update\").\n- **Price at sourcing.** If you can't see a sale price at least 2\u20133\u00d7 your cash cost once you add your hours, skip the piece.\n- **Anchor high, with room to negotiate.** Marketplace buyers expect to haggle. Build that in.\n\n---\n\n## How the three tools fit together\n- **Occam's razor** keeps your *explanations* simple: \"they forgot\" beats \"rival conspiracy.\"\n- **Hanlon's razor** keeps your *attitude* calm: carelessness, not malice. Fix the system, don't resent the person.\n- **First principles** keeps your *pricing* tied to real costs and real buyer value, not to whatever other sellers guessed.\n\n**Caveat (from the book):** these are thinking aids, not answers. Some situations really are complex, and some people really are acting in bad faith. Use the razors to set your default, then update when the evidence changes.\n"}], "grading": {"expectations": [{"text": "Defines Occam's razor correctly", "passed": true, "evidence": "'Simpler explanations are more likely to be true. Prefer the one with the fewest moving parts.' This matches SKILL.md exactly."}, {"text": "Defines Hanlon's razor correctly", "passed": true, "evidence": "'Don't put down to malice what is more easily explained by stupidity. The likeliest explanation has the least intent.' This matches SKILL.md. The road-rage example and 'the Devil Fallacy' are correctly cited."}, {"text": "Applies both to the ghosting scenario", "passed": true, "evidence": "Part 2 lists 7 explanations, scores them by assumptions under Occam (Step 2) and by intent under Hanlon (Step 3), and shows where the razors diverge (Step 4: '#4 is fairly simple, so Occam alone doesn't rule it out. It's Hanlon that pushes it down')."}, {"text": "Uses first principles (breaking down to fundamentals, Socratic questioning or Five Whys) on pricing", "passed": true, "evidence": "Part 3 breaks price into irreducible parts (cost floor, time, holding cost, buyer value ceiling, demand). It applies the book's six Socratic steps, matching SKILL.md ('consider other views' ~ 'consider alternatives'), runs a Five Whys chain ending in 'Root cause: presentation, not price', and rebuilds a $375 price."}, {"text": "Notes limits of the razors", "passed": true, "evidence": "Table caveats: Occam 'Some things really aren't simple' (matches SKILL.md's caveat and medical sidebar); Hanlon 'Malice does exist. The razor sets your default'. Closing caveat: 'some people really are acting in bad faith'. Note: the claim that the book's Occam example is 'Medicine: the common cause of a symptom is more likely than a rare one' goes beyond SKILL.md, which only names a 'medical-field sidebar', but it does not contradict it."}], "summary": {"passed": 5, "failed": 0, "total": 5, "pass_rate": 1.0}}}, {"id": "eval-2-adv-razors-without_skill-run-1", "prompt": "Explain the difference between Occam's and Hanlon's razors with a scenario where a Marketplace buyer ghosts me, then show first-principles thinking on pricing.", "eval_id": 2, "outputs": [{"name": "response.md", "type": "text", "content": "# Occam's Razor vs. Hanlon's Razor (and First Principles Pricing)\n\n## The Two Razors in One Line Each\n\n- **Occam's Razor:** When several explanations fit the facts, prefer the simplest one, the one that needs the fewest assumptions. It's about **likelihood**: which story is most probable?\n- **Hanlon's Razor:** \"Never attribute to malice that which is adequately explained by stupidity,\" or more kindly, by carelessness, busyness, or ordinary human stuff. It's about **intent**: don't assume someone meant to hurt you.\n\n**How they differ:**\n\n| | Occam's Razor | Hanlon's Razor |\n|---|---|---|\n| Question it answers | *What most likely happened?* | *Did they mean it?* |\n| Domain | Any explanation (events, systems, causes) | People's behavior and motives |\n| Main trap it guards against | Overly complex, conspiracy-style stories | Taking things personally; assuming bad intent |\n| Main payoff | Better diagnosis | Better relationships and less wasted emotion |\n\nThey often point the same way, since \"they were careless\" is usually simpler than \"they plotted.\" But they're different tools. Occam's cuts away extra *assumptions*. Hanlon's cuts away assumed *malice*.\n\n---\n\n## The Scenario: A Marketplace Buyer Ghosts You\n\nYou list a dresser on Facebook Marketplace for $250. A buyer messages:\n\n> \"Is this still available? I can pick up Saturday at 2.\"\n\nYou say yes, hold it for them, and turn down two other people. Saturday at 2 comes. No one shows. You message at 2:20 and 3:00. Nothing. \"Seen\" shows up, then silence.\n\n### Stories your brain might come up with\n\n1. They were a scammer gathering info or testing if your account was real.\n2. A competitor flipper wanted to take your listing off the market.\n3. They saw your profile, didn't like something about you, and blew you off on purpose.\n4. They found a cheaper dresser, or changed their mind, and felt awkward saying so.\n5. Something came up (kids, work, car trouble) and they forgot or felt bad.\n6. They message 20 sellers at once and \"is this available\" meant very little to them.\n\n### Apply Occam's Razor\n\nAsk: *which explanation needs the fewest extra assumptions?*\n\n- Stories 1\u20133 each need several things to be true: a motive, a plan, and a reason to target *you*.\n- Stories 4\u20136 need almost nothing beyond normal behavior. Low-commitment messages on a free platform, with no deposit and no penalty for not showing, often lead to no-shows.\n\n**Occam's verdict:** The likely answer is boring. The buyer was low-commitment, changed plans, and found it easier to disappear than to explain. It's a *system* problem (free, frictionless messaging) more than a person problem.\n\n### Apply Hanlon's Razor\n\nAsk: *am I reading malice into this?*\n\nStory 3, \"they blew me off on purpose,\" is a malice story. Even if a few ghosters are rude, the much more common reasons are avoiding an awkward message, being disorganized, or just not thinking about your Saturday at all.\n\n**Hanlon's verdict:** Don't take it personally. Don't send an angry message, leave a bad review in anger, or let it sour how you treat the next buyer.\n\n### What each razor tells you to *do*\n\n- **Occam's (fix the system):** Since no-shows are a normal, predictable part of the platform, design around them:\n  - Ask the buyer to confirm the morning of pickup. No confirmation means the item is still open.\n  - Don't turn down other buyers. Say \"First person to show up with cash gets it\" or keep a backup list.\n  - For high-value pieces, ask for a small deposit through a payment app (from people you've messaged with enough to trust), or skip holds altogether.\n  - Count on a no-show rate. If 1 in 4 pickups fall through, build that into your time and pricing.\n- **Hanlon's (protect your mood and reputation):** Send one calm, friendly follow-up, like \"No worries if plans changed. I'll relist it today.\" Then move on. Stay polite, since the same buyer may come back, and the next buyer gets your best self.\n\n**A caveat:** Both razors are rules of thumb, not laws. If someone asks for your phone number \"to verify,\" sends a fake payment screenshot, or wants you to click a link, that's a pattern that *does* point to a scam. At that point the simplest explanation really is fraud. The razors help you default to the likely answer. They don't tell you to ignore evidence.\n\n---\n\n## First Principles Thinking on Pricing\n\n**First principles thinking** means breaking a problem down to its basic truths and building up from there, instead of copying what everyone else does (\"similar dressers list for $200, so I'll list for $200\").\n\nPricing by copying has two problems. Other sellers might be underpricing (many flippers don't count their time). And it ignores your actual costs and your goals.\n\n### Step 1: Ask what a price actually has to do\n\nA price has to:\n1. **Cover all costs**, including the hidden ones\n2. **Pay you for your time** at a rate you've chosen on purpose\n3. **Match what a buyer will pay**, given the value they see\n4. **Sell within a reasonable time**, since sitting inventory has real costs\n\n### Step 2: List every real cost (the floor)\n\nExample: a solid-wood dresser.\n\n| Cost | Amount |\n|---|---|\n| Purchase price | $60 |\n| Supplies (sandpaper, stain or paint, topcoat, hardware) | $45 |\n| Gas and pickup | $15 |\n| Platform or payment fees (if any) | $0\u2013$15 |\n| Share of tools and space (wear, garage, storage) | $10 |\n| **Direct cost total** | **~$135** |\n\n### Step 3: Price your time honestly\n\nCount *all* the hours, not just painting:\n\n| Task | Hours |\n|---|---|\n| Finding and buying | 1.0 |\n| Pickup and transport | 1.0 |\n| Cleaning and repair | 2.0 |\n| Sanding and finishing | 4.0 |\n| Photos and listing | 0.5 |\n| Messaging, no-shows, and the sale | 1.5 |\n| **Total** | **10 hours** |\n\nIf you want to earn **$25/hour**, your time is worth **$250**.\n\n**Cost-based floor:** $135 + $250 = **$385**\n\n### Step 4: Find the ceiling (buyer value)\n\nNow look at it from the buyer's side. What are their real alternatives?\n\n- A new particleboard dresser from a big-box store: ~$200\u2013$300, which won't last\n- A new solid-wood dresser of similar size: often $700\u2013$1,500+\n- Other used, refinished solid-wood dressers in your area: check what has *sold*, not just what's listed\n\nSo for a nicely finished solid-wood dresser, buyer value may sit somewhere around **$350\u2013$550**, depending on style, size, condition, and local taste.\n\n### Step 5: Compare floor vs. ceiling\n\n- **If floor \u003c ceiling** (e.g., $385 floor vs. $500 ceiling): price toward the ceiling. Try $475 and leave a little room to negotiate.\n- **If floor > ceiling:** this piece doesn't work at your target hourly rate. That's the key insight first principles gives you. Your choices are:\n  - Buy cheaper\n  - Cut hours (simpler finish, fewer repairs, batch similar jobs)\n  - Pick pieces with higher buyer value (solid wood, known brands, mid-century, sets)\n  - Accept a lower hourly rate on purpose for this one, knowing why\n  - Pass on similar pieces next time\n\n### Step 6: Add the time factor\n\nUnsold inventory isn't free. It ties up cash and space. Set a simple rule, for example:\n- List at your target price.\n- If there are no serious offers in **10\u201314 days**, drop 10%.\n- Never go below your **direct cost floor** (~$135 here) unless you're clearing space on purpose.\n\n### Step 7: Fold in what the razors taught you\n\nFrom the ghosting scenario, Occam's Razor said no-shows are normal and predictable. That's a real cost too. If roughly 1 in 4 pickups falls through and each one costs you 30\u201360 minutes, add that time to your \"messaging and sale\" hours. First principles means pricing the business as it *actually* runs, not as it runs on a perfect day.\n\n---\n\n## Summary\n\n- **Occam's Razor:** The buyer most likely flaked for an ordinary reason. Fix the *system* (confirmations, no holds, backup buyers).\n- **Hanlon's Razor:** They almost certainly didn't mean to hurt you. Don't take it personally. Stay polite and move on.\n- **First principles pricing:** Build your price from real costs + the hourly rate you've chosen (the floor), then check it against buyer alternatives (the ceiling). If the floor is above the ceiling, change *the piece or the process*, not just the price tag.\n"}], "grading": {"expectations": [{"text": "Defines Occam's razor correctly", "passed": true, "evidence": "'When several explanations fit the facts, prefer the simplest one, the one that needs the fewest assumptions.' This is correct and consistent with SKILL.md."}, {"text": "Defines Hanlon's razor correctly", "passed": true, "evidence": "'Never attribute to malice that which is adequately explained by stupidity... It's about intent'. This is correct and consistent with SKILL.md (no book examples given)."}, {"text": "Applies both to the ghosting scenario", "passed": true, "evidence": "Lists 6 stories, then 'Apply Occam's Razor' (stories 1-3 need 'a motive, a plan, and a reason to target you') and 'Apply Hanlon's Razor' (story 3 is a malice story), each with its own verdict and actions."}, {"text": "Uses first principles (breaking down to fundamentals, Socratic questioning or Five Whys) on pricing", "passed": true, "evidence": "'breaking a problem down to its basic truths and building up from there, instead of copying'. Steps 1-7 derive what a price must do, list every cost ($135), price the hours (10h x $25), find the buyer ceiling, and compare floor vs ceiling. This is genuine decomposition; it has no Socratic questioning or Five Whys, but the assertion allows any of them."}, {"text": "Notes limits of the razors", "passed": true, "evidence": "'Both razors are rules of thumb, not laws... At that point the simplest explanation really is fraud. The razors help you default to the likely answer. They don't tell you to ignore evidence.'"}], "summary": {"passed": 5, "failed": 0, "total": 5, "pass_rate": 1.0}}}], "previous_feedback": {}, "previous_outputs": {}, "benchmark": {"metadata": {"skill_name": "great-mental-models", "skill_path": "\u003cpath/to/skill>", "executor_model": "\u003cmodel-name>", "analyzer_model": "\u003cmodel-name>", "timestamp": "2026-11-21T22:00:51Z", "evals_run": [1, 2], "runs_per_configuration": 1}, "runs": [{"eval_id": 1, "eval_name": "adv-decision", "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 5, "failed": 0, "total": 5, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Applies at least five named models", "passed": true, "evidence": "Sections 1-9 apply all nine Vol. 1 models by their correct names (Map Is Not the Territory, Circle of Competence, First Principles, Thought Experiment, Second-Order, Probabilistic, Inversion, Occam's, Hanlon's), each with book tools matching SKILL.md (e.g. the three map tools, Lifer/Stranger, LeBron vs Woody Allen/Durant)."}, {"text": "Uses second-order thinking with concrete consequences", "passed": true, "evidence": "Section 5: 'your income now has to come from furniture. You start taking deals you'd have passed on... Healthcare costs show up. Seasonal dips hit your rent'; 10-year 'gap on your r\u00e9sum\u00e9 and less retirement saved'. Cobra bounty example matches SKILL.md. The 10/10/10 framing is SKILL.md's '(std framing)' and is not credited to the book."}, {"text": "Uses inversion (e.g. what would guarantee failure)", "passed": true, "evidence": "Section 7: 'How would I guarantee this fails?' with 8 failure conditions ('Quit with less than 3 months of savings', 'Skip health insurance'), then 'do the opposite'. Jacobi quote and Lewin's 5-step force field analysis match SKILL.md."}, {"text": "Uses circle of competence and/or probabilistic thinking with numbers", "passed": true, "evidence": "Circle of competence: Lifer vs Stranger, curiosity/monitoring/feedback, and the three outside-the-circle steps all match SKILL.md. Probabilistic section has numbers: 'cut your projected revenue by 20-30% and add 20-30% to your costs', and the book's '20-40% returns' asymmetry example. Small embellishment: 'The book warns that we remember wins and forget losses' is not in SKILL.md, but it fits the monitoring idea and does not drive the assertion."}, {"text": "Ends with a decision rule or test, not just a list", "passed": true, "evidence": "Ends with 'a falsifiable go/no-go rule: 3 months in a row of profit >= 60-70% of my take-home pay' and the fallback 'If by month 9 I'm below $___, I start applying for jobs'."}], "notes": []}, {"eval_id": 2, "eval_name": "adv-razors", "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 5, "failed": 0, "total": 5, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Defines Occam's razor correctly", "passed": true, "evidence": "'Simpler explanations are more likely to be true. Prefer the one with the fewest moving parts.' This matches SKILL.md exactly."}, {"text": "Defines Hanlon's razor correctly", "passed": true, "evidence": "'Don't put down to malice what is more easily explained by stupidity. The likeliest explanation has the least intent.' This matches SKILL.md. The road-rage example and 'the Devil Fallacy' are correctly cited."}, {"text": "Applies both to the ghosting scenario", "passed": true, "evidence": "Part 2 lists 7 explanations, scores them by assumptions under Occam (Step 2) and by intent under Hanlon (Step 3), and shows where the razors diverge (Step 4: '#4 is fairly simple, so Occam alone doesn't rule it out. It's Hanlon that pushes it down')."}, {"text": "Uses first principles (breaking down to fundamentals, Socratic questioning or Five Whys) on pricing", "passed": true, "evidence": "Part 3 breaks price into irreducible parts (cost floor, time, holding cost, buyer value ceiling, demand). It applies the book's six Socratic steps, matching SKILL.md ('consider other views' ~ 'consider alternatives'), runs a Five Whys chain ending in 'Root cause: presentation, not price', and rebuilds a $375 price."}, {"text": "Notes limits of the razors", "passed": true, "evidence": "Table caveats: Occam 'Some things really aren't simple' (matches SKILL.md's caveat and medical sidebar); Hanlon 'Malice does exist. The razor sets your default'. Closing caveat: 'some people really are acting in bad faith'. Note: the claim that the book's Occam example is 'Medicine: the common cause of a symptom is more likely than a rare one' goes beyond SKILL.md, which only names a 'medical-field sidebar', but it does not contradict it."}], "notes": []}, {"eval_id": 1, "eval_name": "adv-decision", "configuration": "without_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 5, "failed": 0, "total": 5, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Applies at least five named models", "passed": true, "evidence": "Lists all nine Vol. 1 models correctly and applies seven in depth (sections 1-7), plus the razors briefly in '8 & 9'. The names match SKILL.md."}, {"text": "Uses second-order thinking with concrete consequences", "passed": true, "evidence": "Section 5 table: 'Lose employer health insurance and 401(k) match... Harder to get a mortgage (lenders often want 2 years of self-employment history)', 'push local prices down by flooding your own market', 'career skills and network fade'."}, {"text": "Uses inversion (e.g. what would guarantee failure)", "passed": true, "evidence": "Section 7 'How to make sure this fails': 8 items ('Quit with less than 3 months of savings', 'Depend 100% on one platform'), each turned into a rule. This is generic; it has no Jacobi or force field, but it is correct inversion."}, {"text": "Uses circle of competence and/or probabilistic thinking with numbers", "passed": true, "evidence": "Probabilistic section with numbers: 'Bad case (say 30%)... Base case (say 50%)... Good case (say 20%)', plus fat tails and base rates. Circle of competence is applied correctly but generically (no Lifer/Stranger or the book's three steps)."}, {"text": "Ends with a decision rule or test, not just a list", "passed": true, "evidence": "'Putting It Together: A Decision Rule' - 'Quit when all of these are true' with 6 testable conditions (e.g. 3-6 months net profit >= 60-75% of take-home, 6-12 months runway) and a written exit ramp. The 'one-way/two-way door' framing is not presented as the book's."}], "notes": []}, {"eval_id": 2, "eval_name": "adv-razors", "configuration": "without_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 5, "failed": 0, "total": 5, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Defines Occam's razor correctly", "passed": true, "evidence": "'When several explanations fit the facts, prefer the simplest one, the one that needs the fewest assumptions.' This is correct and consistent with SKILL.md."}, {"text": "Defines Hanlon's razor correctly", "passed": true, "evidence": "'Never attribute to malice that which is adequately explained by stupidity... It's about intent'. This is correct and consistent with SKILL.md (no book examples given)."}, {"text": "Applies both to the ghosting scenario", "passed": true, "evidence": "Lists 6 stories, then 'Apply Occam's Razor' (stories 1-3 need 'a motive, a plan, and a reason to target you') and 'Apply Hanlon's Razor' (story 3 is a malice story), each with its own verdict and actions."}, {"text": "Uses first principles (breaking down to fundamentals, Socratic questioning or Five Whys) on pricing", "passed": true, "evidence": "'breaking a problem down to its basic truths and building up from there, instead of copying'. Steps 1-7 derive what a price must do, list every cost ($135), price the hours (10h x $25), find the buyer ceiling, and compare floor vs ceiling. This is genuine decomposition; it has no Socratic questioning or Five Whys, but the assertion allows any of them."}, {"text": "Notes limits of the razors", "passed": true, "evidence": "'Both razors are rules of thumb, not laws... At that point the simplest explanation really is fraud. The razors help you default to the likely answer. They don't tell you to ignore evidence.'"}], "notes": []}], "run_summary": {"with_skill": {"pass_rate": {"mean": 1.0, "stddev": 0.0, "min": 1.0, "max": 1.0}, "time_seconds": null, "tokens": null}, "without_skill": {"pass_rate": {"mean": 1.0, "stddev": 0.0, "min": 1.0, "max": 1.0}, "time_seconds": null, "tokens": null}, "delta": {"pass_rate": "+0.00", "time_seconds": null, "tokens": null}}, "notes": ["Time recorded for 0 of 2 with_skill runs, 0 of 2 without_skill runs, so there is no time delta.", "Token count recorded for 0 of 2 with_skill runs, 0 of 2 without_skill runs, so there is no token count delta."]}};
+
+    // ---- State ----
+    let feedbackMap = {};  // run_id -> feedback text
+    let currentIndex = 0;
+    let visitedRuns = new Set();
+
+    // ---- Init ----
+    async function init() {
+      // Load saved feedback from server — but only if this isn't a fresh
+      // iteration (indicated by previous_feedback being present). When
+      // previous feedback exists, the feedback.json on disk is stale from
+      // the prior iteration and should not pre-fill the textareas.
+      const hasPrevious = Object.keys(EMBEDDED_DATA.previous_feedback || {}).length > 0
+        || Object.keys(EMBEDDED_DATA.previous_outputs || {}).length > 0;
+      if (!hasPrevious) {
+        try {
+          const resp = await fetch("/api/feedback");
+          const data = await resp.json();
+          if (data.reviews) {
+            for (const r of data.reviews) feedbackMap[r.run_id] = r.feedback;
+          }
+        } catch { /* first run, no feedback yet */ }
+      }
+
+      document.getElementById("skill-name").textContent = EMBEDDED_DATA.skill_name;
+      showRun(0);
+
+      // Wire up feedback auto-save
+      const textarea = document.getElementById("feedback");
+      let saveTimeout = null;
+      textarea.addEventListener("input", () => {
+        clearTimeout(saveTimeout);
+        document.getElementById("feedback-status").textContent = "";
+        saveTimeout = setTimeout(() => saveCurrentFeedback(), 800);
+      });
+    }
+
+    // ---- Navigation ----
+    function navigate(delta) {
+      const newIndex = currentIndex + delta;
+      if (newIndex >= 0 && newIndex < EMBEDDED_DATA.runs.length) {
+        saveCurrentFeedback();
+        showRun(newIndex);
+      }
+    }
+
+    function updateNavButtons() {
+      document.getElementById("prev-btn").disabled = currentIndex === 0;
+      document.getElementById("next-btn").disabled =
+        currentIndex === EMBEDDED_DATA.runs.length - 1;
+    }
+
+    // ---- Show a run ----
+    function showRun(index) {
+      currentIndex = index;
+      const run = EMBEDDED_DATA.runs[index];
+
+      // Progress
+      document.getElementById("progress").textContent =
+        `${index + 1} of ${EMBEDDED_DATA.runs.length}`;
+
+      // Prompt
+      document.getElementById("prompt-text").textContent = run.prompt;
+
+      // Config badge
+      const badge = document.getElementById("config-badge");
+      const configMatch = run.id.match(/(with_skill|without_skill|new_skill|old_skill)/);
+      if (configMatch) {
+        const config = configMatch[1];
+        const isBaseline = config === "without_skill" || config === "old_skill";
+        badge.textContent = config.replace(/_/g, " ");
+        badge.className = "config-badge " + (isBaseline ? "config-baseline" : "config-primary");
+        badge.style.display = "inline-block";
+      } else {
+        badge.style.display = "none";
+      }
+
+      // Outputs
+      renderOutputs(run);
+
+      // Previous outputs
+      renderPrevOutputs(run);
+
+      // Grades
+      renderGrades(run);
+
+      // Previous feedback
+      const prevFb = (EMBEDDED_DATA.previous_feedback || {})[run.id];
+      const prevEl = document.getElementById("prev-feedback");
+      if (prevFb) {
+        document.getElementById("prev-feedback-text").textContent = prevFb;
+        prevEl.style.display = "block";
+      } else {
+        prevEl.style.display = "none";
+      }
+
+      // Feedback
+      document.getElementById("feedback").value = feedbackMap[run.id] || "";
+      document.getElementById("feedback-status").textContent = "";
+
+      updateNavButtons();
+
+      // Track visited runs and promote done button when all visited
+      visitedRuns.add(index);
+      const doneBtn = document.getElementById("done-btn");
+      if (visitedRuns.size >= EMBEDDED_DATA.runs.length) {
+        doneBtn.classList.add("ready");
+      }
+
+      // Scroll main content to top
+      document.querySelector(".main").scrollTop = 0;
+    }
+
+    // ---- Render outputs ----
+    function renderOutputs(run) {
+      const container = document.getElementById("outputs-body");
+      container.innerHTML = "";
+
+      const outputs = run.outputs || [];
+      if (outputs.length === 0) {
+        container.innerHTML = '<div class="empty-state">No output files</div>';
+        return;
+      }
+
+      for (const file of outputs) {
+        const fileDiv = document.createElement("div");
+        fileDiv.className = "output-file";
+
+        // Always show file header with download link
+        const header = document.createElement("div");
+        header.className = "output-file-header";
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = file.name;
+        header.appendChild(nameSpan);
+        const dlBtn = document.createElement("a");
+        dlBtn.className = "dl-btn";
+        dlBtn.textContent = "Download";
+        dlBtn.download = file.name;
+        dlBtn.href = getDownloadUri(file);
+        header.appendChild(dlBtn);
+        fileDiv.appendChild(header);
+
+        const content = document.createElement("div");
+        content.className = "output-file-content";
+
+        if (file.type === "text") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          content.appendChild(pre);
+        } else if (file.type === "image") {
+          const img = document.createElement("img");
+          img.src = file.data_uri;
+          img.alt = file.name;
+          content.appendChild(img);
+        } else if (file.type === "pdf") {
+          const iframe = document.createElement("iframe");
+          iframe.src = file.data_uri;
+          content.appendChild(iframe);
+        } else if (file.type === "xlsx") {
+          renderXlsx(content, file.data_b64);
+        } else if (file.type === "binary") {
+          const a = document.createElement("a");
+          a.className = "download-link";
+          a.href = file.data_uri;
+          a.download = file.name;
+          a.textContent = "Download " + file.name;
+          content.appendChild(a);
+        } else if (file.type === "error") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          pre.style.color = "var(--red)";
+          content.appendChild(pre);
+        }
+
+        fileDiv.appendChild(content);
+        container.appendChild(fileDiv);
+      }
+    }
+
+    // ---- XLSX rendering via SheetJS ----
+    function renderXlsx(container, b64Data) {
+      try {
+        const raw = Uint8Array.from(atob(b64Data), c => c.charCodeAt(0));
+        const wb = XLSX.read(raw, { type: "array" });
+
+        for (let i = 0; i < wb.SheetNames.length; i++) {
+          const sheetName = wb.SheetNames[i];
+          const ws = wb.Sheets[sheetName];
+
+          if (wb.SheetNames.length > 1) {
+            const sheetLabel = document.createElement("div");
+            sheetLabel.style.cssText =
+              "font-weight:600; font-size:0.8rem; color:#b0aea5; margin-top:0.5rem; margin-bottom:0.25rem;";
+            sheetLabel.textContent = "Sheet: " + sheetName;
+            container.appendChild(sheetLabel);
+          }
+
+          const htmlStr = XLSX.utils.sheet_to_html(ws, { editable: false });
+          const wrapper = document.createElement("div");
+          wrapper.innerHTML = htmlStr;
+          container.appendChild(wrapper);
+        }
+      } catch (err) {
+        container.textContent = "Error rendering spreadsheet: " + err.message;
+      }
+    }
+
+    // ---- Grades ----
+    function renderGrades(run) {
+      const section = document.getElementById("grades-section");
+      const content = document.getElementById("grades-content");
+
+      if (!run.grading) {
+        section.style.display = "none";
+        return;
+      }
+
+      const grading = run.grading;
+      section.style.display = "block";
+      // Reset to collapsed
+      content.classList.remove("open");
+      document.getElementById("grades-arrow").classList.remove("open");
+
+      const summary = grading.summary || {};
+      const expectations = grading.expectations || [];
+
+      let html = '<div style="padding: 1rem;">';
+
+      // Summary line
+      const passRate = summary.pass_rate != null
+        ? Math.round(summary.pass_rate * 100) + "%"
+        : "?";
+      const badgeClass = summary.pass_rate >= 0.8 ? "grade-pass" : summary.pass_rate >= 0.5 ? "" : "grade-fail";
+      html += '<div class="grades-summary">';
+      html += '<span class="grade-badge ' + badgeClass + '">' + passRate + '</span>';
+      html += '<span>' + escapeHtml(summary.passed || 0) + ' passed, ' + escapeHtml(summary.failed || 0) + ' failed of ' + escapeHtml(summary.total || 0) + '</span>';
+      html += '</div>';
+
+      // Assertions list
+      html += '<ul class="assertion-list">';
+      for (const exp of expectations) {
+        const statusClass = exp.passed ? "pass" : "fail";
+        const statusIcon = exp.passed ? "\u2713" : "\u2717";
+        html += '<li class="assertion-item">';
+        html += '<span class="assertion-status ' + statusClass + '">' + statusIcon + '</span>';
+        html += '<span>' + escapeHtml(exp.text) + '</span>';
+        if (exp.evidence) {
+          html += '<div class="assertion-evidence">' + escapeHtml(exp.evidence) + '</div>';
+        }
+        html += '</li>';
+      }
+      html += '</ul>';
+
+      html += '</div>';
+      content.innerHTML = html;
+    }
+
+    function toggleGrades() {
+      const content = document.getElementById("grades-content");
+      const arrow = document.getElementById("grades-arrow");
+      content.classList.toggle("open");
+      arrow.classList.toggle("open");
+    }
+
+    // ---- Previous outputs (collapsible) ----
+    function renderPrevOutputs(run) {
+      const section = document.getElementById("prev-outputs-section");
+      const content = document.getElementById("prev-outputs-content");
+      const prevOutputs = (EMBEDDED_DATA.previous_outputs || {})[run.id];
+
+      if (!prevOutputs || prevOutputs.length === 0) {
+        section.style.display = "none";
+        return;
+      }
+
+      section.style.display = "block";
+      // Reset to collapsed
+      content.classList.remove("open");
+      document.getElementById("prev-outputs-arrow").classList.remove("open");
+
+      // Render the files into the content area
+      content.innerHTML = "";
+      const wrapper = document.createElement("div");
+      wrapper.style.padding = "1rem";
+
+      for (const file of prevOutputs) {
+        const fileDiv = document.createElement("div");
+        fileDiv.className = "output-file";
+
+        const header = document.createElement("div");
+        header.className = "output-file-header";
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = file.name;
+        header.appendChild(nameSpan);
+        const dlBtn = document.createElement("a");
+        dlBtn.className = "dl-btn";
+        dlBtn.textContent = "Download";
+        dlBtn.download = file.name;
+        dlBtn.href = getDownloadUri(file);
+        header.appendChild(dlBtn);
+        fileDiv.appendChild(header);
+
+        const fc = document.createElement("div");
+        fc.className = "output-file-content";
+
+        if (file.type === "text") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          fc.appendChild(pre);
+        } else if (file.type === "image") {
+          const img = document.createElement("img");
+          img.src = file.data_uri;
+          img.alt = file.name;
+          fc.appendChild(img);
+        } else if (file.type === "pdf") {
+          const iframe = document.createElement("iframe");
+          iframe.src = file.data_uri;
+          fc.appendChild(iframe);
+        } else if (file.type === "xlsx") {
+          renderXlsx(fc, file.data_b64);
+        } else if (file.type === "binary") {
+          const a = document.createElement("a");
+          a.className = "download-link";
+          a.href = file.data_uri;
+          a.download = file.name;
+          a.textContent = "Download " + file.name;
+          fc.appendChild(a);
+        }
+
+        fileDiv.appendChild(fc);
+        wrapper.appendChild(fileDiv);
+      }
+
+      content.appendChild(wrapper);
+    }
+
+    function togglePrevOutputs() {
+      const content = document.getElementById("prev-outputs-content");
+      const arrow = document.getElementById("prev-outputs-arrow");
+      content.classList.toggle("open");
+      arrow.classList.toggle("open");
+    }
+
+    // ---- Feedback (saved to server -> feedback.json) ----
+    function saveCurrentFeedback() {
+      const run = EMBEDDED_DATA.runs[currentIndex];
+      const text = document.getElementById("feedback").value;
+
+      if (text.trim() === "") {
+        delete feedbackMap[run.id];
+      } else {
+        feedbackMap[run.id] = text;
+      }
+
+      // Build reviews array from map
+      const reviews = [];
+      for (const [run_id, feedback] of Object.entries(feedbackMap)) {
+        if (feedback.trim()) {
+          reviews.push({ run_id, feedback, timestamp: new Date().toISOString() });
+        }
+      }
+
+      fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reviews, status: "in_progress" }),
+      }).then(() => {
+        document.getElementById("feedback-status").textContent = "Saved";
+      }).catch(() => {
+        // Static mode or server unavailable — no-op on auto-save,
+        // feedback will be downloaded on final submit
+        document.getElementById("feedback-status").textContent = "Will download on submit";
+      });
+    }
+
+    // ---- Done ----
+    function showDoneDialog() {
+      // Save current textarea to feedbackMap (but don't POST yet)
+      const run = EMBEDDED_DATA.runs[currentIndex];
+      const text = document.getElementById("feedback").value;
+      if (text.trim() === "") {
+        delete feedbackMap[run.id];
+      } else {
+        feedbackMap[run.id] = text;
+      }
+
+      // POST once with status: complete — include ALL runs so the model
+      // can distinguish "no feedback" (looks good) from "not reviewed"
+      const reviews = [];
+      const ts = new Date().toISOString();
+      for (const r of EMBEDDED_DATA.runs) {
+        reviews.push({ run_id: r.id, feedback: feedbackMap[r.id] || "", timestamp: ts });
+      }
+      const payload = JSON.stringify({ reviews, status: "complete" }, null, 2);
+      fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: payload,
+      }).then(() => {
+        document.getElementById("done-overlay").classList.add("visible");
+      }).catch(() => {
+        // Server not available (static mode) — download as file
+        const blob = new Blob([payload], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "feedback.json";
+        a.click();
+        URL.revokeObjectURL(url);
+        document.getElementById("done-overlay").classList.add("visible");
+      });
+    }
+
+    function closeDoneDialog() {
+      // Reset status back to in_progress
+      saveCurrentFeedback();
+      document.getElementById("done-overlay").classList.remove("visible");
+    }
+
+    // ---- Toast ----
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("visible");
+      setTimeout(() => toast.classList.remove("visible"), 2000);
+    }
+
+    // ---- Keyboard nav ----
+    document.addEventListener("keydown", (e) => {
+      // Don't capture when typing in textarea
+      if (e.target.tagName === "TEXTAREA") return;
+
+      if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+        e.preventDefault();
+        navigate(-1);
+      } else if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+        e.preventDefault();
+        navigate(1);
+      }
+    });
+
+    // ---- Util ----
+    function getDownloadUri(file) {
+      if (file.data_uri) return file.data_uri;
+      if (file.data_b64) return "data:application/octet-stream;base64," + file.data_b64;
+      if (file.type === "text") return "data:text/plain;charset=utf-8," + encodeURIComponent(file.content);
+      return "#";
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement("div");
+      div.textContent = text;
+      return div.innerHTML.replace(/"/g, "&quot;");
+    }
+
+    // ---- View switching ----
+    function switchView(view) {
+      document.querySelectorAll(".view-tab").forEach(t => t.classList.remove("active"));
+      document.querySelectorAll(".view-panel").forEach(p => p.classList.remove("active"));
+      document.querySelector(`[onclick="switchView('${view}')"]`).classList.add("active");
+      document.getElementById("panel-" + view).classList.add("active");
+    }
+
+    // ---- Benchmark rendering ----
+    function renderBenchmark() {
+      const data = EMBEDDED_DATA.benchmark;
+      if (!data) return;
+
+      // Show the tabs
+      document.getElementById("view-tabs").style.display = "flex";
+
+      const container = document.getElementById("benchmark-content");
+      const summary = data.run_summary || {};
+      const metadata = data.metadata || {};
+      const notes = data.notes || [];
+
+      let html = "";
+
+      // Header
+      html += "<h2 style='font-family: Poppins, sans-serif; margin-bottom: 0.5rem;'>Benchmark Results</h2>";
+      html += "<p style='color: var(--text-muted); font-size: 0.875rem; margin-bottom: 1.25rem;'>";
+      if (metadata.skill_name) html += "<strong>" + escapeHtml(metadata.skill_name) + "</strong> &mdash; ";
+      if (metadata.timestamp) html += escapeHtml(metadata.timestamp) + " &mdash; ";
+      if (metadata.evals_run) html += "Evals: " + escapeHtml(metadata.evals_run.join(", ")) + " &mdash; ";
+      html += escapeHtml(metadata.runs_per_configuration || "?") + (metadata.runs_per_configuration === 1 ? " run" : " runs") + " per configuration";
+      html += "</p>";
+
+      // Summary table
+      html += '<table class="benchmark-table">';
+
+      function fmtStat(stat, pct) {
+        if (!stat) return "—";
+        const suffix = pct ? "%" : "";
+        const m = pct ? (stat.mean * 100).toFixed(0) : stat.mean.toFixed(1);
+        const s = pct ? (stat.stddev * 100).toFixed(0) : stat.stddev.toFixed(1);
+        return m + suffix + " ± " + s + suffix;
+      }
+
+      function deltaClass(val) {
+        if (!val) return "";
+        const n = parseFloat(val);
+        if (n > 0) return "benchmark-delta-positive";
+        if (n < 0) return "benchmark-delta-negative";
+        return "";
+      }
+
+      // Discover config names dynamically (everything except "delta")
+      const configs = Object.keys(summary).filter(k => k !== "delta");
+      const configA = configs[0] || "config_a";
+      const configB = configs[1] || "config_b";
+      const labelA = configA.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      const labelB = configB.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      const a = summary[configA] || {};
+      const b = summary[configB] || {};
+      const delta = summary.delta || {};
+      // With a single configuration there is nothing to compare: only its column is shown
+      const compare = cells => configs.length >= 2 ? cells : "";
+
+      html += "<thead><tr><th>Metric</th><th>" + escapeHtml(labelA) + "</th>" + compare("<th>" + escapeHtml(labelB) + "</th><th>Delta</th>") + "</tr></thead>";
+      html += "<tbody>";
+
+      html += "<tr><td><strong>Pass Rate</strong></td>";
+      html += "<td>" + fmtStat(a.pass_rate, true) + "</td>";
+      html += compare("<td>" + fmtStat(b.pass_rate, true) + "</td>");
+      html += compare('<td class="' + deltaClass(delta.pass_rate) + '">' + escapeHtml(delta.pass_rate || "—") + "</td>") + "</tr>";
+
+      // Time (only show row if data exists)
+      if (a.time_seconds || b.time_seconds) {
+        html += "<tr><td><strong>Time (s)</strong></td>";
+        html += "<td>" + fmtStat(a.time_seconds, false) + "</td>";
+        html += compare("<td>" + fmtStat(b.time_seconds, false) + "</td>");
+        html += compare('<td class="' + deltaClass(delta.time_seconds) + '">' + escapeHtml(delta.time_seconds ? delta.time_seconds + "s" : "—") + "</td>") + "</tr>";
+      }
+
+      // Tokens (only show row if data exists)
+      if (a.tokens || b.tokens) {
+        html += "<tr><td><strong>Tokens</strong></td>";
+        html += "<td>" + fmtStat(a.tokens, false) + "</td>";
+        html += compare("<td>" + fmtStat(b.tokens, false) + "</td>");
+        html += compare('<td class="' + deltaClass(delta.tokens) + '">' + escapeHtml(delta.tokens || "—") + "</td>") + "</tr>";
+      }
+
+      html += "</tbody></table>";
+
+      // Per-eval breakdown (if runs data available)
+      const runs = data.runs || [];
+      if (runs.length > 0) {
+        // Numeric ids first, then ids that are names
+        const rank = id => typeof id === "number" ? 0 : 1;
+        const evalIds = [...new Set(runs.map(r => r.eval_id))].sort((a, b) =>
+          rank(a) - rank(b) || (rank(a) ? String(a).localeCompare(String(b)) : a - b));
+
+        html += "<h3 style='font-family: Poppins, sans-serif; margin-bottom: 0.75rem;'>Per-Eval Breakdown</h3>";
+
+        const hasTime = runs.some(r => r.result && r.result.time_seconds != null);
+        const hasErrors = runs.some(r => r.result && r.result.errors > 0);
+
+        for (const evalId of evalIds) {
+          const evalRuns = runs.filter(r => r.eval_id === evalId);
+          const evalName = evalRuns[0] && evalRuns[0].eval_name ? evalRuns[0].eval_name : "Eval " + evalId;
+
+          html += "<h4 style='font-family: Poppins, sans-serif; margin: 1rem 0 0.5rem; color: var(--text);'>" + escapeHtml(evalName) + "</h4>";
+          html += '<table class="benchmark-table">';
+          html += "<thead><tr><th>Config</th><th>Run</th><th>Pass Rate</th>";
+          if (hasTime) html += "<th>Time (s)</th>";
+          if (hasErrors) html += "<th>Crashes During Execution</th>";
+          html += "</tr></thead>";
+          html += "<tbody>";
+
+          // Group by config and render with average rows
+          const configGroups = [...new Set(evalRuns.map(r => r.configuration))];
+          for (let ci = 0; ci < configGroups.length; ci++) {
+            const config = configGroups[ci];
+            const configRuns = evalRuns.filter(r => r.configuration === config);
+            if (configRuns.length === 0) continue;
+
+            const rowClass = ci === 0 ? "benchmark-row-with" : "benchmark-row-without";
+            const configLabel = escapeHtml(config.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase()));
+
+            for (const run of configRuns) {
+              const r = run.result || {};
+              const prClass = r.pass_rate >= 0.8 ? "benchmark-delta-positive" : r.pass_rate < 0.5 ? "benchmark-delta-negative" : "";
+              html += '<tr class="' + rowClass + '">';
+              html += "<td>" + configLabel + "</td>";
+              html += "<td>" + escapeHtml(run.run_number) + "</td>";
+              html += '<td class="' + prClass + '">' + ((r.pass_rate || 0) * 100).toFixed(0) + "% (" + escapeHtml(r.passed || 0) + "/" + escapeHtml(r.total || 0) + ")</td>";
+              if (hasTime) html += "<td>" + (r.time_seconds != null ? r.time_seconds.toFixed(1) : "—") + "</td>";
+              if (hasErrors) html += "<td>" + escapeHtml(r.errors || 0) + "</td>";
+              html += "</tr>";
+            }
+
+            // Average row
+            const rates = configRuns.map(r => (r.result || {}).pass_rate || 0);
+            const avgRate = rates.reduce((a, b) => a + b, 0) / rates.length;
+            const avgPrClass = avgRate >= 0.8 ? "benchmark-delta-positive" : avgRate < 0.5 ? "benchmark-delta-negative" : "";
+            html += '<tr class="benchmark-row-avg ' + rowClass + '">';
+            html += "<td>" + configLabel + "</td>";
+            html += "<td>Avg</td>";
+            html += '<td class="' + avgPrClass + '">' + (avgRate * 100).toFixed(0) + "%</td>";
+            if (hasTime) {
+              const times = configRuns.map(r => (r.result || {}).time_seconds).filter(t => t != null);
+              html += "<td>" + (times.length ? (times.reduce((a, b) => a + b, 0) / times.length).toFixed(1) : "—") + "</td>";
+            }
+            if (hasErrors) html += "<td></td>";
+            html += "</tr>";
+          }
+          html += "</tbody></table>";
+
+          // Per-assertion detail for this eval
+          const runsWithExpectations = {};
+          for (const config of configGroups) {
+            runsWithExpectations[config] = evalRuns.filter(r => r.configuration === config && r.expectations && r.expectations.length > 0);
+          }
+          const hasAnyExpectations = Object.values(runsWithExpectations).some(runs => runs.length > 0);
+          if (hasAnyExpectations) {
+            // Collect all unique assertion texts across all configs
+            const allAssertions = [];
+            const seen = new Set();
+            for (const config of configGroups) {
+              for (const run of runsWithExpectations[config]) {
+                for (const exp of (run.expectations || [])) {
+                  if (!seen.has(exp.text)) {
+                    seen.add(exp.text);
+                    allAssertions.push(exp.text);
+                  }
+                }
+              }
+            }
+
+            html += '<table class="benchmark-table" style="margin-top: 0.5rem;">';
+            html += "<thead><tr><th>Assertion</th>";
+            for (const config of configGroups) {
+              const label = config.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+              html += "<th>" + escapeHtml(label) + "</th>";
+            }
+            html += "</tr></thead><tbody>";
+
+            for (const assertionText of allAssertions) {
+              html += "<tr><td>" + escapeHtml(assertionText) + "</td>";
+
+              for (const config of configGroups) {
+                html += "<td>";
+                for (const run of runsWithExpectations[config]) {
+                  const exp = (run.expectations || []).find(e => e.text === assertionText);
+                  if (exp) {
+                    const cls = exp.passed ? "benchmark-delta-positive" : "benchmark-delta-negative";
+                    const icon = exp.passed ? "\u2713" : "\u2717";
+                    html += '<span class="' + cls + '" title="Run ' + escapeHtml(run.run_number) + ': ' + escapeHtml(exp.evidence || "") + '">' + icon + "</span> ";
+                  } else {
+                    html += "— ";
+                  }
+                }
+                html += "</td>";
+              }
+              html += "</tr>";
+            }
+            html += "</tbody></table>";
+          }
+        }
+      }
+
+      // Notes
+      if (notes.length > 0) {
+        html += '<div class="benchmark-notes">';
+        html += "<h3>Analysis Notes</h3>";
+        html += "<ul>";
+        for (const note of notes) {
+          html += "<li>" + escapeHtml(note) + "</li>";
+        }
+        html += "</ul></div>";
+      }
+
+      container.innerHTML = html;
+    }
+
+    // ---- Start ----
+    init();
+    renderBenchmark();
+  </script>
+</body>
+</html>

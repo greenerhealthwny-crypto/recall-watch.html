@@ -1,0 +1,35 @@
+{
+ "expectations": [
+  {
+   "text": "Sets up the list categories (projects, next actions, waiting for, calendar, someday/maybe, reference)",
+   "passed": true,
+   "evidence": "Step 3 'Organize (the seven lists, with hard edges)' sets up all seven book categories exactly as SKILL.md lists them: 1 Projects list, 2 Project support material, 3 Calendar, 4 Next Actions lists (by context), 5 Waiting For, 6 Reference material, 7 Someday/Maybe, each with flipping examples; also the tickler with '43 folders: 31 daily plus 12 monthly' (matches SKILL.md)."
+  },
+  {
+   "text": "Uses contexts (e.g. @car, @phone, @computer)",
+   "passed": true,
+   "evidence": "Step 3b context table: '@phone (anywhere)', '@computer', '@garage / workshop', '@errands / sourcing', '@pickup-meetup', '@partner (agenda)', '@home', '@work / @office', with example actions; ties contexts to the four-criteria model in the correct order 'context, time available, energy available, then priority'."
+  },
+  {
+   "text": "Runs natural planning on a project (purpose, outcome, brainstorm, organize, next actions)",
+   "passed": true,
+   "evidence": "Step 4 runs 'FLIP: First 10 items sold' through all five phases with the book's names: '1. Purpose and principles (why?)', '2. Outcome visioning', '3. Brainstorming', '4. Organizing (components, order, priorities)', '5. Next actions (the very next physical step, and who owns it)', with concrete content in each; matches SKILL.md."
+  },
+  {
+   "text": "Gives a Weekly Review checklist (get clear, get current, get creative)",
+   "passed": true,
+   "evidence": "Step 5 checklist under GET CLEAR (collect loose papers and materials; get 'in' to zero; empty your head), GET CURRENT (next actions lists, previous calendar, upcoming calendar, Waiting For, Projects list and larger outcomes, relevant checklists), GET CREATIVE (review Someday/Maybe; 'Be creative and courageous') - item-for-item match with SKILL.md."
+  },
+  {
+   "text": "Applies the two-minute rule and/or clarifying questions",
+   "passed": true,
+   "evidence": "Step 2 gives the clarifying questions 'What is it?' / 'Is it actionable?' with the No branch (trash, incubate, reference) and Yes branch (outcome, project, next action), and quotes the two-minute rule verbatim 'If an action will take less than two minutes, it should be done at the moment it's defined.' plus do/delegate/defer and a worked table of flipper inbox items."
+  }
+ ],
+ "summary": {
+  "passed": 5,
+  "failed": 0,
+  "total": 5,
+  "pass_rate": 1.0
+ }
+}

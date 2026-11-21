@@ -1,0 +1,223 @@
+{
+  "metadata": {
+    "skill_name": "getting-things-done",
+    "skill_path": "<path/to/skill>",
+    "executor_model": "<model-name>",
+    "analyzer_model": "<model-name>",
+    "timestamp": "2026-11-21T22:01:10Z",
+    "evals_run": [
+      1,
+      2
+    ],
+    "runs_per_configuration": 1
+  },
+  "runs": [
+    {
+      "eval_id": 1,
+      "eval_name": "adv-setup",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Sets up the list categories (projects, next actions, waiting for, calendar, someday/maybe, reference)",
+          "passed": true,
+          "evidence": "Step 3 'Organize (the seven lists, with hard edges)' sets up all seven book categories exactly as SKILL.md lists them: 1 Projects list, 2 Project support material, 3 Calendar, 4 Next Actions lists (by context), 5 Waiting For, 6 Reference material, 7 Someday/Maybe, each with flipping examples; also the tickler with '43 folders: 31 daily plus 12 monthly' (matches SKILL.md)."
+        },
+        {
+          "text": "Uses contexts (e.g. @car, @phone, @computer)",
+          "passed": true,
+          "evidence": "Step 3b context table: '@phone (anywhere)', '@computer', '@garage / workshop', '@errands / sourcing', '@pickup-meetup', '@partner (agenda)', '@home', '@work / @office', with example actions; ties contexts to the four-criteria model in the correct order 'context, time available, energy available, then priority'."
+        },
+        {
+          "text": "Runs natural planning on a project (purpose, outcome, brainstorm, organize, next actions)",
+          "passed": true,
+          "evidence": "Step 4 runs 'FLIP: First 10 items sold' through all five phases with the book's names: '1. Purpose and principles (why?)', '2. Outcome visioning', '3. Brainstorming', '4. Organizing (components, order, priorities)', '5. Next actions (the very next physical step, and who owns it)', with concrete content in each; matches SKILL.md."
+        },
+        {
+          "text": "Gives a Weekly Review checklist (get clear, get current, get creative)",
+          "passed": true,
+          "evidence": "Step 5 checklist under GET CLEAR (collect loose papers and materials; get 'in' to zero; empty your head), GET CURRENT (next actions lists, previous calendar, upcoming calendar, Waiting For, Projects list and larger outcomes, relevant checklists), GET CREATIVE (review Someday/Maybe; 'Be creative and courageous') - item-for-item match with SKILL.md."
+        },
+        {
+          "text": "Applies the two-minute rule and/or clarifying questions",
+          "passed": true,
+          "evidence": "Step 2 gives the clarifying questions 'What is it?' / 'Is it actionable?' with the No branch (trash, incubate, reference) and Yes branch (outcome, project, next action), and quotes the two-minute rule verbatim 'If an action will take less than two minutes, it should be done at the moment it's defined.' plus do/delegate/defer and a worked table of flipper inbox items."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "adv-horizons",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Names the horizons from Ground/runway through Horizon 5 (purpose/principles)",
+          "passed": true,
+          "evidence": "Table and sections name all six with the book's labels: '5 Purpose and principles', '4 Vision', '3 Goals', '2 Areas of focus and accountabilities', '1 Current projects', 'Ground Current actions'; exactly matches SKILL.md's six-level model."
+        },
+        {
+          "text": "Places the 2-year goal at the right horizon (vision, ~3-5 years, or goals 1-2 years)",
+          "passed": true,
+          "evidence": "'It is a Horizon 3 goal, possibly serving a Horizon 4 vision', and under Horizon 3 (1-2 years): 'This is where your \"quit in 2 years\" belongs.' Also correctly argues it is not a project using the book's quoted definition 'any desired result that can be accomplished within a year that requires more than one action step'."
+        },
+        {
+          "text": "Gives concrete content at each horizon",
+          "passed": true,
+          "evidence": "Each horizon has specific content: H5 purpose statement and four principles; H4 a present-tense 2030 vision; H3 central goal plus six readiness criteria and 12/18-month go/no-go checkpoints; H2 business and life areas; H1 a table of six outcome-phrased projects plus Someday/Maybe; Ground a table of next actions with contexts."
+        },
+        {
+          "text": "Connects horizons to next actions",
+          "passed": true,
+          "evidence": "Ground section: 'Every active project needs at least one next action' with a table mapping each H1 project to a next action and context (e.g. 'Find my employment agreement in email and read the IP section' @computer); projects are tied to goals/areas in the 'Serves goal / area' column."
+        },
+        {
+          "text": "Mentions reviewing higher horizons periodically",
+          "passed": true,
+          "evidence": "'Keeping the horizons alive: review rhythm' table: Ground/H1 weekly, H2 monthly, H3 quarterly, H4-5 yearly or at big decisions; plus a Weekly Review summary (get clear/current/creative) matching SKILL.md."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 1,
+      "eval_name": "adv-setup",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Sets up the list categories (projects, next actions, waiting for, calendar, someday/maybe, reference)",
+          "passed": true,
+          "evidence": "Section 3 'Core lists' sets up Projects (2), Next Actions by context (3), Waiting For (4), Calendar 'hard landscape only' (5), Someday/Maybe (6), plus a separate 'Reference' subsection (inventory tracker, pricing notes, templates). All six named categories present. Note: its numbered 'core lists' add Inbox and Agendas and omit project support material, so it is not the book's seven-category set, but the assertion's categories are all covered."
+        },
+        {
+          "text": "Uses contexts (e.g. @car, @phone, @computer)",
+          "passed": true,
+          "evidence": "Section 4 context table: '@Phone (5 min)', '@Computer', '@Garage / Workspace', '@Errands / Out', '@Sourcing trip', '@Agenda: Spouse', plus a 'Low energy (tag)', with concrete example actions."
+        },
+        {
+          "text": "Runs natural planning on a project (purpose, outcome, brainstorm, organize, next actions)",
+          "passed": true,
+          "evidence": "Section 5 runs the dresser flip project through '1. Purpose and principles', '2. Outcome / vision', '3. Brainstorm', '4. Organize (sequence and group)' with phases A-D, '5. Next actions (only the very next step for each open path)'; consistent with SKILL.md's five phases."
+        },
+        {
+          "text": "Gives a Weekly Review checklist (get clear, get current, get creative)",
+          "passed": true,
+          "evidence": "Section 7 checklist with 'Get Clear' (collect loose items, empty inbox tray, process inboxes to zero, mind sweep), 'Get Current' (past and next calendar, Next Actions, Waiting For, Projects, Agendas), 'Get Creative' (review Someday/Maybe, new ideas). Matches the book's three-part structure; adds non-book items (e.g. 'Pick the 1-3 outcomes'), but the core is correct."
+        },
+        {
+          "text": "Applies the two-minute rule and/or clarifying questions",
+          "passed": true,
+          "evidence": "Ground rule 3: 'Two-minute rule, adjusted for buyers. If replying to a buyer takes under 2 minutes and you're in a flipping context, do it now. Otherwise capture it and batch it.' Applies the rule (explicitly flagged as an adaptation, not attributed to the book). Weaker than the book's 'done at the moment it's defined' and the clarifying questions (What is it? Is it actionable?) are never stated, but the assertion's 'and/or' is met."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "adv-horizons",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Names the horizons from Ground/runway through Horizon 5 (purpose/principles)",
+          "passed": true,
+          "evidence": "Headings name all six: 'Horizon 5 (50,000 ft): Purpose and Principles', 'Horizon 4 (40,000 ft): Vision', 'Horizon 3 (30,000 ft): 1-2 Year Goals', 'Horizon 2 (20,000 ft): Areas of Focus and Responsibility', 'Horizon 1 (10,000 ft): Current Projects', 'Ground (Runway): Next Actions and Calendar'. Order and content match SKILL.md (altitude labels are Allen's older metaphor; 'Responsibility' vs 'accountabilities' is a minor wording difference)."
+        },
+        {
+          "text": "Places the 2-year goal at the right horizon (vision, ~3-5 years, or goals 1-2 years)",
+          "passed": true,
+          "evidence": "Horizon 3: 'This is where your 2-year deadline lives', turned into a measurable 'Quit Trigger'; Horizon 4 framed as 3-5 years beyond it. Correct placement."
+        },
+        {
+          "text": "Gives concrete content at each horizon",
+          "passed": true,
+          "evidence": "Concrete content at every level: H5 draft purpose and four principles; H4 present-tense vision with business/lifestyle/financial/personal elements; H3 quit-trigger conditions and a milestone table by month; H2 day-job, business and life areas; H1 ten projects plus Someday/Maybe; Ground next actions by context and calendar items."
+        },
+        {
+          "text": "Connects horizons to next actions",
+          "passed": true,
+          "evidence": "Ground section: 'Each active project gets one concrete next action, sorted by context' with each action tagged to its project (e.g. 'Draft a list of 20 people who match my target customer (Validate idea)'); plus the 'why test' chain from 'Text Sarah...' (Runway) up to Purpose."
+        },
+        {
+          "text": "Mentions reviewing higher horizons periodically",
+          "passed": true,
+          "evidence": "'Review rhythm' table: Next Actions daily, Projects weekly (Weekly Review), Areas weekly-monthly, Goals monthly+quarterly, Vision quarterly, Purpose yearly; calendar also schedules quarterly reviews and month-12/18 checkpoints."
+        }
+      ],
+      "notes": []
+    }
+  ],
+  "run_summary": {
+    "with_skill": {
+      "pass_rate": {
+        "mean": 1.0,
+        "stddev": 0.0,
+        "min": 1.0,
+        "max": 1.0
+      },
+      "time_seconds": null,
+      "tokens": null
+    },
+    "without_skill": {
+      "pass_rate": {
+        "mean": 1.0,
+        "stddev": 0.0,
+        "min": 1.0,
+        "max": 1.0
+      },
+      "time_seconds": null,
+      "tokens": null
+    },
+    "delta": {
+      "pass_rate": "+0.00",
+      "time_seconds": null,
+      "tokens": null
+    }
+  },
+  "notes": [
+    "Time recorded for 0 of 2 with_skill runs, 0 of 2 without_skill runs, so there is no time delta.",
+    "Token count recorded for 0 of 2 with_skill runs, 0 of 2 without_skill runs, so there is no token count delta."
+  ]
+}

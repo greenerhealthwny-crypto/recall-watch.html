@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eval Review</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&family=Lora:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js" integrity="sha384-EnyY0/GSHQGSxSgMwaIPzSESbqoOLSexfnSMN2AP+39Ckmn92stwABZynq1JyzdT" crossorigin="anonymous"></script>
+  <style>
+    :root {
+      --bg: #faf9f5;
+      --surface: #ffffff;
+      --border: #e8e6dc;
+      --text: #141413;
+      --text-muted: #b0aea5;
+      --accent: #d97757;
+      --accent-hover: #c4613f;
+      --green: #788c5d;
+      --green-bg: #eef2e8;
+      --red: #c44;
+      --red-bg: #fceaea;
+      --header-bg: #141413;
+      --header-text: #faf9f5;
+      --radius: 6px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Lora', Georgia, serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ---- Header ---- */
+    .header {
+      background: var(--header-bg);
+      color: var(--header-text);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .header h1 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+    .header .instructions {
+      font-size: 0.8rem;
+      opacity: 0.7;
+      margin-top: 0.25rem;
+    }
+    .header .progress {
+      font-size: 0.875rem;
+      opacity: 0.8;
+      text-align: right;
+    }
+
+    /* ---- Main content ---- */
+    .main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.5rem 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    /* ---- Sections ---- */
+    .section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      flex-shrink: 0;
+    }
+    .section-header {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.75rem 1rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+    }
+    .section-body {
+      padding: 1rem;
+    }
+
+    /* ---- Config badge ---- */
+    .config-badge {
+      display: inline-block;
+      padding: 0.2rem 0.625rem;
+      border-radius: 9999px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      margin-left: 0.75rem;
+      vertical-align: middle;
+    }
+    .config-badge.config-primary {
+      background: rgba(33, 150, 243, 0.12);
+      color: #1976d2;
+    }
+    .config-badge.config-baseline {
+      background: rgba(255, 193, 7, 0.15);
+      color: #f57f17;
+    }
+
+    /* ---- Prompt ---- */
+    .prompt-text {
+      white-space: pre-wrap;
+      font-size: 0.9375rem;
+      line-height: 1.6;
+    }
+
+    /* ---- Outputs ---- */
+    .output-file {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .output-file + .output-file {
+      margin-top: 1rem;
+    }
+    .output-file-header {
+      padding: 0.5rem 0.75rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .output-file-header .dl-btn {
+      font-size: 0.7rem;
+      color: var(--accent);
+      text-decoration: none;
+      cursor: pointer;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-weight: 500;
+      opacity: 0.8;
+    }
+    .output-file-header .dl-btn:hover {
+      opacity: 1;
+      text-decoration: underline;
+    }
+    .output-file-content {
+      padding: 0.75rem;
+      overflow-x: auto;
+    }
+    .output-file-content pre {
+      font-size: 0.8125rem;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+    }
+    .output-file-content img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 4px;
+    }
+    .output-file-content iframe {
+      width: 100%;
+      height: 600px;
+      border: none;
+    }
+    .output-file-content table {
+      border-collapse: collapse;
+      font-size: 0.8125rem;
+      width: 100%;
+    }
+    .output-file-content table td,
+    .output-file-content table th {
+      border: 1px solid var(--border);
+      padding: 0.375rem 0.5rem;
+      text-align: left;
+    }
+    .output-file-content table th {
+      background: var(--bg);
+      font-weight: 600;
+    }
+    .output-file-content .download-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 0.875rem;
+      cursor: pointer;
+    }
+    .output-file-content .download-link:hover {
+      background: var(--border);
+    }
+    .empty-state {
+      color: var(--text-muted);
+      font-style: italic;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    /* ---- Feedback ---- */
+    .prev-feedback {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.625rem 0.75rem;
+      margin-top: 0.75rem;
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+    .prev-feedback-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.25rem;
+      color: var(--text-muted);
+    }
+    .feedback-textarea {
+      width: 100%;
+      min-height: 100px;
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 0.9375rem;
+      line-height: 1.5;
+      resize: vertical;
+      color: var(--text);
+    }
+    .feedback-textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    .feedback-status {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.5rem;
+      min-height: 1.1em;
+    }
+
+    /* ---- Grades (collapsible) ---- */
+    .grades-toggle {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+    }
+    .grades-toggle:hover {
+      color: var(--accent);
+    }
+    .grades-toggle .arrow {
+      margin-right: 0.5rem;
+      transition: transform 0.15s;
+      font-size: 0.75rem;
+    }
+    .grades-toggle .arrow.open {
+      transform: rotate(90deg);
+    }
+    .grades-content {
+      display: none;
+      margin-top: 0.75rem;
+    }
+    .grades-content.open {
+      display: block;
+    }
+    .grades-summary {
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .grade-badge {
+      display: inline-block;
+      padding: 0.125rem 0.5rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .grade-pass { background: var(--green-bg); color: var(--green); }
+    .grade-fail { background: var(--red-bg); color: var(--red); }
+    .assertion-list {
+      list-style: none;
+    }
+    .assertion-item {
+      padding: 0.625rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.8125rem;
+    }
+    .assertion-item:last-child { border-bottom: none; }
+    .assertion-status {
+      font-weight: 600;
+      margin-right: 0.5rem;
+    }
+    .assertion-status.pass { color: var(--green); }
+    .assertion-status.fail { color: var(--red); }
+    .assertion-evidence {
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      margin-top: 0.25rem;
+      padding-left: 1.5rem;
+    }
+
+    /* ---- View tabs ---- */
+    .view-tabs {
+      display: flex;
+      gap: 0;
+      padding: 0 2rem;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .view-tab {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.625rem 1.25rem;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      background: none;
+      color: var(--text-muted);
+      border-bottom: 2px solid transparent;
+      transition: all 0.15s;
+    }
+    .view-tab:hover { color: var(--text); }
+    .view-tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+    .view-panel { display: none; }
+    .view-panel.active { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
+
+    /* ---- Benchmark view ---- */
+    .benchmark-view {
+      padding: 1.5rem 2rem;
+      overflow-y: auto;
+      flex: 1;
+    }
+    .benchmark-table {
+      border-collapse: collapse;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 0.8125rem;
+      width: 100%;
+      margin-bottom: 1.5rem;
+    }
+    .benchmark-table th, .benchmark-table td {
+      padding: 0.625rem 0.75rem;
+      text-align: left;
+      border: 1px solid var(--border);
+    }
+    .benchmark-table th {
+      font-family: 'Poppins', sans-serif;
+      background: var(--header-bg);
+      color: var(--header-text);
+      font-weight: 500;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .benchmark-table tr:hover { background: var(--bg); }
+    .benchmark-table tr.benchmark-row-with { background: rgba(33, 150, 243, 0.06); }
+    .benchmark-table tr.benchmark-row-without { background: rgba(255, 193, 7, 0.06); }
+    .benchmark-table tr.benchmark-row-with:hover { background: rgba(33, 150, 243, 0.12); }
+    .benchmark-table tr.benchmark-row-without:hover { background: rgba(255, 193, 7, 0.12); }
+    .benchmark-table tr.benchmark-row-avg { font-weight: 600; border-top: 2px solid var(--border); }
+    .benchmark-table tr.benchmark-row-avg.benchmark-row-with { background: rgba(33, 150, 243, 0.12); }
+    .benchmark-table tr.benchmark-row-avg.benchmark-row-without { background: rgba(255, 193, 7, 0.12); }
+    .benchmark-delta-positive { color: var(--green); font-weight: 600; }
+    .benchmark-delta-negative { color: var(--red); font-weight: 600; }
+    .benchmark-notes {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem;
+    }
+    .benchmark-notes h3 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+    }
+    .benchmark-notes ul {
+      list-style: disc;
+      padding-left: 1.25rem;
+    }
+    .benchmark-notes li {
+      font-size: 0.8125rem;
+      line-height: 1.6;
+      margin-bottom: 0.375rem;
+    }
+    .benchmark-empty {
+      color: var(--text-muted);
+      font-style: italic;
+      text-align: center;
+      padding: 3rem;
+    }
+
+    /* ---- Navigation ---- */
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+      flex-shrink: 0;
+    }
+    .nav-btn {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.5rem 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text);
+      transition: all 0.15s;
+    }
+    .nav-btn:hover:not(:disabled) {
+      background: var(--bg);
+      border-color: var(--text-muted);
+    }
+    .nav-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    .done-btn {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.5rem 1.5rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: all 0.15s;
+    }
+    .done-btn:hover {
+      background: var(--bg);
+      border-color: var(--text-muted);
+    }
+    .done-btn.ready {
+      border: none;
+      background: var(--accent);
+      color: white;
+      font-weight: 600;
+    }
+    .done-btn.ready:hover {
+      background: var(--accent-hover);
+    }
+    /* ---- Done overlay ---- */
+    .done-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 100;
+      justify-content: center;
+      align-items: center;
+    }
+    .done-overlay.visible {
+      display: flex;
+    }
+    .done-card {
+      background: var(--surface);
+      border-radius: 12px;
+      padding: 2rem 3rem;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      max-width: 500px;
+    }
+    .done-card h2 {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .done-card p {
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
+    }
+    .done-card .btn-row {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+    }
+    .done-card button {
+      padding: 0.5rem 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 0.875rem;
+    }
+    .done-card button:hover {
+      background: var(--bg);
+    }
+    /* ---- Toast ---- */
+    .toast {
+      position: fixed;
+      bottom: 5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--header-bg);
+      color: var(--header-text);
+      padding: 0.625rem 1.25rem;
+      border-radius: var(--radius);
+      font-size: 0.875rem;
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+      z-index: 200;
+    }
+    .toast.visible {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <div id="app" style="height:100vh; display:flex; flex-direction:column;">
+    <div class="header">
+      <div>
+        <h1>Eval Review: <span id="skill-name"></span></h1>
+        <div class="instructions">Review each output and leave feedback below. Navigate with arrow keys or buttons. When done, copy feedback and paste into Claude Code.</div>
+      </div>
+      <div class="progress" id="progress"></div>
+    </div>
+
+    <!-- View tabs (only shown when benchmark data exists) -->
+    <div class="view-tabs" id="view-tabs" style="display:none;">
+      <button class="view-tab active" onclick="switchView('outputs')">Outputs</button>
+      <button class="view-tab" onclick="switchView('benchmark')">Benchmark</button>
+    </div>
+
+    <!-- Outputs panel (qualitative review) -->
+    <div class="view-panel active" id="panel-outputs">
+    <div class="main">
+      <!-- Prompt -->
+      <div class="section">
+        <div class="section-header">Prompt <span class="config-badge" id="config-badge" style="display:none;"></span></div>
+        <div class="section-body">
+          <div class="prompt-text" id="prompt-text"></div>
+        </div>
+      </div>
+
+      <!-- Outputs -->
+      <div class="section">
+        <div class="section-header">Output</div>
+        <div class="section-body" id="outputs-body">
+          <div class="empty-state">No output files found</div>
+        </div>
+      </div>
+
+      <!-- Previous Output (collapsible) -->
+      <div class="section" id="prev-outputs-section" style="display:none;">
+        <div class="section-header">
+          <div class="grades-toggle" onclick="togglePrevOutputs()">
+            <span class="arrow" id="prev-outputs-arrow">&#9654;</span>
+            Previous Output
+          </div>
+        </div>
+        <div class="grades-content" id="prev-outputs-content"></div>
+      </div>
+
+      <!-- Grades (collapsible) -->
+      <div class="section" id="grades-section" style="display:none;">
+        <div class="section-header">
+          <div class="grades-toggle" onclick="toggleGrades()">
+            <span class="arrow" id="grades-arrow">&#9654;</span>
+            Formal Grades
+          </div>
+        </div>
+        <div class="grades-content" id="grades-content"></div>
+      </div>
+
+      <!-- Feedback -->
+      <div class="section">
+        <div class="section-header">Your Feedback</div>
+        <div class="section-body">
+          <textarea
+            class="feedback-textarea"
+            id="feedback"
+            placeholder="What do you think of this output? Any issues, suggestions, or things that look great?"
+          ></textarea>
+          <div class="feedback-status" id="feedback-status"></div>
+          <div class="prev-feedback" id="prev-feedback" style="display:none;">
+            <div class="prev-feedback-label">Previous feedback</div>
+            <div id="prev-feedback-text"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav" id="outputs-nav">
+      <button class="nav-btn" id="prev-btn" onclick="navigate(-1)">&#8592; Previous</button>
+      <button class="done-btn" id="done-btn" onclick="showDoneDialog()">Submit All Reviews</button>
+      <button class="nav-btn" id="next-btn" onclick="navigate(1)">Next &#8594;</button>
+    </div>
+    </div><!-- end panel-outputs -->
+
+    <!-- Benchmark panel (quantitative stats) -->
+    <div class="view-panel" id="panel-benchmark">
+      <div class="benchmark-view" id="benchmark-content">
+        <div class="benchmark-empty">No benchmark data available. Run a benchmark to see quantitative results here.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Done overlay -->
+  <div class="done-overlay" id="done-overlay">
+    <div class="done-card">
+      <h2>Review Complete</h2>
+      <p>Your feedback has been saved. Go back to your Claude Code session and tell Claude you're done reviewing.</p>
+      <div class="btn-row">
+        <button onclick="closeDoneDialog()">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ---- Embedded data (injected by generate_review.py) ----
+    const EMBEDDED_DATA = {"skill_name": "managing-your-money", "runs": [{"id": "eval-1-adv-budget-with_skill-run-1", "prompt": "I earn $2,400/month, have $3,100 in credit-card debt at 24% APR and no savings. Using the Consumer Reports guide, build a four-step budget and a 12-month plan, and flag anything in the 1989 book that no longer applies.", "eval_id": 1, "outputs": [{"name": "response.md", "type": "text", "content": "# A Four-Step Budget and 12-Month Plan (Consumer Reports *Complete Guide to Managing Your Money*, 1989)\n\n**Your situation:** $2,400 a month in income, $3,100 on a credit card at 24% APR, and no savings.\n\n**Labels used below:**\n- *(book)* means the advice comes from the 1989 Consumer Reports guide.\n- *(std, verify)* means it is current general practice that you should confirm with an official source.\n- All dollar splits are worked examples. Replace them with your own numbers from Step 1.\n\n**One assumption to check:** I've treated $2,400 as **take-home pay** (after tax), because that is the money you actually budget. If $2,400 is your **gross** (pre-tax) income, your take-home is lower. In that case, shrink the flexible categories in Step 3 and keep the debt and savings lines as close to the plan as you can.\n\n---\n\n## The book's framework in brief\n\nThe guide splits budgeting into four steps *(book)*:\n\n1. **Cash-flow analysis.** Find out where your money actually went in the past. This is not a budget yet.\n2. **Set budget goals.**\n3. **Allocate resources** to spending categories.\n4. **Year-end review.** Total each category, compare it with the budget, confirm that income (not counting savings) is greater than spending, track progress such as debt repayment, and set next year's goals.\n\nIt adds three supporting habits *(book)*: **budget for the unexpected**, **keep good records**, and **make the budget work** (adjust it rather than abandon it).\n\nTwo of the book's rules matter most for you:\n- **Debt limit:** monthly payments on all debts except a mortgage should not exceed **15% of gross income** *(book)*. On $2,400 that is a **$360 a month** ceiling. Your card is under that today, but at 24% APR it is the most expensive money in your life.\n- **Order of priorities:** build an emergency cushion and get debts under control *before* investing. Don't buy stocks until debt is in check and you have adequate insurance *(book)*.\n\n---\n\n## Step 1: Cash-flow analysis (weeks 1\u20132)\n\nBefore you set any targets, see where the last 2\u20133 months of money went.\n\n1. Pull your bank and card statements for the last 60\u201390 days.\n2. Sort every transaction into a category:\n   - **Fixed:** rent, utilities, phone, insurance, transport, minimum card payment.\n   - **Variable needs:** groceries, gas, household items, medical.\n   - **Wants:** dining out, subscriptions, entertainment, shopping.\n   - **Irregular:** car registration, gifts, annual fees, repairs.\n3. Average each category per month.\n4. Compare total spending with $2,400.\n   - If spending is higher than income, the card balance is probably filling the gap. Fix that first.\n   - If spending is lower, you have found the surplus that pays for this plan.\n5. Find the leaks. The book's banking chapters say to \"recognize your value to the bank\" *(book)*:\n   - Avoid account fees by keeping a minimum balance or switching to a no-fee account or a credit union.\n   - Never use check-cashing stores, which take a high percentage of each check *(book)*.\n\n**Important:** stop adding to the card while you do this. Use a debit card or cash for daily spending.\n\n---\n\n## Step 2: Set budget goals\n\nThese are concrete, measurable 12-month goals in the book's order: cushion first, then debt, then a longer-term emergency fund.\n\n| # | Goal | Target | By |\n|---|---|---|---|\n| 1 | **Starter emergency fund**, so a surprise bill doesn't go back on the card | $600 | End of month 2 |\n| 2 | **Pay off the $3,100 card** (24% APR) | $0 balance | Month 12 |\n| 3 | **Keep building the emergency fund** | About $1,200+ by month 12, then grow it toward 3\u20136 months of essential expenses *(std, verify)* | Year 2 |\n| 4 | **No new card debt.** Pay any new charges in full each month | $0 carried | Ongoing |\n| 5 | **Check your credit report** for errors, free *(std, verify)* | Once | Month 1 |\n\n**Why a starter fund before attacking the debt?** You have no savings. Without a cushion, any car repair or medical bill goes straight back on the card at 24% and undoes your progress. The book's \"budget for the unexpected\" Close-Up *(book)* makes exactly this point.\n\n**About the size of the emergency fund:** the book calls it \"a personal matter\". It quotes some experts suggesting $10,000\u2013$15,000 and others suggesting a number of months of expenses *(book)*. In 1989 dollars that range doesn't fit your income. Use the months-of-expenses approach instead: 3\u20136 months of **essential** expenses is the common guide today *(std, verify)*.\n\n---\n\n## Step 3: Allocate resources (a sample monthly budget)\n\nThis uses the $2,400 take-home figure. Adjust the categories to match what you found in Step 1. The one line to protect is **$400 a month for debt plus savings**.\n\n| Category | Monthly | % of $2,400 |\n|---|---|---|\n| Rent / housing (incl. renter's insurance) | $900 | 37.5% |\n| Utilities + phone + internet | $180 | 7.5% |\n| Groceries / household | $330 | 13.75% |\n| Transportation (gas, transit, car insurance) | $250 | 10.4% |\n| Health (premiums / copays / prescriptions) | $100 | 4.2% |\n| Irregular-expense set-aside (gifts, repairs, annual bills) | $60 | 2.5% |\n| Personal / dining / entertainment / subscriptions | $180 | 7.5% |\n| **Debt payoff + savings (the plan)** | **$400** | **16.7%** |\n| **Total** | **$2,400** | 100% |\n\n**How the $400 is split over the year:**\n- **Months 1\u20132:** $300 to savings and $100 to the card. The $100 should at least meet your minimum payment, so check your statement.\n- **Months 3\u201311:** $340 to the card and $60 to savings.\n- **Month 12:** about $302 to finish the card and the rest (about $98) to savings.\n\nIf housing or other fixed costs are higher than this sample, cut the flexible lines (personal spending and dining) before you cut the $400.\n\n**Make the budget work** *(book)*:\n- **Automate it.** Schedule the card payment and a savings transfer for the day after payday.\n- **Keep the emergency fund at a separate bank** in an FDIC-insured savings or money-market deposit account. Keep it liquid, not in a CD or stocks. The book's own rule is that money you may need quickly belongs where liquidity and safety are high *(book)*.\n- **Keep records** *(book)*: save statements and receipts, and log your spending weekly against the budget.\n\n---\n\n## The 12-month plan\n\nAssumptions: 24% APR is about 2% interest a month on the balance, and nothing new is charged.\n\n| Month | Card payment | Interest charged | Card balance after | Savings deposit | Emergency fund |\n|---|---|---|---|---|---|\n| 1 | $100 | $62 | $3,062 | $300 | $300 |\n| 2 | $100 | $61 | $3,023 | $300 | $600 |\n| 3 | $340 | $60 | $2,744 | $60 | $660 |\n| 4 | $340 | $55 | $2,459 | $60 | $720 |\n| 5 | $340 | $49 | $2,168 | $60 | $780 |\n| 6 | $340 | $43 | $1,871 | $60 | $840 |\n| 7 | $340 | $37 | $1,569 | $60 | $900 |\n| 8 | $340 | $31 | $1,260 | $60 | $960 |\n| 9 | $340 | $25 | $945 | $60 | $1,020 |\n| 10 | $340 | $19 | $624 | $60 | $1,080 |\n| 11 | $340 | $12 | $296 | $60 | $1,140 |\n| 12 | $302 | $6 | **$0** | $98 | **\u2248 $1,238** |\n\n**Result after 12 months:** the card is paid off, total interest is about **$460**, and you have about **$1,240** in emergency savings. From month 13, the full $400 a month goes to savings.\n\n**Why this beats paying the minimum:**\n\n| Monthly payment | Months to pay off | Total interest |\n|---|---|---|\n| $100 | About 49 | About $1,790 |\n| $200 | About 19 | About $650 |\n| $300 | About 12 | About $410 |\n| $360 (your 15% ceiling) | About 10 | About $340 |\n\n**Milestones:**\n- **Month 1:** finish the cash-flow analysis, set up the automatic transfers, open the separate savings account, and pull your free credit reports.\n- **Month 2:** the $600 starter fund is in place. Raise the card payment to $340.\n- **Month 3:** call the card issuer and ask for a lower APR. Expect to be paid for your business *(book)*. A credit union card may also be cheaper *(book)*.\n- **Month 6 (mid-year check):** the card should be below about $1,900. If you're behind, trim wants or put a windfall (tax refund, bonus) toward the card.\n- **Month 9:** the card should be below $1,000.\n- **Month 12:** the card is at $0. Do the year-end review.\n\n**Speed-ups (optional):**\n- **Windfalls:** put a tax refund or extra income on the card, but only after the $600 starter fund is complete.\n- **0% balance transfer** *(std, verify)*: if your credit qualifies, a 0% promotional transfer (usually with a 3\u20135% fee) can save most of the remaining interest. This only works if you pay the balance off within the promotional period and stop charging on the old card.\n- **Credit union personal loan** *(std, verify)*: a fixed loan at a lower rate than 24% can also cut the cost.\n\n**If something goes wrong:**\n- **An unexpected bill:** use the emergency fund, not the card, then rebuild the fund before raising card payments again.\n- **Income drops:** pay at least the minimum on the card and protect the starter fund. Call the issuer early about a hardship plan.\n- **Debt becomes unmanageable:** a nonprofit credit counseling agency (NFCC member) can set up a debt-management plan *(std, verify)*. The book's bankruptcy chapter is not a guide to today's law (see the flags below).\n\n---\n\n## Step 4: Year-end review (month 12)\n\nFollow the book's checklist *(book)*:\n\n1. **Total each category** for the year and compare it with the budget. Where did you overspend or underspend?\n2. **Compare with your Step 1 cash-flow figures.** How much did each category change?\n3. **Confirm that income (not counting savings) was greater than spending.** If it wasn't, find out which category caused it.\n4. **Graph your progress.** Chart the card balance falling from $3,100 to $0 and the emergency fund rising to about $1,240. The book recommends tracking progress such as debt repayment visually.\n5. **Set next year's goals.** For example:\n   - Grow the emergency fund toward 3\u20136 months of essential expenses *(std, verify)*.\n   - Start retirement saving. The book says retirement planning should begin with your first job *(book)*. Take any employer 401(k) match first, then consider an IRA (current limits are on IRS.gov *(std, verify)*).\n   - Review your insurance: health, renter's, auto liability, and disability if you depend on your paycheck *(book)*.\n   - Only after all of this, invest the surplus. Until it reaches about $10,000\u2013$20,000, the book suggests short-term CDs, Treasury bills or a low-minimum fund *(book)*. Today a low-cost index fund fills the same role *(std, verify)*.\n\n---\n\n## What in the 1989 book no longer applies\n\n| 1989 book says | What's changed *(std, verify)* | Effect on your plan |\n|---|---|---|\n| Consumer-interest deductions were being phased out under the 1986 Tax Reform Act (10% deductible in 1990, then zero). | The deduction is completely gone. Credit-card interest has no tax benefit at all. | The book's advice to pay cards in full is even stronger today. |\n| Emergency fund of \"$10,000\u2013$15,000\" according to some experts. | In 1989 dollars this doesn't fit most incomes. The usual guide today is 3\u20136 months of **essential** expenses. | Start with $600, then build toward months of expenses. |\n| FDIC/FSLIC insured deposits up to **$100,000**. | FSLIC no longer exists. FDIC (banks) and NCUA (credit unions) insure **$250,000** per depositor, per bank, per ownership category. | Your emergency fund is fully insured at any FDIC or NCUA institution. |\n| You could see your credit file (with a fee, waived if you were denied credit in the last 30 days). The book was skeptical of paid \"credit credential\" services. | Free weekly reports from all three bureaus at **annualcreditreport.com**, FCRA dispute rights and free credit freezes. The skepticism about paid monitoring still holds. | Check your reports for free in month 1. Don't pay for monitoring. |\n| Card fraud protections existed but were limited. | Federal law caps liability for unauthorized credit-card charges at $50, and most issuers charge $0. Debit-card liability depends on how quickly you report the loss (EFTA). | Report a lost or stolen debit card immediately. |\n| Bankruptcy: Chapter 7 once every 7 years, Chapter 13 plans of about 3 years. | The **2005 BAPCPA** added a means test, mandatory credit counseling, and an 8-year wait between Chapter 7 discharges. Chapter 13 plans run 3\u20135 years. | With $3,100 of debt, bankruptcy isn't the tool. Use this plan or credit counseling. |\n| IRA contributions of up to **$2,000 a year**. No Roth IRA. | The limits are much higher and indexed. Roth IRAs have existed since 1998, and 401(k) matches are common. Check IRS.gov. | Relevant in year 2 when you start retirement saving. |\n| Investing via load funds, brokers and dividend reinvestment plans. | Low-cost index funds and ETFs, commission-free trading and much lower expense ratios are now standard. | Applies later, once you are debt-free and have an emergency fund. |\n| Balance transfers, 0% promotional APRs and budgeting apps aren't covered. | They are widely available today. | Optional ways to speed up the plan (see above). |\n| Financial planners: \"Few people need a financial planner.\" | Still sound. If you do hire one, choose a fee-only **fiduciary** and check them on FINRA BrokerCheck or the SEC's IAPD. | You don't need a paid planner for this plan. |\n\n**What still holds:** the four budgeting steps, budgeting for the unexpected, the 15%-of-gross ceiling on non-mortgage debt, emergency fund before investing, paying cards in full, and reading the fine print. These principles don't depend on 1989 figures.\n\n---\n\n*This is educational guidance based on the 1989 Consumer Reports guide and current general practice. It is not individualized financial advice. Confirm current figures with official sources (CFPB, FDIC, IRS, annualcreditreport.com) or a nonprofit credit counselor.*\n"}], "grading": {"expectations": [{"text": "Uses the book's four-step budgeting approach", "passed": true, "evidence": "Lists and structures the answer on '1. Cash-flow analysis ... 2. Set budget goals. 3. Allocate resources ... 4. Year-end review' with sections 'Step 1: Cash-flow analysis' through 'Step 4: Year-end review'; matches SKILL.md principle 1 exactly, including the supporting habits (budget for the unexpected, keep records, make the budget work)."}, {"text": "Prioritizes an emergency fund and high-interest debt with numbers", "passed": true, "evidence": "Goals table: '$600' starter emergency fund by month 2, 'Pay off the $3,100 card (24% APR)' by month 12, then 3-6 months of essential expenses; $400/month split $300 savings/$100 card then $340 card/$60 savings. Book's emergency-fund 'personal matter' / $10,000-$15,000 quote and the 15%-of-gross ($360) debt ceiling match SKILL.md."}, {"text": "Gives a month-by-month or phased 12-month plan", "passed": true, "evidence": "Month-by-month table for months 1-12 with payment, interest, balance and emergency fund (card $0 and fund ~$1,238 at month 12), plus milestones at months 1, 2, 3, 6, 9, 12."}, {"text": "Flags at least one dated 1989 figure or rule (e.g. tax or IRA limits) as changed", "passed": true, "evidence": "'What in the 1989 book no longer applies' table flags consumer-interest deduction phase-out (10% in 1990, then zero), FDIC/FSLIC $100,000 -> $250,000, IRA $2,000/no Roth, 2005 BAPCPA; all consistent with SKILL.md and references."}, {"text": "Mentions protecting the credit rating/report", "passed": true, "evidence": "Goal 5 'Check your credit report for errors, free' in month 1; flags table row on free reports at annualcreditreport.com, FCRA disputes, freezes, and the book's skepticism of paid 'credit credential' services, matching banking-credit.md \u00a72."}], "summary": {"passed": 5, "failed": 0, "total": 5, "pass_rate": 1.0}}}, {"id": "eval-1-adv-budget-without_skill-run-1", "prompt": "I earn $2,400/month, have $3,100 in credit-card debt at 24% APR and no savings. Using the Consumer Reports guide, build a four-step budget and a 12-month plan, and flag anything in the 1989 book that no longer applies.", "eval_id": 1, "outputs": [{"name": "response.md", "type": "text", "content": "# A Four-Step Budget and 12-Month Plan ($2,400/month, $3,100 card debt at 24%)\n\n**A note on the source first.** I don't have the text of the 1989 Consumer Reports money guide in front of me, so I can't quote its worksheets or page numbers. What follows uses the standard four-step budgeting method that guides of that era taught: (1) find out what comes in, (2) track what goes out, (3) set goals and priorities, (4) build the spending plan and check it each month. Where I describe what \"the book\" says, I mean the general advice those guides gave, not a quotation. Check the details against your copy.\n\n---\n\n## Step 1: What comes in\n\n| Item | Monthly |\n|---|---|\n| Take-home pay | **$2,400** |\n\nUse **net** (after-tax) pay. If $2,400 is your gross, redo the numbers with your actual deposit amount. If your pay is irregular, budget on your lowest typical month.\n\n## Step 2: What goes out (track it for 30 days)\n\nBefore you assign any dollars, write down every expense for one month, or pull the last two or three months of bank and card statements. Sort them into three groups:\n\n- **Fixed:** rent, insurance, phone, minimum debt payments, subscriptions\n- **Variable needs:** groceries, utilities, gas or transit, medicine\n- **Wants:** eating out, entertainment, shopping\n\nThe point of this step is to find out where the money actually goes, not where you think it goes. Most people find $100 to $300 a month they didn't know about.\n\n## Step 3: Set goals, in order\n\n1. **Starter emergency fund: about $600 to $1,000.** With no savings at all, any car repair or medical bill goes straight back on the card at 24%. A small cushion stops that cycle.\n2. **Pay off the $3,100 card balance.** At 24% APR this costs you about **$62 a month in interest** right now. Paying it off is a guaranteed 24% return; nothing else you can safely do with the money comes close.\n3. **Grow the emergency fund to three months of essential expenses** (roughly $4,500 to $5,500 at your income).\n4. **Start retirement saving**, especially if an employer match is available. If there is a match, put in at least enough to get it even while paying down the card.\n\n## Step 4: The spending plan\n\nA sample plan for $2,400 take-home. Your own numbers from Step 2 replace these.\n\n| Category | Amount | % |\n|---|---|---|\n| Housing (rent + renter's insurance) | $850 | 35% |\n| Utilities, phone, internet | $170 | 7% |\n| Groceries | $300 | 13% |\n| Transportation (gas, insurance, transit) | $230 | 10% |\n| Health (copays, prescriptions) | $60 | 3% |\n| Personal / household / clothing | $90 | 4% |\n| Fun money (eating out, entertainment) | $100 | 4% |\n| Irregular costs fund (gifts, car maintenance, annual bills) | $50 | 2% |\n| **Debt + savings (\"the $400\")** | **$400** | **17%** |\n| **Total** | **$2,400** | **100%** |\n\nThe key line is the **$400 a month** for debt and savings. If your fixed costs are higher than shown (rent is the usual culprit), cut wants and variable categories first to protect that $400. If you truly can't reach $400, even $250 works; it just takes longer (see the end).\n\nCheck the plan once a month: compare planned vs. actual, adjust categories, and don't treat one bad month as failure.\n\n---\n\n## The 12-Month Plan\n\n**Rules for the year:**\n- Stop using the card for new purchases. Pay with debit or cash.\n- Pay the card on time every month (autopay at least the minimum).\n- Call the card issuer and ask for a lower rate. A good payment history sometimes gets one.\n\n**Months 1 to 3: build the starter fund and keep paying down the card**\n- $200/month to a separate savings account (ideally at a different bank so it's not easy to spend)\n- $200/month to the card\n\n**Months 4 to 10: attack the card**\n- $400/month to the card\n- Starter fund stays at $600 and is used only for real emergencies (refill it if you dip into it)\n\n**Months 11 to 12: card gone, savings take over**\n- The last ~$104 clears the card in month 11\n- Everything left goes to the emergency fund\n\n### Month-by-month projection (24% APR = 2% per month)\n\n| Month | Interest | Paid to card | Card balance | Savings |\n|---|---|---|---|---|\n| 1 | $62 | $200 | $2,962 | $200 |\n| 2 | $59 | $200 | $2,821 | $400 |\n| 3 | $56 | $200 | $2,678 | $600 |\n| 4 | $54 | $400 | $2,331 | $600 |\n| 5 | $47 | $400 | $1,978 | $600 |\n| 6 | $40 | $400 | $1,617 | $600 |\n| 7 | $32 | $400 | $1,250 | $600 |\n| 8 | $25 | $400 | $875 | $600 |\n| 9 | $17 | $400 | $492 | $600 |\n| 10 | $10 | $400 | $102 | $600 |\n| 11 | $2 | $104 | **$0** | $896 |\n| 12 | $0 | $0 | $0 | **$1,296** |\n\n**At the end of 12 months:** the card is paid off (in month 11), you've paid about **$344 in total interest**, and you have about **$1,300 in savings**. From month 13 on, the full $400 (plus the $62 you no longer spend on interest) can go to the three-month emergency fund, which you'd reach in roughly another 8 to 10 months, and then to retirement.\n\n**For comparison:** paying only the minimum (often about 2% to 3% of the balance) would take many years and cost well over $2,000 in interest.\n\n**If you can only manage $250 a month total:** use $100 savings / $150 card for three months, then $250 to the card. The card is gone in about 15 to 16 months.\n\n**Consider a balance transfer** if your credit qualifies: a 0% intro card (typically 12 to 21 months, with a 3% to 5% transfer fee, so about $93 to $155 here) would save most of the remaining interest. Only do it if you will stop using the old card and can pay the balance off before the intro rate ends.\n\n---\n\n## What in a 1989 book no longer applies\n\nI can't check the book line by line, but these are the areas where any personal-finance guide from 1989 is out of date:\n\n1. **Interest-rate numbers.** Late-1980s savings accounts and CDs paid roughly 5% to 9%, and money-market funds were often near 8% to 9%. Any examples that assume your savings grow that fast are wrong for today's planning. Online high-yield savings rates move with the Fed rate; check current rates instead of the book's.\n2. **Credit-card interest deductibility.** The Tax Reform Act of 1986 phased out the deduction for consumer interest, ending after 1990. Some 1989 material still mentions it as partly deductible. It isn't anymore.\n3. **Credit reports and scores.** In 1989 there was no free annual credit report and FICO scores (introduced 1989) were not yet widely used by lenders or visible to consumers. Today you can get free reports from all three bureaus at AnnualCreditReport.com, and free scores from many banks and card issuers. The CARD Act of 2009 also added rules on rate increases, payment allocation, and the minimum-payment warning on statements.\n4. **Retirement accounts.** The book predates the Roth IRA (1997), Roth 401(k) (2006), and today's much higher contribution limits. 401(k) plans existed but were less common, and auto-enrollment and target-date funds did not. Contribution limits from 1989 are far too low.\n5. **Index funds and fees.** Low-cost index funds existed but were a niche product. Today, low-cost broad index funds and ETFs with tiny fees are the default advice for most people. Commissions on stock trades, which the book likely treats as a significant cost, are now usually zero.\n6. **Tools.** Paper ledgers and checkbook registers are optional now. Banking apps, automatic transfers, and budgeting apps make Step 2 (tracking) much easier. \"Pay yourself first\" is now best done with an automatic transfer on payday.\n7. **Dollar amounts in general.** Any sample budget, rent, food cost, or \"how much you need\" figure is in 1989 dollars. Prices have roughly tripled since then (about 2.5x to 3x by CPI), so multiply old figures accordingly or ignore them.\n8. **Emergency fund size.** Older guides often said three to six months of expenses as a single goal. Many current advisers recommend a small starter fund first when you have high-interest debt, which is the approach used above.\n9. **New risks the book couldn't cover.** Identity theft, online scams, phishing, buy-now-pay-later loans, and payday-loan apps all need attention today.\n\n**What still holds up:** the core method. Know your income, track your spending, set priorities, write a plan, and review it. Pay off high-interest debt, keep an emergency cushion, and don't spend more than you earn. That advice hasn't aged.\n\n---\n\n*This is general education, not personalized financial advice. If you're struggling with payments, a nonprofit credit counselor (for example, through the National Foundation for Credit Counseling) can help for free or at low cost.*\n"}], "grading": {"expectations": [{"text": "Uses the book's four-step budgeting approach", "passed": false, "evidence": "States it lacks the book and uses 'the standard four-step budgeting method that guides of that era taught: (1) find out what comes in, (2) track what goes out, (3) set goals and priorities, (4) build the spending plan and check it each month'. This does not match the book's steps in SKILL.md (cash-flow analysis, set goals, allocate resources, year-end review); it has no year-end review and invents an income step."}, {"text": "Prioritizes an emergency fund and high-interest debt with numbers", "passed": true, "evidence": "'Starter emergency fund: about $600 to $1,000', 'Pay off the $3,100 card balance. At 24% APR this costs you about $62 a month in interest', then 3 months of expenses (~$4,500-$5,500)."}, {"text": "Gives a month-by-month or phased 12-month plan", "passed": true, "evidence": "Phased plan (Months 1-3, 4-10, 11-12) plus a month-by-month projection table ending with card $0 in month 11 and ~$1,296 savings at month 12."}, {"text": "Flags at least one dated 1989 figure or rule (e.g. tax or IRA limits) as changed", "passed": true, "evidence": "Flags 'Credit-card interest deductibility. The Tax Reform Act of 1986 phased out the deduction for consumer interest' and 'Retirement accounts ... predates the Roth IRA ... Contribution limits from 1989 are far too low'; consistent with SKILL.md, though framed generically ('any personal-finance guide from 1989')."}, {"text": "Mentions protecting the credit rating/report", "passed": true, "evidence": "'Pay the card on time every month (autopay at least the minimum)' and flag 3: 'Today you can get free reports from all three bureaus at AnnualCreditReport.com'. Mentioned, though only as a dated-item note rather than a planned action."}], "summary": {"passed": 4, "failed": 1, "total": 5, "pass_rate": 0.8}}}, {"id": "eval-2-adv-insure-with_skill-run-1", "prompt": "I'm 29, single, renting, own a 2012 car worth $5k and freelance. What insurance do I actually need per this guide, and what's likely a waste?", "eval_id": 2, "outputs": [{"name": "response.md", "type": "text", "content": "# What Insurance You Need: 29, Single, Renting, a $5,000 Car, Freelance\n\nThis is based on the Consumer Reports *Complete Guide to Managing Your Money* (1989), Part IV, Insurance, chapters 12\u201316.\n\n**Labels used below:**\n- *(book)* means the advice comes from the 1989 guide.\n- *(std, verify)* means it is current general practice that you should confirm with your state insurance department, HealthCare.gov or a licensed agent.\n\nThe book's dollar figures and product rules are from 1989. Use its **principles**, not its prices.\n\n## The book's guiding principle\n\nInsure against **catastrophe**, meaning losses you could not pay out of savings. Then **calculate your need** instead of buying what you're sold *(book)*. Before buying any coverage, ask two questions:\n1. Could I cover this loss myself?\n2. What does my existing coverage already pay?\n\nYour situation changes the usual picture in two ways:\n\n| Your situation | What it means |\n|---|---|\n| **Freelance** | You have no employer health plan, no group disability coverage and no workers' comp. The coverage most employees get automatically, you have to buy yourself. |\n| **Single, no dependents, renting, modest car** | Several common products (life insurance, collision coverage, cash-value policies) don't protect anything you actually have at risk. |\n\n---\n\n## What you actually need\n\n### 1. Health insurance (top priority)\n- The book calls health coverage \"protecting your most valuable asset\" *(book)*. One hospital stay can cost more than years of premiums.\n- **What the book says to look for** *(book)*: the out-of-pocket ceiling. The traditional design is 80/20 coinsurance up to a cap, after which the insurer pays 100%. That cap is what limits your worst case.\n- **Where to buy today, as a freelancer** *(std, verify)*:\n  - The ACA marketplace (HealthCare.gov or your state's exchange). Premium tax credits are based on your projected income, which matters if your freelance income varies. Report income changes during the year.\n  - Plans can't exclude pre-existing conditions and must cover essential health benefits.\n  - A **high-deductible plan with an HSA** can suit a healthy 29-year-old. HSA contributions are tax-deductible, and the money carries over from year to year.\n  - Self-employed people can generally deduct their health premiums.\n- **Avoid as substitutes for real coverage** *(std, verify)*: short-term health plans, \"health-sharing ministries\" and fixed-indemnity or discount plans. They are not ACA-compliant and can leave you exposed to exactly the catastrophe you're insuring against.\n\n### 2. Disability income insurance (the gap people miss)\n- **The book's method** *(book)*: before buying, add up the monthly benefits you'd already receive (group plan, Social Security disability, workers' comp).\n- **Your tally:** you have no group plan and no workers' comp. Social Security disability is hard to qualify for and pays little. That means your existing coverage is close to $0.\n- **Why it matters:** your ability to earn is your biggest asset. At 29 you have decades of earnings ahead, and an illness or injury is statistically more likely than an early death.\n- **What to look for** *(std, verify)*:\n  - An individual long-term disability policy replacing roughly 60% of income.\n  - \"Own-occupation\" or a strong definition of disability.\n  - A 90-day elimination period, which keeps premiums down. Your emergency fund covers the wait.\n  - Benefits to age 65 or 67.\n  - Non-cancelable and guaranteed renewable terms.\n  - Premiums are lower while you're young and healthy.\n- Freelancer associations sometimes offer group rates *(std, verify)*.\n\n### 3. Renter's insurance\n- **Separate policies exist for renters** *(book)*. Your landlord's policy covers the building, not your belongings or your liability.\n- **Liability** *(book)*: this covers you if someone is hurt in your home or you accidentally cause damage, and the book's example is your dog biting someone. For a single renter, this is often the most valuable part of the policy.\n- **Replacement-cost contents:** in the book's era it cost renters about 20\u201340% more than actual-cash-value coverage *(book)*. It is usually worth it, because actual cash value pays for your used laptop and couch after depreciation.\n- **Make a household inventory** *(book Close-Up)*: a phone video of each room, saved to the cloud *(std)*.\n- **Freelancer warning** *(std, verify)*:\n  - Standard renter's policies often limit or exclude **business property** (computers, cameras, equipment used for paid work).\n  - They also exclude **business liability**, such as a client tripping in your home office.\n  - Ask for a home-business endorsement or a separate small business policy.\n- **Flood and earthquake** are excluded from standard policies. Buy them separately (flood through NFIP or private insurers) if your area is at risk *(std, verify)*.\n- Renter's insurance is typically inexpensive relative to what it protects *(std, verify)*.\n\n### 4. Auto insurance: carry strong liability, and think about dropping collision\nThe book lists these coverages: liability (bodily injury and property damage), medical payments, no-fault/PIP, uninsured motorist, collision and comprehensive *(book)*.\n\n**Keep and strengthen:**\n- **Liability.** This protects your future income from a lawsuit. State minimums are often low. Many advisers suggest about 100/300/100 (bodily injury per person / per accident / property damage, in $ thousands) or more *(std, verify)*.\n- **Uninsured / underinsured motorist.** This protects you when the other driver can't pay *(book)*.\n- **PIP / medical payments**, as your state requires *(book)*.\n\n**Probably drop: collision, and maybe comprehensive.**\n- Collision pays for damage to *your* car *(book)*. On a 2012 car worth about $5,000, the most it will ever pay is the car's value minus your deductible, for example $5,000 \u2212 $1,000 = $4,000.\n- **Rule of thumb** *(std, verify)*: if the yearly premium for collision and comprehensive is more than about 10% of the car's value (here about $500), or if you could replace the car from savings, drop it or raise the deductible to $1,000.\n- **Exceptions:**\n  - A lender or lease requires collision.\n  - You have no savings to replace the car and depend on it to earn income. In that case keep it with a high deductible until your emergency fund grows.\n- **Comprehensive** (theft, hail, flood, hitting a deer) is usually cheaper. Keep it if your area has high theft or weather risk.\n\n**Freelancer check:**\n- If you drive for work (deliveries, rideshare, carrying client equipment), tell your insurer. A personal policy may deny a claim that happened during business use *(std, verify)*.\n\n**Shop around** *(book)*. Premiums for identical coverage vary widely between insurers. Get at least three quotes, and ask about raising deductibles, bundling with renter's insurance, and safe-driver or low-mileage discounts.\n\n**Watch out for packaged policies** *(book Close-Up)*. Check each coverage line separately, so you aren't paying for extras you don't need.\n\n### 5. Professional liability / E&O (depending on your field)\n- This isn't in the 1989 book. It's current practice *(std, verify)*.\n- If your work involves advice, design, code, health or wellness services, or a client's property, a mistake can lead to a lawsuit. Renter's and auto policies won't cover it.\n- Many client contracts require general liability or E&O (errors and omissions) insurance. Read your contracts. A single-member LLC does not by itself protect you from your own professional errors.\n\n### 6. Later, as your assets grow: an umbrella policy\n- **The book** *(book)*: an umbrella adds $1 million or more of liability on top of auto and renter's coverage, and also covers libel and slander. It cost about $100 a year in 1989.\n- **Today** *(std, verify)*: prices are higher but still modest. Insurers usually require you to carry certain underlying auto and renter's liability limits first.\n- **When to buy it:** once you have real savings or a high income to protect. It isn't urgent at your stage.\n\n---\n\n## What's likely a waste of money for you\n\n| Product | Why it's poor value here |\n|---|---|\n| **Life insurance (most kinds)** | The book says the people who need it are those with **dependents who rely on their income** *(book)*. Run its three-step method: (1) your death would leave survivors with only funeral and final costs; (2) subtract your assets; (3) the gap is small or zero. **Exceptions:** someone depends on you financially (a parent or partner), or someone cosigned a private student loan. In that case buy cheap **term** insurance for exactly that amount. |\n| **Cash-value / whole life sold as \"an investment\" or \"lock in rates while young\"** | It combines insurance with a high-fee savings plan. The book notes how whole life keeps the cash-value buildup \"in the dark\" *(book)*. If you later need coverage, buy term and invest the difference separately *(std)*. |\n| **Credit-life / credit-disability insurance** (offered with car loans and credit cards) | \"Usually not a good buy\" *(book)*. It pays the lender, not you, and costs a lot for the coverage you get. Proper term or disability coverage does the job better. |\n| **Dread-disease (cancer) policies** | Poor value for the dollar, narrow coverage, and often sold with \"promotional fear tactics\" *(book)*. A good health plan with an out-of-pocket maximum already covers cancer. |\n| **Accident-only, hospital-indemnity and similar narrow policies** *(std, verify)* | Same logic as dread-disease policies: they pay small fixed amounts for specific events. Your emergency fund and real health and disability coverage do this better. |\n| **Collision coverage on the $5,000 car** (in most cases) | It pays out at most about $4,000 and costs hundreds a year. See the rule of thumb above. |\n| **Rental-car counter coverage** (CDW/LDW) | Often duplicates your own auto policy or the coverage on your credit card *(std, verify)*. Check both before you travel. Note: if you drop collision, your own policy may no longer cover damage to a rental car. |\n| **Travel, title and legal insurance** | Buy only in special circumstances, after checking what your existing coverage already does *(book)*. A large non-refundable trip may justify travel insurance. A one-off flight doesn't. |\n| **Extended warranties, phone or device protection plans** *(std)* | Small losses you could cover yourself. They are profit centers for the seller. Paying for small repairs out of savings is cheaper over time. |\n| **Several small policies instead of one adequate one** | The book's point is that one large policy beats several small ones *(book)*. Overlapping coverage means you pay twice for the same risk. |\n| **Low deductibles everywhere** | Low deductibles mean you're paying to insure small, affordable losses. Build an emergency fund and choose higher deductibles on auto, renter's and health (if you have an HSA) *(book heuristic: raise deductibles to cut premiums; std)*. |\n\n---\n\n## Priority checklist\n\n1. **Health insurance:** compare ACA marketplace plans with your income estimate, and consider an HDHP with an HSA *(std, verify)*.\n2. **Disability insurance:** get quotes for an individual long-term policy *(std, verify)*.\n3. **Auto insurance:** raise liability limits, keep uninsured motorist coverage, price the policy with and without collision, and get three quotes *(book)*.\n4. **Renter's insurance:** choose replacement-cost contents coverage, add a home-business endorsement for your work equipment, and make a video inventory *(book; std)*.\n5. **Professional liability:** check whether your contracts or your field call for it *(std, verify)*.\n6. **Skip** life, cash-value, credit-life, dread-disease and narrow indemnity policies unless someone depends on your income *(book)*.\n7. **Reinforce your insurance with savings:**\n   - An emergency fund of 3\u20136 months of expenses *(std)*. Freelancers with uneven income should lean toward 6 months or more.\n   - That fund is what lets you choose high deductibles and a 90-day disability waiting period.\n   - For retirement, the book points self-employed people to Keogh and SEP plans *(book)*. Today a SEP-IRA or Solo 401(k) does this job, with much higher limits; check IRS.gov *(std, verify)*.\n8. **Review once a year**, and whenever something changes: a partner or child, buying a home, a new car loan, or a big jump in income.\n\n---\n\n*This is educational guidance drawn from the 1989 Consumer Reports guide plus current general practice. It is not individualized insurance advice. Insurance products, ACA rules and prices have changed a great deal since 1989, so confirm details with your state insurance department, HealthCare.gov and a licensed agent. If you work with an agent, ask how they are paid.*\n"}], "grading": {"expectations": [{"text": "Covers medical/health insurance as a priority for a freelancer", "passed": true, "evidence": "'1. Health insurance (top priority)', quotes the book's 'protecting your most valuable asset' and 80/20 coinsurance with out-of-pocket ceiling (matches insurance-taxes.md \u00a71), then ACA marketplace/HSA for freelancers marked (std, verify)."}, {"text": "Addresses life insurance need for a single person with no dependents (likely low)", "passed": true, "evidence": "Waste table: life insurance needed by those with 'dependents who rely on their income' and runs the book's three-step method ('the gap is small or zero'), with term exception; matches insurance-taxes.md \u00a72."}, {"text": "Addresses renter's/property coverage", "passed": true, "evidence": "'3. Renter's insurance': separate renter policies, liability (book's dog-bite example), replacement-cost contents at '20-40% more' for renters, household inventory Close-Up; all match insurance-taxes.md \u00a73. Adds business-property exclusion warning."}, {"text": "Addresses auto coverage decisions for a low-value car (e.g. dropping collision)", "passed": true, "evidence": "'Probably drop: collision, and maybe comprehensive' with $5,000 - $1,000 = $4,000 max payout and 10%-of-value rule (labelled std), keep liability/UM, shop around and packaged-policy Close-Up (book). Minor mislabel: 'book heuristic: raise deductibles to cut premiums' is marked (std) heuristic in insurance-taxes.md \u00a74, not book, but this does not affect the auto-decision content."}, {"text": "Flags disability or other coverage and notes dated details", "passed": true, "evidence": "'2. Disability income insurance' uses the book's method of tallying existing benefits (group plan, SS disability, workers' comp) per \u00a75; dated details noted: umbrella 'cost about $100 a year in 1989' vs today, replacement-cost surcharge 'in the book's era', Keogh/SEP vs today's SEP-IRA/Solo 401(k), and the header caution that 1989 prices and product rules have changed."}], "summary": {"passed": 5, "failed": 0, "total": 5, "pass_rate": 1.0}}}, {"id": "eval-2-adv-insure-without_skill-run-1", "prompt": "I'm 29, single, renting, own a 2012 car worth $5k and freelance. What insurance do I actually need per this guide, and what's likely a waste?", "eval_id": 2, "outputs": [{"name": "response.md", "type": "text", "content": "# Insurance for a 29-Year-Old Single Freelancer Who Rents and Owns a $5k Car\n\n**A note on the source.** You mention \"this guide,\" but I don't have its text, so I can't quote what it says. Below is the standard insurance advice found in consumer money guides (Consumer Reports' money books included): **insure against losses you couldn't afford to pay yourself, and self-insure the small stuff.** Where your guide's numbers differ, especially if it's an older edition, trust current law and current prices over the book.\n\n---\n\n## What you actually need\n\n### 1. Health insurance (top priority)\nAs a freelancer, nobody gives this to you. A single hospital stay can cost tens of thousands of dollars, so this is the most important policy you can have.\n- Shop on the ACA marketplace (HealthCare.gov or your state's exchange). Plans can't refuse you for pre-existing conditions, and freelance income may qualify you for premium tax credits.\n- If you're healthy and have some savings, a **high-deductible plan paired with an HSA** is often a good fit. HSA money is tax-deductible, grows tax-free, and comes out tax-free for medical costs.\n- Self-employed health premiums are usually deductible on your tax return.\n- Avoid \"short-term\" plans and health-sharing ministries as your main coverage. They can exclude pre-existing conditions and cap benefits.\n\n### 2. Disability insurance (the one most freelancers skip, and shouldn't)\nYour ability to earn is your biggest asset. At 29, you're far more likely to be disabled for a long stretch than to die before retirement. Freelancers have no employer group plan and often no workers' comp.\n- Look for an **individual long-term disability** policy with an \"own occupation\" definition if you can afford it, a 90-day waiting period (which keeps the premium down), and benefits to age 65 or 67.\n- Aim to replace about 60% of your income. Expect roughly 1% to 3% of your income per year in premiums.\n- Some professional associations and freelancer groups offer cheaper group disability plans.\n- Your emergency fund needs to cover the waiting period, so keep three to six months of expenses saved.\n\n### 3. Auto liability insurance (required, and worth raising)\nLiability is required by law in nearly every state, and it protects you if you injure someone or damage their property. State minimums are often far too low; one serious accident can exceed them many times over.\n- Carry at least **100/300/100** (bodily injury per person / per accident / property damage), if the price difference is small.\n- Keep **uninsured/underinsured motorist** coverage. Many drivers carry only the minimum or nothing.\n\n### 4. Renter's insurance (cheap and worth it)\nUsually about $10 to $25 a month. It covers your belongings (laptop, camera, furniture) against theft and fire, and includes **personal liability** if someone gets hurt in your home or you cause damage to the building.\n- Pick **replacement cost**, not \"actual cash value.\"\n- **Important for freelancers:** standard renter's policies often limit or exclude **business property** (like $2,500 max for business equipment) and exclude business liability. If your work gear is worth more, add a home-business endorsement or a small business policy.\n\n### 5. Business coverage (depends on your work)\n- **Professional liability / errors and omissions** if clients could sue you for mistakes or missed deadlines (consultants, designers, developers, writers). Some clients require it in the contract.\n- **General liability** if you meet clients in person or work on their sites.\n- Often bought together as a small Business Owner's Policy (BOP). Many freelancers pay a few hundred dollars a year.\n\n---\n\n## What's likely a waste for you\n\n### Collision and comprehensive on a 2012 car worth $5,000 (probably drop it, or raise the deductible)\nThese cover damage to **your own** car. The most an insurer will pay is the car's value minus your deductible. With a $1,000 deductible, the maximum payout is about $4,000, and it shrinks every year.\n- A common rule: if collision + comprehensive cost more than about **10% of the car's value per year** ($500 here), drop them.\n- Drop them only if you could replace the car, or go without one for a while, from savings. If you can't, keep comprehensive (cheaper, covers theft, hail, hitting a deer) and raise deductibles to $1,000.\n- If you still have a car loan, the lender requires them.\n\n### Life insurance (probably not needed yet)\nLife insurance replaces income for people who depend on you. Single, no kids, and no one relying on your income means there's usually no one to protect.\n- Exception: if someone co-signed your private student loans, or you support a parent, a small **term** policy may make sense.\n- **Avoid whole life or other \"cash value\" policies** pitched as investments. They cost many times more than term and are rarely a good deal for someone in your position.\n- If you expect a partner or kids soon, cheap 20- or 30-year term at 29 is easy to buy later while you're healthy.\n\n### Other common wastes\n- **Credit life / credit disability insurance** sold with loans and credit cards. Expensive for what it pays.\n- **Extended warranties and service plans** on electronics and appliances. Most failures happen in the manufacturer's warranty period, and these plans are high-profit for the seller. Self-insure with your emergency fund.\n- **Rental car insurance** at the counter, if your auto policy or credit card already covers rentals. Check before you travel.\n- **Accidental death / flight insurance.** Narrow coverage, already handled by good life insurance if you need it.\n- **Cancer or single-disease policies.** Good health insurance already covers these.\n- **Phone insurance** with high deductibles, unless your phone is very expensive and you break things often.\n- **Low deductibles everywhere.** Raising deductibles on auto and renter's policies to $500 or $1,000 cuts premiums. Pay the small stuff from savings.\n- **Pet, dental, and vision add-ons** only make sense if the premium is less than what you'd expect to spend. Run the numbers.\n\n---\n\n## Your priority list\n\n| Priority | Coverage | Why |\n|---|---|---|\n| 1 | Health insurance (ACA plan, maybe HDHP + HSA) | Medical bills are the biggest financial risk |\n| 2 | Long-term disability | Protects your income; no employer plan |\n| 3 | Auto liability (100/300/100) + uninsured motorist | Legally required; lawsuits can be huge |\n| 4 | Renter's insurance with liability | Cheap; covers belongings and lawsuits |\n| 5 | Professional / general liability (if your work calls for it) | Client lawsuits; renter's won't cover business |\n| Skip or reduce | Collision on the $5k car, life insurance, extended warranties, credit insurance | Small or no risk you can't cover yourself |\n\n**Also:** consider an **umbrella policy** (often $150 to $300 a year for $1 million) once you have assets worth protecting. It sits on top of your auto and renter's liability.\n\n**Bottom line:** spend your insurance money on the big, rare disasters (health, disability, liability) and keep an emergency fund for the small ones. Shop policies every year or two and get at least three quotes.\n\n*This is general education, not personalized advice. Rules and prices vary by state.*\n"}], "grading": {"expectations": [{"text": "Covers medical/health insurance as a priority for a freelancer", "passed": true, "evidence": "'1. Health insurance (top priority) As a freelancer, nobody gives this to you' with ACA marketplace, HDHP+HSA, deductible premiums."}, {"text": "Addresses life insurance need for a single person with no dependents (likely low)", "passed": true, "evidence": "'Life insurance (probably not needed yet) ... Single, no kids, and no one relying on your income means there's usually no one to protect', with cosigner/parent exception and term over whole life."}, {"text": "Addresses renter's/property coverage", "passed": true, "evidence": "'4. Renter's insurance (cheap and worth it)': belongings, personal liability, replacement cost vs actual cash value, business-property limits."}, {"text": "Addresses auto coverage decisions for a low-value car (e.g. dropping collision)", "passed": true, "evidence": "'Collision and comprehensive on a 2012 car worth $5,000 (probably drop it, or raise the deductible)', max payout ~$4,000, 10%-of-value rule, lender exception."}, {"text": "Flags disability or other coverage and notes dated details", "passed": false, "evidence": "Disability is covered ('2. Disability insurance'), but no dated details are noted: the only reference is a generic hedge ('Where your guide's numbers differ, especially if it's an older edition, trust current law and current prices over the book'). It never identifies any specific 1989 figure, product or rule that has changed."}], "summary": {"passed": 4, "failed": 1, "total": 5, "pass_rate": 0.8}}}], "previous_feedback": {}, "previous_outputs": {}, "benchmark": {"metadata": {"skill_name": "managing-your-money", "skill_path": "\u003cpath/to/skill>", "executor_model": "\u003cmodel-name>", "analyzer_model": "\u003cmodel-name>", "timestamp": "2026-11-21T22:00:50Z", "evals_run": [1, 2], "runs_per_configuration": 1}, "runs": [{"eval_id": 1, "eval_name": "adv-budget", "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 5, "failed": 0, "total": 5, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Uses the book's four-step budgeting approach", "passed": true, "evidence": "Lists and structures the answer on '1. Cash-flow analysis ... 2. Set budget goals. 3. Allocate resources ... 4. Year-end review' with sections 'Step 1: Cash-flow analysis' through 'Step 4: Year-end review'; matches SKILL.md principle 1 exactly, including the supporting habits (budget for the unexpected, keep records, make the budget work)."}, {"text": "Prioritizes an emergency fund and high-interest debt with numbers", "passed": true, "evidence": "Goals table: '$600' starter emergency fund by month 2, 'Pay off the $3,100 card (24% APR)' by month 12, then 3-6 months of essential expenses; $400/month split $300 savings/$100 card then $340 card/$60 savings. Book's emergency-fund 'personal matter' / $10,000-$15,000 quote and the 15%-of-gross ($360) debt ceiling match SKILL.md."}, {"text": "Gives a month-by-month or phased 12-month plan", "passed": true, "evidence": "Month-by-month table for months 1-12 with payment, interest, balance and emergency fund (card $0 and fund ~$1,238 at month 12), plus milestones at months 1, 2, 3, 6, 9, 12."}, {"text": "Flags at least one dated 1989 figure or rule (e.g. tax or IRA limits) as changed", "passed": true, "evidence": "'What in the 1989 book no longer applies' table flags consumer-interest deduction phase-out (10% in 1990, then zero), FDIC/FSLIC $100,000 -> $250,000, IRA $2,000/no Roth, 2005 BAPCPA; all consistent with SKILL.md and references."}, {"text": "Mentions protecting the credit rating/report", "passed": true, "evidence": "Goal 5 'Check your credit report for errors, free' in month 1; flags table row on free reports at annualcreditreport.com, FCRA disputes, freezes, and the book's skepticism of paid 'credit credential' services, matching banking-credit.md \u00a72."}], "notes": []}, {"eval_id": 2, "eval_name": "adv-insure", "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 5, "failed": 0, "total": 5, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Covers medical/health insurance as a priority for a freelancer", "passed": true, "evidence": "'1. Health insurance (top priority)', quotes the book's 'protecting your most valuable asset' and 80/20 coinsurance with out-of-pocket ceiling (matches insurance-taxes.md \u00a71), then ACA marketplace/HSA for freelancers marked (std, verify)."}, {"text": "Addresses life insurance need for a single person with no dependents (likely low)", "passed": true, "evidence": "Waste table: life insurance needed by those with 'dependents who rely on their income' and runs the book's three-step method ('the gap is small or zero'), with term exception; matches insurance-taxes.md \u00a72."}, {"text": "Addresses renter's/property coverage", "passed": true, "evidence": "'3. Renter's insurance': separate renter policies, liability (book's dog-bite example), replacement-cost contents at '20-40% more' for renters, household inventory Close-Up; all match insurance-taxes.md \u00a73. Adds business-property exclusion warning."}, {"text": "Addresses auto coverage decisions for a low-value car (e.g. dropping collision)", "passed": true, "evidence": "'Probably drop: collision, and maybe comprehensive' with $5,000 - $1,000 = $4,000 max payout and 10%-of-value rule (labelled std), keep liability/UM, shop around and packaged-policy Close-Up (book). Minor mislabel: 'book heuristic: raise deductibles to cut premiums' is marked (std) heuristic in insurance-taxes.md \u00a74, not book, but this does not affect the auto-decision content."}, {"text": "Flags disability or other coverage and notes dated details", "passed": true, "evidence": "'2. Disability income insurance' uses the book's method of tallying existing benefits (group plan, SS disability, workers' comp) per \u00a75; dated details noted: umbrella 'cost about $100 a year in 1989' vs today, replacement-cost surcharge 'in the book's era', Keogh/SEP vs today's SEP-IRA/Solo 401(k), and the header caution that 1989 prices and product rules have changed."}], "notes": []}, {"eval_id": 1, "eval_name": "adv-budget", "configuration": "without_skill", "run_number": 1, "result": {"pass_rate": 0.8, "passed": 4, "failed": 1, "total": 5, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Uses the book's four-step budgeting approach", "passed": false, "evidence": "States it lacks the book and uses 'the standard four-step budgeting method that guides of that era taught: (1) find out what comes in, (2) track what goes out, (3) set goals and priorities, (4) build the spending plan and check it each month'. This does not match the book's steps in SKILL.md (cash-flow analysis, set goals, allocate resources, year-end review); it has no year-end review and invents an income step."}, {"text": "Prioritizes an emergency fund and high-interest debt with numbers", "passed": true, "evidence": "'Starter emergency fund: about $600 to $1,000', 'Pay off the $3,100 card balance. At 24% APR this costs you about $62 a month in interest', then 3 months of expenses (~$4,500-$5,500)."}, {"text": "Gives a month-by-month or phased 12-month plan", "passed": true, "evidence": "Phased plan (Months 1-3, 4-10, 11-12) plus a month-by-month projection table ending with card $0 in month 11 and ~$1,296 savings at month 12."}, {"text": "Flags at least one dated 1989 figure or rule (e.g. tax or IRA limits) as changed", "passed": true, "evidence": "Flags 'Credit-card interest deductibility. The Tax Reform Act of 1986 phased out the deduction for consumer interest' and 'Retirement accounts ... predates the Roth IRA ... Contribution limits from 1989 are far too low'; consistent with SKILL.md, though framed generically ('any personal-finance guide from 1989')."}, {"text": "Mentions protecting the credit rating/report", "passed": true, "evidence": "'Pay the card on time every month (autopay at least the minimum)' and flag 3: 'Today you can get free reports from all three bureaus at AnnualCreditReport.com'. Mentioned, though only as a dated-item note rather than a planned action."}], "notes": []}, {"eval_id": 2, "eval_name": "adv-insure", "configuration": "without_skill", "run_number": 1, "result": {"pass_rate": 0.8, "passed": 4, "failed": 1, "total": 5, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Covers medical/health insurance as a priority for a freelancer", "passed": true, "evidence": "'1. Health insurance (top priority) As a freelancer, nobody gives this to you' with ACA marketplace, HDHP+HSA, deductible premiums."}, {"text": "Addresses life insurance need for a single person with no dependents (likely low)", "passed": true, "evidence": "'Life insurance (probably not needed yet) ... Single, no kids, and no one relying on your income means there's usually no one to protect', with cosigner/parent exception and term over whole life."}, {"text": "Addresses renter's/property coverage", "passed": true, "evidence": "'4. Renter's insurance (cheap and worth it)': belongings, personal liability, replacement cost vs actual cash value, business-property limits."}, {"text": "Addresses auto coverage decisions for a low-value car (e.g. dropping collision)", "passed": true, "evidence": "'Collision and comprehensive on a 2012 car worth $5,000 (probably drop it, or raise the deductible)', max payout ~$4,000, 10%-of-value rule, lender exception."}, {"text": "Flags disability or other coverage and notes dated details", "passed": false, "evidence": "Disability is covered ('2. Disability insurance'), but no dated details are noted: the only reference is a generic hedge ('Where your guide's numbers differ, especially if it's an older edition, trust current law and current prices over the book'). It never identifies any specific 1989 figure, product or rule that has changed."}], "notes": []}], "run_summary": {"with_skill": {"pass_rate": {"mean": 1.0, "stddev": 0.0, "min": 1.0, "max": 1.0}, "time_seconds": null, "tokens": null}, "without_skill": {"pass_rate": {"mean": 0.8, "stddev": 0.0, "min": 0.8, "max": 0.8}, "time_seconds": null, "tokens": null}, "delta": {"pass_rate": "+0.20", "time_seconds": null, "tokens": null}}, "notes": ["Time recorded for 0 of 2 with_skill runs, 0 of 2 without_skill runs, so there is no time delta.", "Token count recorded for 0 of 2 with_skill runs, 0 of 2 without_skill runs, so there is no token count delta."]}};
+
+    // ---- State ----
+    let feedbackMap = {};  // run_id -> feedback text
+    let currentIndex = 0;
+    let visitedRuns = new Set();
+
+    // ---- Init ----
+    async function init() {
+      // Load saved feedback from server — but only if this isn't a fresh
+      // iteration (indicated by previous_feedback being present). When
+      // previous feedback exists, the feedback.json on disk is stale from
+      // the prior iteration and should not pre-fill the textareas.
+      const hasPrevious = Object.keys(EMBEDDED_DATA.previous_feedback || {}).length > 0
+        || Object.keys(EMBEDDED_DATA.previous_outputs || {}).length > 0;
+      if (!hasPrevious) {
+        try {
+          const resp = await fetch("/api/feedback");
+          const data = await resp.json();
+          if (data.reviews) {
+            for (const r of data.reviews) feedbackMap[r.run_id] = r.feedback;
+          }
+        } catch { /* first run, no feedback yet */ }
+      }
+
+      document.getElementById("skill-name").textContent = EMBEDDED_DATA.skill_name;
+      showRun(0);
+
+      // Wire up feedback auto-save
+      const textarea = document.getElementById("feedback");
+      let saveTimeout = null;
+      textarea.addEventListener("input", () => {
+        clearTimeout(saveTimeout);
+        document.getElementById("feedback-status").textContent = "";
+        saveTimeout = setTimeout(() => saveCurrentFeedback(), 800);
+      });
+    }
+
+    // ---- Navigation ----
+    function navigate(delta) {
+      const newIndex = currentIndex + delta;
+      if (newIndex >= 0 && newIndex < EMBEDDED_DATA.runs.length) {
+        saveCurrentFeedback();
+        showRun(newIndex);
+      }
+    }
+
+    function updateNavButtons() {
+      document.getElementById("prev-btn").disabled = currentIndex === 0;
+      document.getElementById("next-btn").disabled =
+        currentIndex === EMBEDDED_DATA.runs.length - 1;
+    }
+
+    // ---- Show a run ----
+    function showRun(index) {
+      currentIndex = index;
+      const run = EMBEDDED_DATA.runs[index];
+
+      // Progress
+      document.getElementById("progress").textContent =
+        `${index + 1} of ${EMBEDDED_DATA.runs.length}`;
+
+      // Prompt
+      document.getElementById("prompt-text").textContent = run.prompt;
+
+      // Config badge
+      const badge = document.getElementById("config-badge");
+      const configMatch = run.id.match(/(with_skill|without_skill|new_skill|old_skill)/);
+      if (configMatch) {
+        const config = configMatch[1];
+        const isBaseline = config === "without_skill" || config === "old_skill";
+        badge.textContent = config.replace(/_/g, " ");
+        badge.className = "config-badge " + (isBaseline ? "config-baseline" : "config-primary");
+        badge.style.display = "inline-block";
+      } else {
+        badge.style.display = "none";
+      }
+
+      // Outputs
+      renderOutputs(run);
+
+      // Previous outputs
+      renderPrevOutputs(run);
+
+      // Grades
+      renderGrades(run);
+
+      // Previous feedback
+      const prevFb = (EMBEDDED_DATA.previous_feedback || {})[run.id];
+      const prevEl = document.getElementById("prev-feedback");
+      if (prevFb) {
+        document.getElementById("prev-feedback-text").textContent = prevFb;
+        prevEl.style.display = "block";
+      } else {
+        prevEl.style.display = "none";
+      }
+
+      // Feedback
+      document.getElementById("feedback").value = feedbackMap[run.id] || "";
+      document.getElementById("feedback-status").textContent = "";
+
+      updateNavButtons();
+
+      // Track visited runs and promote done button when all visited
+      visitedRuns.add(index);
+      const doneBtn = document.getElementById("done-btn");
+      if (visitedRuns.size >= EMBEDDED_DATA.runs.length) {
+        doneBtn.classList.add("ready");
+      }
+
+      // Scroll main content to top
+      document.querySelector(".main").scrollTop = 0;
+    }
+
+    // ---- Render outputs ----
+    function renderOutputs(run) {
+      const container = document.getElementById("outputs-body");
+      container.innerHTML = "";
+
+      const outputs = run.outputs || [];
+      if (outputs.length === 0) {
+        container.innerHTML = '<div class="empty-state">No output files</div>';
+        return;
+      }
+
+      for (const file of outputs) {
+        const fileDiv = document.createElement("div");
+        fileDiv.className = "output-file";
+
+        // Always show file header with download link
+        const header = document.createElement("div");
+        header.className = "output-file-header";
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = file.name;
+        header.appendChild(nameSpan);
+        const dlBtn = document.createElement("a");
+        dlBtn.className = "dl-btn";
+        dlBtn.textContent = "Download";
+        dlBtn.download = file.name;
+        dlBtn.href = getDownloadUri(file);
+        header.appendChild(dlBtn);
+        fileDiv.appendChild(header);
+
+        const content = document.createElement("div");
+        content.className = "output-file-content";
+
+        if (file.type === "text") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          content.appendChild(pre);
+        } else if (file.type === "image") {
+          const img = document.createElement("img");
+          img.src = file.data_uri;
+          img.alt = file.name;
+          content.appendChild(img);
+        } else if (file.type === "pdf") {
+          const iframe = document.createElement("iframe");
+          iframe.src = file.data_uri;
+          content.appendChild(iframe);
+        } else if (file.type === "xlsx") {
+          renderXlsx(content, file.data_b64);
+        } else if (file.type === "binary") {
+          const a = document.createElement("a");
+          a.className = "download-link";
+          a.href = file.data_uri;
+          a.download = file.name;
+          a.textContent = "Download " + file.name;
+          content.appendChild(a);
+        } else if (file.type === "error") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          pre.style.color = "var(--red)";
+          content.appendChild(pre);
+        }
+
+        fileDiv.appendChild(content);
+        container.appendChild(fileDiv);
+      }
+    }
+
+    // ---- XLSX rendering via SheetJS ----
+    function renderXlsx(container, b64Data) {
+      try {
+        const raw = Uint8Array.from(atob(b64Data), c => c.charCodeAt(0));
+        const wb = XLSX.read(raw, { type: "array" });
+
+        for (let i = 0; i < wb.SheetNames.length; i++) {
+          const sheetName = wb.SheetNames[i];
+          const ws = wb.Sheets[sheetName];
+
+          if (wb.SheetNames.length > 1) {
+            const sheetLabel = document.createElement("div");
+            sheetLabel.style.cssText =
+              "font-weight:600; font-size:0.8rem; color:#b0aea5; margin-top:0.5rem; margin-bottom:0.25rem;";
+            sheetLabel.textContent = "Sheet: " + sheetName;
+            container.appendChild(sheetLabel);
+          }
+
+          const htmlStr = XLSX.utils.sheet_to_html(ws, { editable: false });
+          const wrapper = document.createElement("div");
+          wrapper.innerHTML = htmlStr;
+          container.appendChild(wrapper);
+        }
+      } catch (err) {
+        container.textContent = "Error rendering spreadsheet: " + err.message;
+      }
+    }
+
+    // ---- Grades ----
+    function renderGrades(run) {
+      const section = document.getElementById("grades-section");
+      const content = document.getElementById("grades-content");
+
+      if (!run.grading) {
+        section.style.display = "none";
+        return;
+      }
+
+      const grading = run.grading;
+      section.style.display = "block";
+      // Reset to collapsed
+      content.classList.remove("open");
+      document.getElementById("grades-arrow").classList.remove("open");
+
+      const summary = grading.summary || {};
+      const expectations = grading.expectations || [];
+
+      let html = '<div style="padding: 1rem;">';
+
+      // Summary line
+      const passRate = summary.pass_rate != null
+        ? Math.round(summary.pass_rate * 100) + "%"
+        : "?";
+      const badgeClass = summary.pass_rate >= 0.8 ? "grade-pass" : summary.pass_rate >= 0.5 ? "" : "grade-fail";
+      html += '<div class="grades-summary">';
+      html += '<span class="grade-badge ' + badgeClass + '">' + passRate + '</span>';
+      html += '<span>' + escapeHtml(summary.passed || 0) + ' passed, ' + escapeHtml(summary.failed || 0) + ' failed of ' + escapeHtml(summary.total || 0) + '</span>';
+      html += '</div>';
+
+      // Assertions list
+      html += '<ul class="assertion-list">';
+      for (const exp of expectations) {
+        const statusClass = exp.passed ? "pass" : "fail";
+        const statusIcon = exp.passed ? "\u2713" : "\u2717";
+        html += '<li class="assertion-item">';
+        html += '<span class="assertion-status ' + statusClass + '">' + statusIcon + '</span>';
+        html += '<span>' + escapeHtml(exp.text) + '</span>';
+        if (exp.evidence) {
+          html += '<div class="assertion-evidence">' + escapeHtml(exp.evidence) + '</div>';
+        }
+        html += '</li>';
+      }
+      html += '</ul>';
+
+      html += '</div>';
+      content.innerHTML = html;
+    }
+
+    function toggleGrades() {
+      const content = document.getElementById("grades-content");
+      const arrow = document.getElementById("grades-arrow");
+      content.classList.toggle("open");
+      arrow.classList.toggle("open");
+    }
+
+    // ---- Previous outputs (collapsible) ----
+    function renderPrevOutputs(run) {
+      const section = document.getElementById("prev-outputs-section");
+      const content = document.getElementById("prev-outputs-content");
+      const prevOutputs = (EMBEDDED_DATA.previous_outputs || {})[run.id];
+
+      if (!prevOutputs || prevOutputs.length === 0) {
+        section.style.display = "none";
+        return;
+      }
+
+      section.style.display = "block";
+      // Reset to collapsed
+      content.classList.remove("open");
+      document.getElementById("prev-outputs-arrow").classList.remove("open");
+
+      // Render the files into the content area
+      content.innerHTML = "";
+      const wrapper = document.createElement("div");
+      wrapper.style.padding = "1rem";
+
+      for (const file of prevOutputs) {
+        const fileDiv = document.createElement("div");
+        fileDiv.className = "output-file";
+
+        const header = document.createElement("div");
+        header.className = "output-file-header";
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = file.name;
+        header.appendChild(nameSpan);
+        const dlBtn = document.createElement("a");
+        dlBtn.className = "dl-btn";
+        dlBtn.textContent = "Download";
+        dlBtn.download = file.name;
+        dlBtn.href = getDownloadUri(file);
+        header.appendChild(dlBtn);
+        fileDiv.appendChild(header);
+
+        const fc = document.createElement("div");
+        fc.className = "output-file-content";
+
+        if (file.type === "text") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          fc.appendChild(pre);
+        } else if (file.type === "image") {
+          const img = document.createElement("img");
+          img.src = file.data_uri;
+          img.alt = file.name;
+          fc.appendChild(img);
+        } else if (file.type === "pdf") {
+          const iframe = document.createElement("iframe");
+          iframe.src = file.data_uri;
+          fc.appendChild(iframe);
+        } else if (file.type === "xlsx") {
+          renderXlsx(fc, file.data_b64);
+        } else if (file.type === "binary") {
+          const a = document.createElement("a");
+          a.className = "download-link";
+          a.href = file.data_uri;
+          a.download = file.name;
+          a.textContent = "Download " + file.name;
+          fc.appendChild(a);
+        }
+
+        fileDiv.appendChild(fc);
+        wrapper.appendChild(fileDiv);
+      }
+
+      content.appendChild(wrapper);
+    }
+
+    function togglePrevOutputs() {
+      const content = document.getElementById("prev-outputs-content");
+      const arrow = document.getElementById("prev-outputs-arrow");
+      content.classList.toggle("open");
+      arrow.classList.toggle("open");
+    }
+
+    // ---- Feedback (saved to server -> feedback.json) ----
+    function saveCurrentFeedback() {
+      const run = EMBEDDED_DATA.runs[currentIndex];
+      const text = document.getElementById("feedback").value;
+
+      if (text.trim() === "") {
+        delete feedbackMap[run.id];
+      } else {
+        feedbackMap[run.id] = text;
+      }
+
+      // Build reviews array from map
+      const reviews = [];
+      for (const [run_id, feedback] of Object.entries(feedbackMap)) {
+        if (feedback.trim()) {
+          reviews.push({ run_id, feedback, timestamp: new Date().toISOString() });
+        }
+      }
+
+      fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reviews, status: "in_progress" }),
+      }).then(() => {
+        document.getElementById("feedback-status").textContent = "Saved";
+      }).catch(() => {
+        // Static mode or server unavailable — no-op on auto-save,
+        // feedback will be downloaded on final submit
+        document.getElementById("feedback-status").textContent = "Will download on submit";
+      });
+    }
+
+    // ---- Done ----
+    function showDoneDialog() {
+      // Save current textarea to feedbackMap (but don't POST yet)
+      const run = EMBEDDED_DATA.runs[currentIndex];
+      const text = document.getElementById("feedback").value;
+      if (text.trim() === "") {
+        delete feedbackMap[run.id];
+      } else {
+        feedbackMap[run.id] = text;
+      }
+
+      // POST once with status: complete — include ALL runs so the model
+      // can distinguish "no feedback" (looks good) from "not reviewed"
+      const reviews = [];
+      const ts = new Date().toISOString();
+      for (const r of EMBEDDED_DATA.runs) {
+        reviews.push({ run_id: r.id, feedback: feedbackMap[r.id] || "", timestamp: ts });
+      }
+      const payload = JSON.stringify({ reviews, status: "complete" }, null, 2);
+      fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: payload,
+      }).then(() => {
+        document.getElementById("done-overlay").classList.add("visible");
+      }).catch(() => {
+        // Server not available (static mode) — download as file
+        const blob = new Blob([payload], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "feedback.json";
+        a.click();
+        URL.revokeObjectURL(url);
+        document.getElementById("done-overlay").classList.add("visible");
+      });
+    }
+
+    function closeDoneDialog() {
+      // Reset status back to in_progress
+      saveCurrentFeedback();
+      document.getElementById("done-overlay").classList.remove("visible");
+    }
+
+    // ---- Toast ----
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("visible");
+      setTimeout(() => toast.classList.remove("visible"), 2000);
+    }
+
+    // ---- Keyboard nav ----
+    document.addEventListener("keydown", (e) => {
+      // Don't capture when typing in textarea
+      if (e.target.tagName === "TEXTAREA") return;
+
+      if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+        e.preventDefault();
+        navigate(-1);
+      } else if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+        e.preventDefault();
+        navigate(1);
+      }
+    });
+
+    // ---- Util ----
+    function getDownloadUri(file) {
+      if (file.data_uri) return file.data_uri;
+      if (file.data_b64) return "data:application/octet-stream;base64," + file.data_b64;
+      if (file.type === "text") return "data:text/plain;charset=utf-8," + encodeURIComponent(file.content);
+      return "#";
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement("div");
+      div.textContent = text;
+      return div.innerHTML.replace(/"/g, "&quot;");
+    }
+
+    // ---- View switching ----
+    function switchView(view) {
+      document.querySelectorAll(".view-tab").forEach(t => t.classList.remove("active"));
+      document.querySelectorAll(".view-panel").forEach(p => p.classList.remove("active"));
+      document.querySelector(`[onclick="switchView('${view}')"]`).classList.add("active");
+      document.getElementById("panel-" + view).classList.add("active");
+    }
+
+    // ---- Benchmark rendering ----
+    function renderBenchmark() {
+      const data = EMBEDDED_DATA.benchmark;
+      if (!data) return;
+
+      // Show the tabs
+      document.getElementById("view-tabs").style.display = "flex";
+
+      const container = document.getElementById("benchmark-content");
+      const summary = data.run_summary || {};
+      const metadata = data.metadata || {};
+      const notes = data.notes || [];
+
+      let html = "";
+
+      // Header
+      html += "<h2 style='font-family: Poppins, sans-serif; margin-bottom: 0.5rem;'>Benchmark Results</h2>";
+      html += "<p style='color: var(--text-muted); font-size: 0.875rem; margin-bottom: 1.25rem;'>";
+      if (metadata.skill_name) html += "<strong>" + escapeHtml(metadata.skill_name) + "</strong> &mdash; ";
+      if (metadata.timestamp) html += escapeHtml(metadata.timestamp) + " &mdash; ";
+      if (metadata.evals_run) html += "Evals: " + escapeHtml(metadata.evals_run.join(", ")) + " &mdash; ";
+      html += escapeHtml(metadata.runs_per_configuration || "?") + (metadata.runs_per_configuration === 1 ? " run" : " runs") + " per configuration";
+      html += "</p>";
+
+      // Summary table
+      html += '<table class="benchmark-table">';
+
+      function fmtStat(stat, pct) {
+        if (!stat) return "—";
+        const suffix = pct ? "%" : "";
+        const m = pct ? (stat.mean * 100).toFixed(0) : stat.mean.toFixed(1);
+        const s = pct ? (stat.stddev * 100).toFixed(0) : stat.stddev.toFixed(1);
+        return m + suffix + " ± " + s + suffix;
+      }
+
+      function deltaClass(val) {
+        if (!val) return "";
+        const n = parseFloat(val);
+        if (n > 0) return "benchmark-delta-positive";
+        if (n < 0) return "benchmark-delta-negative";
+        return "";
+      }
+
+      // Discover config names dynamically (everything except "delta")
+      const configs = Object.keys(summary).filter(k => k !== "delta");
+      const configA = configs[0] || "config_a";
+      const configB = configs[1] || "config_b";
+      const labelA = configA.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      const labelB = configB.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      const a = summary[configA] || {};
+      const b = summary[configB] || {};
+      const delta = summary.delta || {};
+      // With a single configuration there is nothing to compare: only its column is shown
+      const compare = cells => configs.length >= 2 ? cells : "";
+
+      html += "<thead><tr><th>Metric</th><th>" + escapeHtml(labelA) + "</th>" + compare("<th>" + escapeHtml(labelB) + "</th><th>Delta</th>") + "</tr></thead>";
+      html += "<tbody>";
+
+      html += "<tr><td><strong>Pass Rate</strong></td>";
+      html += "<td>" + fmtStat(a.pass_rate, true) + "</td>";
+      html += compare("<td>" + fmtStat(b.pass_rate, true) + "</td>");
+      html += compare('<td class="' + deltaClass(delta.pass_rate) + '">' + escapeHtml(delta.pass_rate || "—") + "</td>") + "</tr>";
+
+      // Time (only show row if data exists)
+      if (a.time_seconds || b.time_seconds) {
+        html += "<tr><td><strong>Time (s)</strong></td>";
+        html += "<td>" + fmtStat(a.time_seconds, false) + "</td>";
+        html += compare("<td>" + fmtStat(b.time_seconds, false) + "</td>");
+        html += compare('<td class="' + deltaClass(delta.time_seconds) + '">' + escapeHtml(delta.time_seconds ? delta.time_seconds + "s" : "—") + "</td>") + "</tr>";
+      }
+
+      // Tokens (only show row if data exists)
+      if (a.tokens || b.tokens) {
+        html += "<tr><td><strong>Tokens</strong></td>";
+        html += "<td>" + fmtStat(a.tokens, false) + "</td>";
+        html += compare("<td>" + fmtStat(b.tokens, false) + "</td>");
+        html += compare('<td class="' + deltaClass(delta.tokens) + '">' + escapeHtml(delta.tokens || "—") + "</td>") + "</tr>";
+      }
+
+      html += "</tbody></table>";
+
+      // Per-eval breakdown (if runs data available)
+      const runs = data.runs || [];
+      if (runs.length > 0) {
+        // Numeric ids first, then ids that are names
+        const rank = id => typeof id === "number" ? 0 : 1;
+        const evalIds = [...new Set(runs.map(r => r.eval_id))].sort((a, b) =>
+          rank(a) - rank(b) || (rank(a) ? String(a).localeCompare(String(b)) : a - b));
+
+        html += "<h3 style='font-family: Poppins, sans-serif; margin-bottom: 0.75rem;'>Per-Eval Breakdown</h3>";
+
+        const hasTime = runs.some(r => r.result && r.result.time_seconds != null);
+        const hasErrors = runs.some(r => r.result && r.result.errors > 0);
+
+        for (const evalId of evalIds) {
+          const evalRuns = runs.filter(r => r.eval_id === evalId);
+          const evalName = evalRuns[0] && evalRuns[0].eval_name ? evalRuns[0].eval_name : "Eval " + evalId;
+
+          html += "<h4 style='font-family: Poppins, sans-serif; margin: 1rem 0 0.5rem; color: var(--text);'>" + escapeHtml(evalName) + "</h4>";
+          html += '<table class="benchmark-table">';
+          html += "<thead><tr><th>Config</th><th>Run</th><th>Pass Rate</th>";
+          if (hasTime) html += "<th>Time (s)</th>";
+          if (hasErrors) html += "<th>Crashes During Execution</th>";
+          html += "</tr></thead>";
+          html += "<tbody>";
+
+          // Group by config and render with average rows
+          const configGroups = [...new Set(evalRuns.map(r => r.configuration))];
+          for (let ci = 0; ci < configGroups.length; ci++) {
+            const config = configGroups[ci];
+            const configRuns = evalRuns.filter(r => r.configuration === config);
+            if (configRuns.length === 0) continue;
+
+            const rowClass = ci === 0 ? "benchmark-row-with" : "benchmark-row-without";
+            const configLabel = escapeHtml(config.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase()));
+
+            for (const run of configRuns) {
+              const r = run.result || {};
+              const prClass = r.pass_rate >= 0.8 ? "benchmark-delta-positive" : r.pass_rate < 0.5 ? "benchmark-delta-negative" : "";
+              html += '<tr class="' + rowClass + '">';
+              html += "<td>" + configLabel + "</td>";
+              html += "<td>" + escapeHtml(run.run_number) + "</td>";
+              html += '<td class="' + prClass + '">' + ((r.pass_rate || 0) * 100).toFixed(0) + "% (" + escapeHtml(r.passed || 0) + "/" + escapeHtml(r.total || 0) + ")</td>";
+              if (hasTime) html += "<td>" + (r.time_seconds != null ? r.time_seconds.toFixed(1) : "—") + "</td>";
+              if (hasErrors) html += "<td>" + escapeHtml(r.errors || 0) + "</td>";
+              html += "</tr>";
+            }
+
+            // Average row
+            const rates = configRuns.map(r => (r.result || {}).pass_rate || 0);
+            const avgRate = rates.reduce((a, b) => a + b, 0) / rates.length;
+            const avgPrClass = avgRate >= 0.8 ? "benchmark-delta-positive" : avgRate < 0.5 ? "benchmark-delta-negative" : "";
+            html += '<tr class="benchmark-row-avg ' + rowClass + '">';
+            html += "<td>" + configLabel + "</td>";
+            html += "<td>Avg</td>";
+            html += '<td class="' + avgPrClass + '">' + (avgRate * 100).toFixed(0) + "%</td>";
+            if (hasTime) {
+              const times = configRuns.map(r => (r.result || {}).time_seconds).filter(t => t != null);
+              html += "<td>" + (times.length ? (times.reduce((a, b) => a + b, 0) / times.length).toFixed(1) : "—") + "</td>";
+            }
+            if (hasErrors) html += "<td></td>";
+            html += "</tr>";
+          }
+          html += "</tbody></table>";
+
+          // Per-assertion detail for this eval
+          const runsWithExpectations = {};
+          for (const config of configGroups) {
+            runsWithExpectations[config] = evalRuns.filter(r => r.configuration === config && r.expectations && r.expectations.length > 0);
+          }
+          const hasAnyExpectations = Object.values(runsWithExpectations).some(runs => runs.length > 0);
+          if (hasAnyExpectations) {
+            // Collect all unique assertion texts across all configs
+            const allAssertions = [];
+            const seen = new Set();
+            for (const config of configGroups) {
+              for (const run of runsWithExpectations[config]) {
+                for (const exp of (run.expectations || [])) {
+                  if (!seen.has(exp.text)) {
+                    seen.add(exp.text);
+                    allAssertions.push(exp.text);
+                  }
+                }
+              }
+            }
+
+            html += '<table class="benchmark-table" style="margin-top: 0.5rem;">';
+            html += "<thead><tr><th>Assertion</th>";
+            for (const config of configGroups) {
+              const label = config.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+              html += "<th>" + escapeHtml(label) + "</th>";
+            }
+            html += "</tr></thead><tbody>";
+
+            for (const assertionText of allAssertions) {
+              html += "<tr><td>" + escapeHtml(assertionText) + "</td>";
+
+              for (const config of configGroups) {
+                html += "<td>";
+                for (const run of runsWithExpectations[config]) {
+                  const exp = (run.expectations || []).find(e => e.text === assertionText);
+                  if (exp) {
+                    const cls = exp.passed ? "benchmark-delta-positive" : "benchmark-delta-negative";
+                    const icon = exp.passed ? "\u2713" : "\u2717";
+                    html += '<span class="' + cls + '" title="Run ' + escapeHtml(run.run_number) + ': ' + escapeHtml(exp.evidence || "") + '">' + icon + "</span> ";
+                  } else {
+                    html += "— ";
+                  }
+                }
+                html += "</td>";
+              }
+              html += "</tr>";
+            }
+            html += "</tbody></table>";
+          }
+        }
+      }
+
+      // Notes
+      if (notes.length > 0) {
+        html += '<div class="benchmark-notes">';
+        html += "<h3>Analysis Notes</h3>";
+        html += "<ul>";
+        for (const note of notes) {
+          html += "<li>" + escapeHtml(note) + "</li>";
+        }
+        html += "</ul></div>";
+      }
+
+      container.innerHTML = html;
+    }
+
+    // ---- Start ----
+    init();
+    renderBenchmark();
+  </script>
+</body>
+</html>

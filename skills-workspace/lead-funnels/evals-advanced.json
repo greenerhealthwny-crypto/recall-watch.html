@@ -21,7 +21,7 @@
    "assertions": [
     "Explains self-liquidating offer",
     "Explains break-even day",
-    "Explains RFMS scoring (recency, frequency, monetary, source)",
+    "Explains RFMS scoring (recency, frequency, monetary, social)",
     "Does concrete math on $2/lead with a conversion rate and price",
     "Suggests a fast info product to sell (one of the nine fast ways)"
    ]

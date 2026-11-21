@@ -1,7 +1,35 @@
-{"expectations":[
-{"text":"Identifies vagueness/lack of specificity","passed":true,"evidence":"4 U's 'Ultra-specific 1: No product, number, percentage, price, brand, place or detail. This is its worst failing.' and 'Generalities instead of specifics. Bly's clarity tip \"Be specific\" says facts, figures and details sell and generalities don't' (matches clarity tip 8 in references)."},
-{"text":"Applies the four functions of a headline (attention, select audience, deliver message, draw into body)","passed":true,"evidence":"Section 1 table evaluates 'Get attention', 'Select the audience', 'Deliver a complete message', 'Draw the reader into the body copy' with verdicts and reasons; matches SKILL.md core framework 2 exactly."},
-{"text":"Uses the 4 U's","passed":true,"evidence":"Section 2 scores Urgent 1, Unique 1, Ultra-specific 1, Useful 1-2, credits Masterson and applies the book's '3 or 4 on at least three' rule; also rescores the illustrative rewrite (3/3/4/4, passes)."},
-{"text":"Gives multiple rewrites using named techniques or types","passed":true,"evidence":"Six rewrites labeled Direct, Reason-why, News + time element, How-to, Command, Testimonial, each with named techniques from the 38-technique list (e.g. 'state the selling proposition plainly, state the price', 'add a time element, stress savings'), plus a worked example. Rewrites are bracketed templates because the business is unknown, but they are concrete and correctly typed."},
-{"text":"Mentions USP or a BFD/motivator angle","passed":true,"evidence":"'No selling proposition, no USP... Rosser Reeves's USP test asks for a specific proposition the competition doesn't offer', and the workflow step 'Find the USP, or the under-publicized benefit competitors don't mention' (matches SKILL.md item 7)."}
-],"summary":{"passed":5,"failed":0,"total":5,"pass_rate":1.0}}
+{
+ "expectations": [
+  {
+   "text": "Identifies vagueness/lack of specificity",
+   "passed": true,
+   "evidence": "4 U's 'Ultra-specific 1: No product, number, percentage, price, brand, place or detail. This is its worst failing.' and 'Generalities instead of specifics. Bly's clarity tip \"Be specific\" says facts, figures and details sell and generalities don't' (matches clarity tip 8 in references)."
+  },
+  {
+   "text": "Applies the four functions of a headline (attention, select audience, deliver message, draw into body)",
+   "passed": true,
+   "evidence": "Section 1 table evaluates 'Get attention', 'Select the audience', 'Deliver a complete message', 'Draw the reader into the body copy' with verdicts and reasons; matches SKILL.md core framework 2 exactly."
+  },
+  {
+   "text": "Uses the 4 U's",
+   "passed": true,
+   "evidence": "Section 2 scores Urgent 1, Unique 1, Ultra-specific 1, Useful 1-2, credits Masterson and applies the book's '3 or 4 on at least three' rule; also rescores the illustrative rewrite (3/3/4/4, passes)."
+  },
+  {
+   "text": "Gives multiple rewrites using named techniques or types",
+   "passed": true,
+   "evidence": "Six rewrites labeled Direct, Reason-why, News + time element, How-to, Command, Testimonial, each with named techniques from the 38-technique list (e.g. 'state the selling proposition plainly, state the price', 'add a time element, stress savings'), plus a worked example. Rewrites are bracketed templates because the business is unknown, but they are concrete and correctly typed."
+  },
+  {
+   "text": "Mentions USP or a BFD/motivator angle",
+   "passed": true,
+   "evidence": "'No selling proposition, no USP... Rosser Reeves's USP test asks for a specific proposition the competition doesn't offer', and the workflow step 'Find the USP, or the under-publicized benefit competitors don't mention' (matches SKILL.md item 7)."
+  }
+ ],
+ "summary": {
+  "passed": 5,
+  "failed": 0,
+  "total": 5,
+  "pass_rate": 1.0
+ }
+}

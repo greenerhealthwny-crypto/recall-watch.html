@@ -1,0 +1,223 @@
+{
+  "metadata": {
+    "skill_name": "quiet-strength-bible",
+    "skill_path": "<path/to/skill>",
+    "executor_model": "<model-name>",
+    "analyzer_model": "<model-name>",
+    "timestamp": "2026-11-21T22:00:50Z",
+    "evals_run": [
+      1,
+      2
+    ],
+    "runs_per_configuration": 1
+  },
+  "runs": [
+    {
+      "eval_id": 1,
+      "eval_name": "adv-study",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Uses the three-step method: observation, interpretation, application",
+          "passed": true,
+          "evidence": "Line 3 names the edition's 'A Life of Quiet Strength' method 'Observation, Interpretation, Application'; sections 'Step 1: Observation', 'Step 2: Interpretation', 'Step 3: Application' match SKILL.md (restate in own words/underline; ask why written, use Overview/commentary; 'So what?' with 2 Timothy 3:16)."
+        },
+        {
+          "text": "Applies each step to Philippians 4:6-7 specifically",
+          "passed": true,
+          "evidence": "Observation table breaks down 4:6-7 (Stop/Start/With/Promise/guard/'in Christ Jesus') with underline words; Interpretation uses the edition's Philippians overview (Paul, around AD 61, letter, 'mind-set, attitude and outlook... joy of the Lord in a troubled world' - matches book-overviews.md, p.169 correct); Application turns 4:6-7 into worry->request->thanks steps."
+        },
+        {
+          "text": "Gives related verses on fear/anxiety or prayer",
+          "passed": true,
+          "evidence": "'Related verses from the Quiet Strength Verse Finder' lists Courage/Fear 1 John 4:18, Psalm 27:1; Assurance Romans 8:38-39, John 6:37-40, 10:27-29, Romans 5:1-5, Eph 3:12, 2 Tim 1:12; Protection 2 Thess 3:3; Psalm 46:1-3; Prayer practice (Matt 7:7-8, Heb 4:16, James 5:16). All match verse-finder.md; non-VF verses (Matt 6:25-34, 1 Pet 5:7) are clearly labeled 'not from the Verse Finder'."
+        },
+        {
+          "text": "Connects to Dungy's 'God's playbook' framing or the Principles/Practices/Priorities structure",
+          "passed": true,
+          "evidence": "Line 3: 'Tony Dungy calls the Bible \"God's playbook\". His advice is to study it before the game, not after you've fallen behind'; closing tip on the head coach answering questions about plays; Dungy's 'read daily and pray daily' rhythm - all match SKILL.md. Also uses VF practice wording ('Thankfulness must be cultivated', 'Prayer must be sincere and persistent')."
+        },
+        {
+          "text": "Gives a concrete personal application",
+          "passed": true,
+          "evidence": "Step 3 gives concrete steps (name the worry, convert 'What if I can't pay this bill?' into a request, attach thanks, re-aim thinking per 4:8, do the next faithful thing) plus a 7-day practice table and memory phrase."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "adv-work",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Provides a 7-day structure",
+          "passed": true,
+          "evidence": "Seven headed days: 'Day 1. Who is the real boss?' through 'Day 7. A good name and the long view', each with readings, Observe/Interpret/Apply, and prayer."
+        },
+        {
+          "text": "Uses Proverbs passages on work or wealth",
+          "passed": true,
+          "evidence": "Proverbs 16:3, 10:9, 11:1, 30:8-9, 3:5-6, 21:5, 13:11, 14:23, 15:22, 22:1, 2:6-8. Book-specific claims check out: Proverbs p.301, Agur listed as a Proverbs author, Proverbs 10:9 and 2:6-7 correctly marked (VF) under Integrity, Proverbs as 'practical wisdom for every area of life'."
+        },
+        {
+          "text": "Uses NT passages on money/integrity",
+          "passed": true,
+          "evidence": "Matthew 6:19-21,24; Luke 12:21; Matthew 6:33; Hebrews 13:5; 1 Timothy 6:6-10,17-19; Luke 16:10; Titus 2:7; Ephesians 6:5-7. VF principle statements quoted accurately ('Wealth must be used wisely', 'Integrity must be protected', 'Work must be done with God in mind... God is ultimately your true boss', 'Responsibility must be accepted', 'Simplicity must be sought'); minor range extensions (Matt 6:19-21 vs VF 6:19; Matt 25:21,23 vs VF 25:23) are not errors of substance."
+        },
+        {
+          "text": "Each day includes an application or reflection question",
+          "passed": true,
+          "evidence": "Every day has an 'Apply' section with concrete actions (e.g., Day 2 'honest scales' checklist; Day 3 define 'enough' and a generosity plan; Day 5 90-day plan; Day 7 'Business Playbook'), several with reflection questions ('if God were my client, what would I change?')."
+        },
+        {
+          "text": "Stays faithful to scripture rather than prosperity-gospel promises",
+          "passed": true,
+          "evidence": "Day 4: 'Jesus' answer to money worry is not \"you'll get rich\"... Philippians 4:13 ... isn't a promise of business success.' Day 5: Proverbs 'shows what is generally true, not guaranteed formulas.' Day 3: money as tool, not master."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 1,
+      "eval_name": "adv-study",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.6,
+        "passed": 3,
+        "failed": 2,
+        "total": 5,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Uses the three-step method: observation, interpretation, application",
+          "passed": false,
+          "evidence": "Line 3 disclaims not having the edition's study-method pages and substitutes a generic five-step 'Read -> Observe -> Interpret -> Apply -> Pray' pattern. Observe/Interpret/Apply appear, but not as the book's three-step method of 'A Life of Quiet Strength' (no own-words restatement step, no use of the Overview, no 'So what?' framing)."
+        },
+        {
+          "text": "Applies each step to Philippians 4:6-7 specifically",
+          "passed": true,
+          "evidence": "Observe table and key-word list (merimnao, phroureo, 'hearts and minds'), Interpret bullets ('promise is peace, not a guaranteed outcome'), and Apply questions/Worry-to-Prayer Swap are all specific to Philippians 4:6-7."
+        },
+        {
+          "text": "Gives related verses on fear/anxiety or prayer",
+          "passed": true,
+          "evidence": "Long list of anxiety/fear/peace verses (1 Peter 5:7, Matthew 6:25-34, John 14:27, Psalm 46:1-2, Isaiah 26:3, etc.). None are presented as confirmed Verse Finder entries (hedged as 'Verse Finder-style indexes usually'), and most are not in the VF per verse-finder.md, but the assertion only requires related verses."
+        },
+        {
+          "text": "Connects to Dungy's 'God's playbook' framing or the Principles/Practices/Priorities structure",
+          "passed": false,
+          "evidence": "No mention of Tony Dungy, 'God's playbook', or the Principles/Practices/Priorities structure anywhere in the response."
+        },
+        {
+          "text": "Gives a concrete personal application",
+          "passed": true,
+          "evidence": "'A Practical Exercise: The Worry-to-Prayer Swap' (write worries down, convert 'What if I lose my job?' into a request, add thanks, release, repeat) plus memorization and journaling questions."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "adv-work",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Provides a 7-day structure",
+          "passed": true,
+          "evidence": "Seven headed days, 'Day 1: Commit the Work to God' through 'Day 7: Generosity and a Lasting Legacy', each with readings, Reflection, Reflect questions, Business Step and Prayer."
+        },
+        {
+          "text": "Uses Proverbs passages on work or wealth",
+          "passed": true,
+          "evidence": "Proverbs 16:3, 10:4, 21:5, 6:6-11, 11:1, 10:9, 11:3, 30:8-9, 23:4-5, 3:5-10, 15:22, 27:23-24, 22:7, 11:24-25, 22:1 - all on work, wealth or integrity. No book-specific claims made, so nothing to contradict the skill files."
+        },
+        {
+          "text": "Uses NT passages on money/integrity",
+          "passed": true,
+          "evidence": "Luke 16:10, 1 Timothy 6:6-10,17-19, Matthew 6:19-21,24-34, 2 Thessalonians 3:10-13, Colossians 3:23-24, 2 Corinthians 9:6-8 on money/integrity/work."
+        },
+        {
+          "text": "Each day includes an application or reflection question",
+          "passed": true,
+          "evidence": "Each day has a 'Reflect' section with questions (e.g., Day 3 'Where might I be tempted to shade the truth...?', Day 4 'What number would feel like \"enough\"?') plus a 'Business Step'."
+        },
+        {
+          "text": "Stays faithful to scripture rather than prosperity-gospel promises",
+          "passed": true,
+          "evidence": "Day 4: 'Scripture doesn't call money evil. It calls the love of money a root of evil... a tool or a master'; Day 5: 'Trust isn't the same as being careless'; Day 7 reads 2 Cor 9:8 as blessing 'so that you can abound in good work... through you, not just to you'. Proverbs 3:9-10 and 11:24-25 are quoted but not turned into wealth guarantees."
+        }
+      ],
+      "notes": []
+    }
+  ],
+  "run_summary": {
+    "with_skill": {
+      "pass_rate": {
+        "mean": 1.0,
+        "stddev": 0.0,
+        "min": 1.0,
+        "max": 1.0
+      },
+      "time_seconds": null,
+      "tokens": null
+    },
+    "without_skill": {
+      "pass_rate": {
+        "mean": 0.8,
+        "stddev": 0.2828,
+        "min": 0.6,
+        "max": 1.0
+      },
+      "time_seconds": null,
+      "tokens": null
+    },
+    "delta": {
+      "pass_rate": "+0.20",
+      "time_seconds": null,
+      "tokens": null
+    }
+  },
+  "notes": [
+    "Time recorded for 0 of 2 with_skill runs, 0 of 2 without_skill runs, so there is no time delta.",
+    "Token count recorded for 0 of 2 with_skill runs, 0 of 2 without_skill runs, so there is no token count delta."
+  ]
+}

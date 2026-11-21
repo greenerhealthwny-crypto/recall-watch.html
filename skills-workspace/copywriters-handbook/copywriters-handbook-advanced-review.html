@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eval Review</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&family=Lora:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js" integrity="sha384-EnyY0/GSHQGSxSgMwaIPzSESbqoOLSexfnSMN2AP+39Ckmn92stwABZynq1JyzdT" crossorigin="anonymous"></script>
+  <style>
+    :root {
+      --bg: #faf9f5;
+      --surface: #ffffff;
+      --border: #e8e6dc;
+      --text: #141413;
+      --text-muted: #b0aea5;
+      --accent: #d97757;
+      --accent-hover: #c4613f;
+      --green: #788c5d;
+      --green-bg: #eef2e8;
+      --red: #c44;
+      --red-bg: #fceaea;
+      --header-bg: #141413;
+      --header-text: #faf9f5;
+      --radius: 6px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Lora', Georgia, serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ---- Header ---- */
+    .header {
+      background: var(--header-bg);
+      color: var(--header-text);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .header h1 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+    .header .instructions {
+      font-size: 0.8rem;
+      opacity: 0.7;
+      margin-top: 0.25rem;
+    }
+    .header .progress {
+      font-size: 0.875rem;
+      opacity: 0.8;
+      text-align: right;
+    }
+
+    /* ---- Main content ---- */
+    .main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.5rem 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    /* ---- Sections ---- */
+    .section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      flex-shrink: 0;
+    }
+    .section-header {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.75rem 1rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+    }
+    .section-body {
+      padding: 1rem;
+    }
+
+    /* ---- Config badge ---- */
+    .config-badge {
+      display: inline-block;
+      padding: 0.2rem 0.625rem;
+      border-radius: 9999px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      margin-left: 0.75rem;
+      vertical-align: middle;
+    }
+    .config-badge.config-primary {
+      background: rgba(33, 150, 243, 0.12);
+      color: #1976d2;
+    }
+    .config-badge.config-baseline {
+      background: rgba(255, 193, 7, 0.15);
+      color: #f57f17;
+    }
+
+    /* ---- Prompt ---- */
+    .prompt-text {
+      white-space: pre-wrap;
+      font-size: 0.9375rem;
+      line-height: 1.6;
+    }
+
+    /* ---- Outputs ---- */
+    .output-file {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .output-file + .output-file {
+      margin-top: 1rem;
+    }
+    .output-file-header {
+      padding: 0.5rem 0.75rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .output-file-header .dl-btn {
+      font-size: 0.7rem;
+      color: var(--accent);
+      text-decoration: none;
+      cursor: pointer;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-weight: 500;
+      opacity: 0.8;
+    }
+    .output-file-header .dl-btn:hover {
+      opacity: 1;
+      text-decoration: underline;
+    }
+    .output-file-content {
+      padding: 0.75rem;
+      overflow-x: auto;
+    }
+    .output-file-content pre {
+      font-size: 0.8125rem;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+    }
+    .output-file-content img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 4px;
+    }
+    .output-file-content iframe {
+      width: 100%;
+      height: 600px;
+      border: none;
+    }
+    .output-file-content table {
+      border-collapse: collapse;
+      font-size: 0.8125rem;
+      width: 100%;
+    }
+    .output-file-content table td,
+    .output-file-content table th {
+      border: 1px solid var(--border);
+      padding: 0.375rem 0.5rem;
+      text-align: left;
+    }
+    .output-file-content table th {
+      background: var(--bg);
+      font-weight: 600;
+    }
+    .output-file-content .download-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 0.875rem;
+      cursor: pointer;
+    }
+    .output-file-content .download-link:hover {
+      background: var(--border);
+    }
+    .empty-state {
+      color: var(--text-muted);
+      font-style: italic;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    /* ---- Feedback ---- */
+    .prev-feedback {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.625rem 0.75rem;
+      margin-top: 0.75rem;
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+    .prev-feedback-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.25rem;
+      color: var(--text-muted);
+    }
+    .feedback-textarea {
+      width: 100%;
+      min-height: 100px;
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 0.9375rem;
+      line-height: 1.5;
+      resize: vertical;
+      color: var(--text);
+    }
+    .feedback-textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    .feedback-status {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.5rem;
+      min-height: 1.1em;
+    }
+
+    /* ---- Grades (collapsible) ---- */
+    .grades-toggle {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+    }
+    .grades-toggle:hover {
+      color: var(--accent);
+    }
+    .grades-toggle .arrow {
+      margin-right: 0.5rem;
+      transition: transform 0.15s;
+      font-size: 0.75rem;
+    }
+    .grades-toggle .arrow.open {
+      transform: rotate(90deg);
+    }
+    .grades-content {
+      display: none;
+      margin-top: 0.75rem;
+    }
+    .grades-content.open {
+      display: block;
+    }
+    .grades-summary {
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .grade-badge {
+      display: inline-block;
+      padding: 0.125rem 0.5rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .grade-pass { background: var(--green-bg); color: var(--green); }
+    .grade-fail { background: var(--red-bg); color: var(--red); }
+    .assertion-list {
+      list-style: none;
+    }
+    .assertion-item {
+      padding: 0.625rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.8125rem;
+    }
+    .assertion-item:last-child { border-bottom: none; }
+    .assertion-status {
+      font-weight: 600;
+      margin-right: 0.5rem;
+    }
+    .assertion-status.pass { color: var(--green); }
+    .assertion-status.fail { color: var(--red); }
+    .assertion-evidence {
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      margin-top: 0.25rem;
+      padding-left: 1.5rem;
+    }
+
+    /* ---- View tabs ---- */
+    .view-tabs {
+      display: flex;
+      gap: 0;
+      padding: 0 2rem;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .view-tab {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.625rem 1.25rem;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      background: none;
+      color: var(--text-muted);
+      border-bottom: 2px solid transparent;
+      transition: all 0.15s;
+    }
+    .view-tab:hover { color: var(--text); }
+    .view-tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+    .view-panel { display: none; }
+    .view-panel.active { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
+
+    /* ---- Benchmark view ---- */
+    .benchmark-view {
+      padding: 1.5rem 2rem;
+      overflow-y: auto;
+      flex: 1;
+    }
+    .benchmark-table {
+      border-collapse: collapse;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 0.8125rem;
+      width: 100%;
+      margin-bottom: 1.5rem;
+    }
+    .benchmark-table th, .benchmark-table td {
+      padding: 0.625rem 0.75rem;
+      text-align: left;
+      border: 1px solid var(--border);
+    }
+    .benchmark-table th {
+      font-family: 'Poppins', sans-serif;
+      background: var(--header-bg);
+      color: var(--header-text);
+      font-weight: 500;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .benchmark-table tr:hover { background: var(--bg); }
+    .benchmark-table tr.benchmark-row-with { background: rgba(33, 150, 243, 0.06); }
+    .benchmark-table tr.benchmark-row-without { background: rgba(255, 193, 7, 0.06); }
+    .benchmark-table tr.benchmark-row-with:hover { background: rgba(33, 150, 243, 0.12); }
+    .benchmark-table tr.benchmark-row-without:hover { background: rgba(255, 193, 7, 0.12); }
+    .benchmark-table tr.benchmark-row-avg { font-weight: 600; border-top: 2px solid var(--border); }
+    .benchmark-table tr.benchmark-row-avg.benchmark-row-with { background: rgba(33, 150, 243, 0.12); }
+    .benchmark-table tr.benchmark-row-avg.benchmark-row-without { background: rgba(255, 193, 7, 0.12); }
+    .benchmark-delta-positive { color: var(--green); font-weight: 600; }
+    .benchmark-delta-negative { color: var(--red); font-weight: 600; }
+    .benchmark-notes {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem;
+    }
+    .benchmark-notes h3 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+    }
+    .benchmark-notes ul {
+      list-style: disc;
+      padding-left: 1.25rem;
+    }
+    .benchmark-notes li {
+      font-size: 0.8125rem;
+      line-height: 1.6;
+      margin-bottom: 0.375rem;
+    }
+    .benchmark-empty {
+      color: var(--text-muted);
+      font-style: italic;
+      text-align: center;
+      padding: 3rem;
+    }
+
+    /* ---- Navigation ---- */
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+      flex-shrink: 0;
+    }
+    .nav-btn {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.5rem 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text);
+      transition: all 0.15s;
+    }
+    .nav-btn:hover:not(:disabled) {
+      background: var(--bg);
+      border-color: var(--text-muted);
+    }
+    .nav-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    .done-btn {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.5rem 1.5rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: all 0.15s;
+    }
+    .done-btn:hover {
+      background: var(--bg);
+      border-color: var(--text-muted);
+    }
+    .done-btn.ready {
+      border: none;
+      background: var(--accent);
+      color: white;
+      font-weight: 600;
+    }
+    .done-btn.ready:hover {
+      background: var(--accent-hover);
+    }
+    /* ---- Done overlay ---- */
+    .done-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 100;
+      justify-content: center;
+      align-items: center;
+    }
+    .done-overlay.visible {
+      display: flex;
+    }
+    .done-card {
+      background: var(--surface);
+      border-radius: 12px;
+      padding: 2rem 3rem;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      max-width: 500px;
+    }
+    .done-card h2 {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .done-card p {
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
+    }
+    .done-card .btn-row {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+    }
+    .done-card button {
+      padding: 0.5rem 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 0.875rem;
+    }
+    .done-card button:hover {
+      background: var(--bg);
+    }
+    /* ---- Toast ---- */
+    .toast {
+      position: fixed;
+      bottom: 5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--header-bg);
+      color: var(--header-text);
+      padding: 0.625rem 1.25rem;
+      border-radius: var(--radius);
+      font-size: 0.875rem;
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+      z-index: 200;
+    }
+    .toast.visible {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <div id="app" style="height:100vh; display:flex; flex-direction:column;">
+    <div class="header">
+      <div>
+        <h1>Eval Review: <span id="skill-name"></span></h1>
+        <div class="instructions">Review each output and leave feedback below. Navigate with arrow keys or buttons. When done, copy feedback and paste into Claude Code.</div>
+      </div>
+      <div class="progress" id="progress"></div>
+    </div>
+
+    <!-- View tabs (only shown when benchmark data exists) -->
+    <div class="view-tabs" id="view-tabs" style="display:none;">
+      <button class="view-tab active" onclick="switchView('outputs')">Outputs</button>
+      <button class="view-tab" onclick="switchView('benchmark')">Benchmark</button>
+    </div>
+
+    <!-- Outputs panel (qualitative review) -->
+    <div class="view-panel active" id="panel-outputs">
+    <div class="main">
+      <!-- Prompt -->
+      <div class="section">
+        <div class="section-header">Prompt <span class="config-badge" id="config-badge" style="display:none;"></span></div>
+        <div class="section-body">
+          <div class="prompt-text" id="prompt-text"></div>
+        </div>
+      </div>
+
+      <!-- Outputs -->
+      <div class="section">
+        <div class="section-header">Output</div>
+        <div class="section-body" id="outputs-body">
+          <div class="empty-state">No output files found</div>
+        </div>
+      </div>
+
+      <!-- Previous Output (collapsible) -->
+      <div class="section" id="prev-outputs-section" style="display:none;">
+        <div class="section-header">
+          <div class="grades-toggle" onclick="togglePrevOutputs()">
+            <span class="arrow" id="prev-outputs-arrow">&#9654;</span>
+            Previous Output
+          </div>
+        </div>
+        <div class="grades-content" id="prev-outputs-content"></div>
+      </div>
+
+      <!-- Grades (collapsible) -->
+      <div class="section" id="grades-section" style="display:none;">
+        <div class="section-header">
+          <div class="grades-toggle" onclick="toggleGrades()">
+            <span class="arrow" id="grades-arrow">&#9654;</span>
+            Formal Grades
+          </div>
+        </div>
+        <div class="grades-content" id="grades-content"></div>
+      </div>
+
+      <!-- Feedback -->
+      <div class="section">
+        <div class="section-header">Your Feedback</div>
+        <div class="section-body">
+          <textarea
+            class="feedback-textarea"
+            id="feedback"
+            placeholder="What do you think of this output? Any issues, suggestions, or things that look great?"
+          ></textarea>
+          <div class="feedback-status" id="feedback-status"></div>
+          <div class="prev-feedback" id="prev-feedback" style="display:none;">
+            <div class="prev-feedback-label">Previous feedback</div>
+            <div id="prev-feedback-text"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav" id="outputs-nav">
+      <button class="nav-btn" id="prev-btn" onclick="navigate(-1)">&#8592; Previous</button>
+      <button class="done-btn" id="done-btn" onclick="showDoneDialog()">Submit All Reviews</button>
+      <button class="nav-btn" id="next-btn" onclick="navigate(1)">Next &#8594;</button>
+    </div>
+    </div><!-- end panel-outputs -->
+
+    <!-- Benchmark panel (quantitative stats) -->
+    <div class="view-panel" id="panel-benchmark">
+      <div class="benchmark-view" id="benchmark-content">
+        <div class="benchmark-empty">No benchmark data available. Run a benchmark to see quantitative results here.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Done overlay -->
+  <div class="done-overlay" id="done-overlay">
+    <div class="done-card">
+      <h2>Review Complete</h2>
+      <p>Your feedback has been saved. Go back to your Claude Code session and tell Claude you're done reviewing.</p>
+      <div class="btn-row">
+        <button onclick="closeDoneDialog()">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ---- Embedded data (injected by generate_review.py) ----
+    const EMBEDDED_DATA = {"skill_name": "copywriters-handbook", "runs": [{"id": "eval-1-adv-listing-with_skill-run-1", "prompt": "Write a Facebook Marketplace listing for a used solid-oak dining table ($180) using Bly's techniques. Give 3 headlines with the headline type named, check them against the 4 U's, and convert features to benefits.", "eval_id": 1, "outputs": [{"name": "response.md", "type": "text", "content": "# Facebook Marketplace Listing: Used Solid-Oak Dining Table ($180)\n\nYou gave me three facts: **used**, **solid oak**, **dining table**, **$180**. Bly's main rule for selling copy is to be specific, because facts and details sell and generalities don't. That rule only works if the details are true. So I have **not made up** dimensions, seating, age, brand, condition or pickup terms. Wherever the listing needs one, I put a **[bracketed placeholder]** for you to fill in from the real table. Delete any line you can't back up. Truthful, substantiated claims are the baseline (the FTC standard for advertising applies even to a classified listing).\n\nContext note: the *Handbook* (3rd ed., 2005) predates Facebook Marketplace. The principles still apply (headline, benefits, specifics, a clear call to action), but the platform tactics are my adaptation, not Bly's.\n\n---\n\n## Step 1: Bly's three headline questions\n\n1. **Who is my customer?** Local buyers furnishing a home on a budget: first apartments, young families, people who want real wood but not new-furniture prices. Some resellers or refinishers too.\n2. **What are the important features?** Solid oak (not veneer or particleboard), used, $180, [size / seats], [condition], [extras such as leaves or chairs].\n3. **Why will they buy (the key selling proposition)?** *A real solid-wood table that lasts, for a fraction of what new solid oak costs.* That proposition goes in the headline.\n\n**BFD check** (Masterson's Beliefs, Feelings, Desires, as Bly reports it):\n- *Beliefs:* \"Cheap furniture is particleboard that falls apart.\" \"Used furniture might be wobbly or damaged.\"\n- *Feelings:* Wary of bad listings and wasted trips. Frustrated by new-furniture prices.\n- *Desires:* A sturdy table that looks good and holds up to family life, bought quickly and cheaply.\n\n**Copy motivators in play** (from Bly's list of 22): save money, be secure (it won't fall apart), comfortable, happy (family dinners), convenience (local pickup), greed (a bargain).\n\n---\n\n## Step 2: Features to benefits\n\nAsk \"so what?\" of each feature until it becomes a reason to buy.\n\n| Feature | So what? Benefit to the buyer |\n|---|---|\n| Solid oak (not veneer or particleboard) | It's sturdy and holds screws, so it won't sag, wobble or peel like flat-pack furniture. It can last for decades. |\n| Solid wood throughout | If it gets scratched, you can sand and refinish it instead of throwing it away. Veneer can't take that. |\n| Oak's grain and colour | A warm, classic look that fits farmhouse, traditional or modern rooms. |\n| $180, used | You get real hardwood for much less than a new one would cost. *(Only quote a \"new costs $X\" comparison if you check a real retail price for a similar table.)* |\n| Heavy, dense hardwood | It stays put. It doesn't slide or rock when kids lean on it or you're carving a roast. |\n| [Seats X / measures L x W x H] | You know before you drive over whether it fits your room and your family. Fewer wasted trips. |\n| [Has leaf / extends to X] | Room for holiday guests without owning a second table. |\n| [Condition: e.g., light surface wear, no structural damage] | No surprises at pickup. Honest condition notes build trust (Bly's \"prove it\" step). |\n| Local pickup | Take it home today. No shipping wait, no delivery fee. |\n\n**USP:** You can't claim a feature no other seller has, so use Reeves's fallback as Bly gives it: **stress the benefit most sellers don't mention.** Most used-table listings just say \"solid wood.\" Few explain that **solid oak can be refinished, so you can buy it now and make it look new later.** That is the under-publicized benefit to lead with.\n\n---\n\n## Step 3: Three headlines, typed and scored on the 4 U's\n\nScale: 1 (weak) to 4 (strong). Bly's test (borrowed from Michael Masterson): a headline should score **3 or 4 on at least three of the four U's**, or you rewrite it.\n\n### Headline A: Direct (techniques: state the selling proposition plainly, state the price, be specific)\n> **Solid Oak Dining Table, Seats [6], $180**\n\n| Urgent | Unique | Ultra-specific | Useful | Pass? |\n|---|---|---|---|---|\n| 1 | 2 | 4 | 3 | No (2 of 4) |\n\nThe clearest headline, and it scans well in a Marketplace feed, where price and item show first. Urgency is weak. Two honest ways to raise it: add \"Pickup This Weekend,\" or use \"First Reasonable Offer\" only if that's really your policy. Revised:\n> **Solid Oak Dining Table, Seats [6], $180, Pickup This Weekend in [Neighbourhood]**\n\nRevised score: U3 / Un2 / Sp4 / Us3, which passes (3 of 4). Note that the urgency only holds if you really can do weekend pickup.\n\n### Headline B: Reason-why (techniques: use numbers, reasons-why, stress savings and value)\n> **3 Reasons This $180 Solid Oak Table Beats Anything Flat-Pack**\n\n| Urgent | Unique | Ultra-specific | Useful | Pass? |\n|---|---|---|---|---|\n| 2 | 3 | 3 | 4 | Yes (3 of 4) |\n\nThe \"3 reasons\" go straight into the body copy (sturdy, refinishable, price). It names the buyer's fear (particleboard) as the comparison, which follows Bly's \"address the reader's concern.\"\n\n### Headline C: How-to / useful information (techniques: promise useful information, help the reader achieve a goal, address the reader's concern)\n> **How to Get a Real Hardwood Dining Table for $180 (One You Can Refinish Instead of Replace)**\n\n| Urgent | Unique | Ultra-specific | Useful | Pass? |\n|---|---|---|---|---|\n| 1 | 4 | 3 | 4 | Yes (3 of 4) |\n\nThis one leads with the USP (refinishable). It's long for a Marketplace title field, so use it as the **first line of the description**, with Headline A as the title.\n\n**What I avoided, per Bly:** puns (\"Oak-ay Deal!\", \"Table This Offer\"), because wordplay doesn't sell. Blind headlines that make no sense alone. Negatives like \"No Damage!\" (say what it *is*: \"Sturdy, Solid Oak\"). Fake scarcity or invented \"retail value\" figures.\n\n**Recommendation:** Title = Headline A (revised). First line of description = Headline C or B.\n\n---\n\n## Step 4: The listing (written in Bly's motivating sequence)\n\n**Title:**\nSolid Oak Dining Table, Seats [6], $180, Pickup This Weekend in [Neighbourhood]\n\n**Description:**\n\n> **How to get a real hardwood dining table for $180, one you can refinish instead of replace.**\n>\n> *(1. Attention: lead with the strongest benefit.)*\n>\n> Tired of tables that wobble, peel or sag after a year? Most budget furniture is particleboard with a thin veneer. Once it's scratched or chipped, it's done.\n>\n> *(2. Show a need.)*\n>\n> This is **solid oak**, all the way through. That means:\n> - **It's built to last.** Heavy and stable. It won't rock when the kids lean on it.\n> - **It can look new again.** Scratches sand out. Refinish it whenever you like instead of buying another table.\n> - **It fits any style.** Warm oak grain works in farmhouse, traditional or modern rooms.\n>\n> *(3. Satisfy the need and position the table as the answer.)*\n>\n> **The details** (so you know before you drive over):\n> - Size: [L x W x H]. Seats [X] [extends to Y with leaf, if true]\n> - Condition: [honest description, e.g., \"light surface scratches on top, legs and joints solid, no wobble\"]\n> - [Chairs included / not included]\n> - [Smoke-free / pet-free home, only if true]\n> - Photos show [top, legs, underside, any wear up close]\n>\n> *(4. Prove it: specifics and honest photos of flaws are the proof. Showing wear up close builds trust.)*\n>\n> **$180.** Pickup in [neighbourhood / cross streets]. It's heavy, so bring a helper and a vehicle that fits [L] inches. [Cash / e-transfer / other] at pickup.\n>\n> **Message me with a day and time that works and it's yours.** [Available this weekend.]\n>\n> *(5. Ask for action: tell the reader exactly what to do, and make it easy.)*\n\n---\n\n## Step 5: Clarity check (Bly's 11 tips)\n\n- **You-orientation:** \"you,\" \"your room,\" \"your family\" throughout. \u2714\n- **Organized selling points:** follows the motivating sequence. \u2714\n- **Short sections, short sentences, simple words, no jargon:** bullets, plain words. (\"Veneer\" is the one technical word, and it's explained by contrast.) \u2714\n- **Specific:** depends on you filling every placeholder with real numbers. This is the most important step. \u2714 once filled\n- **Straight to the point, conversational:** \u2714\n\n## Before you post\n\n1. Replace every [placeholder] with verified facts, or delete the line.\n2. Don't add a \"retails for $___\" claim unless you've checked a real comparable price.\n3. Only use urgency (\"this weekend\") you will honour.\n4. Photograph flaws. Bly's \"prove it\" step and the buyer's trust both depend on it.\n5. Optional: test two titles (A vs. B) by reposting or editing after a few days and see which gets more messages. Bly's advice to keep and test headlines applies here.\n"}], "grading": {"expectations": [{"text": "Gives 3 headlines each labeled with one of Bly's headline types", "passed": true, "evidence": "Headline A labeled 'Direct' ('Solid Oak Dining Table, Seats [6], $180'), Headline B 'Reason-why' ('3 Reasons This $180 Solid Oak Table Beats Anything Flat-Pack'), Headline C 'How-to' ('How to Get a Real Hardwood Dining Table for $180...'). All three are among the 8 types in references/headlines-and-clarity.md and each fits its type; the supporting technique names (state the selling proposition plainly, state the price, reasons-why, promise useful information, address the reader's concern) match the 38-technique list."}, {"text": "Checks headlines against the 4 U's (urgent, unique, ultra-specific, useful)", "passed": true, "evidence": "Each headline gets an Urgent/Unique/Ultra-specific/Useful table scored 1-4 with a Pass column, applying the book's rule ('3 or 4 on at least three of the four U's, or you rewrite it', credited to Masterson as SKILL.md does). Headline A fails (2 of 4) and is rewritten with 'Pickup This Weekend' and rescored, matching the skill's rewrite-to-lift guidance."}, {"text": "Converts features to benefits explicitly", "passed": true, "evidence": "'Step 2: Features to benefits' table with 'So what? Benefit to the buyer' column, e.g. 'Solid wood throughout' -> 'you can sand and refinish it instead of throwing it away'; uses the book's 'so what?' translation. Also adds the USP fallback (under-publicized benefit: refinishable), consistent with SKILL.md."}, {"text": "Follows the motivating sequence (attention, need, satisfy, prove, action) in the body", "passed": true, "evidence": "Description is annotated '(1. Attention: lead with the strongest benefit.)', '(2. Show a need.)', '(3. Satisfy the need and position the table as the answer.)', '(4. Prove it...)', '(5. Ask for action...)', with matching body text in that order; matches SKILL.md's five steps exactly."}, {"text": "Includes a clear call to action", "passed": true, "evidence": "'Message me with a day and time that works and it's yours. [Available this weekend.]' plus price, pickup location and payment terms, explicitly framed as 'tell the reader exactly what to do, and make it easy.'"}], "summary": {"passed": 5, "failed": 0, "total": 5, "pass_rate": 1.0}}}, {"id": "eval-1-adv-listing-without_skill-run-1", "prompt": "Write a Facebook Marketplace listing for a used solid-oak dining table ($180) using Bly's techniques. Give 3 headlines with the headline type named, check them against the 4 U's, and convert features to benefits.", "eval_id": 1, "outputs": [{"name": "response.md", "type": "text", "content": "# Facebook Marketplace Listing: Used Solid-Oak Dining Table ($180)\n\nThis follows Robert Bly's approach in *The Copywriter's Handbook*: a headline that does the selling, features turned into benefits, the motivating sequence (attention, need, satisfaction, proof, action), and a specific call to action.\n\n> Placeholders in [brackets] are details only you know (size, seats, location, flaws). Fill them in honestly. Bly says specific, true details sell, and made-up ones lose the buyer's trust once they see the table.\n\n---\n\n## 1. Three headlines, each with its type named\n\n| # | Headline | Bly headline type |\n|---|----------|-------------------|\n| A | **Solid Oak Dining Table, Seats 6, $180. Built to Outlast Particleboard** | **Direct** (says exactly what it is, with the price) |\n| B | **Why Pay $900 New? Solid-Oak Table, Seats 6, Just $180** | **Question** (also uses price as a reason-why) |\n| C | **Solid Oak, Not Veneer: Seats 6, $180, Pick Up This Weekend** | **Reason-why / news** (one real fact sets it apart, plus a time hook) |\n\n(Other Bly types for reference: indirect, news, how-to, command, reason-why, testimonial. Direct and question headlines suit a Marketplace feed best, because people scroll quickly and judge on the title plus the photo.)\n\n## 2. Checking each headline against the 4 U's\n\nThe 4 U's: **Urgent** (a reason to act now), **Unique** (sets it apart), **Ultra-specific** (concrete details), **Useful** (a benefit to the reader). Scored 1 to 4.\n\n| Headline | Urgent | Unique | Ultra-specific | Useful | Total / 16 | Notes |\n|----------|:-----:|:-----:|:-----:|:-----:|:-----:|-------|\n| A: Direct | 1 | 3 | 4 | 3 | **11** | Clear and easy to search for (\"solid oak,\" \"dining table,\" \"seats 6\"). Gives no reason to message today. |\n| B: Question | 2 | 3 | 4 | 4 | **13** | The $900 versus $180 contrast makes the value plain. The \"$900 new\" figure must be honest: check what a similar new table costs. |\n| C: Reason-why / news | 4 | 4 | 4 | 3 | **15** | \"Not veneer\" answers the main doubt about used furniture. \"This weekend\" adds urgency. **Recommended.** |\n\n**Pick: Headline C** for the Marketplace title. If the title field cuts it off, the short version is **\"Solid Oak Dining Table, Seats 6, $180\"**. Keep the search terms at the front, because Marketplace shows only about the first 40 to 50 characters in the feed.\n\n## 3. Features turned into benefits\n\nBly's rule: a feature is what the product *is*, and a benefit is what it *does for the buyer*. Name the feature, then say \"which means...\".\n\n| Feature | Benefit (what the buyer gets) |\n|---------|-------------------------------|\n| Solid oak, not veneer or particleboard | It won't swell, peel or sag. You can sand out scratches and refinish it, so it can last decades instead of a few years. |\n| Seats [6] ([dimensions, e.g., 72\" x 36\"]) | Room for the whole family plus guests at holidays, without borrowing a card table. |\n| Heavy, sturdy build | No wobble when kids lean on it or someone cuts a steak. It feels solid. |\n| Used, in [good] condition, with [minor surface wear] | You get furniture-store quality for about a fifth of the price. The marks are already there, so you won't worry about the first scratch. |\n| Classic oak grain and finish | Fits farmhouse, traditional or modern rooms, and it won't look dated next year. |\n| [Leaf / extends to X\"] *(if true)* | Small every day, large for Thanksgiving. One table does both. |\n| $180, local pickup | Less than most new flat-pack tables, with no assembly, no shipping and no waiting. |\n\n## 4. The full listing\n\n**Title:** Solid Oak, Not Veneer: Dining Table Seats 6, $180, Pick Up This Weekend\n\n**Price:** $180\n\n**Description:**\n\n> **Tired of tables that wobble, peel, or sag after two years? This one is solid oak, all the way through.**\n>\n> Most dining tables sold new today are particleboard with a thin veneer on top. This one is real oak. That means it's heavy, it doesn't wobble, and any scratch can be sanded out and refinished. Look after it and it will outlast the next three tables you'd otherwise buy.\n>\n> **What you get:**\n> - **Seats [6] comfortably**: [72\" L x 36\" W x 30\" H]. Enough room for family dinners and holiday guests.\n> - **Solid oak construction**: no veneer to chip, no particleboard to swell.\n> - **Rock-steady**: no wobble, no loose legs. [Legs bolt on / come off for easy transport.]\n> - **Classic grain**: fits farmhouse, traditional, or modern rooms.\n> - [**Extends to X\" with leaf**, if applicable]\n>\n> **Honest condition:** [Light surface scratches on top / small mark near one corner; see photo 4]. Structurally perfect. Wipe it down or give it a quick refinish and it looks new.\n>\n> **Why so cheap?** [We're moving / we upsized to a bigger table] and it needs to go. A comparable solid-oak table runs [$700 to $900+] new. Yours for **$180**.\n>\n> **Pickup:** [Neighborhood / cross streets]. [Fits in an SUV or pickup with the legs off.] [I can help you load it.]\n>\n> \ud83d\udc49 **Message me \"Is this available?\" and tell me when you can come.** First person with a pickup time gets it. Available for pickup this weekend, [Sat/Sun].\n\n*(Delete the emoji if you prefer a plain listing.)*\n\n## 5. How this follows Bly's method\n\n- **Attention:** the headline names the product, the key difference (\"not veneer\") and the price.\n- **Need:** the opening question names a real annoyance (wobbly, peeling furniture).\n- **Satisfaction:** features are paired with benefits, so the buyer pictures using the table.\n- **Proof:** stated dimensions, an honest condition note with a photo reference, and a reason for the low price. Admitting a small flaw makes the rest of the listing more believable.\n- **Action:** one simple next step (\"Message me...\") and a reason to act now (\"first person with a pickup time,\" \"this weekend\").\n\n**Photo tips (these do much of the selling on Marketplace):** shoot in daylight, take one wide shot with chairs or a place setting so buyers can picture it at home, one close-up of the oak grain, one of the underside or joinery to prove it's solid wood, and one honest photo of the worst flaw.\n"}], "grading": {"expectations": [{"text": "Gives 3 headlines each labeled with one of Bly's headline types", "passed": false, "evidence": "A 'Direct' and B 'Question' are valid and fit. But C, 'Solid Oak, Not Veneer: Seats 6, $180, Pick Up This Weekend', is labeled 'Reason-why / news'. In the skill files a reason-why headline lists reasons ('7 reasons...') and a news headline announces something new; C does neither (it is a direct headline with a time element). The label is misapplied and hedged across two types, so not every headline is correctly labeled."}, {"text": "Checks headlines against the 4 U's (urgent, unique, ultra-specific, useful)", "passed": true, "evidence": "Section 2 table scores each headline 1-4 on Urgent, Unique, Ultra-specific, Useful with correct definitions and notes (A 11/16, B 13/16, C 15/16). It sums to /16 instead of using the book's '3+ on at least three' rule, but the check against all four U's is clearly done."}, {"text": "Converts features to benefits explicitly", "passed": true, "evidence": "Section 3 'Features turned into benefits' table, e.g. 'Solid oak, not veneer or particleboard' -> 'It won't swell, peel or sag. You can sand out scratches and refinish it'; states the 'which means...' translation."}, {"text": "Follows the motivating sequence (attention, need, satisfy, prove, action) in the body", "passed": true, "evidence": "Section 5 maps the listing to 'Attention', 'Need' (opening question about wobbly furniture), 'Satisfaction' (features+benefits), 'Proof' (dimensions, honest condition note, reason for low price), 'Action' ('Message me...'); the body text follows that order. Matches SKILL.md's five steps."}, {"text": "Includes a clear call to action", "passed": true, "evidence": "'Message me \"Is this available?\" and tell me when you can come. First person with a pickup time gets it. Available for pickup this weekend, [Sat/Sun].'"}], "summary": {"passed": 4, "failed": 1, "total": 5, "pass_rate": 0.8}}}, {"id": "eval-2-adv-critique-with_skill-run-1", "prompt": "Critique this headline with Bly's rules and rewrite it: 'Quality Products At Great Prices - Check Us Out!'", "eval_id": 2, "outputs": [{"name": "response.md", "type": "text", "content": "# Critique: \"Quality Products At Great Prices - Check Us Out!\"\n\n## Verdict\n\nThis headline fails almost every test in Bly's *Copywriter's Handbook*. It could sit on any store in the world, so it sells nothing. It's built from two of the most worn-out generalities in advertising (\"quality\" and \"great prices\") plus a vague command. It doesn't say who it's for, what is sold, or why anyone should act.\n\n---\n\n## 1. The four functions of a headline\n\n| Function (Bly) | Does it do it? | Why |\n|---|---|---|\n| **Get attention** | No | \"Quality\" and \"great prices\" are claims every competitor makes. Readers have learned to skip past them. Nothing new, specific or surprising. |\n| **Select the audience** | No | No reader is named or implied. A plumber, a bride and a teenager would all read it the same way, so it calls to none of them. |\n| **Deliver a complete message** | No | We don't learn what the products are, how good, or how cheap. The only message is \"we sell stuff.\" |\n| **Draw the reader into the body copy** | Weakly | \"Check us out!\" asks for a click but gives no reason or curiosity to act on it. |\n\n**Score: 0 of 4 functions fully met.**\n\n## 2. The 4 U's (Masterson's formula, used by Bly)\n\nScore 1 to 4. Bly's rule: a headline should score 3 or 4 on at least three of the four, or rewrite it.\n\n| U | Score | Reason |\n|---|---|---|\n| **Urgent** | 1 | No reason to act now: no deadline, no limited offer, no time element. \"Check us out!\" is a command with no clock on it. |\n| **Unique** | 1 | Every retailer claims quality and good prices. Nothing sets this business apart. |\n| **Ultra-specific** | 1 | No product, number, percentage, price, brand, place or detail. This is its worst failing. |\n| **Useful** | 1 to 2 | \"Great prices\" hints at saving money, but it's too vague to count as a real benefit. |\n\n**Total: about 4 to 5 out of 16. Zero U's at 3 or higher. Clear fail; rewrite.**\n\n## 3. Other Bly rules it breaks\n\n- **Generalities instead of specifics.** Bly's clarity tip \"Be specific\" says facts, figures and details sell and generalities don't. \"Quality\" and \"great\" are the two words he'd cut first. *Show* the quality (material, warranty, rating) and *state* the price or discount.\n- **No selling proposition, no USP.** Bly's headline method is to ask who the customer is, what the key features are, and why they'll buy, then put the answer to the last question in the headline. There's no answer here. Rosser Reeves's USP test asks for a specific proposition the competition doesn't offer. \"Quality at great prices\" is the opposite, since everyone claims it.\n- **Features vs. benefits.** There are no features (what *is* the quality?) and no concrete benefit (what does the buyer *get*: lasts 10 years, costs 30% less, ships tomorrow?).\n- **Weak command headline.** Command headlines work in Bly's list when the command carries the benefit or a reason. \"Check us out\" has neither. It's also the language of a casual flyer, not a selling proposition.\n- **Doesn't name the offer.** Bly's technique list includes \"highlight your offer,\" \"state the price\" and \"stress savings, discounts or value.\" This headline mentions value but gives no offer or price.\n- **Not you-oriented.** The focus is \"us\" (\"Check *us* out\"). Bly's first clarity tip is to put the reader first.\n- **Style.** All-Caps-On-Every-Word, a dash and an exclamation mark make it look like an ad and read as hype. Exclamation marks don't add urgency; a real reason to act does. *(Bly's e-mail chapter advises using all-caps sparingly. Title case on a headline is normal; the exclamation mark is the bigger problem.)*\n\n## 4. What would fix it\n\nI don't know what this business sells, its real prices, or its offer. A good rewrite **needs those facts**, and inventing them would break the other rule: claims must be true and substantiated (FTC truth-in-advertising). So below are **templates with [placeholders]**, each based on a named Bly headline type, and then one fully worked **illustrative** example clearly marked as invented.\n\n### Rewrites (fill the brackets with real facts)\n\n1. **Direct (state the selling proposition plainly, state the price):**\n   > **[Product category] from [real price], with a [X]-Year Warranty**\n   *Specific, useful; add a time element for urgency.*\n\n2. **Reason-why (numbers, reasons-why):**\n   > **[5] Reasons [Target customer] Buy Their [Product] From [Store], Not [Big-box competitor]**\n   *Selects the audience, sets up the body copy, unique.*\n\n3. **News + time element (give news, add a time element, stress savings):**\n   > **This Week Only: [Real %] Off [Specific product line], Ends [Date]**\n   *Urgent and specific. Use it only if the sale and deadline are real.*\n\n4. **How-to (promise useful information, help the reader achieve a goal):**\n   > **How to Get [Specific benefit, e.g., \"a Kitchen That Looks Custom\"] for Under $[real figure]**\n   *Useful and specific. Pulls the reader into the copy.*\n\n5. **Command, done right (command plus benefit):**\n   > **Compare Our [Product] Side by Side with [Brand], and Keep the Difference: [Real $] on Average**\n   *Keeps a call to action but gives the reason.*\n\n6. **Testimonial (the customer sells):**\n   > **\"[Real customer quote about quality or savings]\" \u2013 [Name, town]**\n   *Use real, permitted testimonials only.*\n\n### Illustrative example (invented business, for demonstration only)\n\nSuppose the business sells refurbished office chairs, with a real 5-year warranty and prices about 60% under new:\n\n> **Refurbished Designer Mesh Office Chairs from $389, Backed by a 5-Year Warranty. This Month's Stock Ships in 48 Hours**\n\n4 U's: Urgent 3 (this month's stock, 48 hours) \u00b7 Unique 3 (refurbished designer chairs plus a long warranty) \u00b7 Ultra-specific 4 (price, warranty, ship time) \u00b7 Useful 4 (saves money and the warranty lowers risk). **Passes: 4 of 4 at 3 or higher.** Every number here is invented for the example. Swap in your own verified facts.\n\n## 5. Process going forward (Bly's workflow)\n\n1. Answer: Who is the customer? What are the key features? Why will they buy?\n2. List features, then translate each into a benefit (\"so what?\").\n3. Find the USP, or the under-publicized benefit competitors don't mention.\n4. Write 5 to 10 headlines using the techniques above. Score each on the 4 U's. Keep those with three or more U's at 3 or higher.\n5. Make the body copy follow through: attention, show a need, satisfy it, prove it, ask for specific action (not just \"check us out,\" but \"Call [number] / Shop the sale at [URL] before [date]\").\n\nSend me what you sell, your real prices or offer, your customer and what makes you different, and I'll turn the best template into a finished headline.\n"}], "grading": {"expectations": [{"text": "Identifies vagueness/lack of specificity", "passed": true, "evidence": "4 U's 'Ultra-specific 1: No product, number, percentage, price, brand, place or detail. This is its worst failing.' and 'Generalities instead of specifics. Bly's clarity tip \"Be specific\" says facts, figures and details sell and generalities don't' (matches clarity tip 8 in references)."}, {"text": "Applies the four functions of a headline (attention, select audience, deliver message, draw into body)", "passed": true, "evidence": "Section 1 table evaluates 'Get attention', 'Select the audience', 'Deliver a complete message', 'Draw the reader into the body copy' with verdicts and reasons; matches SKILL.md core framework 2 exactly."}, {"text": "Uses the 4 U's", "passed": true, "evidence": "Section 2 scores Urgent 1, Unique 1, Ultra-specific 1, Useful 1-2, credits Masterson and applies the book's '3 or 4 on at least three' rule; also rescores the illustrative rewrite (3/3/4/4, passes)."}, {"text": "Gives multiple rewrites using named techniques or types", "passed": true, "evidence": "Six rewrites labeled Direct, Reason-why, News + time element, How-to, Command, Testimonial, each with named techniques from the 38-technique list (e.g. 'state the selling proposition plainly, state the price', 'add a time element, stress savings'), plus a worked example. Rewrites are bracketed templates because the business is unknown, but they are concrete and correctly typed."}, {"text": "Mentions USP or a BFD/motivator angle", "passed": true, "evidence": "'No selling proposition, no USP... Rosser Reeves's USP test asks for a specific proposition the competition doesn't offer', and the workflow step 'Find the USP, or the under-publicized benefit competitors don't mention' (matches SKILL.md item 7)."}], "summary": {"passed": 5, "failed": 0, "total": 5, "pass_rate": 1.0}}}, {"id": "eval-2-adv-critique-without_skill-run-1", "prompt": "Critique this headline with Bly's rules and rewrite it: 'Quality Products At Great Prices - Check Us Out!'", "eval_id": 2, "outputs": [{"name": "response.md", "type": "text", "content": "# Headline Critique: \"Quality Products At Great Prices - Check Us Out!\"\n\n## The verdict\n\nThis headline breaks almost every rule in Robert Bly's *The Copywriter's Handbook*. It could belong to any business that sells anything, so it gives the reader no reason to stop. Bly would call it a \"blind\" or generic headline: it names no product, promises no specific benefit and gives no reason to believe it.\n\n## Critique using Bly's rules\n\n### 1. The four jobs of a headline\nBly says a headline must (1) **get attention**, (2) **select the audience**, (3) **deliver a complete message** and (4) **draw the reader into the body copy**.\n\n| Job | How this headline does | Why |\n|-----|------------------------|-----|\n| Get attention | Fails | \"Quality\" and \"great prices\" are the most overused phrases in advertising. Readers skip them. |\n| Select the audience | Fails | No product, customer type or problem is named. A bride, a plumber and a gamer all get the same message. |\n| Deliver a complete message | Fails | If the reader reads only this line, which most people do, they still don't know what you sell. |\n| Draw the reader into the body | Weak | \"Check Us Out!\" is an order with no reason behind it. Nothing makes the reader curious. |\n\n### 2. The 4 U's (Urgent, Unique, Ultra-specific, Useful)\nScored 1 to 4:\n\n| U | Score | Comment |\n|---|:-----:|---------|\n| Urgent | 1 | No deadline, no limited offer, no reason to act now. |\n| Unique | 1 | Every competitor claims quality and good prices. Nothing here sets you apart. |\n| Ultra-specific | 1 | \"Products,\" \"quality\" and \"great\" are all abstract. There are no numbers, names or details. |\n| Useful | 1 | The benefit is only implied (\"you might save money\") and never stated or shown. |\n| **Total** | **4 / 16** | About as low as a headline can score. |\n\n### 3. Specific rule breaks\n- **Vague claims instead of specifics.** Bly keeps stressing that specific copy sells and general copy doesn't. \"Great prices\" proves nothing. \"$29, half the big-box price\" does.\n- **Seller-focused, not reader-focused.** \"Check **us** out\" is about the business. Bly's advice, in line with Caples and Ogilvy, is to talk about the reader's self-interest (\"you,\" \"your\").\n- **Features and benefits are both missing.** There is no feature (what it is) and no benefit (what it does for me).\n- **Two unsupported claims together.** \"Quality\" and \"great prices\" pull against each other in the reader's mind (\"cheap means low quality\"), and the headline offers no proof for either.\n- **Weak, empty call to action.** A command headline can work, but only when the command carries a benefit (\"Get...\", \"Stop...\", \"Discover...\"). \"Check us out\" asks for effort and offers nothing.\n- **Title Case and the exclamation mark.** Capitalizing every word makes it harder to read, and the \"!\" tries to add excitement the words don't have. Bly prefers sentence case and letting the content do the work.\n- **No headline type.** It isn't a real direct, how-to, question, news, reason-why or testimonial headline. It is a slogan.\n\n## Rewrites\n\nThe original names no product, so the rewrites below use a sample business, an **independent furniture store**, to show the method. Replace the specifics with your real product, price, proof and audience. Each version is labelled with its Bly headline type.\n\n| # | Type | Rewrite | Why it's better |\n|---|------|---------|-----------------|\n| 1 | **Direct** | **Solid-Wood Dining Sets From $499: Half What the Big Stores Charge** | Names the product, gives a real price and a concrete comparison that backs up \"great prices.\" |\n| 2 | **How-to** | **How to Furnish Your Whole Living Room for Under $1,500, Without Particleboard** | A useful promise, an exact number, and it answers the \"cheap means junk\" worry. |\n| 3 | **Question** | **Why Pay $2,000 for a Sofa That Sags in Two Years?** | Targets the reader's pain and draws them into the body copy to find the answer. |\n| 4 | **Reason-why** | **5 Reasons Our 10-Year-Warranty Sofas Cost Less Than Mall Brands** | A specific number promises a list, and the warranty is proof of \"quality.\" |\n| 5 | **News** | **New: Factory-Direct Oak Furniture Now in [City], Save 40% Through Sunday** | News headlines get attention. Adds a location, a specific saving and a deadline. |\n| 6 | **Testimonial** | **\"We furnished our entire home for less than one designer sofa.\" \u2014 Maria T., [City]** | Social proof in the customer's own words. *(Use only a real customer quote.)* |\n| 7 | **Command** | **Stop Overpaying for Furniture: See This Week's $299 Solid-Oak Specials** | Keeps the call to action but attaches a clear benefit and a specific offer. |\n\n### Recommended rewrite\n**\"Solid-Wood Dining Sets From $499: Half What the Big Stores Charge\"**\n\n4 U's check: Urgent 2, Unique 3, Ultra-specific 4, Useful 4 = **13 / 16**, up from 4. To push urgency higher, add a deadline: *\"...Half What the Big Stores Charge, This Week Only.\"*\n\n## Template to apply to your own business\n\n> **[Specific product] for [specific price or result]: [proof or comparison][, deadline if real]**\n\nBefore you write the headline, answer these four questions (Bly's starting point is knowing the product and the buyer):\n1. What exactly do you sell, and who buys it?\n2. What is the single most important benefit to that buyer?\n3. What specific fact proves \"quality\"? (Material, warranty, years in business, ratings.)\n4. What specific number proves \"great prices\"? (A dollar figure, a percentage saved, a competitor comparison.)\n\nPut those answers into the headline in place of \"quality\" and \"great.\"\n"}], "grading": {"expectations": [{"text": "Identifies vagueness/lack of specificity", "passed": true, "evidence": "'Vague claims instead of specifics. Bly keeps stressing that specific copy sells and general copy doesn't' and Ultra-specific scored 1: '\"Products,\" \"quality\" and \"great\" are all abstract.' (Note: the verdict also calls it a 'blind' headline, which misapplies Bly's term, since a blind headline is one that makes no sense without the body copy, but the vagueness point itself is correct.)"}, {"text": "Applies the four functions of a headline (attention, select audience, deliver message, draw into body)", "passed": true, "evidence": "Section 1 'The four jobs of a headline' lists and evaluates get attention, select the audience, deliver a complete message, draw the reader into the body copy; matches SKILL.md."}, {"text": "Uses the 4 U's", "passed": true, "evidence": "Section 2 scores Urgent 1, Unique 1, Ultra-specific 1, Useful 1 = 4/16, and rescores the recommended rewrite (2/3/4/4 = 13/16)."}, {"text": "Gives multiple rewrites using named techniques or types", "passed": true, "evidence": "Seven rewrites in a table labeled Direct, How-to, Question, Reason-why, News, Testimonial, Command (all among Bly's 8 types), with a sample furniture-store business, and a recommended rewrite."}, {"text": "Mentions USP or a BFD/motivator angle", "passed": false, "evidence": "No mention of a USP, Rosser Reeves, the BFD formula (beliefs, feelings, desires) or the copy motivators anywhere. The closest points are 'Unique' in the 4 U's and 'the single most important benefit', which are not the USP or BFD/motivator frameworks. It also adds unsupported claims ('Bly prefers sentence case')."}], "summary": {"passed": 4, "failed": 1, "total": 5, "pass_rate": 0.8}}}], "previous_feedback": {}, "previous_outputs": {}, "benchmark": {"metadata": {"skill_name": "copywriters-handbook", "skill_path": "\u003cpath/to/skill>", "executor_model": "\u003cmodel-name>", "analyzer_model": "\u003cmodel-name>", "timestamp": "2026-11-21T22:00:51Z", "evals_run": [1, 2], "runs_per_configuration": 1}, "runs": [{"eval_id": 1, "eval_name": "adv-listing", "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 5, "failed": 0, "total": 5, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Gives 3 headlines each labeled with one of Bly's headline types", "passed": true, "evidence": "Headline A labeled 'Direct' ('Solid Oak Dining Table, Seats [6], $180'), Headline B 'Reason-why' ('3 Reasons This $180 Solid Oak Table Beats Anything Flat-Pack'), Headline C 'How-to' ('How to Get a Real Hardwood Dining Table for $180...'). All three are among the 8 types in references/headlines-and-clarity.md and each fits its type; the supporting technique names (state the selling proposition plainly, state the price, reasons-why, promise useful information, address the reader's concern) match the 38-technique list."}, {"text": "Checks headlines against the 4 U's (urgent, unique, ultra-specific, useful)", "passed": true, "evidence": "Each headline gets an Urgent/Unique/Ultra-specific/Useful table scored 1-4 with a Pass column, applying the book's rule ('3 or 4 on at least three of the four U's, or you rewrite it', credited to Masterson as SKILL.md does). Headline A fails (2 of 4) and is rewritten with 'Pickup This Weekend' and rescored, matching the skill's rewrite-to-lift guidance."}, {"text": "Converts features to benefits explicitly", "passed": true, "evidence": "'Step 2: Features to benefits' table with 'So what? Benefit to the buyer' column, e.g. 'Solid wood throughout' -> 'you can sand and refinish it instead of throwing it away'; uses the book's 'so what?' translation. Also adds the USP fallback (under-publicized benefit: refinishable), consistent with SKILL.md."}, {"text": "Follows the motivating sequence (attention, need, satisfy, prove, action) in the body", "passed": true, "evidence": "Description is annotated '(1. Attention: lead with the strongest benefit.)', '(2. Show a need.)', '(3. Satisfy the need and position the table as the answer.)', '(4. Prove it...)', '(5. Ask for action...)', with matching body text in that order; matches SKILL.md's five steps exactly."}, {"text": "Includes a clear call to action", "passed": true, "evidence": "'Message me with a day and time that works and it's yours. [Available this weekend.]' plus price, pickup location and payment terms, explicitly framed as 'tell the reader exactly what to do, and make it easy.'"}], "notes": []}, {"eval_id": 2, "eval_name": "adv-critique", "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 5, "failed": 0, "total": 5, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Identifies vagueness/lack of specificity", "passed": true, "evidence": "4 U's 'Ultra-specific 1: No product, number, percentage, price, brand, place or detail. This is its worst failing.' and 'Generalities instead of specifics. Bly's clarity tip \"Be specific\" says facts, figures and details sell and generalities don't' (matches clarity tip 8 in references)."}, {"text": "Applies the four functions of a headline (attention, select audience, deliver message, draw into body)", "passed": true, "evidence": "Section 1 table evaluates 'Get attention', 'Select the audience', 'Deliver a complete message', 'Draw the reader into the body copy' with verdicts and reasons; matches SKILL.md core framework 2 exactly."}, {"text": "Uses the 4 U's", "passed": true, "evidence": "Section 2 scores Urgent 1, Unique 1, Ultra-specific 1, Useful 1-2, credits Masterson and applies the book's '3 or 4 on at least three' rule; also rescores the illustrative rewrite (3/3/4/4, passes)."}, {"text": "Gives multiple rewrites using named techniques or types", "passed": true, "evidence": "Six rewrites labeled Direct, Reason-why, News + time element, How-to, Command, Testimonial, each with named techniques from the 38-technique list (e.g. 'state the selling proposition plainly, state the price', 'add a time element, stress savings'), plus a worked example. Rewrites are bracketed templates because the business is unknown, but they are concrete and correctly typed."}, {"text": "Mentions USP or a BFD/motivator angle", "passed": true, "evidence": "'No selling proposition, no USP... Rosser Reeves's USP test asks for a specific proposition the competition doesn't offer', and the workflow step 'Find the USP, or the under-publicized benefit competitors don't mention' (matches SKILL.md item 7)."}], "notes": []}, {"eval_id": 1, "eval_name": "adv-listing", "configuration": "without_skill", "run_number": 1, "result": {"pass_rate": 0.8, "passed": 4, "failed": 1, "total": 5, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Gives 3 headlines each labeled with one of Bly's headline types", "passed": false, "evidence": "A 'Direct' and B 'Question' are valid and fit. But C, 'Solid Oak, Not Veneer: Seats 6, $180, Pick Up This Weekend', is labeled 'Reason-why / news'. In the skill files a reason-why headline lists reasons ('7 reasons...') and a news headline announces something new; C does neither (it is a direct headline with a time element). The label is misapplied and hedged across two types, so not every headline is correctly labeled."}, {"text": "Checks headlines against the 4 U's (urgent, unique, ultra-specific, useful)", "passed": true, "evidence": "Section 2 table scores each headline 1-4 on Urgent, Unique, Ultra-specific, Useful with correct definitions and notes (A 11/16, B 13/16, C 15/16). It sums to /16 instead of using the book's '3+ on at least three' rule, but the check against all four U's is clearly done."}, {"text": "Converts features to benefits explicitly", "passed": true, "evidence": "Section 3 'Features turned into benefits' table, e.g. 'Solid oak, not veneer or particleboard' -> 'It won't swell, peel or sag. You can sand out scratches and refinish it'; states the 'which means...' translation."}, {"text": "Follows the motivating sequence (attention, need, satisfy, prove, action) in the body", "passed": true, "evidence": "Section 5 maps the listing to 'Attention', 'Need' (opening question about wobbly furniture), 'Satisfaction' (features+benefits), 'Proof' (dimensions, honest condition note, reason for low price), 'Action' ('Message me...'); the body text follows that order. Matches SKILL.md's five steps."}, {"text": "Includes a clear call to action", "passed": true, "evidence": "'Message me \"Is this available?\" and tell me when you can come. First person with a pickup time gets it. Available for pickup this weekend, [Sat/Sun].'"}], "notes": []}, {"eval_id": 2, "eval_name": "adv-critique", "configuration": "without_skill", "run_number": 1, "result": {"pass_rate": 0.8, "passed": 4, "failed": 1, "total": 5, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Identifies vagueness/lack of specificity", "passed": true, "evidence": "'Vague claims instead of specifics. Bly keeps stressing that specific copy sells and general copy doesn't' and Ultra-specific scored 1: '\"Products,\" \"quality\" and \"great\" are all abstract.' (Note: the verdict also calls it a 'blind' headline, which misapplies Bly's term, since a blind headline is one that makes no sense without the body copy, but the vagueness point itself is correct.)"}, {"text": "Applies the four functions of a headline (attention, select audience, deliver message, draw into body)", "passed": true, "evidence": "Section 1 'The four jobs of a headline' lists and evaluates get attention, select the audience, deliver a complete message, draw the reader into the body copy; matches SKILL.md."}, {"text": "Uses the 4 U's", "passed": true, "evidence": "Section 2 scores Urgent 1, Unique 1, Ultra-specific 1, Useful 1 = 4/16, and rescores the recommended rewrite (2/3/4/4 = 13/16)."}, {"text": "Gives multiple rewrites using named techniques or types", "passed": true, "evidence": "Seven rewrites in a table labeled Direct, How-to, Question, Reason-why, News, Testimonial, Command (all among Bly's 8 types), with a sample furniture-store business, and a recommended rewrite."}, {"text": "Mentions USP or a BFD/motivator angle", "passed": false, "evidence": "No mention of a USP, Rosser Reeves, the BFD formula (beliefs, feelings, desires) or the copy motivators anywhere. The closest points are 'Unique' in the 4 U's and 'the single most important benefit', which are not the USP or BFD/motivator frameworks. It also adds unsupported claims ('Bly prefers sentence case')."}], "notes": []}], "run_summary": {"with_skill": {"pass_rate": {"mean": 1.0, "stddev": 0.0, "min": 1.0, "max": 1.0}, "time_seconds": null, "tokens": null}, "without_skill": {"pass_rate": {"mean": 0.8, "stddev": 0.0, "min": 0.8, "max": 0.8}, "time_seconds": null, "tokens": null}, "delta": {"pass_rate": "+0.20", "time_seconds": null, "tokens": null}}, "notes": ["Time recorded for 0 of 2 with_skill runs, 0 of 2 without_skill runs, so there is no time delta.", "Token count recorded for 0 of 2 with_skill runs, 0 of 2 without_skill runs, so there is no token count delta."]}};
+
+    // ---- State ----
+    let feedbackMap = {};  // run_id -> feedback text
+    let currentIndex = 0;
+    let visitedRuns = new Set();
+
+    // ---- Init ----
+    async function init() {
+      // Load saved feedback from server — but only if this isn't a fresh
+      // iteration (indicated by previous_feedback being present). When
+      // previous feedback exists, the feedback.json on disk is stale from
+      // the prior iteration and should not pre-fill the textareas.
+      const hasPrevious = Object.keys(EMBEDDED_DATA.previous_feedback || {}).length > 0
+        || Object.keys(EMBEDDED_DATA.previous_outputs || {}).length > 0;
+      if (!hasPrevious) {
+        try {
+          const resp = await fetch("/api/feedback");
+          const data = await resp.json();
+          if (data.reviews) {
+            for (const r of data.reviews) feedbackMap[r.run_id] = r.feedback;
+          }
+        } catch { /* first run, no feedback yet */ }
+      }
+
+      document.getElementById("skill-name").textContent = EMBEDDED_DATA.skill_name;
+      showRun(0);
+
+      // Wire up feedback auto-save
+      const textarea = document.getElementById("feedback");
+      let saveTimeout = null;
+      textarea.addEventListener("input", () => {
+        clearTimeout(saveTimeout);
+        document.getElementById("feedback-status").textContent = "";
+        saveTimeout = setTimeout(() => saveCurrentFeedback(), 800);
+      });
+    }
+
+    // ---- Navigation ----
+    function navigate(delta) {
+      const newIndex = currentIndex + delta;
+      if (newIndex >= 0 && newIndex < EMBEDDED_DATA.runs.length) {
+        saveCurrentFeedback();
+        showRun(newIndex);
+      }
+    }
+
+    function updateNavButtons() {
+      document.getElementById("prev-btn").disabled = currentIndex === 0;
+      document.getElementById("next-btn").disabled =
+        currentIndex === EMBEDDED_DATA.runs.length - 1;
+    }
+
+    // ---- Show a run ----
+    function showRun(index) {
+      currentIndex = index;
+      const run = EMBEDDED_DATA.runs[index];
+
+      // Progress
+      document.getElementById("progress").textContent =
+        `${index + 1} of ${EMBEDDED_DATA.runs.length}`;
+
+      // Prompt
+      document.getElementById("prompt-text").textContent = run.prompt;
+
+      // Config badge
+      const badge = document.getElementById("config-badge");
+      const configMatch = run.id.match(/(with_skill|without_skill|new_skill|old_skill)/);
+      if (configMatch) {
+        const config = configMatch[1];
+        const isBaseline = config === "without_skill" || config === "old_skill";
+        badge.textContent = config.replace(/_/g, " ");
+        badge.className = "config-badge " + (isBaseline ? "config-baseline" : "config-primary");
+        badge.style.display = "inline-block";
+      } else {
+        badge.style.display = "none";
+      }
+
+      // Outputs
+      renderOutputs(run);
+
+      // Previous outputs
+      renderPrevOutputs(run);
+
+      // Grades
+      renderGrades(run);
+
+      // Previous feedback
+      const prevFb = (EMBEDDED_DATA.previous_feedback || {})[run.id];
+      const prevEl = document.getElementById("prev-feedback");
+      if (prevFb) {
+        document.getElementById("prev-feedback-text").textContent = prevFb;
+        prevEl.style.display = "block";
+      } else {
+        prevEl.style.display = "none";
+      }
+
+      // Feedback
+      document.getElementById("feedback").value = feedbackMap[run.id] || "";
+      document.getElementById("feedback-status").textContent = "";
+
+      updateNavButtons();
+
+      // Track visited runs and promote done button when all visited
+      visitedRuns.add(index);
+      const doneBtn = document.getElementById("done-btn");
+      if (visitedRuns.size >= EMBEDDED_DATA.runs.length) {
+        doneBtn.classList.add("ready");
+      }
+
+      // Scroll main content to top
+      document.querySelector(".main").scrollTop = 0;
+    }
+
+    // ---- Render outputs ----
+    function renderOutputs(run) {
+      const container = document.getElementById("outputs-body");
+      container.innerHTML = "";
+
+      const outputs = run.outputs || [];
+      if (outputs.length === 0) {
+        container.innerHTML = '<div class="empty-state">No output files</div>';
+        return;
+      }
+
+      for (const file of outputs) {
+        const fileDiv = document.createElement("div");
+        fileDiv.className = "output-file";
+
+        // Always show file header with download link
+        const header = document.createElement("div");
+        header.className = "output-file-header";
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = file.name;
+        header.appendChild(nameSpan);
+        const dlBtn = document.createElement("a");
+        dlBtn.className = "dl-btn";
+        dlBtn.textContent = "Download";
+        dlBtn.download = file.name;
+        dlBtn.href = getDownloadUri(file);
+        header.appendChild(dlBtn);
+        fileDiv.appendChild(header);
+
+        const content = document.createElement("div");
+        content.className = "output-file-content";
+
+        if (file.type === "text") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          content.appendChild(pre);
+        } else if (file.type === "image") {
+          const img = document.createElement("img");
+          img.src = file.data_uri;
+          img.alt = file.name;
+          content.appendChild(img);
+        } else if (file.type === "pdf") {
+          const iframe = document.createElement("iframe");
+          iframe.src = file.data_uri;
+          content.appendChild(iframe);
+        } else if (file.type === "xlsx") {
+          renderXlsx(content, file.data_b64);
+        } else if (file.type === "binary") {
+          const a = document.createElement("a");
+          a.className = "download-link";
+          a.href = file.data_uri;
+          a.download = file.name;
+          a.textContent = "Download " + file.name;
+          content.appendChild(a);
+        } else if (file.type === "error") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          pre.style.color = "var(--red)";
+          content.appendChild(pre);
+        }
+
+        fileDiv.appendChild(content);
+        container.appendChild(fileDiv);
+      }
+    }
+
+    // ---- XLSX rendering via SheetJS ----
+    function renderXlsx(container, b64Data) {
+      try {
+        const raw = Uint8Array.from(atob(b64Data), c => c.charCodeAt(0));
+        const wb = XLSX.read(raw, { type: "array" });
+
+        for (let i = 0; i < wb.SheetNames.length; i++) {
+          const sheetName = wb.SheetNames[i];
+          const ws = wb.Sheets[sheetName];
+
+          if (wb.SheetNames.length > 1) {
+            const sheetLabel = document.createElement("div");
+            sheetLabel.style.cssText =
+              "font-weight:600; font-size:0.8rem; color:#b0aea5; margin-top:0.5rem; margin-bottom:0.25rem;";
+            sheetLabel.textContent = "Sheet: " + sheetName;
+            container.appendChild(sheetLabel);
+          }
+
+          const htmlStr = XLSX.utils.sheet_to_html(ws, { editable: false });
+          const wrapper = document.createElement("div");
+          wrapper.innerHTML = htmlStr;
+          container.appendChild(wrapper);
+        }
+      } catch (err) {
+        container.textContent = "Error rendering spreadsheet: " + err.message;
+      }
+    }
+
+    // ---- Grades ----
+    function renderGrades(run) {
+      const section = document.getElementById("grades-section");
+      const content = document.getElementById("grades-content");
+
+      if (!run.grading) {
+        section.style.display = "none";
+        return;
+      }
+
+      const grading = run.grading;
+      section.style.display = "block";
+      // Reset to collapsed
+      content.classList.remove("open");
+      document.getElementById("grades-arrow").classList.remove("open");
+
+      const summary = grading.summary || {};
+      const expectations = grading.expectations || [];
+
+      let html = '<div style="padding: 1rem;">';
+
+      // Summary line
+      const passRate = summary.pass_rate != null
+        ? Math.round(summary.pass_rate * 100) + "%"
+        : "?";
+      const badgeClass = summary.pass_rate >= 0.8 ? "grade-pass" : summary.pass_rate >= 0.5 ? "" : "grade-fail";
+      html += '<div class="grades-summary">';
+      html += '<span class="grade-badge ' + badgeClass + '">' + passRate + '</span>';
+      html += '<span>' + escapeHtml(summary.passed || 0) + ' passed, ' + escapeHtml(summary.failed || 0) + ' failed of ' + escapeHtml(summary.total || 0) + '</span>';
+      html += '</div>';
+
+      // Assertions list
+      html += '<ul class="assertion-list">';
+      for (const exp of expectations) {
+        const statusClass = exp.passed ? "pass" : "fail";
+        const statusIcon = exp.passed ? "\u2713" : "\u2717";
+        html += '<li class="assertion-item">';
+        html += '<span class="assertion-status ' + statusClass + '">' + statusIcon + '</span>';
+        html += '<span>' + escapeHtml(exp.text) + '</span>';
+        if (exp.evidence) {
+          html += '<div class="assertion-evidence">' + escapeHtml(exp.evidence) + '</div>';
+        }
+        html += '</li>';
+      }
+      html += '</ul>';
+
+      html += '</div>';
+      content.innerHTML = html;
+    }
+
+    function toggleGrades() {
+      const content = document.getElementById("grades-content");
+      const arrow = document.getElementById("grades-arrow");
+      content.classList.toggle("open");
+      arrow.classList.toggle("open");
+    }
+
+    // ---- Previous outputs (collapsible) ----
+    function renderPrevOutputs(run) {
+      const section = document.getElementById("prev-outputs-section");
+      const content = document.getElementById("prev-outputs-content");
+      const prevOutputs = (EMBEDDED_DATA.previous_outputs || {})[run.id];
+
+      if (!prevOutputs || prevOutputs.length === 0) {
+        section.style.display = "none";
+        return;
+      }
+
+      section.style.display = "block";
+      // Reset to collapsed
+      content.classList.remove("open");
+      document.getElementById("prev-outputs-arrow").classList.remove("open");
+
+      // Render the files into the content area
+      content.innerHTML = "";
+      const wrapper = document.createElement("div");
+      wrapper.style.padding = "1rem";
+
+      for (const file of prevOutputs) {
+        const fileDiv = document.createElement("div");
+        fileDiv.className = "output-file";
+
+        const header = document.createElement("div");
+        header.className = "output-file-header";
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = file.name;
+        header.appendChild(nameSpan);
+        const dlBtn = document.createElement("a");
+        dlBtn.className = "dl-btn";
+        dlBtn.textContent = "Download";
+        dlBtn.download = file.name;
+        dlBtn.href = getDownloadUri(file);
+        header.appendChild(dlBtn);
+        fileDiv.appendChild(header);
+
+        const fc = document.createElement("div");
+        fc.className = "output-file-content";
+
+        if (file.type === "text") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          fc.appendChild(pre);
+        } else if (file.type === "image") {
+          const img = document.createElement("img");
+          img.src = file.data_uri;
+          img.alt = file.name;
+          fc.appendChild(img);
+        } else if (file.type === "pdf") {
+          const iframe = document.createElement("iframe");
+          iframe.src = file.data_uri;
+          fc.appendChild(iframe);
+        } else if (file.type === "xlsx") {
+          renderXlsx(fc, file.data_b64);
+        } else if (file.type === "binary") {
+          const a = document.createElement("a");
+          a.className = "download-link";
+          a.href = file.data_uri;
+          a.download = file.name;
+          a.textContent = "Download " + file.name;
+          fc.appendChild(a);
+        }
+
+        fileDiv.appendChild(fc);
+        wrapper.appendChild(fileDiv);
+      }
+
+      content.appendChild(wrapper);
+    }
+
+    function togglePrevOutputs() {
+      const content = document.getElementById("prev-outputs-content");
+      const arrow = document.getElementById("prev-outputs-arrow");
+      content.classList.toggle("open");
+      arrow.classList.toggle("open");
+    }
+
+    // ---- Feedback (saved to server -> feedback.json) ----
+    function saveCurrentFeedback() {
+      const run = EMBEDDED_DATA.runs[currentIndex];
+      const text = document.getElementById("feedback").value;
+
+      if (text.trim() === "") {
+        delete feedbackMap[run.id];
+      } else {
+        feedbackMap[run.id] = text;
+      }
+
+      // Build reviews array from map
+      const reviews = [];
+      for (const [run_id, feedback] of Object.entries(feedbackMap)) {
+        if (feedback.trim()) {
+          reviews.push({ run_id, feedback, timestamp: new Date().toISOString() });
+        }
+      }
+
+      fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reviews, status: "in_progress" }),
+      }).then(() => {
+        document.getElementById("feedback-status").textContent = "Saved";
+      }).catch(() => {
+        // Static mode or server unavailable — no-op on auto-save,
+        // feedback will be downloaded on final submit
+        document.getElementById("feedback-status").textContent = "Will download on submit";
+      });
+    }
+
+    // ---- Done ----
+    function showDoneDialog() {
+      // Save current textarea to feedbackMap (but don't POST yet)
+      const run = EMBEDDED_DATA.runs[currentIndex];
+      const text = document.getElementById("feedback").value;
+      if (text.trim() === "") {
+        delete feedbackMap[run.id];
+      } else {
+        feedbackMap[run.id] = text;
+      }
+
+      // POST once with status: complete — include ALL runs so the model
+      // can distinguish "no feedback" (looks good) from "not reviewed"
+      const reviews = [];
+      const ts = new Date().toISOString();
+      for (const r of EMBEDDED_DATA.runs) {
+        reviews.push({ run_id: r.id, feedback: feedbackMap[r.id] || "", timestamp: ts });
+      }
+      const payload = JSON.stringify({ reviews, status: "complete" }, null, 2);
+      fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: payload,
+      }).then(() => {
+        document.getElementById("done-overlay").classList.add("visible");
+      }).catch(() => {
+        // Server not available (static mode) — download as file
+        const blob = new Blob([payload], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "feedback.json";
+        a.click();
+        URL.revokeObjectURL(url);
+        document.getElementById("done-overlay").classList.add("visible");
+      });
+    }
+
+    function closeDoneDialog() {
+      // Reset status back to in_progress
+      saveCurrentFeedback();
+      document.getElementById("done-overlay").classList.remove("visible");
+    }
+
+    // ---- Toast ----
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("visible");
+      setTimeout(() => toast.classList.remove("visible"), 2000);
+    }
+
+    // ---- Keyboard nav ----
+    document.addEventListener("keydown", (e) => {
+      // Don't capture when typing in textarea
+      if (e.target.tagName === "TEXTAREA") return;
+
+      if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+        e.preventDefault();
+        navigate(-1);
+      } else if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+        e.preventDefault();
+        navigate(1);
+      }
+    });
+
+    // ---- Util ----
+    function getDownloadUri(file) {
+      if (file.data_uri) return file.data_uri;
+      if (file.data_b64) return "data:application/octet-stream;base64," + file.data_b64;
+      if (file.type === "text") return "data:text/plain;charset=utf-8," + encodeURIComponent(file.content);
+      return "#";
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement("div");
+      div.textContent = text;
+      return div.innerHTML.replace(/"/g, "&quot;");
+    }
+
+    // ---- View switching ----
+    function switchView(view) {
+      document.querySelectorAll(".view-tab").forEach(t => t.classList.remove("active"));
+      document.querySelectorAll(".view-panel").forEach(p => p.classList.remove("active"));
+      document.querySelector(`[onclick="switchView('${view}')"]`).classList.add("active");
+      document.getElementById("panel-" + view).classList.add("active");
+    }
+
+    // ---- Benchmark rendering ----
+    function renderBenchmark() {
+      const data = EMBEDDED_DATA.benchmark;
+      if (!data) return;
+
+      // Show the tabs
+      document.getElementById("view-tabs").style.display = "flex";
+
+      const container = document.getElementById("benchmark-content");
+      const summary = data.run_summary || {};
+      const metadata = data.metadata || {};
+      const notes = data.notes || [];
+
+      let html = "";
+
+      // Header
+      html += "<h2 style='font-family: Poppins, sans-serif; margin-bottom: 0.5rem;'>Benchmark Results</h2>";
+      html += "<p style='color: var(--text-muted); font-size: 0.875rem; margin-bottom: 1.25rem;'>";
+      if (metadata.skill_name) html += "<strong>" + escapeHtml(metadata.skill_name) + "</strong> &mdash; ";
+      if (metadata.timestamp) html += escapeHtml(metadata.timestamp) + " &mdash; ";
+      if (metadata.evals_run) html += "Evals: " + escapeHtml(metadata.evals_run.join(", ")) + " &mdash; ";
+      html += escapeHtml(metadata.runs_per_configuration || "?") + (metadata.runs_per_configuration === 1 ? " run" : " runs") + " per configuration";
+      html += "</p>";
+
+      // Summary table
+      html += '<table class="benchmark-table">';
+
+      function fmtStat(stat, pct) {
+        if (!stat) return "—";
+        const suffix = pct ? "%" : "";
+        const m = pct ? (stat.mean * 100).toFixed(0) : stat.mean.toFixed(1);
+        const s = pct ? (stat.stddev * 100).toFixed(0) : stat.stddev.toFixed(1);
+        return m + suffix + " ± " + s + suffix;
+      }
+
+      function deltaClass(val) {
+        if (!val) return "";
+        const n = parseFloat(val);
+        if (n > 0) return "benchmark-delta-positive";
+        if (n < 0) return "benchmark-delta-negative";
+        return "";
+      }
+
+      // Discover config names dynamically (everything except "delta")
+      const configs = Object.keys(summary).filter(k => k !== "delta");
+      const configA = configs[0] || "config_a";
+      const configB = configs[1] || "config_b";
+      const labelA = configA.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      const labelB = configB.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      const a = summary[configA] || {};
+      const b = summary[configB] || {};
+      const delta = summary.delta || {};
+      // With a single configuration there is nothing to compare: only its column is shown
+      const compare = cells => configs.length >= 2 ? cells : "";
+
+      html += "<thead><tr><th>Metric</th><th>" + escapeHtml(labelA) + "</th>" + compare("<th>" + escapeHtml(labelB) + "</th><th>Delta</th>") + "</tr></thead>";
+      html += "<tbody>";
+
+      html += "<tr><td><strong>Pass Rate</strong></td>";
+      html += "<td>" + fmtStat(a.pass_rate, true) + "</td>";
+      html += compare("<td>" + fmtStat(b.pass_rate, true) + "</td>");
+      html += compare('<td class="' + deltaClass(delta.pass_rate) + '">' + escapeHtml(delta.pass_rate || "—") + "</td>") + "</tr>";
+
+      // Time (only show row if data exists)
+      if (a.time_seconds || b.time_seconds) {
+        html += "<tr><td><strong>Time (s)</strong></td>";
+        html += "<td>" + fmtStat(a.time_seconds, false) + "</td>";
+        html += compare("<td>" + fmtStat(b.time_seconds, false) + "</td>");
+        html += compare('<td class="' + deltaClass(delta.time_seconds) + '">' + escapeHtml(delta.time_seconds ? delta.time_seconds + "s" : "—") + "</td>") + "</tr>";
+      }
+
+      // Tokens (only show row if data exists)
+      if (a.tokens || b.tokens) {
+        html += "<tr><td><strong>Tokens</strong></td>";
+        html += "<td>" + fmtStat(a.tokens, false) + "</td>";
+        html += compare("<td>" + fmtStat(b.tokens, false) + "</td>");
+        html += compare('<td class="' + deltaClass(delta.tokens) + '">' + escapeHtml(delta.tokens || "—") + "</td>") + "</tr>";
+      }
+
+      html += "</tbody></table>";
+
+      // Per-eval breakdown (if runs data available)
+      const runs = data.runs || [];
+      if (runs.length > 0) {
+        // Numeric ids first, then ids that are names
+        const rank = id => typeof id === "number" ? 0 : 1;
+        const evalIds = [...new Set(runs.map(r => r.eval_id))].sort((a, b) =>
+          rank(a) - rank(b) || (rank(a) ? String(a).localeCompare(String(b)) : a - b));
+
+        html += "<h3 style='font-family: Poppins, sans-serif; margin-bottom: 0.75rem;'>Per-Eval Breakdown</h3>";
+
+        const hasTime = runs.some(r => r.result && r.result.time_seconds != null);
+        const hasErrors = runs.some(r => r.result && r.result.errors > 0);
+
+        for (const evalId of evalIds) {
+          const evalRuns = runs.filter(r => r.eval_id === evalId);
+          const evalName = evalRuns[0] && evalRuns[0].eval_name ? evalRuns[0].eval_name : "Eval " + evalId;
+
+          html += "<h4 style='font-family: Poppins, sans-serif; margin: 1rem 0 0.5rem; color: var(--text);'>" + escapeHtml(evalName) + "</h4>";
+          html += '<table class="benchmark-table">';
+          html += "<thead><tr><th>Config</th><th>Run</th><th>Pass Rate</th>";
+          if (hasTime) html += "<th>Time (s)</th>";
+          if (hasErrors) html += "<th>Crashes During Execution</th>";
+          html += "</tr></thead>";
+          html += "<tbody>";
+
+          // Group by config and render with average rows
+          const configGroups = [...new Set(evalRuns.map(r => r.configuration))];
+          for (let ci = 0; ci < configGroups.length; ci++) {
+            const config = configGroups[ci];
+            const configRuns = evalRuns.filter(r => r.configuration === config);
+            if (configRuns.length === 0) continue;
+
+            const rowClass = ci === 0 ? "benchmark-row-with" : "benchmark-row-without";
+            const configLabel = escapeHtml(config.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase()));
+
+            for (const run of configRuns) {
+              const r = run.result || {};
+              const prClass = r.pass_rate >= 0.8 ? "benchmark-delta-positive" : r.pass_rate < 0.5 ? "benchmark-delta-negative" : "";
+              html += '<tr class="' + rowClass + '">';
+              html += "<td>" + configLabel + "</td>";
+              html += "<td>" + escapeHtml(run.run_number) + "</td>";
+              html += '<td class="' + prClass + '">' + ((r.pass_rate || 0) * 100).toFixed(0) + "% (" + escapeHtml(r.passed || 0) + "/" + escapeHtml(r.total || 0) + ")</td>";
+              if (hasTime) html += "<td>" + (r.time_seconds != null ? r.time_seconds.toFixed(1) : "—") + "</td>";
+              if (hasErrors) html += "<td>" + escapeHtml(r.errors || 0) + "</td>";
+              html += "</tr>";
+            }
+
+            // Average row
+            const rates = configRuns.map(r => (r.result || {}).pass_rate || 0);
+            const avgRate = rates.reduce((a, b) => a + b, 0) / rates.length;
+            const avgPrClass = avgRate >= 0.8 ? "benchmark-delta-positive" : avgRate < 0.5 ? "benchmark-delta-negative" : "";
+            html += '<tr class="benchmark-row-avg ' + rowClass + '">';
+            html += "<td>" + configLabel + "</td>";
+            html += "<td>Avg</td>";
+            html += '<td class="' + avgPrClass + '">' + (avgRate * 100).toFixed(0) + "%</td>";
+            if (hasTime) {
+              const times = configRuns.map(r => (r.result || {}).time_seconds).filter(t => t != null);
+              html += "<td>" + (times.length ? (times.reduce((a, b) => a + b, 0) / times.length).toFixed(1) : "—") + "</td>";
+            }
+            if (hasErrors) html += "<td></td>";
+            html += "</tr>";
+          }
+          html += "</tbody></table>";
+
+          // Per-assertion detail for this eval
+          const runsWithExpectations = {};
+          for (const config of configGroups) {
+            runsWithExpectations[config] = evalRuns.filter(r => r.configuration === config && r.expectations && r.expectations.length > 0);
+          }
+          const hasAnyExpectations = Object.values(runsWithExpectations).some(runs => runs.length > 0);
+          if (hasAnyExpectations) {
+            // Collect all unique assertion texts across all configs
+            const allAssertions = [];
+            const seen = new Set();
+            for (const config of configGroups) {
+              for (const run of runsWithExpectations[config]) {
+                for (const exp of (run.expectations || [])) {
+                  if (!seen.has(exp.text)) {
+                    seen.add(exp.text);
+                    allAssertions.push(exp.text);
+                  }
+                }
+              }
+            }
+
+            html += '<table class="benchmark-table" style="margin-top: 0.5rem;">';
+            html += "<thead><tr><th>Assertion</th>";
+            for (const config of configGroups) {
+              const label = config.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+              html += "<th>" + escapeHtml(label) + "</th>";
+            }
+            html += "</tr></thead><tbody>";
+
+            for (const assertionText of allAssertions) {
+              html += "<tr><td>" + escapeHtml(assertionText) + "</td>";
+
+              for (const config of configGroups) {
+                html += "<td>";
+                for (const run of runsWithExpectations[config]) {
+                  const exp = (run.expectations || []).find(e => e.text === assertionText);
+                  if (exp) {
+                    const cls = exp.passed ? "benchmark-delta-positive" : "benchmark-delta-negative";
+                    const icon = exp.passed ? "\u2713" : "\u2717";
+                    html += '<span class="' + cls + '" title="Run ' + escapeHtml(run.run_number) + ': ' + escapeHtml(exp.evidence || "") + '">' + icon + "</span> ";
+                  } else {
+                    html += "— ";
+                  }
+                }
+                html += "</td>";
+              }
+              html += "</tr>";
+            }
+            html += "</tbody></table>";
+          }
+        }
+      }
+
+      // Notes
+      if (notes.length > 0) {
+        html += '<div class="benchmark-notes">';
+        html += "<h3>Analysis Notes</h3>";
+        html += "<ul>";
+        for (const note of notes) {
+          html += "<li>" + escapeHtml(note) + "</li>";
+        }
+        html += "</ul></div>";
+      }
+
+      container.innerHTML = html;
+    }
+
+    // ---- Start ----
+    init();
+    renderBenchmark();
+  </script>
+</body>
+</html>

@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eval Review</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&family=Lora:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js" integrity="sha384-EnyY0/GSHQGSxSgMwaIPzSESbqoOLSexfnSMN2AP+39Ckmn92stwABZynq1JyzdT" crossorigin="anonymous"></script>
+  <style>
+    :root {
+      --bg: #faf9f5;
+      --surface: #ffffff;
+      --border: #e8e6dc;
+      --text: #141413;
+      --text-muted: #b0aea5;
+      --accent: #d97757;
+      --accent-hover: #c4613f;
+      --green: #788c5d;
+      --green-bg: #eef2e8;
+      --red: #c44;
+      --red-bg: #fceaea;
+      --header-bg: #141413;
+      --header-text: #faf9f5;
+      --radius: 6px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Lora', Georgia, serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ---- Header ---- */
+    .header {
+      background: var(--header-bg);
+      color: var(--header-text);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .header h1 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+    .header .instructions {
+      font-size: 0.8rem;
+      opacity: 0.7;
+      margin-top: 0.25rem;
+    }
+    .header .progress {
+      font-size: 0.875rem;
+      opacity: 0.8;
+      text-align: right;
+    }
+
+    /* ---- Main content ---- */
+    .main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.5rem 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    /* ---- Sections ---- */
+    .section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      flex-shrink: 0;
+    }
+    .section-header {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.75rem 1rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+    }
+    .section-body {
+      padding: 1rem;
+    }
+
+    /* ---- Config badge ---- */
+    .config-badge {
+      display: inline-block;
+      padding: 0.2rem 0.625rem;
+      border-radius: 9999px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      margin-left: 0.75rem;
+      vertical-align: middle;
+    }
+    .config-badge.config-primary {
+      background: rgba(33, 150, 243, 0.12);
+      color: #1976d2;
+    }
+    .config-badge.config-baseline {
+      background: rgba(255, 193, 7, 0.15);
+      color: #f57f17;
+    }
+
+    /* ---- Prompt ---- */
+    .prompt-text {
+      white-space: pre-wrap;
+      font-size: 0.9375rem;
+      line-height: 1.6;
+    }
+
+    /* ---- Outputs ---- */
+    .output-file {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .output-file + .output-file {
+      margin-top: 1rem;
+    }
+    .output-file-header {
+      padding: 0.5rem 0.75rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .output-file-header .dl-btn {
+      font-size: 0.7rem;
+      color: var(--accent);
+      text-decoration: none;
+      cursor: pointer;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-weight: 500;
+      opacity: 0.8;
+    }
+    .output-file-header .dl-btn:hover {
+      opacity: 1;
+      text-decoration: underline;
+    }
+    .output-file-content {
+      padding: 0.75rem;
+      overflow-x: auto;
+    }
+    .output-file-content pre {
+      font-size: 0.8125rem;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+    }
+    .output-file-content img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 4px;
+    }
+    .output-file-content iframe {
+      width: 100%;
+      height: 600px;
+      border: none;
+    }
+    .output-file-content table {
+      border-collapse: collapse;
+      font-size: 0.8125rem;
+      width: 100%;
+    }
+    .output-file-content table td,
+    .output-file-content table th {
+      border: 1px solid var(--border);
+      padding: 0.375rem 0.5rem;
+      text-align: left;
+    }
+    .output-file-content table th {
+      background: var(--bg);
+      font-weight: 600;
+    }
+    .output-file-content .download-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 0.875rem;
+      cursor: pointer;
+    }
+    .output-file-content .download-link:hover {
+      background: var(--border);
+    }
+    .empty-state {
+      color: var(--text-muted);
+      font-style: italic;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    /* ---- Feedback ---- */
+    .prev-feedback {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.625rem 0.75rem;
+      margin-top: 0.75rem;
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+    .prev-feedback-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.25rem;
+      color: var(--text-muted);
+    }
+    .feedback-textarea {
+      width: 100%;
+      min-height: 100px;
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 0.9375rem;
+      line-height: 1.5;
+      resize: vertical;
+      color: var(--text);
+    }
+    .feedback-textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    .feedback-status {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.5rem;
+      min-height: 1.1em;
+    }
+
+    /* ---- Grades (collapsible) ---- */
+    .grades-toggle {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+    }
+    .grades-toggle:hover {
+      color: var(--accent);
+    }
+    .grades-toggle .arrow {
+      margin-right: 0.5rem;
+      transition: transform 0.15s;
+      font-size: 0.75rem;
+    }
+    .grades-toggle .arrow.open {
+      transform: rotate(90deg);
+    }
+    .grades-content {
+      display: none;
+      margin-top: 0.75rem;
+    }
+    .grades-content.open {
+      display: block;
+    }
+    .grades-summary {
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .grade-badge {
+      display: inline-block;
+      padding: 0.125rem 0.5rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .grade-pass { background: var(--green-bg); color: var(--green); }
+    .grade-fail { background: var(--red-bg); color: var(--red); }
+    .assertion-list {
+      list-style: none;
+    }
+    .assertion-item {
+      padding: 0.625rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.8125rem;
+    }
+    .assertion-item:last-child { border-bottom: none; }
+    .assertion-status {
+      font-weight: 600;
+      margin-right: 0.5rem;
+    }
+    .assertion-status.pass { color: var(--green); }
+    .assertion-status.fail { color: var(--red); }
+    .assertion-evidence {
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      margin-top: 0.25rem;
+      padding-left: 1.5rem;
+    }
+
+    /* ---- View tabs ---- */
+    .view-tabs {
+      display: flex;
+      gap: 0;
+      padding: 0 2rem;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .view-tab {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.625rem 1.25rem;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      background: none;
+      color: var(--text-muted);
+      border-bottom: 2px solid transparent;
+      transition: all 0.15s;
+    }
+    .view-tab:hover { color: var(--text); }
+    .view-tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+    .view-panel { display: none; }
+    .view-panel.active { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
+
+    /* ---- Benchmark view ---- */
+    .benchmark-view {
+      padding: 1.5rem 2rem;
+      overflow-y: auto;
+      flex: 1;
+    }
+    .benchmark-table {
+      border-collapse: collapse;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 0.8125rem;
+      width: 100%;
+      margin-bottom: 1.5rem;
+    }
+    .benchmark-table th, .benchmark-table td {
+      padding: 0.625rem 0.75rem;
+      text-align: left;
+      border: 1px solid var(--border);
+    }
+    .benchmark-table th {
+      font-family: 'Poppins', sans-serif;
+      background: var(--header-bg);
+      color: var(--header-text);
+      font-weight: 500;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .benchmark-table tr:hover { background: var(--bg); }
+    .benchmark-table tr.benchmark-row-with { background: rgba(33, 150, 243, 0.06); }
+    .benchmark-table tr.benchmark-row-without { background: rgba(255, 193, 7, 0.06); }
+    .benchmark-table tr.benchmark-row-with:hover { background: rgba(33, 150, 243, 0.12); }
+    .benchmark-table tr.benchmark-row-without:hover { background: rgba(255, 193, 7, 0.12); }
+    .benchmark-table tr.benchmark-row-avg { font-weight: 600; border-top: 2px solid var(--border); }
+    .benchmark-table tr.benchmark-row-avg.benchmark-row-with { background: rgba(33, 150, 243, 0.12); }
+    .benchmark-table tr.benchmark-row-avg.benchmark-row-without { background: rgba(255, 193, 7, 0.12); }
+    .benchmark-delta-positive { color: var(--green); font-weight: 600; }
+    .benchmark-delta-negative { color: var(--red); font-weight: 600; }
+    .benchmark-notes {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem;
+    }
+    .benchmark-notes h3 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+    }
+    .benchmark-notes ul {
+      list-style: disc;
+      padding-left: 1.25rem;
+    }
+    .benchmark-notes li {
+      font-size: 0.8125rem;
+      line-height: 1.6;
+      margin-bottom: 0.375rem;
+    }
+    .benchmark-empty {
+      color: var(--text-muted);
+      font-style: italic;
+      text-align: center;
+      padding: 3rem;
+    }
+
+    /* ---- Navigation ---- */
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+      flex-shrink: 0;
+    }
+    .nav-btn {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.5rem 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text);
+      transition: all 0.15s;
+    }
+    .nav-btn:hover:not(:disabled) {
+      background: var(--bg);
+      border-color: var(--text-muted);
+    }
+    .nav-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    .done-btn {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.5rem 1.5rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: all 0.15s;
+    }
+    .done-btn:hover {
+      background: var(--bg);
+      border-color: var(--text-muted);
+    }
+    .done-btn.ready {
+      border: none;
+      background: var(--accent);
+      color: white;
+      font-weight: 600;
+    }
+    .done-btn.ready:hover {
+      background: var(--accent-hover);
+    }
+    /* ---- Done overlay ---- */
+    .done-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 100;
+      justify-content: center;
+      align-items: center;
+    }
+    .done-overlay.visible {
+      display: flex;
+    }
+    .done-card {
+      background: var(--surface);
+      border-radius: 12px;
+      padding: 2rem 3rem;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      max-width: 500px;
+    }
+    .done-card h2 {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .done-card p {
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
+    }
+    .done-card .btn-row {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+    }
+    .done-card button {
+      padding: 0.5rem 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 0.875rem;
+    }
+    .done-card button:hover {
+      background: var(--bg);
+    }
+    /* ---- Toast ---- */
+    .toast {
+      position: fixed;
+      bottom: 5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--header-bg);
+      color: var(--header-text);
+      padding: 0.625rem 1.25rem;
+      border-radius: var(--radius);
+      font-size: 0.875rem;
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+      z-index: 200;
+    }
+    .toast.visible {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <div id="app" style="height:100vh; display:flex; flex-direction:column;">
+    <div class="header">
+      <div>
+        <h1>Eval Review: <span id="skill-name"></span></h1>
+        <div class="instructions">Review each output and leave feedback below. Navigate with arrow keys or buttons. When done, copy feedback and paste into Claude Code.</div>
+      </div>
+      <div class="progress" id="progress"></div>
+    </div>
+
+    <!-- View tabs (only shown when benchmark data exists) -->
+    <div class="view-tabs" id="view-tabs" style="display:none;">
+      <button class="view-tab active" onclick="switchView('outputs')">Outputs</button>
+      <button class="view-tab" onclick="switchView('benchmark')">Benchmark</button>
+    </div>
+
+    <!-- Outputs panel (qualitative review) -->
+    <div class="view-panel active" id="panel-outputs">
+    <div class="main">
+      <!-- Prompt -->
+      <div class="section">
+        <div class="section-header">Prompt <span class="config-badge" id="config-badge" style="display:none;"></span></div>
+        <div class="section-body">
+          <div class="prompt-text" id="prompt-text"></div>
+        </div>
+      </div>
+
+      <!-- Outputs -->
+      <div class="section">
+        <div class="section-header">Output</div>
+        <div class="section-body" id="outputs-body">
+          <div class="empty-state">No output files found</div>
+        </div>
+      </div>
+
+      <!-- Previous Output (collapsible) -->
+      <div class="section" id="prev-outputs-section" style="display:none;">
+        <div class="section-header">
+          <div class="grades-toggle" onclick="togglePrevOutputs()">
+            <span class="arrow" id="prev-outputs-arrow">&#9654;</span>
+            Previous Output
+          </div>
+        </div>
+        <div class="grades-content" id="prev-outputs-content"></div>
+      </div>
+
+      <!-- Grades (collapsible) -->
+      <div class="section" id="grades-section" style="display:none;">
+        <div class="section-header">
+          <div class="grades-toggle" onclick="toggleGrades()">
+            <span class="arrow" id="grades-arrow">&#9654;</span>
+            Formal Grades
+          </div>
+        </div>
+        <div class="grades-content" id="grades-content"></div>
+      </div>
+
+      <!-- Feedback -->
+      <div class="section">
+        <div class="section-header">Your Feedback</div>
+        <div class="section-body">
+          <textarea
+            class="feedback-textarea"
+            id="feedback"
+            placeholder="What do you think of this output? Any issues, suggestions, or things that look great?"
+          ></textarea>
+          <div class="feedback-status" id="feedback-status"></div>
+          <div class="prev-feedback" id="prev-feedback" style="display:none;">
+            <div class="prev-feedback-label">Previous feedback</div>
+            <div id="prev-feedback-text"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav" id="outputs-nav">
+      <button class="nav-btn" id="prev-btn" onclick="navigate(-1)">&#8592; Previous</button>
+      <button class="done-btn" id="done-btn" onclick="showDoneDialog()">Submit All Reviews</button>
+      <button class="nav-btn" id="next-btn" onclick="navigate(1)">Next &#8594;</button>
+    </div>
+    </div><!-- end panel-outputs -->
+
+    <!-- Benchmark panel (quantitative stats) -->
+    <div class="view-panel" id="panel-benchmark">
+      <div class="benchmark-view" id="benchmark-content">
+        <div class="benchmark-empty">No benchmark data available. Run a benchmark to see quantitative results here.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Done overlay -->
+  <div class="done-overlay" id="done-overlay">
+    <div class="done-card">
+      <h2>Review Complete</h2>
+      <p>Your feedback has been saved. Go back to your Claude Code session and tell Claude you're done reviewing.</p>
+      <div class="btn-row">
+        <button onclick="closeDoneDialog()">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ---- Embedded data (injected by generate_review.py) ----
+    const EMBEDDED_DATA = {"skill_name": "getting-things-done", "runs": [{"id": "eval-1-adv-setup-with_skill-run-1", "prompt": "I'm starting a Marketplace flipping side hustle on top of a job and family. Set up a full GTD system for it: lists, contexts, a sample project with natural planning, and a Weekly Review checklist.", "eval_id": 1, "outputs": [{"name": "response.md", "type": "text", "content": "# A GTD System for a Marketplace Flipping Side Hustle\n\n*Built on David Allen's* Getting Things Done *(revised edition, 2015).*\n\nYou have three areas competing for the same 24 hours: a job, a family, and a new business. GTD will not create more time. It gets every commitment out of your head and into a trusted system, so that in any free 20 minutes you can see what you could do and choose with confidence. Allen calls that state **\"mind like water\"**: you respond to each thing in proportion, without over- or under-reacting.\n\nOne design decision comes first: **build one system, not a separate \"hustle system.\"** If flipping has its own app or notebook that you check only on hustle nights, you will still be carrying job and family loops in your head, and your mind won't trust either system. Use one set of lists. Mark side-hustle items with a tag or prefix (for example `FLIP:`) so you can filter them, but review everything together.\n\n---\n\n## Step 0: Pick your tools (keep them few)\n\nThe revised edition is tool-agnostic. Any tool works if you trust it and review it. For a flipper on the move, these work well:\n\n| Need | Suggested tool |\n|---|---|\n| Capture on the go (at a garage sale, a thrift store, in the car) | Phone: a quick-capture inbox in your list app, plus voice notes |\n| Lists | One list manager (Todoist, Things, TickTick, Apple Reminders, or a paper notebook) |\n| Calendar | The calendar you already share with your family |\n| Reference and project support | One notes or cloud folder area, e.g. `Flip / Reference` and `Flip / Projects` |\n| Physical in-tray | A box or tray at home for receipts, item tags, parts, and cash envelopes |\n\nKeep the number of **collection points** small: phone inbox, physical in-tray, and email. Every extra inbox is one more place you have to empty.\n\n---\n\n## Step 1: Capture (the initial mind sweep)\n\nSet aside 1 to 2 hours. Write down **everything** that has your attention about the hustle, one item per line, with no judging or organizing yet. Then do the same quickly for job and family, because those loops are what will pull your attention away from your flipping time.\n\nTrigger list for the side hustle:\n\n- **Setup:** Marketplace profile and photo, payment methods, ratings, a separate bank account or card, bookkeeping, a business name, local rules on resale or sales tax, the tax treatment of side income\n- **Sourcing:** garage sales, estate sales, thrift stores, curb alerts, Facebook \"free\" listings, auctions, liquidation pallets, a list of target categories (furniture, tools, electronics, kids' gear)\n- **Inventory:** items you already own to sell first, storage space (garage corner, shelving), item tracking (a spreadsheet of cost, listed price, and sold price)\n- **Listing:** a photo setup and lighting, a description template, a pricing method (searching sold comps), cleaning and repair supplies\n- **Selling:** message response times, safe meetup spots, pickup windows, dealing with no-shows, delivery options\n- **Money:** startup budget, the reinvestment rule, profit targets, receipts\n- **Family and time:** agreed hustle hours with your partner, use of the garage and car, a kid-safe storage zone\n- **Ideas:** a refurbishing niche, eBay cross-listing, a small van someday\n\nEverything you write down goes into your inbox. You'll clarify it next.\n\n---\n\n## Step 2: Clarify (process inbox to empty)\n\nTake each item **one at a time, from the top**. Don't skip ahead, and don't put anything back into \"in.\" Ask:\n\n1. **What is it?**\n2. **Is it actionable?**\n   - **No:** trash it, **incubate** it (Someday/Maybe or the tickler), or file it as **reference**.\n   - **Yes:** What's the desired outcome? If it needs more than one action and can be finished within a year, it's a **project**. Then: **what's the very next physical, visible action?**\n3. Then decide what to do with the action:\n   - **Under 2 minutes? Do it now.** (\"If an action will take less than two minutes, it should be done at the moment it's defined.\") Replying \"Yes, still available, can you do 6pm?\" to a buyer is a classic two-minute action.\n   - **Someone else can do it? Delegate it** and track it on **Waiting For**.\n   - **Otherwise, defer it.** Put it on the **calendar** if it must happen on a specific day or at a specific time. Otherwise it goes on a **Next Actions** list by context.\n\nWorked examples from a flipper's inbox:\n\n| Stuff | Decision | Where it goes |\n|---|---|---|\n| \"Dresser for $20 on curb alert, gone by tonight\" | Actionable, date-specific | Calendar today, or do it now |\n| \"Learn about refinishing furniture\" | Not now | Someday/Maybe |\n| \"Sold-comps notes for KitchenAid mixers\" | Not actionable, useful | Reference: `Flip / Pricing comps` |\n| \"Set up separate bank account\" | Multi-step outcome | Project, next action: \"@computer: compare 3 no-fee business checking accounts\" |\n| \"Buyer says she'll send pickup time\" | Someone else's move | Waiting For: \"Sara: pickup time for bike (asked Tue)\" |\n| \"Estate sale Saturday 8am, Elm St\" | Fixed time and place | Calendar |\n| Receipt from a thrift store | Reference | Receipts folder, plus enter it in the tracking spreadsheet at the next @computer session |\n\n---\n\n## Step 3: Organize (the seven lists, with hard edges)\n\nGTD uses **seven primary categories**. Keep firm boundaries between them: a Next Action never lives on the calendar \"just in case,\" and reference never sits in the action lists.\n\n### 1. Projects list\nEvery outcome that needs more than one step and can be done within a year. Write each one as a finished result.\n- FLIP: Business setup complete (bank account, tracking sheet, tax notes)\n- FLIP: First 10 items sold\n- FLIP: Garage storage zone set up\n- FLIP: Photo station built\n- FLIP: Pricing reference sheet for top 5 categories\n- FAMILY: Hustle schedule agreed with my partner\n- (plus your job and family projects)\n\n### 2. Project support material\nNotes, plans, and files for each project, kept **outside** the action lists. Example: `Flip / Projects / First 10 items sold /` holds the item list, photos, and comps.\n\n### 3. Calendar (the \"hard landscape\")\nOnly three kinds of things go here: **time-specific actions** (pickup with a buyer at 6:00pm), **day-specific actions** (call the auction house Tuesday), and **day-specific information** (city-wide garage sale weekend; trash day for big items). Block your agreed hustle windows here too, so your family can see them.\n\n### 4. Next Actions lists (by context)\nSee the context list below. Each entry is the next physical step, starting with a verb.\n\n### 5. Waiting For list\nWhat you're waiting on, from whom, and since when.\n- Buyer \"Mike R.\": confirm pickup for desk (messaged Mon)\n- Partner: OK to use garage left bay (asked Sun)\n- Bank: debit card in the mail (ordered 11/14)\n- Payment: Venmo from buyer for lamp, $25\n\n### 6. Reference material\nNot actionable, but you want it. Sold-comp notes by category, listing and message templates, safe-meetup locations, local sales tax notes, receipts, and the inventory spreadsheet. Use a simple A\u2013Z filing system you can file into in under a minute.\n\n### 7. Someday/Maybe\nThings you might want to do, but not now. List them so they stop nagging you.\n- Cross-list on eBay or OfferUp\n- Rent a storage unit\n- Specialize in mid-century furniture\n- Buy a utility trailer\n- Make a \"flip of the week\" social account\n\n### Tickler file\nIf you have paper (receipts, return-by slips, auction catalogs), use the **43 folders**: 31 daily plus 12 monthly. Drop an item into the day you want to see it again. Digitally, use deferred start dates or calendar reminders. Examples: \"Re-list the sofa at a lower price\" set for 7 days after listing, and \"Quarterly estimated taxes\" in the month it's due.\n\n---\n\n## Step 3b: Contexts that fit a job + family + hustle life\n\nThe four-criteria model says you choose actions first by **context**: where you are and what tools you have. Build contexts around the places and tools that limit what you can do:\n\n| Context | What's on it | Example actions |\n|---|---|---|\n| **@phone (anywhere)** | Things you can do from your phone in a spare few minutes: lunch break, waiting rooms | Reply to buyer messages; post a quick listing from saved photos; check sold comps for a mixer |\n| **@computer** | Things that need a keyboard | Update the inventory spreadsheet; write a description template; research business checking accounts |\n| **@garage / workshop** | Physical work on items | Clean and test the lamp; tighten the dresser hardware; photograph 3 items at the photo station |\n| **@errands / sourcing** | Out of the house with the car | Hit the Goodwill on Route 9; buy Magic Erasers and furniture polish; drop off the donate pile |\n| **@pickup-meetup** | Handoffs with buyers (usually on the calendar instead) | Bring the bike to the police station lot |\n| **@partner (agenda)** | Things to bring up with your spouse or partner | Agree on a weekend sourcing slot; talk about the budget cap |\n| **@home** | Household (non-hustle) | Fix the kitchen drawer |\n| **@work / @office** | Day-job context | (keep this separate so you're not flipping on company time) |\n\nTwo practical tips:\n- **Low-energy list.** The four criteria are context, **time available**, **energy available**, then priority. After the kids are in bed you may have 30 minutes and very little energy. Tag simple tasks (`@phone`, quick replies, re-listing) so a tired evening is still useful.\n- **Agendas** for people you talk to often (partner, a flipping friend, your accountant). Put discussion points there instead of in your head.\n\n---\n\n## Step 4: A sample project with the Natural Planning Model\n\n**Project: \"FLIP: First 10 items sold, with profit tracked\"**\n\n### 1. Purpose and principles (why?)\n- **Purpose:** Prove the hustle can make money before spending real money on inventory. Build the habits and the system.\n- **Principles (the rules I won't break):**\n  - The family comes first: no sourcing during family dinners or kids' events.\n  - Start with stuff I already own, then spend no more than $200 of my own money.\n  - Meet only at safe public spots; no buyers in the house.\n  - Track every dollar from day one.\n  - Keep hustle work off the job's clock and equipment.\n\n### 2. Outcome visioning (what does success look like?)\nIn 6 weeks: 10 items sold, every sale logged with cost, price, profit, and time spent. A repeatable listing template and a photo setup. A clear number for \"profit per hour,\" so I know whether to scale up. My partner feels the hustle fits our life rather than taking it over.\n\n### 3. Brainstorming (how? all ideas out, no judging)\nSell the unused treadmill; the kids' outgrown bike; the old TV stand; check the closets for things to sell \u00b7 build a photo backdrop with a white sheet \u00b7 learn to search sold comps \u00b7 weekend garage sale runs \u00b7 Facebook free section \u00b7 ask friends if they're decluttering \u00b7 make a listing template \u00b7 put the price in the first line \u00b7 bundle the small items \u00b7 offer delivery for $15 \u00b7 set a weekly re-list day \u00b7 track time with a phone timer \u00b7 cash box for change \u00b7 ask a flipping subreddit for advice \u00b7 consider an eBay crossover...\n\n### 4. Organizing (components, order, priorities)\n1. **Foundation:** tracking spreadsheet; separate account or card; listing template; photo station\n2. **Phase A (weeks 1\u20132):** List 5 items I already own (zero cost, low risk, quick learning)\n3. **Phase B (weeks 2\u20135):** Source 5 to 8 items within the $200 cap, focused on 1 or 2 categories\n4. **Phase C (week 6):** Review the numbers and decide to scale, adjust, or pause\n\nDependencies: the photo station and template come before listing. Comps research comes before buying.\n\n### 5. Next actions (the very next physical step, and who owns it)\n- **@home:** Walk through the garage and closets with a notepad, and list everything sellable *(this is the project's single next action on the active list)*\n- **@computer:** Create the inventory sheet with columns for item, cost, list price, sold price, fees, hours, and profit\n- **@partner:** Agree on two weekly hustle windows (e.g., Tue 8\u20139:30pm and Sat 7\u201310am)\n- **Waiting For:** nothing yet\n\nOnly the next actions go on your context lists. The rest of the plan lives in project support material until the next step is due.\n\n---\n\n## Step 5: Reflect \u2014 Weekly Review checklist\n\nPick a fixed time each week, for about 1 to 2 hours. **Sunday evening** suits many people with a day job, because it sets up both the work week and the next weekend's sourcing. Put it on the shared family calendar as a recurring appointment with yourself.\n\n### GET CLEAR\n- [ ] **Collect loose papers and materials.** Receipts in the car, item tags, sticky notes, cash from sales, garage sale flyers. Everything goes into the in-tray.\n- [ ] **Get \"in\" to zero.** Process the physical in-tray, phone capture inbox, Marketplace messages, voice notes, email, and photos taken while sourcing. Use the clarify decision tree on each.\n- [ ] **Empty your head.** Do a quick mind sweep of all three areas: hustle, job, family. What's nagging you?\n\n### GET CURRENT\n- [ ] **Review Next Actions lists.** Mark off what's done. Is each item still a clear physical next step?\n- [ ] **Review previous calendar (last 1\u20132 weeks).** Any follow-ups from pickups, sales, family events, or work meetings?\n- [ ] **Review upcoming calendar (next 2\u20134 weeks).** Garage sale weekends, kids' events, work travel. Block hustle windows around them.\n- [ ] **Review Waiting For.** Unpaid buyers, pending pickups, partner decisions, mail-order items. Nudge whatever is stale.\n- [ ] **Review the Projects list (and larger outcomes).** Make sure *every* project has at least one next action. Check the project support folders.\n- [ ] **Review relevant checklists.** The hustle numbers check:\n  - [ ] Log this week's sales and costs in the spreadsheet\n  - [ ] Count active listings and stale ones (14+ days \u2192 drop the price or re-list)\n  - [ ] Inventory on hand vs. storage space\n  - [ ] Hours spent vs. the agreed budget\n  - [ ] Profit this week and to date; profit per hour\n\n### GET CREATIVE\n- [ ] **Review Someday/Maybe.** Is anything ready to become active (eBay cross-listing, a niche)? Is anything dead? Delete it.\n- [ ] **Be creative and courageous.** Any new ideas, a better sourcing route, a bolder price test? Capture them.\n- [ ] *(Optional, monthly)* **Look up a horizon.** Is the hustle still serving your goals and your family's priorities? (See below.)\n\n---\n\n## Step 6: Engage \u2014 choosing what to do in the moment\n\nUse the **four-criteria model** in this order:\n1. **Context:** Where am I and what do I have? (At work at lunch \u2192 only `@phone`)\n2. **Time available:** 10 minutes before school pickup \u2192 reply to messages, don't start a refinish\n3. **Energy available:** Tired at 9pm \u2192 re-list items, update the spreadsheet; save sourcing and repairs for fresh hours\n4. **Priority:** Of what's left, what matters most right now?\n\nAnd the **threefold model**: each day you are doing predefined work (your lists), doing work as it shows up (a buyer messages, a kid gets sick), or defining your work (processing your inbox). Expect interruptions to win sometimes. Because everything is captured and you review weekly, you can drop the hustle for a night without anything getting lost.\n\n---\n\n## Keeping the hustle in balance (horizons of focus)\n\nGTD is a workflow method, not a priority formula. To keep the hustle from swallowing your family time, look at it from higher horizons now and then:\n\n- **Horizon 5 (Purpose and principles):** Why am I doing this? (e.g., financial breathing room for the family)\n- **Horizon 4 (Vision):** What does life look like if this works?\n- **Horizon 3 (Goals):** e.g., \"$X/month in profit within a year, in 8 hours a week or less\"\n- **Horizon 2 (Areas of focus):** Job \u00b7 Family/partner \u00b7 Kids \u00b7 Health \u00b7 Home \u00b7 Finances \u00b7 *Flipping business*. Flipping is **one** area among several, not the center.\n- **Horizon 1 (Projects):** Your Projects list\n- **Ground (Actions):** Your Next Actions lists and calendar\n\nIf a weekly review shows the hustle crowding out the family or health areas, that's a signal to adjust. The system makes the tradeoff visible.\n\n---\n\n## Quick start: your first 7 days\n\n1. **Day 1:** Set up the tools and create the seven lists and contexts above.\n2. **Day 2:** Full mind sweep of the hustle, job, and family (1\u20132 hrs).\n3. **Day 3:** Clarify the inbox to zero, doing every two-minute action.\n4. **Day 4:** Run the natural planning model on \"First 10 items sold.\"\n5. **Day 5:** Agree on hustle windows with your partner and put them on the shared calendar.\n6. **Days 6\u20137:** Do next actions by context; capture everything new.\n7. **End of week:** Your first Weekly Review using the checklist.\n"}], "grading": {"expectations": [{"text": "Sets up the list categories (projects, next actions, waiting for, calendar, someday/maybe, reference)", "passed": true, "evidence": "Step 3 'Organize (the seven lists, with hard edges)' sets up all seven book categories exactly as SKILL.md lists them: 1 Projects list, 2 Project support material, 3 Calendar, 4 Next Actions lists (by context), 5 Waiting For, 6 Reference material, 7 Someday/Maybe, each with flipping examples; also the tickler with '43 folders: 31 daily plus 12 monthly' (matches SKILL.md)."}, {"text": "Uses contexts (e.g. @car, @phone, @computer)", "passed": true, "evidence": "Step 3b context table: '@phone (anywhere)', '@computer', '@garage / workshop', '@errands / sourcing', '@pickup-meetup', '@partner (agenda)', '@home', '@work / @office', with example actions; ties contexts to the four-criteria model in the correct order 'context, time available, energy available, then priority'."}, {"text": "Runs natural planning on a project (purpose, outcome, brainstorm, organize, next actions)", "passed": true, "evidence": "Step 4 runs 'FLIP: First 10 items sold' through all five phases with the book's names: '1. Purpose and principles (why?)', '2. Outcome visioning', '3. Brainstorming', '4. Organizing (components, order, priorities)', '5. Next actions (the very next physical step, and who owns it)', with concrete content in each; matches SKILL.md."}, {"text": "Gives a Weekly Review checklist (get clear, get current, get creative)", "passed": true, "evidence": "Step 5 checklist under GET CLEAR (collect loose papers and materials; get 'in' to zero; empty your head), GET CURRENT (next actions lists, previous calendar, upcoming calendar, Waiting For, Projects list and larger outcomes, relevant checklists), GET CREATIVE (review Someday/Maybe; 'Be creative and courageous') - item-for-item match with SKILL.md."}, {"text": "Applies the two-minute rule and/or clarifying questions", "passed": true, "evidence": "Step 2 gives the clarifying questions 'What is it?' / 'Is it actionable?' with the No branch (trash, incubate, reference) and Yes branch (outcome, project, next action), and quotes the two-minute rule verbatim 'If an action will take less than two minutes, it should be done at the moment it's defined.' plus do/delegate/defer and a worked table of flipper inbox items."}], "summary": {"passed": 5, "failed": 0, "total": 5, "pass_rate": 1.0}}}, {"id": "eval-1-adv-setup-without_skill-run-1", "prompt": "I'm starting a Marketplace flipping side hustle on top of a job and family. Set up a full GTD system for it: lists, contexts, a sample project with natural planning, and a Weekly Review checklist.", "eval_id": 1, "outputs": [{"name": "response.md", "type": "text", "content": "# A GTD System for Your Marketplace Flipping Side Hustle\n\nYou're fitting this around a day job and a family. So the system has one main job: get flipping out of your head, so it only gets your attention at the times you choose. Below is a complete setup you can build in any tool (Todoist, Things, Notion, Apple Reminders, or paper). Expect it to take about 60\u201390 minutes to set up.\n\n---\n\n## 1. Ground rules (read these first)\n\n1. **The side hustle gets its own area, not its own system.** Use the same trusted system as the rest of your life, with a \"Flipping\" tag or area. If you run two systems, one of them will go stale.\n2. **Protect the boundaries with the calendar, not with willpower.** Block your flipping time, for example Tue/Thu 8:30\u201310pm and Sat 7\u201310am. Everything outside those blocks belongs to the job and the family.\n3. **Two-minute rule, adjusted for buyers.** If replying to a buyer takes under 2 minutes and you're in a flipping context, do it now. Otherwise capture it and batch it.\n4. **Nothing about flipping lives only in your head:** prices you paid, pickup promises, buyer names, or \"I should list that dresser.\"\n\n---\n\n## 2. Capture: your inboxes\n\nKeep as few inboxes as possible and empty each one at least every 48 hours.\n\n| Inbox | What lands there | How to process it |\n|---|---|---|\n| **Phone quick-capture** (task app inbox or voice memo) | Ideas, \"check that garage sale,\" pricing thoughts | Clarify during daily processing |\n| **Marketplace messages** (FB Marketplace, OfferUp, Craigslist, eBay) | Buyer and seller messages | Batch-reply 2\u20133 times a day; capture any commitment as a next action |\n| **Photo camera roll / \"Sourcing\" album** | Photos of possible buys and items to list | Turn each into an inventory record + a \"List: ___\" action |\n| **Physical inbox tray / bin** (garage or shelf) | Receipts, new items not yet processed | Processed in the Weekly Review |\n| **Email label \"Flipping\"** | Platform notices, payouts, shipping labels | Clarify during daily processing |\n\n**Tip:** Turn off push notifications for marketplace apps during work hours and family time. Check them at set times. A buyer who waits two hours is fine. A boss or kid who gets half your attention is not.\n\n---\n\n## 3. Clarify and organize: the lists\n\n### Core lists\n\n1. **Inbox:** unprocessed items.\n2. **Projects (Flipping):** any outcome that takes more than one step. For flipping, most items and every sourcing trip are small projects.\n3. **Next Actions:** sorted by context (see section 4).\n4. **Waiting For:** things others owe you. Include the date and the person each time.\n   - \"Buyer Jason: confirm Sat pickup for oak table (msg'd 11/20)\"\n   - \"eBay payout for Nintendo lot (expected 11/24)\"\n   - \"Spouse: OK on using garage corner for storage\"\n5. **Calendar (hard landscape only):** set pickups, buyer meetups, estate sale openings, your blocked flipping sessions. Don't put wishful to-dos here.\n6. **Someday/Maybe (Flipping):**\n   - Start an eBay store / move to a higher seller tier\n   - Learn furniture refinishing\n   - Rent a small storage unit\n   - Sell on Mercari or Poshmark too\n   - Build an LLC + separate bank account (move this to Projects once revenue is steady)\n7. **Agendas:** topics to raise with specific people.\n   - **Spouse/partner:** weekend sourcing schedule, garage space, budget cap for buys\n   - **Accountant/tax person:** side-income reporting, mileage deductions, sales tax\n   - **Regular buyer or picker friend:** what they're looking for\n\n### Reference (not actionable, but you need it)\n\n- **Inventory tracker** (spreadsheet or Airtable): item, date bought, cost, where bought, listing date, platforms, asking price, sold price, fees, profit, days to sell.\n- **Pricing research notes:** sold comps by category, brands that move fast, brands to avoid.\n- **Sourcing map:** thrift stores, estate sale companies, curb-alert days, and the best day or time for each.\n- **Templates:** listing description template, buyer reply snippets (\"Yes, still available. Pickup is at ___, cash or Venmo\"), and a safe-meetup policy.\n- **Finance:** monthly profit and loss, mileage log, receipts folder (for taxes).\n\n### Tickler / recurring items\n\n- Weekly: relist or refresh listings older than 7 days\n- Weekly: check local estate sale listings (Thursday night, for weekend sales)\n- Monthly: drop prices on items older than 30 days by 10\u201315%\n- Quarterly: set aside and pay estimated taxes, if needed\n\n---\n\n## 4. Contexts built for a job + family life\n\nContexts answer one question: **\"What can I do right now, given where I am, what I have with me, and how much energy is left?\"** Keep the list short.\n\n| Context | Use it when | Example actions |\n|---|---|---|\n| **@Phone (5 min)** | Lunch break, waiting in line, kid's practice | Reply to buyer re: dresser; renew 3 OfferUp listings; check sold comps for KitchenAid mixer |\n| **@Computer** | Evening session at a desk | Write eBay listings for the 4 Lego sets; update inventory spreadsheet; print shipping labels |\n| **@Garage / Workspace** | Flipping block at home | Photograph 5 items; clean and test the Dyson; pack eBay orders |\n| **@Errands / Out** | Already driving for family errands | Drop packages at USPS; check Goodwill on Main St; buy furniture wax |\n| **@Sourcing trip** | Planned Saturday mornings | Hit 2 estate sales on the list; Facebook pickup of the free desk |\n| **@Agenda: Spouse** | Weekly check-in | Discuss holiday sourcing budget |\n| **Low energy (tag)** | Tired after the kids' bedtime | Sort photos; renew listings; log sales |\n\n**Two key ideas:**\n- **Bundle errands with family trips.** Your USPS drop-off and thrift check go on the same run as groceries.\n- **Low-energy tasks matter.** Most of your flipping time comes when you're tired. Keep a stock of brain-dead tasks so 9:30pm isn't wasted.\n\n---\n\n## 5. Sample project with natural planning\n\n**Project:** *Flip the $40 estate sale mid-century dresser for $250+ within 3 weeks.*\n\nThe Natural Planning Model has five steps: purpose, vision, brainstorm, organize, next actions.\n\n### 1. Purpose and principles: why are we doing this?\n- **Purpose:** Prove that furniture flips can make $150+ profit per piece. If they do, this becomes a repeatable category.\n- **Principles (the rules for how):**\n  - No more than 4 hours of hands-on work. If it needs more, sell it as-is.\n  - Work only in scheduled blocks. No refinishing during family dinner.\n  - Meet buyers safely: porch or driveway pickup with someone home, or a public spot.\n  - Keep total extra spend under $25.\n\n### 2. Outcome / vision: what does \"done\" look like?\n> The dresser is sold and picked up within 21 days for $250 or more. Profit (after supplies) is logged in the inventory sheet. I have before/after photos and a note on what worked, so I can repeat it.\n\n### 3. Brainstorm (everything, unfiltered)\n- Clean the drawers, fix the sticky bottom drawer\n- Restain or just oil the top?\n- Replace or polish the hardware\n- Check sold comps for \"mid-century dresser\" in my area\n- Good daylight photos, staged with a plant and lamp\n- List on FB Marketplace, OfferUp, Craigslist\n- Delivery for an extra fee?\n- Need a dolly / helper to move it\n- Ask spouse about moving it into the garage\n- Keywords: \"MCM,\" \"walnut,\" \"Broyhill-style,\" \"dovetail drawers\"\n- Price high, then drop on a schedule\n- Log costs: $40 + supplies\n\n### 4. Organize (sequence and group)\n**Phase A: Assess (Week 1)**\n1. Research sold comps \u2192 set target price and floor price\n2. Inspect for damage \u2192 decide: as-is, light refresh, or full refinish\n\n**Phase B: Prep (Week 1\u20132, two sessions max)**\n3. Clean and fix the drawer\n4. Refresh the top (oil, or light sand + stain)\n5. Polish the hardware\n\n**Phase C: Sell (Week 2\u20133)**\n6. Photograph in daylight (Saturday morning)\n7. Write and post the listing on 3 platforms\n8. Respond to buyers, then schedule the pickup\n9. Price drop on Day 7 if there are no serious offers\n\n**Phase D: Close**\n10. Collect payment, confirm pickup, mark it sold everywhere\n11. Log profit, hours spent, and lessons learned\n\n### 5. Next actions (only the very next step for each open path)\n- **@Phone:** Search FB Marketplace + eBay *sold* listings for \"mid century dresser,\" save 5 comps to the Pricing note *(10 min)*\n- **@Agenda: Spouse:** Okay to keep the dresser in the left garage bay for 3 weeks?\n- **@Errands:** Pick up Howard Feed-N-Wax + 0000 steel wool at the hardware store (on the Saturday grocery run)\n- **Calendar:** Sat 8\u201310am, Dresser prep session #1\n- **Waiting For:** (none yet)\n\nEvery other step stays in the project plan until it becomes the next action.\n\n---\n\n## 6. Daily rhythm (15 minutes total)\n\n- **Morning (3 min, phone):** Glance at the calendar. Any pickups or meetups today? Anything to grab on the way?\n- **Lunch (5 min, @Phone):** Batch-reply to buyers. Capture any promises into Calendar or Waiting For.\n- **Evening flipping block (when scheduled):** Start with a 5-minute inbox-to-zero, then work from the @Garage or @Computer list.\n- **Non-flipping evenings:** Don't open the list. That's the whole point of a trusted system.\n\n---\n\n## 7. Weekly Review checklist (Flipping edition)\n\n**When:** Same time every week, 45\u201360 minutes. Sunday evening works well because it's after weekend sourcing and before the work week. Put it on your calendar as a recurring appointment.\n\n### Get Clear\n- [ ] Collect loose items: receipts from wallet and car, sticky notes, items dumped in the garage\n- [ ] Empty the physical inbox tray / new-items bin\n- [ ] Process the phone capture inbox to zero\n- [ ] Clear the camera roll \"Sourcing\" album \u2192 inventory records + \"List: ___\" actions\n- [ ] Process the email \"Flipping\" label to zero\n- [ ] Mind sweep: \"What's bugging me about the business?\" Write down everything\n\n### Get Current\n- [ ] **Review the past week's calendar:** any pickups that fell through? Follow-ups owed?\n- [ ] **Review the next 2 weeks' calendar:** estate sales, holidays, kid events that block flipping time. Book your flipping blocks.\n- [ ] **Review Next Actions:** cross off done items; remove stale ones; make sure every action is concrete (\"Photograph Dyson,\" not \"Dyson\")\n- [ ] **Review Waiting For:** nudge any buyer or payout that's more than 2 days late\n- [ ] **Review Projects:** every active project (each item, each sourcing trip) has at least one next action\n- [ ] **Review Agendas:** anything to raise with your spouse this week?\n- [ ] **Inventory health check:**\n  - [ ] Every item on hand is listed (or has a \"List: ___\" action)\n  - [ ] Items listed 7+ days \u2192 refresh or relist\n  - [ ] Items listed 30+ days \u2192 price drop, bundle, or donate\n- [ ] **Money check:** log sales and payouts; update the weekly profit total; log mileage\n\n### Get Creative\n- [ ] Review Someday/Maybe: promote anything to an active project? Delete anything dead?\n- [ ] What category sold best this week? What should I source more of or less of?\n- [ ] **Capacity check:** Did flipping take time from family or sleep this week? Adjust next week's blocks if so.\n- [ ] Pick the **1\u20133 outcomes** that matter most for next week (e.g., \"List all 6 garage items,\" \"Sell the dresser\")\n\n---\n\n## 8. Higher horizons (a quick check each quarter)\n\n- **Goal (1 year):** e.g., $1,000/month average profit with no more than 8 hours a week\n- **Areas of focus for the side hustle:** Sourcing \u00b7 Listing & Sales \u00b7 Inventory & Space \u00b7 Finances & Taxes \u00b7 Customer Safety \u00b7 Family Boundaries\n- **Purpose:** Why are you doing this? Debt payoff, a vacation fund, a test before going full-time? Write it down. It tells you which opportunities to say no to.\n\n---\n\n## Quick-start: your first 3 actions\n\n1. **Today (10 min):** Create the \"Flipping\" area, the contexts above, and the Waiting For list in your task app.\n2. **Tonight (20 min):** Walk the garage and your phone photos. Capture every item and open commitment into the inbox.\n3. **This week:** Put the Weekly Review and two flipping blocks on your calendar as recurring events, and run your first review.\n"}], "grading": {"expectations": [{"text": "Sets up the list categories (projects, next actions, waiting for, calendar, someday/maybe, reference)", "passed": true, "evidence": "Section 3 'Core lists' sets up Projects (2), Next Actions by context (3), Waiting For (4), Calendar 'hard landscape only' (5), Someday/Maybe (6), plus a separate 'Reference' subsection (inventory tracker, pricing notes, templates). All six named categories present. Note: its numbered 'core lists' add Inbox and Agendas and omit project support material, so it is not the book's seven-category set, but the assertion's categories are all covered."}, {"text": "Uses contexts (e.g. @car, @phone, @computer)", "passed": true, "evidence": "Section 4 context table: '@Phone (5 min)', '@Computer', '@Garage / Workspace', '@Errands / Out', '@Sourcing trip', '@Agenda: Spouse', plus a 'Low energy (tag)', with concrete example actions."}, {"text": "Runs natural planning on a project (purpose, outcome, brainstorm, organize, next actions)", "passed": true, "evidence": "Section 5 runs the dresser flip project through '1. Purpose and principles', '2. Outcome / vision', '3. Brainstorm', '4. Organize (sequence and group)' with phases A-D, '5. Next actions (only the very next step for each open path)'; consistent with SKILL.md's five phases."}, {"text": "Gives a Weekly Review checklist (get clear, get current, get creative)", "passed": true, "evidence": "Section 7 checklist with 'Get Clear' (collect loose items, empty inbox tray, process inboxes to zero, mind sweep), 'Get Current' (past and next calendar, Next Actions, Waiting For, Projects, Agendas), 'Get Creative' (review Someday/Maybe, new ideas). Matches the book's three-part structure; adds non-book items (e.g. 'Pick the 1-3 outcomes'), but the core is correct."}, {"text": "Applies the two-minute rule and/or clarifying questions", "passed": true, "evidence": "Ground rule 3: 'Two-minute rule, adjusted for buyers. If replying to a buyer takes under 2 minutes and you're in a flipping context, do it now. Otherwise capture it and batch it.' Applies the rule (explicitly flagged as an adaptation, not attributed to the book). Weaker than the book's 'done at the moment it's defined' and the clarifying questions (What is it? Is it actionable?) are never stated, but the assertion's 'and/or' is met."}], "summary": {"passed": 5, "failed": 0, "total": 5, "pass_rate": 1.0}}}, {"id": "eval-2-adv-horizons-with_skill-run-1", "prompt": "Map my life onto GTD's horizons of focus: I want to quit my job in 2 years and run my own business.", "eval_id": 2, "outputs": [{"name": "response.md", "type": "text", "content": "# Mapping \"Quit My Job in 2 Years and Run My Own Business\" onto GTD's Horizons of Focus\n\n*Based on David Allen's* Getting Things Done *(revised edition, 2015): the six-level model for reviewing your work.*\n\n## First, a correction: this is not one project\n\nThe natural reflex is to put \"Quit my job and start my business\" on your Projects list. In GTD terms that's a category error. Allen defines a project as **\"any desired result that can be accomplished within a year that requires more than one action step.\"** A two-year transition doesn't fit that definition. It is a **Horizon 3 goal**, possibly serving a **Horizon 4 vision**, and it will produce *many* projects over time.\n\nIf you treat it as one huge project, you get a list item with no clear next action that sits there making you anxious. If you place it at the right horizon, it gives direction to a steady flow of small, doable projects and actions.\n\n## The six horizons (from the top down)\n\n| Horizon | Altitude | Typical time frame* | Your question |\n|---|---|---|---|\n| **5** | Purpose and principles | Lifetime | Why am I doing this at all? |\n| **4** | Vision | 3\u20135 years | What does success look like? |\n| **3** | Goals | 1\u20132 years | What has to be true by when? |\n| **2** | Areas of focus and accountabilities | Ongoing | What must I keep up in every part of life? |\n| **1** | Current projects | Within a year | What outcomes am I committed to now? |\n| **Ground** | Current actions | Today/this week | What's the next physical step? |\n\n\\*The time frames are the usual GTD guidelines, not hard rules.\n\n**Work top-down for direction, bottom-up for control.** Allen's advice is practical: if your inbox is overflowing and your head is full, the higher horizons won't feel real. Get Ground and Horizon 1 under control first (capture, clarify, the lists), then think about the higher levels. Below I go from the top down, because that's how you set the direction. The sequence that follows shows how to actually start.\n\n---\n\n## Horizon 5 \u2014 Purpose and principles\n\n*Why does this matter to you?* Everything below should trace back to this.\n\nFill in your own. Prompts and examples:\n- **Purpose:** \"To build work that is mine, that uses my skills fully, and that gives my family security and freedom over our time.\"\n- **Principles (the standards you won't trade away):**\n  - \"I don't bet the family's financial safety on the business.\"\n  - \"I keep doing excellent work for my current employer until the day I leave, and I leave on good terms.\"\n  - \"Health and relationships are not what I sacrifice to make this happen.\"\n  - \"I build things customers actually pay for, not things I just enjoy building.\"\n\n**Why this matters:** In year 2, when you're tired and the business is slow, your principles decide what you do. They tell you whether to quit early, push harder, or adjust the plan.\n\n---\n\n## Horizon 4 \u2014 Vision (3\u20135 years)\n\n*What does your life look like when this has worked?* Describe it in the present tense, with real detail.\n\nExample:\n> It's 2030. I've run my business full-time for about two years. It pays me at least what my old salary did, with 6+ months of operating reserve. I have [N] steady clients/customers, and I choose who I work with. I work about 45 hours most weeks, and I'm home for dinner. The work is [what you actually do day to day].\n\nNote what the vision covers: income, time, the type of work, and lifestyle. Quitting your job is not the vision. It's a **milestone** on the way to it. Keep your eye on the life you're building, not just the exit.\n\n---\n\n## Horizon 3 \u2014 Goals (1\u20132 years)\n\nThis is where your \"quit in 2 years\" belongs. Make it concrete and testable, and add the conditions that make quitting a good decision rather than a jump into the unknown. Write them as specific outcomes with dates.\n\n**The central goal:**\n> **By [month, year + 2], I resign from my job and work full-time on my business.**\n\n**Supporting goals (the \"readiness criteria\"):**\n1. **Revenue proof:** The business earns at least $[X]/month on the side for [3\u20136] consecutive months before I resign.\n2. **Financial runway:** [6\u201312] months of personal living expenses saved, plus a business reserve.\n3. **Customer base:** [N] paying customers or a dependable pipeline, plus repeatable ways to find new ones.\n4. **Foundations:** The business is legally set up, with bookkeeping, contracts/terms, and insurance in place. Health insurance is figured out for after I leave.\n5. **Skills:** I can sell, price, and deliver without being stuck.\n6. **Family alignment:** My partner/family and I agree on the plan, the risks, and the go/no-go checkpoints.\n\n**Add go/no-go checkpoints** (for example, at 12 and 18 months). At each one, ask: \"Am I on track? Do I proceed, adjust the date, or pivot the business idea?\" These belong on your calendar now.\n\nA year-1 slice of the goals makes it easier to define projects:\n- **By month 12:** First paying customers, $[Y]/month in side revenue, half the runway saved.\n- **By month 24:** All readiness criteria met \u2192 resign.\n\n---\n\n## Horizon 2 \u2014 Areas of focus and accountabilities\n\nThese are the ongoing roles and standards that don't end. No area is ever \"finished,\" but each one needs attention. Allen's point: the projects you create should keep *all* your areas at an acceptable standard, not just one.\n\n**Areas that the transition adds or changes:**\n- **Business: Product/Offer** \u2014 what you sell and how good it is\n- **Business: Marketing and Sales** \u2014 pipeline, outreach, audience\n- **Business: Delivery and Customers** \u2014 doing the work and keeping clients happy\n- **Business: Finance and Admin** \u2014 bookkeeping, taxes, legal, tools\n- **Personal Finances** \u2014 runway, budget, debt, health insurance plan\n- **Skills and Learning** \u2014 sales, your trade, running a business\n\n**Areas you must keep up** (the ones that fall apart if you ignore them):\n- **Current job** \u2014 performance, reputation, references. You're still accountable here for two years. Also check your employment contract for non-compete, IP, and moonlighting clauses.\n- **Family/partner** \u2014 time together and shared decisions\n- **Health and energy** \u2014 sleep, exercise. This is the engine for doing two things at once.\n- **Home**\n- **Friends and community/network** \u2014 which also becomes your referral base\n\nUse this list as a **checklist** during your Weekly Review: \"Is there an area I'm neglecting? Does any area need a new project?\"\n\n---\n\n## Horizon 1 \u2014 Current projects (within a year)\n\nNow break the Horizon 3 goals into projects you can finish in the next 12 months. Each one is a specific result that needs more than one action. Only put the ones you're committed to *now* on your active Projects list. Put the rest on **Someday/Maybe** and move them up in later reviews.\n\n**Active now (sample):**\n| Project (written as a finished outcome) | Serves goal / area |\n|---|---|\n| Business idea validated with 10 customer interviews | Revenue proof / Product |\n| First paid offer launched with a price and a sales page | Revenue proof / Marketing |\n| Monthly budget and runway target set; automatic savings running | Runway / Personal finances |\n| Employment contract reviewed for non-compete, IP, and moonlighting rules | Foundations / Current job |\n| Two-year plan agreed with my partner, including checkpoints | Family alignment / Family |\n| Weekly schedule set with protected business hours (e.g., 2 evenings + Saturday morning) | All goals / Health, Family |\n\n**Someday/Maybe (for later quarters):**\n- Form an LLC and open a business bank account\n- Get the website and portfolio built\n- Set up bookkeeping software\n- Plan health insurance for after resigning\n- Find a mentor or mastermind group\n- Plan the resignation and transition handover (month ~22)\n\nFor a big or unclear project, run the **natural planning model**: (1) purpose and principles, (2) outcome visioning, (3) brainstorming, (4) organizing, (5) next actions.\n\n---\n\n## Ground \u2014 Current actions\n\nEvery active project needs **at least one next action**: the very next physical, visible step, on a context list. This is where the two-year vision becomes something you can do on a Tuesday night.\n\n| Project | Next action | Context |\n|---|---|---|\n| Idea validated with 10 interviews | Write a list of 15 people who fit the target customer profile | @computer |\n| First paid offer launched | Draft 3 possible offer names and prices in my notebook | @anywhere |\n| Budget and runway set | Download the last 3 months of bank statements | @computer |\n| Contract reviewed | Find my employment agreement in email and read the IP section | @computer |\n| Plan agreed with partner | Ask my partner for a 1-hour Sunday planning slot | @partner agenda |\n| Weekly schedule | Block Tue/Thu 8\u201310pm and Sat 7\u201310am on the calendar as \"Business\" | @calendar |\n\nAlso:\n- **Calendar:** the 12- and 18-month go/no-go checkpoints; protected business blocks\n- **Waiting For:** responses from people you've asked for interviews, your partner's input\n- **Two-minute rule:** \"If an action will take less than two minutes, it should be done at the moment it's defined.\" For example, texting a friend to ask for one interview contact.\n\n---\n\n## Keeping the horizons alive: review rhythm\n\n| Horizon | How often to review | Where |\n|---|---|---|\n| Ground & Horizon 1 | **Weekly** | Weekly Review: get clear, get current, get creative |\n| Horizon 2 | Monthly, or weekly at a glance | Areas checklist in the Weekly Review |\n| Horizon 3 | Quarterly | Goals review, and the go/no-go checkpoints |\n| Horizons 4\u20135 | Yearly, or when making a big decision | Personal retreat or planning day |\n\n**The Weekly Review** is what holds it all together:\n- **Get clear:** collect loose papers, process the inbox to zero, empty your head\n- **Get current:** review action lists, the previous and upcoming calendar, Waiting For, project (and larger outcome) lists, and relevant checklists (including your Horizon 2 areas)\n- **Get creative:** review Someday/Maybe and be creative and courageous. This is where \"launch a podcast\" or \"LLC\" moves from Someday to active when the time is right.\n\n## Choosing what to do each day\n\nThe horizons give **direction**. In the moment, use the **four-criteria model**, in order: **context** (where am I and what tools do I have?), **time available**, **energy available**, then **priority**. Priority is where the horizons come in: when you have a free evening and enough energy, a next action on \"First paid offer launched\" usually beats reorganizing your desk, because it moves your Horizon 3 goal.\n\n## How to start this week (bottom-up first)\n\n1. **Mind sweep:** write down everything on your mind about the job, the business idea, money, and family.\n2. **Clarify and organize** it into Projects, Next Actions, Waiting For, Someday/Maybe, calendar, and reference.\n3. **Write a first draft of Horizons 5, 4, and 3** (one page total, messy is fine).\n4. **List your Horizon 2 areas.**\n5. **Choose 3 to 6 active projects** from the goals. Give each one a next action.\n6. **Put the go/no-go checkpoints and your first Weekly Review on the calendar.**\n\nYou don't need the perfect plan for the next two years. You need clear goals at Horizon 3, a handful of real projects at Horizon 1, and a next action for each, reviewed every week. Over 104 Weekly Reviews, that's how you get to your resignation day.\n"}], "grading": {"expectations": [{"text": "Names the horizons from Ground/runway through Horizon 5 (purpose/principles)", "passed": true, "evidence": "Table and sections name all six with the book's labels: '5 Purpose and principles', '4 Vision', '3 Goals', '2 Areas of focus and accountabilities', '1 Current projects', 'Ground Current actions'; exactly matches SKILL.md's six-level model."}, {"text": "Places the 2-year goal at the right horizon (vision, ~3-5 years, or goals 1-2 years)", "passed": true, "evidence": "'It is a Horizon 3 goal, possibly serving a Horizon 4 vision', and under Horizon 3 (1-2 years): 'This is where your \"quit in 2 years\" belongs.' Also correctly argues it is not a project using the book's quoted definition 'any desired result that can be accomplished within a year that requires more than one action step'."}, {"text": "Gives concrete content at each horizon", "passed": true, "evidence": "Each horizon has specific content: H5 purpose statement and four principles; H4 a present-tense 2030 vision; H3 central goal plus six readiness criteria and 12/18-month go/no-go checkpoints; H2 business and life areas; H1 a table of six outcome-phrased projects plus Someday/Maybe; Ground a table of next actions with contexts."}, {"text": "Connects horizons to next actions", "passed": true, "evidence": "Ground section: 'Every active project needs at least one next action' with a table mapping each H1 project to a next action and context (e.g. 'Find my employment agreement in email and read the IP section' @computer); projects are tied to goals/areas in the 'Serves goal / area' column."}, {"text": "Mentions reviewing higher horizons periodically", "passed": true, "evidence": "'Keeping the horizons alive: review rhythm' table: Ground/H1 weekly, H2 monthly, H3 quarterly, H4-5 yearly or at big decisions; plus a Weekly Review summary (get clear/current/creative) matching SKILL.md."}], "summary": {"passed": 5, "failed": 0, "total": 5, "pass_rate": 1.0}}}, {"id": "eval-2-adv-horizons-without_skill-run-1", "prompt": "Map my life onto GTD's horizons of focus: I want to quit my job in 2 years and run my own business.", "eval_id": 2, "outputs": [{"name": "response.md", "type": "text", "content": "# Your Life Mapped onto GTD's Horizons of Focus\n**The goal: quit your job in 2 years and run your own business**\n\nDavid Allen's Horizons of Focus look at your commitments from six heights, from the runway (today's actions) up to 50,000 feet (purpose). A big life change like this usually fails in the middle. People have a dream at the top and a to-do list at the bottom, with nothing linking them. The map below builds that link.\n\nI don't know your business idea, finances, or family situation yet, so I've filled in a realistic structure with placeholders in **[brackets]**. Replace them with your own details. Use the questions at the end to fill the gaps.\n\n---\n\n## Horizon 5 (50,000 ft): Purpose and Principles\n*Why do you exist? What are your non-negotiables?*\n\nThis is the anchor. When the business gets hard in Year 2, this is what keeps you going, and what tells you when *not* to quit.\n\n**Draft purpose statement (edit this):**\n> \"I want to build work that I own, that uses my strengths in **[skill]**, gives me control over my time, and supports my family without depending on one employer.\"\n\n**Principles (how you'll pursue it):**\n- I won't risk the family's basic security. Quitting depends on numbers, not feelings.\n- I'll test with real customers before I bet on an idea.\n- Health and key relationships are not the price of the business.\n- I'll leave my current job on good terms (no burned bridges, no breach of contract or non-compete).\n\n**Action:** Write this in your own words in one sitting (30 min). Read it at every quarterly review.\n\n---\n\n## Horizon 4 (40,000 ft): Vision (3\u20135 years)\n*What does success look like if things go well?*\n\nWrite it in the present tense, as if it's already true, about 3\u20135 years out:\n\n> \"It's **[year + 4]**. I've run **[business]** full-time for two years. It brings in **[$X]** per year, pays me **[$Y]**, and has **[N]** steady clients/customers. I work about **[hours]** a week, mostly on **[the work I enjoy]**. We have **[6\u201312]** months of expenses saved. I pick up my kids from school on **[days]**.\"\n\nInclude:\n- **Business:** revenue, what you sell, who buys, what your role is\n- **Lifestyle:** hours, location, flexibility\n- **Financial:** income floor, savings, benefits sorted (health insurance especially)\n- **Personal:** who you are as a result (skills, confidence, reputation)\n\n---\n\n## Horizon 3 (30,000 ft): 1\u20132 Year Goals\n*The specific objectives that make the vision real.*\n\nThis is where your 2-year deadline lives. Turn \"quit in 2 years\" into a **quit trigger**, a set of conditions you can measure. The date becomes the target, and the conditions decide it.\n\n### The Quit Trigger (all must be true)\n1. Side business revenue \u2265 **[60\u2013100%]** of your current take-home pay for **3 months in a row**\n2. Emergency fund = **[6\u201312]** months of family expenses, kept separate from business capital\n3. Health insurance plan picked and priced (spouse's plan, marketplace plan, etc.)\n4. A repeatable way to get customers (you know where the next 10 come from)\n5. Spouse/partner agrees and is on board with the plan\n\n### Milestone goals by stage\n\n| Timeframe | Goal |\n|---|---|\n| **Months 0\u20133** | Idea validated: 10+ conversations with target customers; first paying customer |\n| **Months 4\u20136** | Offer defined and priced; **[$500\u20131,000]**/month revenue; business legally set up |\n| **Months 7\u201312** | **[$2\u20133K]**/month; first repeatable marketing channel; emergency fund at 50% |\n| **Months 13\u201318** | **[$X]**/month (\u224850% of salary); systems documented; emergency fund at 100% |\n| **Months 19\u201324** | Quit trigger met \u2192 give notice; transition plan done |\n\n**Fallback goal:** If the trigger isn't met by month 24, decide on purpose. Extend 6 months, cut to part-time at your job, or pivot the idea. Don't just drift.\n\n---\n\n## Horizon 2 (20,000 ft): Areas of Focus and Responsibility\n*The roles and standards you must keep up. They never get \"done.\"*\n\nYour life will have **two sets of areas at once** for the next 2 years. That's the main source of overload, so list them clearly.\n\n### Day job (keep it up; it's funding the plan)\n- **Job performance:** meet expectations, stay employable, keep your reputation and references\n- **Professional network:** relationships that could become clients, partners, or a safety net\n- **Legal/ethical boundaries:** no company time or equipment for the side business; review any non-compete or IP clause\n\n### Business-in-progress\n- **Product/Offer:** what you sell and how good it is\n- **Customers & Sales:** pipeline, conversations, closing\n- **Marketing & Audience:** visibility, content, referrals\n- **Finance:** business bookkeeping, pricing, taxes, separate accounts\n- **Operations & Legal:** entity, contracts, tools, insurance\n- **Skills & Learning:** the gaps you need to close (sales, accounting, your craft)\n\n### Life (don't let these go)\n- **Family / Partner:** time, communication, shared decisions\n- **Health:** sleep, exercise, stress (this is a long effort; burnout ends more businesses than competition does)\n- **Personal finances:** budget, savings rate, emergency fund, debt\n- **Home & Admin**\n- **Friends / Community / Rest**\n\n**Weekly check:** For each area, ask: \"Is anything here below standard? Do I need a project to fix it?\"\n\n---\n\n## Horizon 1 (10,000 ft): Current Projects\n*Outcomes you can finish within about 12 months that need more than one step.*\n\nKeep **3\u20135 active business projects at a time**. Put the rest on Someday/Maybe. Here's a realistic first slate:\n\n**Business**\n1. **Validate the business idea:** 10 customer interviews done and summarized\n2. **Land the first paying customer**\n3. **Build a simple one-page website / landing page**\n4. **Set up the business legally:** LLC or sole proprietorship, EIN, business bank account\n5. **Create a 24-month financial runway plan:** a spreadsheet of salary, expenses, savings target, and break-even\n\n**Life (supporting the transition)**\n6. **Build the emergency fund to [X] months:** automated monthly transfer set up\n7. **Hold the \"2-year plan\" conversation with spouse/partner** and agree on guardrails (budget, hours, decision checkpoints)\n8. **Research health insurance options after leaving the job**\n9. **Review the employment contract** for non-compete, IP, and moonlighting clauses\n\n**Day job**\n10. **[Any current work project]:** keep a strong track record while you build\n\n**Someday/Maybe (not now):** hire a VA, write a book, second product line, office space, podcast.\n\n---\n\n## Ground (Runway): Next Actions and Calendar\n*The visible, physical next steps.*\n\nEach active project gets **one concrete next action**, sorted by context:\n\n**@Computer**\n- Draft a list of 20 people who match my target customer *(Validate idea)*\n- Download last 3 months of bank statements to calculate monthly family spending *(Runway plan)*\n- Search the state business registry to see if **[business name]** is available *(Legal setup)*\n\n**@Phone**\n- Text **[name]** to ask for a 20-min chat about how they handle **[problem]** *(Validate idea)*\n- Call HR or check the employee handbook for the moonlighting policy *(Contract review)*\n\n**@Home**\n- Find and read the employment agreement; highlight non-compete and IP clauses *(Contract review)*\n\n**@Agenda: Spouse**\n- Propose a time this weekend for the 2-year-plan conversation\n\n**@Bank / Online**\n- Set up an automatic transfer of **[$X]** per paycheck to a high-yield savings account *(Emergency fund)*\n\n**Calendar (hard landscape)**\n- Recurring business blocks: e.g., **Tue/Thu 5:30\u20137am, Sat 8\u201312** (protect these like meetings)\n- Weekly Review: **Sunday 7pm**, 60 min\n- Quarterly review: first weekend of **Jan / Apr / Jul / Oct**\n- **Month 12 checkpoint:** \"Am I on track for the quit trigger?\"\n- **Month 18 checkpoint:** \"Do I set a notice date?\"\n\n---\n\n## How the horizons connect (the \"why\" test)\n\nEvery next action should trace up to your purpose:\n\n> **Text Sarah to ask for a 20-min chat** (Runway)\n> \u2192 *Validate the business idea* (Project)\n> \u2192 *Customers & Sales* (Area)\n> \u2192 *$2\u20133K/month by month 12* (Goal)\n> \u2192 *Full-time business supporting the family* (Vision)\n> \u2192 *Owning my work and time without risking family security* (Purpose)\n\nIf an action doesn't trace up, ask whether it belongs at all. If a goal has no projects under it, it's only a wish.\n\n---\n\n## Review rhythm (keeps the map alive)\n\n| Horizon | Review how often | Question to ask |\n|---|---|---|\n| Runway / Next Actions | Daily | What's the next thing I can do right now? |\n| Projects | Weekly (Weekly Review) | Does every project have a next action? Am I working on the right 3\u20135? |\n| Areas of Focus | Weekly\u2013monthly | Is any area slipping, especially health and family? |\n| 1\u20132 Year Goals | Monthly + quarterly | Am I on pace for the quit trigger? What needs to change? |\n| Vision | Quarterly | Do I still want this future? Has it changed? |\n| Purpose & Principles | Yearly (or at a crisis) | Why am I doing this? Am I living by my principles? |\n\n**Monthly business dashboard (5 numbers):** revenue, profit, # customers, savings balance (months of runway), hours spent. Track them on one page.\n\n---\n\n## Questions to make this map yours\n\nAnswer these and swap out the brackets:\n1. What business are you thinking of, and how sure are you of the idea (just an idea / tested / already making money)?\n2. What's your monthly family \"must-pay\" spending? That sets the revenue target and the size of the emergency fund.\n3. Who depends on your income, and who needs to agree to the plan?\n4. How many hours a week can you really give it, after work and family?\n5. Does your employment contract have a non-compete, IP, or moonlighting clause?\n6. What would make you decide *not* to quit, even at month 24?\n\n## Your first 3 moves this week\n1. **Write your Horizon 5 purpose and the quit-trigger conditions**: one page, 45 minutes.\n2. **Book your Weekly Review and two recurring business blocks** on the calendar.\n3. **Do one runway action from the \"Validate the idea\" project.** Getting moving matters more than planning well.\n"}], "grading": {"expectations": [{"text": "Names the horizons from Ground/runway through Horizon 5 (purpose/principles)", "passed": true, "evidence": "Headings name all six: 'Horizon 5 (50,000 ft): Purpose and Principles', 'Horizon 4 (40,000 ft): Vision', 'Horizon 3 (30,000 ft): 1-2 Year Goals', 'Horizon 2 (20,000 ft): Areas of Focus and Responsibility', 'Horizon 1 (10,000 ft): Current Projects', 'Ground (Runway): Next Actions and Calendar'. Order and content match SKILL.md (altitude labels are Allen's older metaphor; 'Responsibility' vs 'accountabilities' is a minor wording difference)."}, {"text": "Places the 2-year goal at the right horizon (vision, ~3-5 years, or goals 1-2 years)", "passed": true, "evidence": "Horizon 3: 'This is where your 2-year deadline lives', turned into a measurable 'Quit Trigger'; Horizon 4 framed as 3-5 years beyond it. Correct placement."}, {"text": "Gives concrete content at each horizon", "passed": true, "evidence": "Concrete content at every level: H5 draft purpose and four principles; H4 present-tense vision with business/lifestyle/financial/personal elements; H3 quit-trigger conditions and a milestone table by month; H2 day-job, business and life areas; H1 ten projects plus Someday/Maybe; Ground next actions by context and calendar items."}, {"text": "Connects horizons to next actions", "passed": true, "evidence": "Ground section: 'Each active project gets one concrete next action, sorted by context' with each action tagged to its project (e.g. 'Draft a list of 20 people who match my target customer (Validate idea)'); plus the 'why test' chain from 'Text Sarah...' (Runway) up to Purpose."}, {"text": "Mentions reviewing higher horizons periodically", "passed": true, "evidence": "'Review rhythm' table: Next Actions daily, Projects weekly (Weekly Review), Areas weekly-monthly, Goals monthly+quarterly, Vision quarterly, Purpose yearly; calendar also schedules quarterly reviews and month-12/18 checkpoints."}], "summary": {"passed": 5, "failed": 0, "total": 5, "pass_rate": 1.0}}}], "previous_feedback": {}, "previous_outputs": {}, "benchmark": {"metadata": {"skill_name": "getting-things-done", "skill_path": "\u003cpath/to/skill>", "executor_model": "\u003cmodel-name>", "analyzer_model": "\u003cmodel-name>", "timestamp": "2026-11-21T22:01:10Z", "evals_run": [1, 2], "runs_per_configuration": 1}, "runs": [{"eval_id": 1, "eval_name": "adv-setup", "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 5, "failed": 0, "total": 5, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Sets up the list categories (projects, next actions, waiting for, calendar, someday/maybe, reference)", "passed": true, "evidence": "Step 3 'Organize (the seven lists, with hard edges)' sets up all seven book categories exactly as SKILL.md lists them: 1 Projects list, 2 Project support material, 3 Calendar, 4 Next Actions lists (by context), 5 Waiting For, 6 Reference material, 7 Someday/Maybe, each with flipping examples; also the tickler with '43 folders: 31 daily plus 12 monthly' (matches SKILL.md)."}, {"text": "Uses contexts (e.g. @car, @phone, @computer)", "passed": true, "evidence": "Step 3b context table: '@phone (anywhere)', '@computer', '@garage / workshop', '@errands / sourcing', '@pickup-meetup', '@partner (agenda)', '@home', '@work / @office', with example actions; ties contexts to the four-criteria model in the correct order 'context, time available, energy available, then priority'."}, {"text": "Runs natural planning on a project (purpose, outcome, brainstorm, organize, next actions)", "passed": true, "evidence": "Step 4 runs 'FLIP: First 10 items sold' through all five phases with the book's names: '1. Purpose and principles (why?)', '2. Outcome visioning', '3. Brainstorming', '4. Organizing (components, order, priorities)', '5. Next actions (the very next physical step, and who owns it)', with concrete content in each; matches SKILL.md."}, {"text": "Gives a Weekly Review checklist (get clear, get current, get creative)", "passed": true, "evidence": "Step 5 checklist under GET CLEAR (collect loose papers and materials; get 'in' to zero; empty your head), GET CURRENT (next actions lists, previous calendar, upcoming calendar, Waiting For, Projects list and larger outcomes, relevant checklists), GET CREATIVE (review Someday/Maybe; 'Be creative and courageous') - item-for-item match with SKILL.md."}, {"text": "Applies the two-minute rule and/or clarifying questions", "passed": true, "evidence": "Step 2 gives the clarifying questions 'What is it?' / 'Is it actionable?' with the No branch (trash, incubate, reference) and Yes branch (outcome, project, next action), and quotes the two-minute rule verbatim 'If an action will take less than two minutes, it should be done at the moment it's defined.' plus do/delegate/defer and a worked table of flipper inbox items."}], "notes": []}, {"eval_id": 2, "eval_name": "adv-horizons", "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 5, "failed": 0, "total": 5, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Names the horizons from Ground/runway through Horizon 5 (purpose/principles)", "passed": true, "evidence": "Table and sections name all six with the book's labels: '5 Purpose and principles', '4 Vision', '3 Goals', '2 Areas of focus and accountabilities', '1 Current projects', 'Ground Current actions'; exactly matches SKILL.md's six-level model."}, {"text": "Places the 2-year goal at the right horizon (vision, ~3-5 years, or goals 1-2 years)", "passed": true, "evidence": "'It is a Horizon 3 goal, possibly serving a Horizon 4 vision', and under Horizon 3 (1-2 years): 'This is where your \"quit in 2 years\" belongs.' Also correctly argues it is not a project using the book's quoted definition 'any desired result that can be accomplished within a year that requires more than one action step'."}, {"text": "Gives concrete content at each horizon", "passed": true, "evidence": "Each horizon has specific content: H5 purpose statement and four principles; H4 a present-tense 2030 vision; H3 central goal plus six readiness criteria and 12/18-month go/no-go checkpoints; H2 business and life areas; H1 a table of six outcome-phrased projects plus Someday/Maybe; Ground a table of next actions with contexts."}, {"text": "Connects horizons to next actions", "passed": true, "evidence": "Ground section: 'Every active project needs at least one next action' with a table mapping each H1 project to a next action and context (e.g. 'Find my employment agreement in email and read the IP section' @computer); projects are tied to goals/areas in the 'Serves goal / area' column."}, {"text": "Mentions reviewing higher horizons periodically", "passed": true, "evidence": "'Keeping the horizons alive: review rhythm' table: Ground/H1 weekly, H2 monthly, H3 quarterly, H4-5 yearly or at big decisions; plus a Weekly Review summary (get clear/current/creative) matching SKILL.md."}], "notes": []}, {"eval_id": 1, "eval_name": "adv-setup", "configuration": "without_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 5, "failed": 0, "total": 5, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Sets up the list categories (projects, next actions, waiting for, calendar, someday/maybe, reference)", "passed": true, "evidence": "Section 3 'Core lists' sets up Projects (2), Next Actions by context (3), Waiting For (4), Calendar 'hard landscape only' (5), Someday/Maybe (6), plus a separate 'Reference' subsection (inventory tracker, pricing notes, templates). All six named categories present. Note: its numbered 'core lists' add Inbox and Agendas and omit project support material, so it is not the book's seven-category set, but the assertion's categories are all covered."}, {"text": "Uses contexts (e.g. @car, @phone, @computer)", "passed": true, "evidence": "Section 4 context table: '@Phone (5 min)', '@Computer', '@Garage / Workspace', '@Errands / Out', '@Sourcing trip', '@Agenda: Spouse', plus a 'Low energy (tag)', with concrete example actions."}, {"text": "Runs natural planning on a project (purpose, outcome, brainstorm, organize, next actions)", "passed": true, "evidence": "Section 5 runs the dresser flip project through '1. Purpose and principles', '2. Outcome / vision', '3. Brainstorm', '4. Organize (sequence and group)' with phases A-D, '5. Next actions (only the very next step for each open path)'; consistent with SKILL.md's five phases."}, {"text": "Gives a Weekly Review checklist (get clear, get current, get creative)", "passed": true, "evidence": "Section 7 checklist with 'Get Clear' (collect loose items, empty inbox tray, process inboxes to zero, mind sweep), 'Get Current' (past and next calendar, Next Actions, Waiting For, Projects, Agendas), 'Get Creative' (review Someday/Maybe, new ideas). Matches the book's three-part structure; adds non-book items (e.g. 'Pick the 1-3 outcomes'), but the core is correct."}, {"text": "Applies the two-minute rule and/or clarifying questions", "passed": true, "evidence": "Ground rule 3: 'Two-minute rule, adjusted for buyers. If replying to a buyer takes under 2 minutes and you're in a flipping context, do it now. Otherwise capture it and batch it.' Applies the rule (explicitly flagged as an adaptation, not attributed to the book). Weaker than the book's 'done at the moment it's defined' and the clarifying questions (What is it? Is it actionable?) are never stated, but the assertion's 'and/or' is met."}], "notes": []}, {"eval_id": 2, "eval_name": "adv-horizons", "configuration": "without_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 5, "failed": 0, "total": 5, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Names the horizons from Ground/runway through Horizon 5 (purpose/principles)", "passed": true, "evidence": "Headings name all six: 'Horizon 5 (50,000 ft): Purpose and Principles', 'Horizon 4 (40,000 ft): Vision', 'Horizon 3 (30,000 ft): 1-2 Year Goals', 'Horizon 2 (20,000 ft): Areas of Focus and Responsibility', 'Horizon 1 (10,000 ft): Current Projects', 'Ground (Runway): Next Actions and Calendar'. Order and content match SKILL.md (altitude labels are Allen's older metaphor; 'Responsibility' vs 'accountabilities' is a minor wording difference)."}, {"text": "Places the 2-year goal at the right horizon (vision, ~3-5 years, or goals 1-2 years)", "passed": true, "evidence": "Horizon 3: 'This is where your 2-year deadline lives', turned into a measurable 'Quit Trigger'; Horizon 4 framed as 3-5 years beyond it. Correct placement."}, {"text": "Gives concrete content at each horizon", "passed": true, "evidence": "Concrete content at every level: H5 draft purpose and four principles; H4 present-tense vision with business/lifestyle/financial/personal elements; H3 quit-trigger conditions and a milestone table by month; H2 day-job, business and life areas; H1 ten projects plus Someday/Maybe; Ground next actions by context and calendar items."}, {"text": "Connects horizons to next actions", "passed": true, "evidence": "Ground section: 'Each active project gets one concrete next action, sorted by context' with each action tagged to its project (e.g. 'Draft a list of 20 people who match my target customer (Validate idea)'); plus the 'why test' chain from 'Text Sarah...' (Runway) up to Purpose."}, {"text": "Mentions reviewing higher horizons periodically", "passed": true, "evidence": "'Review rhythm' table: Next Actions daily, Projects weekly (Weekly Review), Areas weekly-monthly, Goals monthly+quarterly, Vision quarterly, Purpose yearly; calendar also schedules quarterly reviews and month-12/18 checkpoints."}], "notes": []}], "run_summary": {"with_skill": {"pass_rate": {"mean": 1.0, "stddev": 0.0, "min": 1.0, "max": 1.0}, "time_seconds": null, "tokens": null}, "without_skill": {"pass_rate": {"mean": 1.0, "stddev": 0.0, "min": 1.0, "max": 1.0}, "time_seconds": null, "tokens": null}, "delta": {"pass_rate": "+0.00", "time_seconds": null, "tokens": null}}, "notes": ["Time recorded for 0 of 2 with_skill runs, 0 of 2 without_skill runs, so there is no time delta.", "Token count recorded for 0 of 2 with_skill runs, 0 of 2 without_skill runs, so there is no token count delta."]}};
+
+    // ---- State ----
+    let feedbackMap = {};  // run_id -> feedback text
+    let currentIndex = 0;
+    let visitedRuns = new Set();
+
+    // ---- Init ----
+    async function init() {
+      // Load saved feedback from server — but only if this isn't a fresh
+      // iteration (indicated by previous_feedback being present). When
+      // previous feedback exists, the feedback.json on disk is stale from
+      // the prior iteration and should not pre-fill the textareas.
+      const hasPrevious = Object.keys(EMBEDDED_DATA.previous_feedback || {}).length > 0
+        || Object.keys(EMBEDDED_DATA.previous_outputs || {}).length > 0;
+      if (!hasPrevious) {
+        try {
+          const resp = await fetch("/api/feedback");
+          const data = await resp.json();
+          if (data.reviews) {
+            for (const r of data.reviews) feedbackMap[r.run_id] = r.feedback;
+          }
+        } catch { /* first run, no feedback yet */ }
+      }
+
+      document.getElementById("skill-name").textContent = EMBEDDED_DATA.skill_name;
+      showRun(0);
+
+      // Wire up feedback auto-save
+      const textarea = document.getElementById("feedback");
+      let saveTimeout = null;
+      textarea.addEventListener("input", () => {
+        clearTimeout(saveTimeout);
+        document.getElementById("feedback-status").textContent = "";
+        saveTimeout = setTimeout(() => saveCurrentFeedback(), 800);
+      });
+    }
+
+    // ---- Navigation ----
+    function navigate(delta) {
+      const newIndex = currentIndex + delta;
+      if (newIndex >= 0 && newIndex < EMBEDDED_DATA.runs.length) {
+        saveCurrentFeedback();
+        showRun(newIndex);
+      }
+    }
+
+    function updateNavButtons() {
+      document.getElementById("prev-btn").disabled = currentIndex === 0;
+      document.getElementById("next-btn").disabled =
+        currentIndex === EMBEDDED_DATA.runs.length - 1;
+    }
+
+    // ---- Show a run ----
+    function showRun(index) {
+      currentIndex = index;
+      const run = EMBEDDED_DATA.runs[index];
+
+      // Progress
+      document.getElementById("progress").textContent =
+        `${index + 1} of ${EMBEDDED_DATA.runs.length}`;
+
+      // Prompt
+      document.getElementById("prompt-text").textContent = run.prompt;
+
+      // Config badge
+      const badge = document.getElementById("config-badge");
+      const configMatch = run.id.match(/(with_skill|without_skill|new_skill|old_skill)/);
+      if (configMatch) {
+        const config = configMatch[1];
+        const isBaseline = config === "without_skill" || config === "old_skill";
+        badge.textContent = config.replace(/_/g, " ");
+        badge.className = "config-badge " + (isBaseline ? "config-baseline" : "config-primary");
+        badge.style.display = "inline-block";
+      } else {
+        badge.style.display = "none";
+      }
+
+      // Outputs
+      renderOutputs(run);
+
+      // Previous outputs
+      renderPrevOutputs(run);
+
+      // Grades
+      renderGrades(run);
+
+      // Previous feedback
+      const prevFb = (EMBEDDED_DATA.previous_feedback || {})[run.id];
+      const prevEl = document.getElementById("prev-feedback");
+      if (prevFb) {
+        document.getElementById("prev-feedback-text").textContent = prevFb;
+        prevEl.style.display = "block";
+      } else {
+        prevEl.style.display = "none";
+      }
+
+      // Feedback
+      document.getElementById("feedback").value = feedbackMap[run.id] || "";
+      document.getElementById("feedback-status").textContent = "";
+
+      updateNavButtons();
+
+      // Track visited runs and promote done button when all visited
+      visitedRuns.add(index);
+      const doneBtn = document.getElementById("done-btn");
+      if (visitedRuns.size >= EMBEDDED_DATA.runs.length) {
+        doneBtn.classList.add("ready");
+      }
+
+      // Scroll main content to top
+      document.querySelector(".main").scrollTop = 0;
+    }
+
+    // ---- Render outputs ----
+    function renderOutputs(run) {
+      const container = document.getElementById("outputs-body");
+      container.innerHTML = "";
+
+      const outputs = run.outputs || [];
+      if (outputs.length === 0) {
+        container.innerHTML = '<div class="empty-state">No output files</div>';
+        return;
+      }
+
+      for (const file of outputs) {
+        const fileDiv = document.createElement("div");
+        fileDiv.className = "output-file";
+
+        // Always show file header with download link
+        const header = document.createElement("div");
+        header.className = "output-file-header";
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = file.name;
+        header.appendChild(nameSpan);
+        const dlBtn = document.createElement("a");
+        dlBtn.className = "dl-btn";
+        dlBtn.textContent = "Download";
+        dlBtn.download = file.name;
+        dlBtn.href = getDownloadUri(file);
+        header.appendChild(dlBtn);
+        fileDiv.appendChild(header);
+
+        const content = document.createElement("div");
+        content.className = "output-file-content";
+
+        if (file.type === "text") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          content.appendChild(pre);
+        } else if (file.type === "image") {
+          const img = document.createElement("img");
+          img.src = file.data_uri;
+          img.alt = file.name;
+          content.appendChild(img);
+        } else if (file.type === "pdf") {
+          const iframe = document.createElement("iframe");
+          iframe.src = file.data_uri;
+          content.appendChild(iframe);
+        } else if (file.type === "xlsx") {
+          renderXlsx(content, file.data_b64);
+        } else if (file.type === "binary") {
+          const a = document.createElement("a");
+          a.className = "download-link";
+          a.href = file.data_uri;
+          a.download = file.name;
+          a.textContent = "Download " + file.name;
+          content.appendChild(a);
+        } else if (file.type === "error") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          pre.style.color = "var(--red)";
+          content.appendChild(pre);
+        }
+
+        fileDiv.appendChild(content);
+        container.appendChild(fileDiv);
+      }
+    }
+
+    // ---- XLSX rendering via SheetJS ----
+    function renderXlsx(container, b64Data) {
+      try {
+        const raw = Uint8Array.from(atob(b64Data), c => c.charCodeAt(0));
+        const wb = XLSX.read(raw, { type: "array" });
+
+        for (let i = 0; i < wb.SheetNames.length; i++) {
+          const sheetName = wb.SheetNames[i];
+          const ws = wb.Sheets[sheetName];
+
+          if (wb.SheetNames.length > 1) {
+            const sheetLabel = document.createElement("div");
+            sheetLabel.style.cssText =
+              "font-weight:600; font-size:0.8rem; color:#b0aea5; margin-top:0.5rem; margin-bottom:0.25rem;";
+            sheetLabel.textContent = "Sheet: " + sheetName;
+            container.appendChild(sheetLabel);
+          }
+
+          const htmlStr = XLSX.utils.sheet_to_html(ws, { editable: false });
+          const wrapper = document.createElement("div");
+          wrapper.innerHTML = htmlStr;
+          container.appendChild(wrapper);
+        }
+      } catch (err) {
+        container.textContent = "Error rendering spreadsheet: " + err.message;
+      }
+    }
+
+    // ---- Grades ----
+    function renderGrades(run) {
+      const section = document.getElementById("grades-section");
+      const content = document.getElementById("grades-content");
+
+      if (!run.grading) {
+        section.style.display = "none";
+        return;
+      }
+
+      const grading = run.grading;
+      section.style.display = "block";
+      // Reset to collapsed
+      content.classList.remove("open");
+      document.getElementById("grades-arrow").classList.remove("open");
+
+      const summary = grading.summary || {};
+      const expectations = grading.expectations || [];
+
+      let html = '<div style="padding: 1rem;">';
+
+      // Summary line
+      const passRate = summary.pass_rate != null
+        ? Math.round(summary.pass_rate * 100) + "%"
+        : "?";
+      const badgeClass = summary.pass_rate >= 0.8 ? "grade-pass" : summary.pass_rate >= 0.5 ? "" : "grade-fail";
+      html += '<div class="grades-summary">';
+      html += '<span class="grade-badge ' + badgeClass + '">' + passRate + '</span>';
+      html += '<span>' + escapeHtml(summary.passed || 0) + ' passed, ' + escapeHtml(summary.failed || 0) + ' failed of ' + escapeHtml(summary.total || 0) + '</span>';
+      html += '</div>';
+
+      // Assertions list
+      html += '<ul class="assertion-list">';
+      for (const exp of expectations) {
+        const statusClass = exp.passed ? "pass" : "fail";
+        const statusIcon = exp.passed ? "\u2713" : "\u2717";
+        html += '<li class="assertion-item">';
+        html += '<span class="assertion-status ' + statusClass + '">' + statusIcon + '</span>';
+        html += '<span>' + escapeHtml(exp.text) + '</span>';
+        if (exp.evidence) {
+          html += '<div class="assertion-evidence">' + escapeHtml(exp.evidence) + '</div>';
+        }
+        html += '</li>';
+      }
+      html += '</ul>';
+
+      html += '</div>';
+      content.innerHTML = html;
+    }
+
+    function toggleGrades() {
+      const content = document.getElementById("grades-content");
+      const arrow = document.getElementById("grades-arrow");
+      content.classList.toggle("open");
+      arrow.classList.toggle("open");
+    }
+
+    // ---- Previous outputs (collapsible) ----
+    function renderPrevOutputs(run) {
+      const section = document.getElementById("prev-outputs-section");
+      const content = document.getElementById("prev-outputs-content");
+      const prevOutputs = (EMBEDDED_DATA.previous_outputs || {})[run.id];
+
+      if (!prevOutputs || prevOutputs.length === 0) {
+        section.style.display = "none";
+        return;
+      }
+
+      section.style.display = "block";
+      // Reset to collapsed
+      content.classList.remove("open");
+      document.getElementById("prev-outputs-arrow").classList.remove("open");
+
+      // Render the files into the content area
+      content.innerHTML = "";
+      const wrapper = document.createElement("div");
+      wrapper.style.padding = "1rem";
+
+      for (const file of prevOutputs) {
+        const fileDiv = document.createElement("div");
+        fileDiv.className = "output-file";
+
+        const header = document.createElement("div");
+        header.className = "output-file-header";
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = file.name;
+        header.appendChild(nameSpan);
+        const dlBtn = document.createElement("a");
+        dlBtn.className = "dl-btn";
+        dlBtn.textContent = "Download";
+        dlBtn.download = file.name;
+        dlBtn.href = getDownloadUri(file);
+        header.appendChild(dlBtn);
+        fileDiv.appendChild(header);
+
+        const fc = document.createElement("div");
+        fc.className = "output-file-content";
+
+        if (file.type === "text") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          fc.appendChild(pre);
+        } else if (file.type === "image") {
+          const img = document.createElement("img");
+          img.src = file.data_uri;
+          img.alt = file.name;
+          fc.appendChild(img);
+        } else if (file.type === "pdf") {
+          const iframe = document.createElement("iframe");
+          iframe.src = file.data_uri;
+          fc.appendChild(iframe);
+        } else if (file.type === "xlsx") {
+          renderXlsx(fc, file.data_b64);
+        } else if (file.type === "binary") {
+          const a = document.createElement("a");
+          a.className = "download-link";
+          a.href = file.data_uri;
+          a.download = file.name;
+          a.textContent = "Download " + file.name;
+          fc.appendChild(a);
+        }
+
+        fileDiv.appendChild(fc);
+        wrapper.appendChild(fileDiv);
+      }
+
+      content.appendChild(wrapper);
+    }
+
+    function togglePrevOutputs() {
+      const content = document.getElementById("prev-outputs-content");
+      const arrow = document.getElementById("prev-outputs-arrow");
+      content.classList.toggle("open");
+      arrow.classList.toggle("open");
+    }
+
+    // ---- Feedback (saved to server -> feedback.json) ----
+    function saveCurrentFeedback() {
+      const run = EMBEDDED_DATA.runs[currentIndex];
+      const text = document.getElementById("feedback").value;
+
+      if (text.trim() === "") {
+        delete feedbackMap[run.id];
+      } else {
+        feedbackMap[run.id] = text;
+      }
+
+      // Build reviews array from map
+      const reviews = [];
+      for (const [run_id, feedback] of Object.entries(feedbackMap)) {
+        if (feedback.trim()) {
+          reviews.push({ run_id, feedback, timestamp: new Date().toISOString() });
+        }
+      }
+
+      fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reviews, status: "in_progress" }),
+      }).then(() => {
+        document.getElementById("feedback-status").textContent = "Saved";
+      }).catch(() => {
+        // Static mode or server unavailable — no-op on auto-save,
+        // feedback will be downloaded on final submit
+        document.getElementById("feedback-status").textContent = "Will download on submit";
+      });
+    }
+
+    // ---- Done ----
+    function showDoneDialog() {
+      // Save current textarea to feedbackMap (but don't POST yet)
+      const run = EMBEDDED_DATA.runs[currentIndex];
+      const text = document.getElementById("feedback").value;
+      if (text.trim() === "") {
+        delete feedbackMap[run.id];
+      } else {
+        feedbackMap[run.id] = text;
+      }
+
+      // POST once with status: complete — include ALL runs so the model
+      // can distinguish "no feedback" (looks good) from "not reviewed"
+      const reviews = [];
+      const ts = new Date().toISOString();
+      for (const r of EMBEDDED_DATA.runs) {
+        reviews.push({ run_id: r.id, feedback: feedbackMap[r.id] || "", timestamp: ts });
+      }
+      const payload = JSON.stringify({ reviews, status: "complete" }, null, 2);
+      fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: payload,
+      }).then(() => {
+        document.getElementById("done-overlay").classList.add("visible");
+      }).catch(() => {
+        // Server not available (static mode) — download as file
+        const blob = new Blob([payload], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "feedback.json";
+        a.click();
+        URL.revokeObjectURL(url);
+        document.getElementById("done-overlay").classList.add("visible");
+      });
+    }
+
+    function closeDoneDialog() {
+      // Reset status back to in_progress
+      saveCurrentFeedback();
+      document.getElementById("done-overlay").classList.remove("visible");
+    }
+
+    // ---- Toast ----
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("visible");
+      setTimeout(() => toast.classList.remove("visible"), 2000);
+    }
+
+    // ---- Keyboard nav ----
+    document.addEventListener("keydown", (e) => {
+      // Don't capture when typing in textarea
+      if (e.target.tagName === "TEXTAREA") return;
+
+      if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+        e.preventDefault();
+        navigate(-1);
+      } else if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+        e.preventDefault();
+        navigate(1);
+      }
+    });
+
+    // ---- Util ----
+    function getDownloadUri(file) {
+      if (file.data_uri) return file.data_uri;
+      if (file.data_b64) return "data:application/octet-stream;base64," + file.data_b64;
+      if (file.type === "text") return "data:text/plain;charset=utf-8," + encodeURIComponent(file.content);
+      return "#";
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement("div");
+      div.textContent = text;
+      return div.innerHTML.replace(/"/g, "&quot;");
+    }
+
+    // ---- View switching ----
+    function switchView(view) {
+      document.querySelectorAll(".view-tab").forEach(t => t.classList.remove("active"));
+      document.querySelectorAll(".view-panel").forEach(p => p.classList.remove("active"));
+      document.querySelector(`[onclick="switchView('${view}')"]`).classList.add("active");
+      document.getElementById("panel-" + view).classList.add("active");
+    }
+
+    // ---- Benchmark rendering ----
+    function renderBenchmark() {
+      const data = EMBEDDED_DATA.benchmark;
+      if (!data) return;
+
+      // Show the tabs
+      document.getElementById("view-tabs").style.display = "flex";
+
+      const container = document.getElementById("benchmark-content");
+      const summary = data.run_summary || {};
+      const metadata = data.metadata || {};
+      const notes = data.notes || [];
+
+      let html = "";
+
+      // Header
+      html += "<h2 style='font-family: Poppins, sans-serif; margin-bottom: 0.5rem;'>Benchmark Results</h2>";
+      html += "<p style='color: var(--text-muted); font-size: 0.875rem; margin-bottom: 1.25rem;'>";
+      if (metadata.skill_name) html += "<strong>" + escapeHtml(metadata.skill_name) + "</strong> &mdash; ";
+      if (metadata.timestamp) html += escapeHtml(metadata.timestamp) + " &mdash; ";
+      if (metadata.evals_run) html += "Evals: " + escapeHtml(metadata.evals_run.join(", ")) + " &mdash; ";
+      html += escapeHtml(metadata.runs_per_configuration || "?") + (metadata.runs_per_configuration === 1 ? " run" : " runs") + " per configuration";
+      html += "</p>";
+
+      // Summary table
+      html += '<table class="benchmark-table">';
+
+      function fmtStat(stat, pct) {
+        if (!stat) return "—";
+        const suffix = pct ? "%" : "";
+        const m = pct ? (stat.mean * 100).toFixed(0) : stat.mean.toFixed(1);
+        const s = pct ? (stat.stddev * 100).toFixed(0) : stat.stddev.toFixed(1);
+        return m + suffix + " ± " + s + suffix;
+      }
+
+      function deltaClass(val) {
+        if (!val) return "";
+        const n = parseFloat(val);
+        if (n > 0) return "benchmark-delta-positive";
+        if (n < 0) return "benchmark-delta-negative";
+        return "";
+      }
+
+      // Discover config names dynamically (everything except "delta")
+      const configs = Object.keys(summary).filter(k => k !== "delta");
+      const configA = configs[0] || "config_a";
+      const configB = configs[1] || "config_b";
+      const labelA = configA.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      const labelB = configB.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      const a = summary[configA] || {};
+      const b = summary[configB] || {};
+      const delta = summary.delta || {};
+      // With a single configuration there is nothing to compare: only its column is shown
+      const compare = cells => configs.length >= 2 ? cells : "";
+
+      html += "<thead><tr><th>Metric</th><th>" + escapeHtml(labelA) + "</th>" + compare("<th>" + escapeHtml(labelB) + "</th><th>Delta</th>") + "</tr></thead>";
+      html += "<tbody>";
+
+      html += "<tr><td><strong>Pass Rate</strong></td>";
+      html += "<td>" + fmtStat(a.pass_rate, true) + "</td>";
+      html += compare("<td>" + fmtStat(b.pass_rate, true) + "</td>");
+      html += compare('<td class="' + deltaClass(delta.pass_rate) + '">' + escapeHtml(delta.pass_rate || "—") + "</td>") + "</tr>";
+
+      // Time (only show row if data exists)
+      if (a.time_seconds || b.time_seconds) {
+        html += "<tr><td><strong>Time (s)</strong></td>";
+        html += "<td>" + fmtStat(a.time_seconds, false) + "</td>";
+        html += compare("<td>" + fmtStat(b.time_seconds, false) + "</td>");
+        html += compare('<td class="' + deltaClass(delta.time_seconds) + '">' + escapeHtml(delta.time_seconds ? delta.time_seconds + "s" : "—") + "</td>") + "</tr>";
+      }
+
+      // Tokens (only show row if data exists)
+      if (a.tokens || b.tokens) {
+        html += "<tr><td><strong>Tokens</strong></td>";
+        html += "<td>" + fmtStat(a.tokens, false) + "</td>";
+        html += compare("<td>" + fmtStat(b.tokens, false) + "</td>");
+        html += compare('<td class="' + deltaClass(delta.tokens) + '">' + escapeHtml(delta.tokens || "—") + "</td>") + "</tr>";
+      }
+
+      html += "</tbody></table>";
+
+      // Per-eval breakdown (if runs data available)
+      const runs = data.runs || [];
+      if (runs.length > 0) {
+        // Numeric ids first, then ids that are names
+        const rank = id => typeof id === "number" ? 0 : 1;
+        const evalIds = [...new Set(runs.map(r => r.eval_id))].sort((a, b) =>
+          rank(a) - rank(b) || (rank(a) ? String(a).localeCompare(String(b)) : a - b));
+
+        html += "<h3 style='font-family: Poppins, sans-serif; margin-bottom: 0.75rem;'>Per-Eval Breakdown</h3>";
+
+        const hasTime = runs.some(r => r.result && r.result.time_seconds != null);
+        const hasErrors = runs.some(r => r.result && r.result.errors > 0);
+
+        for (const evalId of evalIds) {
+          const evalRuns = runs.filter(r => r.eval_id === evalId);
+          const evalName = evalRuns[0] && evalRuns[0].eval_name ? evalRuns[0].eval_name : "Eval " + evalId;
+
+          html += "<h4 style='font-family: Poppins, sans-serif; margin: 1rem 0 0.5rem; color: var(--text);'>" + escapeHtml(evalName) + "</h4>";
+          html += '<table class="benchmark-table">';
+          html += "<thead><tr><th>Config</th><th>Run</th><th>Pass Rate</th>";
+          if (hasTime) html += "<th>Time (s)</th>";
+          if (hasErrors) html += "<th>Crashes During Execution</th>";
+          html += "</tr></thead>";
+          html += "<tbody>";
+
+          // Group by config and render with average rows
+          const configGroups = [...new Set(evalRuns.map(r => r.configuration))];
+          for (let ci = 0; ci < configGroups.length; ci++) {
+            const config = configGroups[ci];
+            const configRuns = evalRuns.filter(r => r.configuration === config);
+            if (configRuns.length === 0) continue;
+
+            const rowClass = ci === 0 ? "benchmark-row-with" : "benchmark-row-without";
+            const configLabel = escapeHtml(config.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase()));
+
+            for (const run of configRuns) {
+              const r = run.result || {};
+              const prClass = r.pass_rate >= 0.8 ? "benchmark-delta-positive" : r.pass_rate < 0.5 ? "benchmark-delta-negative" : "";
+              html += '<tr class="' + rowClass + '">';
+              html += "<td>" + configLabel + "</td>";
+              html += "<td>" + escapeHtml(run.run_number) + "</td>";
+              html += '<td class="' + prClass + '">' + ((r.pass_rate || 0) * 100).toFixed(0) + "% (" + escapeHtml(r.passed || 0) + "/" + escapeHtml(r.total || 0) + ")</td>";
+              if (hasTime) html += "<td>" + (r.time_seconds != null ? r.time_seconds.toFixed(1) : "—") + "</td>";
+              if (hasErrors) html += "<td>" + escapeHtml(r.errors || 0) + "</td>";
+              html += "</tr>";
+            }
+
+            // Average row
+            const rates = configRuns.map(r => (r.result || {}).pass_rate || 0);
+            const avgRate = rates.reduce((a, b) => a + b, 0) / rates.length;
+            const avgPrClass = avgRate >= 0.8 ? "benchmark-delta-positive" : avgRate < 0.5 ? "benchmark-delta-negative" : "";
+            html += '<tr class="benchmark-row-avg ' + rowClass + '">';
+            html += "<td>" + configLabel + "</td>";
+            html += "<td>Avg</td>";
+            html += '<td class="' + avgPrClass + '">' + (avgRate * 100).toFixed(0) + "%</td>";
+            if (hasTime) {
+              const times = configRuns.map(r => (r.result || {}).time_seconds).filter(t => t != null);
+              html += "<td>" + (times.length ? (times.reduce((a, b) => a + b, 0) / times.length).toFixed(1) : "—") + "</td>";
+            }
+            if (hasErrors) html += "<td></td>";
+            html += "</tr>";
+          }
+          html += "</tbody></table>";
+
+          // Per-assertion detail for this eval
+          const runsWithExpectations = {};
+          for (const config of configGroups) {
+            runsWithExpectations[config] = evalRuns.filter(r => r.configuration === config && r.expectations && r.expectations.length > 0);
+          }
+          const hasAnyExpectations = Object.values(runsWithExpectations).some(runs => runs.length > 0);
+          if (hasAnyExpectations) {
+            // Collect all unique assertion texts across all configs
+            const allAssertions = [];
+            const seen = new Set();
+            for (const config of configGroups) {
+              for (const run of runsWithExpectations[config]) {
+                for (const exp of (run.expectations || [])) {
+                  if (!seen.has(exp.text)) {
+                    seen.add(exp.text);
+                    allAssertions.push(exp.text);
+                  }
+                }
+              }
+            }
+
+            html += '<table class="benchmark-table" style="margin-top: 0.5rem;">';
+            html += "<thead><tr><th>Assertion</th>";
+            for (const config of configGroups) {
+              const label = config.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+              html += "<th>" + escapeHtml(label) + "</th>";
+            }
+            html += "</tr></thead><tbody>";
+
+            for (const assertionText of allAssertions) {
+              html += "<tr><td>" + escapeHtml(assertionText) + "</td>";
+
+              for (const config of configGroups) {
+                html += "<td>";
+                for (const run of runsWithExpectations[config]) {
+                  const exp = (run.expectations || []).find(e => e.text === assertionText);
+                  if (exp) {
+                    const cls = exp.passed ? "benchmark-delta-positive" : "benchmark-delta-negative";
+                    const icon = exp.passed ? "\u2713" : "\u2717";
+                    html += '<span class="' + cls + '" title="Run ' + escapeHtml(run.run_number) + ': ' + escapeHtml(exp.evidence || "") + '">' + icon + "</span> ";
+                  } else {
+                    html += "— ";
+                  }
+                }
+                html += "</td>";
+              }
+              html += "</tr>";
+            }
+            html += "</tbody></table>";
+          }
+        }
+      }
+
+      // Notes
+      if (notes.length > 0) {
+        html += '<div class="benchmark-notes">';
+        html += "<h3>Analysis Notes</h3>";
+        html += "<ul>";
+        for (const note of notes) {
+          html += "<li>" + escapeHtml(note) + "</li>";
+        }
+        html += "</ul></div>";
+      }
+
+      container.innerHTML = html;
+    }
+
+    // ---- Start ----
+    init();
+    renderBenchmark();
+  </script>
+</body>
+</html>

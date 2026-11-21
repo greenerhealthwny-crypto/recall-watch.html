@@ -1,0 +1,223 @@
+{
+  "metadata": {
+    "skill_name": "managing-your-money",
+    "skill_path": "<path/to/skill>",
+    "executor_model": "<model-name>",
+    "analyzer_model": "<model-name>",
+    "timestamp": "2026-11-21T22:00:50Z",
+    "evals_run": [
+      1,
+      2
+    ],
+    "runs_per_configuration": 1
+  },
+  "runs": [
+    {
+      "eval_id": 1,
+      "eval_name": "adv-budget",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Uses the book's four-step budgeting approach",
+          "passed": true,
+          "evidence": "Lists and structures the answer on '1. Cash-flow analysis ... 2. Set budget goals. 3. Allocate resources ... 4. Year-end review' with sections 'Step 1: Cash-flow analysis' through 'Step 4: Year-end review'; matches SKILL.md principle 1 exactly, including the supporting habits (budget for the unexpected, keep records, make the budget work)."
+        },
+        {
+          "text": "Prioritizes an emergency fund and high-interest debt with numbers",
+          "passed": true,
+          "evidence": "Goals table: '$600' starter emergency fund by month 2, 'Pay off the $3,100 card (24% APR)' by month 12, then 3-6 months of essential expenses; $400/month split $300 savings/$100 card then $340 card/$60 savings. Book's emergency-fund 'personal matter' / $10,000-$15,000 quote and the 15%-of-gross ($360) debt ceiling match SKILL.md."
+        },
+        {
+          "text": "Gives a month-by-month or phased 12-month plan",
+          "passed": true,
+          "evidence": "Month-by-month table for months 1-12 with payment, interest, balance and emergency fund (card $0 and fund ~$1,238 at month 12), plus milestones at months 1, 2, 3, 6, 9, 12."
+        },
+        {
+          "text": "Flags at least one dated 1989 figure or rule (e.g. tax or IRA limits) as changed",
+          "passed": true,
+          "evidence": "'What in the 1989 book no longer applies' table flags consumer-interest deduction phase-out (10% in 1990, then zero), FDIC/FSLIC $100,000 -> $250,000, IRA $2,000/no Roth, 2005 BAPCPA; all consistent with SKILL.md and references."
+        },
+        {
+          "text": "Mentions protecting the credit rating/report",
+          "passed": true,
+          "evidence": "Goal 5 'Check your credit report for errors, free' in month 1; flags table row on free reports at annualcreditreport.com, FCRA disputes, freezes, and the book's skepticism of paid 'credit credential' services, matching banking-credit.md \u00a72."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "adv-insure",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Covers medical/health insurance as a priority for a freelancer",
+          "passed": true,
+          "evidence": "'1. Health insurance (top priority)', quotes the book's 'protecting your most valuable asset' and 80/20 coinsurance with out-of-pocket ceiling (matches insurance-taxes.md \u00a71), then ACA marketplace/HSA for freelancers marked (std, verify)."
+        },
+        {
+          "text": "Addresses life insurance need for a single person with no dependents (likely low)",
+          "passed": true,
+          "evidence": "Waste table: life insurance needed by those with 'dependents who rely on their income' and runs the book's three-step method ('the gap is small or zero'), with term exception; matches insurance-taxes.md \u00a72."
+        },
+        {
+          "text": "Addresses renter's/property coverage",
+          "passed": true,
+          "evidence": "'3. Renter's insurance': separate renter policies, liability (book's dog-bite example), replacement-cost contents at '20-40% more' for renters, household inventory Close-Up; all match insurance-taxes.md \u00a73. Adds business-property exclusion warning."
+        },
+        {
+          "text": "Addresses auto coverage decisions for a low-value car (e.g. dropping collision)",
+          "passed": true,
+          "evidence": "'Probably drop: collision, and maybe comprehensive' with $5,000 - $1,000 = $4,000 max payout and 10%-of-value rule (labelled std), keep liability/UM, shop around and packaged-policy Close-Up (book). Minor mislabel: 'book heuristic: raise deductibles to cut premiums' is marked (std) heuristic in insurance-taxes.md \u00a74, not book, but this does not affect the auto-decision content."
+        },
+        {
+          "text": "Flags disability or other coverage and notes dated details",
+          "passed": true,
+          "evidence": "'2. Disability income insurance' uses the book's method of tallying existing benefits (group plan, SS disability, workers' comp) per \u00a75; dated details noted: umbrella 'cost about $100 a year in 1989' vs today, replacement-cost surcharge 'in the book's era', Keogh/SEP vs today's SEP-IRA/Solo 401(k), and the header caution that 1989 prices and product rules have changed."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 1,
+      "eval_name": "adv-budget",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.8,
+        "passed": 4,
+        "failed": 1,
+        "total": 5,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Uses the book's four-step budgeting approach",
+          "passed": false,
+          "evidence": "States it lacks the book and uses 'the standard four-step budgeting method that guides of that era taught: (1) find out what comes in, (2) track what goes out, (3) set goals and priorities, (4) build the spending plan and check it each month'. This does not match the book's steps in SKILL.md (cash-flow analysis, set goals, allocate resources, year-end review); it has no year-end review and invents an income step."
+        },
+        {
+          "text": "Prioritizes an emergency fund and high-interest debt with numbers",
+          "passed": true,
+          "evidence": "'Starter emergency fund: about $600 to $1,000', 'Pay off the $3,100 card balance. At 24% APR this costs you about $62 a month in interest', then 3 months of expenses (~$4,500-$5,500)."
+        },
+        {
+          "text": "Gives a month-by-month or phased 12-month plan",
+          "passed": true,
+          "evidence": "Phased plan (Months 1-3, 4-10, 11-12) plus a month-by-month projection table ending with card $0 in month 11 and ~$1,296 savings at month 12."
+        },
+        {
+          "text": "Flags at least one dated 1989 figure or rule (e.g. tax or IRA limits) as changed",
+          "passed": true,
+          "evidence": "Flags 'Credit-card interest deductibility. The Tax Reform Act of 1986 phased out the deduction for consumer interest' and 'Retirement accounts ... predates the Roth IRA ... Contribution limits from 1989 are far too low'; consistent with SKILL.md, though framed generically ('any personal-finance guide from 1989')."
+        },
+        {
+          "text": "Mentions protecting the credit rating/report",
+          "passed": true,
+          "evidence": "'Pay the card on time every month (autopay at least the minimum)' and flag 3: 'Today you can get free reports from all three bureaus at AnnualCreditReport.com'. Mentioned, though only as a dated-item note rather than a planned action."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "adv-insure",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.8,
+        "passed": 4,
+        "failed": 1,
+        "total": 5,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Covers medical/health insurance as a priority for a freelancer",
+          "passed": true,
+          "evidence": "'1. Health insurance (top priority) As a freelancer, nobody gives this to you' with ACA marketplace, HDHP+HSA, deductible premiums."
+        },
+        {
+          "text": "Addresses life insurance need for a single person with no dependents (likely low)",
+          "passed": true,
+          "evidence": "'Life insurance (probably not needed yet) ... Single, no kids, and no one relying on your income means there's usually no one to protect', with cosigner/parent exception and term over whole life."
+        },
+        {
+          "text": "Addresses renter's/property coverage",
+          "passed": true,
+          "evidence": "'4. Renter's insurance (cheap and worth it)': belongings, personal liability, replacement cost vs actual cash value, business-property limits."
+        },
+        {
+          "text": "Addresses auto coverage decisions for a low-value car (e.g. dropping collision)",
+          "passed": true,
+          "evidence": "'Collision and comprehensive on a 2012 car worth $5,000 (probably drop it, or raise the deductible)', max payout ~$4,000, 10%-of-value rule, lender exception."
+        },
+        {
+          "text": "Flags disability or other coverage and notes dated details",
+          "passed": false,
+          "evidence": "Disability is covered ('2. Disability insurance'), but no dated details are noted: the only reference is a generic hedge ('Where your guide's numbers differ, especially if it's an older edition, trust current law and current prices over the book'). It never identifies any specific 1989 figure, product or rule that has changed."
+        }
+      ],
+      "notes": []
+    }
+  ],
+  "run_summary": {
+    "with_skill": {
+      "pass_rate": {
+        "mean": 1.0,
+        "stddev": 0.0,
+        "min": 1.0,
+        "max": 1.0
+      },
+      "time_seconds": null,
+      "tokens": null
+    },
+    "without_skill": {
+      "pass_rate": {
+        "mean": 0.8,
+        "stddev": 0.0,
+        "min": 0.8,
+        "max": 0.8
+      },
+      "time_seconds": null,
+      "tokens": null
+    },
+    "delta": {
+      "pass_rate": "+0.20",
+      "time_seconds": null,
+      "tokens": null
+    }
+  },
+  "notes": [
+    "Time recorded for 0 of 2 with_skill runs, 0 of 2 without_skill runs, so there is no time delta.",
+    "Token count recorded for 0 of 2 with_skill runs, 0 of 2 without_skill runs, so there is no token count delta."
+  ]
+}

@@ -1,0 +1,35 @@
+{
+ "expectations": [
+  {
+   "text": "Covers all five parts: lead magnet, landing page, thank-you page, sales page, follow-up",
+   "passed": true,
+   "evidence": "Sections '## 1. Lead magnet', '## 2. Landing page', '## 3. Thank-you page', '## 4. Sales page', '## 5. Follow-up funnel', plus a one-page summary table of all five. Matches SKILL.md's five parts."
+  },
+  {
+   "text": "Lead magnet uses a curiosity/pain hook (e.g. 'The # Biggest Mistakes...')",
+   "passed": true,
+   "evidence": "Uses the book's formula verbatim ('The (#) Biggest Mistakes (audience) Make (when doing X)') to produce 'The 7 Biggest Mistakes People Make Buying Used Furniture on Facebook Marketplace', lists 5 hooks with a required Mistakes hook, and cites the pain focus; matches SKILL.md."
+  },
+  {
+   "text": "Includes a thank-you-page offer or self-liquidating offer",
+   "passed": true,
+   "evidence": "Thank-you page delivers the PDF then one next step '[See This Week's Pieces]'; section 4 explains the SLO ('front-end sales pay for the ads') and proposes $39-$79 delivery / $15-$20 care-kit add-ons, citing #27 '44 Sensational Salads' -> $15 (matches examples.md)."
+  },
+  {
+   "text": "Includes list math (e.g. $1 per name per month) with an estimate",
+   "passed": true,
+   "evidence": "Section 6 cites '$1 per name per month ... $2-$50 with a strong relationship (book)' and '$1-$3' leads / month-3 break-even (all match SKILL.md), then estimates 500 names x 2% x $110 = $1,260 \u2248 $2.52/name/month with weak/base/strong scenarios."
+  },
+  {
+   "text": "Includes a follow-up sequence or daily publishing plan",
+   "passed": true,
+   "evidence": "Day 0/1/3/5/7 buyer email table plus weekly 'Thursday Drop', seller sequence, RFMS scoring (recency, frequency, monetary, social \u2014 correct per SKILL.md) and a 'Daily publishing (book)' section ('one or two steps ahead')."
+  }
+ ],
+ "summary": {
+  "passed": 5,
+  "failed": 0,
+  "total": 5,
+  "pass_rate": 1.0
+ }
+}

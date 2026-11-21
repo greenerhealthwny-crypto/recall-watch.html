@@ -1,7 +1,35 @@
-{"expectations":[
-{"text":"Identifies vagueness/lack of specificity","passed":true,"evidence":"'Vague claims instead of specifics. Bly keeps stressing that specific copy sells and general copy doesn't' and Ultra-specific scored 1: '\"Products,\" \"quality\" and \"great\" are all abstract.' (Note: the verdict also calls it a 'blind' headline, which misapplies Bly's term, since a blind headline is one that makes no sense without the body copy, but the vagueness point itself is correct.)"},
-{"text":"Applies the four functions of a headline (attention, select audience, deliver message, draw into body)","passed":true,"evidence":"Section 1 'The four jobs of a headline' lists and evaluates get attention, select the audience, deliver a complete message, draw the reader into the body copy; matches SKILL.md."},
-{"text":"Uses the 4 U's","passed":true,"evidence":"Section 2 scores Urgent 1, Unique 1, Ultra-specific 1, Useful 1 = 4/16, and rescores the recommended rewrite (2/3/4/4 = 13/16)."},
-{"text":"Gives multiple rewrites using named techniques or types","passed":true,"evidence":"Seven rewrites in a table labeled Direct, How-to, Question, Reason-why, News, Testimonial, Command (all among Bly's 8 types), with a sample furniture-store business, and a recommended rewrite."},
-{"text":"Mentions USP or a BFD/motivator angle","passed":false,"evidence":"No mention of a USP, Rosser Reeves, the BFD formula (beliefs, feelings, desires) or the copy motivators anywhere. The closest points are 'Unique' in the 4 U's and 'the single most important benefit', which are not the USP or BFD/motivator frameworks. It also adds unsupported claims ('Bly prefers sentence case')."}
-],"summary":{"passed":4,"failed":1,"total":5,"pass_rate":0.8}}
+{
+ "expectations": [
+  {
+   "text": "Identifies vagueness/lack of specificity",
+   "passed": true,
+   "evidence": "'Vague claims instead of specifics. Bly keeps stressing that specific copy sells and general copy doesn't' and Ultra-specific scored 1: '\"Products,\" \"quality\" and \"great\" are all abstract.' (Note: the verdict also calls it a 'blind' headline, which misapplies Bly's term, since a blind headline is one that makes no sense without the body copy, but the vagueness point itself is correct.)"
+  },
+  {
+   "text": "Applies the four functions of a headline (attention, select audience, deliver message, draw into body)",
+   "passed": true,
+   "evidence": "Section 1 'The four jobs of a headline' lists and evaluates get attention, select the audience, deliver a complete message, draw the reader into the body copy; matches SKILL.md."
+  },
+  {
+   "text": "Uses the 4 U's",
+   "passed": true,
+   "evidence": "Section 2 scores Urgent 1, Unique 1, Ultra-specific 1, Useful 1 = 4/16, and rescores the recommended rewrite (2/3/4/4 = 13/16)."
+  },
+  {
+   "text": "Gives multiple rewrites using named techniques or types",
+   "passed": true,
+   "evidence": "Seven rewrites in a table labeled Direct, How-to, Question, Reason-why, News, Testimonial, Command (all among Bly's 8 types), with a sample furniture-store business, and a recommended rewrite."
+  },
+  {
+   "text": "Mentions USP or a BFD/motivator angle",
+   "passed": false,
+   "evidence": "No mention of a USP, Rosser Reeves, the BFD formula (beliefs, feelings, desires) or the copy motivators anywhere. The closest points are 'Unique' in the 4 U's and 'the single most important benefit', which are not the USP or BFD/motivator frameworks. It also adds unsupported claims ('Bly prefers sentence case')."
+  }
+ ],
+ "summary": {
+  "passed": 4,
+  "failed": 1,
+  "total": 5,
+  "pass_rate": 0.8
+ }
+}

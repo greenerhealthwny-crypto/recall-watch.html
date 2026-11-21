@@ -1,7 +1,35 @@
-{"expectations":[
-{"text":"Gives 3 headlines each labeled with one of Bly's headline types","passed":false,"evidence":"A 'Direct' and B 'Question' are valid and fit. But C, 'Solid Oak, Not Veneer: Seats 6, $180, Pick Up This Weekend', is labeled 'Reason-why / news'. In the skill files a reason-why headline lists reasons ('7 reasons...') and a news headline announces something new; C does neither (it is a direct headline with a time element). The label is misapplied and hedged across two types, so not every headline is correctly labeled."},
-{"text":"Checks headlines against the 4 U's (urgent, unique, ultra-specific, useful)","passed":true,"evidence":"Section 2 table scores each headline 1-4 on Urgent, Unique, Ultra-specific, Useful with correct definitions and notes (A 11/16, B 13/16, C 15/16). It sums to /16 instead of using the book's '3+ on at least three' rule, but the check against all four U's is clearly done."},
-{"text":"Converts features to benefits explicitly","passed":true,"evidence":"Section 3 'Features turned into benefits' table, e.g. 'Solid oak, not veneer or particleboard' -> 'It won't swell, peel or sag. You can sand out scratches and refinish it'; states the 'which means...' translation."},
-{"text":"Follows the motivating sequence (attention, need, satisfy, prove, action) in the body","passed":true,"evidence":"Section 5 maps the listing to 'Attention', 'Need' (opening question about wobbly furniture), 'Satisfaction' (features+benefits), 'Proof' (dimensions, honest condition note, reason for low price), 'Action' ('Message me...'); the body text follows that order. Matches SKILL.md's five steps."},
-{"text":"Includes a clear call to action","passed":true,"evidence":"'Message me \"Is this available?\" and tell me when you can come. First person with a pickup time gets it. Available for pickup this weekend, [Sat/Sun].'"}
-],"summary":{"passed":4,"failed":1,"total":5,"pass_rate":0.8}}
+{
+ "expectations": [
+  {
+   "text": "Gives 3 headlines each labeled with one of Bly's headline types",
+   "passed": false,
+   "evidence": "A 'Direct' and B 'Question' are valid and fit. But C, 'Solid Oak, Not Veneer: Seats 6, $180, Pick Up This Weekend', is labeled 'Reason-why / news'. In the skill files a reason-why headline lists reasons ('7 reasons...') and a news headline announces something new; C does neither (it is a direct headline with a time element). The label is misapplied and hedged across two types, so not every headline is correctly labeled."
+  },
+  {
+   "text": "Checks headlines against the 4 U's (urgent, unique, ultra-specific, useful)",
+   "passed": true,
+   "evidence": "Section 2 table scores each headline 1-4 on Urgent, Unique, Ultra-specific, Useful with correct definitions and notes (A 11/16, B 13/16, C 15/16). It sums to /16 instead of using the book's '3+ on at least three' rule, but the check against all four U's is clearly done."
+  },
+  {
+   "text": "Converts features to benefits explicitly",
+   "passed": true,
+   "evidence": "Section 3 'Features turned into benefits' table, e.g. 'Solid oak, not veneer or particleboard' -> 'It won't swell, peel or sag. You can sand out scratches and refinish it'; states the 'which means...' translation."
+  },
+  {
+   "text": "Follows the motivating sequence (attention, need, satisfy, prove, action) in the body",
+   "passed": true,
+   "evidence": "Section 5 maps the listing to 'Attention', 'Need' (opening question about wobbly furniture), 'Satisfaction' (features+benefits), 'Proof' (dimensions, honest condition note, reason for low price), 'Action' ('Message me...'); the body text follows that order. Matches SKILL.md's five steps."
+  },
+  {
+   "text": "Includes a clear call to action",
+   "passed": true,
+   "evidence": "'Message me \"Is this available?\" and tell me when you can come. First person with a pickup time gets it. Available for pickup this weekend, [Sat/Sun].'"
+  }
+ ],
+ "summary": {
+  "passed": 4,
+  "failed": 1,
+  "total": 5,
+  "pass_rate": 0.8
+ }
+}

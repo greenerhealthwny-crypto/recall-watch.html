@@ -1,0 +1,223 @@
+{
+  "metadata": {
+    "skill_name": "brick-mortar-funnels",
+    "skill_path": "<path/to/skill>",
+    "executor_model": "<model-name>",
+    "analyzer_model": "<model-name>",
+    "timestamp": "2026-11-21T22:00:50Z",
+    "evals_run": [
+      1,
+      2
+    ],
+    "runs_per_configuration": 1
+  },
+  "runs": [
+    {
+      "eval_id": 1,
+      "eval_name": "adv-100days",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Uses Joshua Latimer's home-services ideas (max CAC and/or front-end offer)",
+          "passed": true,
+          "evidence": "Section 1 'Know your numbers first (Latimer's maximum CAC)' uses his one-off formula ('decide what share of a job's profit you'll give up'), matching references/experts.md; Section 2 cites his real front-end examples ('$20 45-minute power clean, a free spot clean, and 10 exterior windows for $99'), the value ladder quote 'amateurs focus on the front end but professionals focus on the back end', the ~$3,850/yr client, and Section 3 lists his seven steps correctly."
+        },
+        {
+          "text": "Borrows from at least one other named expert (e.g. David Frey referrals, Tyler Shaule SMS, Hormozi client-financed acquisition)",
+          "passed": true,
+          "evidence": "Section 4 uses Tyler Shaule's Phone Funnel System (reactivation, survey-to-appointment with 3-5 questions, NPS rate/review/referral, ~300 reviews, repackage every 90 days); Section 6 uses David Frey's Dream 100, 20 friend requests/day, Team 12, viral deal, fishbowl; Section 5 uses Woolner's portfolio of proof and Position Ascension Loop. All match the skill files."
+        },
+        {
+          "text": "Breaks the plan into phases across 100 days",
+          "passed": true,
+          "evidence": "Section 7 '100-day calendar' splits into Weeks 1-2 (days 1-14), 3-4 (15-28), 5-6 (29-42), 7-10 (43-70), 11-14 (71-100), each with cumulative customer targets (10, 25, 42, 72, 100)."
+        },
+        {
+          "text": "Includes acquisition-cost math",
+          "passed": true,
+          "evidence": "Max CAC table: $325 job, $190 gross profit, 35% share -> 'Max CAC on the first job about $65', back-end-adjusted 'about $100'; working-backward funnel (100 customers / 55% close = ~180 quotes / 70% = ~260 leads); Hormozi's 'spend $1 to make $3' check, correctly attributed."
+        },
+        {
+          "text": "Includes reviews/referrals or reactivation",
+          "passed": true,
+          "evidence": "Section 4a reactivation funnel ('Upload every past customer and every old lead'), 4c NPS review/referral funnel (with correct no-gating caution), Section 6 referral methods ($20/$20 refer-a-friend, share a post, Team 12)."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "adv-event",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Uses Jaime Cross's ticketed-event concept",
+          "passed": true,
+          "evidence": "Section 3 'a Cross-style ticketed First Look' cites her accurate details: '$47\u2013$97' class, factory tour and origin story, 'Seven Pillars of True Beauty', hand massage/sampling stations, free 14-Day True Beauty Challenge on the thank-you page, bring-a-friend free full-size serum, refer-two free products, DiscoverTrueBeauty.com, 'Director of Happiness' - all matching references/experts.md."
+        },
+        {
+          "text": "Uses Chad Woolner's workshop/event funnel",
+          "passed": true,
+          "evidence": "Section 4 adapts 'The 30-Minute Reboot' (real value, 'not a thinly veiled sales pitch'), booking order (existing relationships -> lead boxes -> 'welcome guest' outreach with ~90% failure), ~3 workshops/week; Section 5 runs the 'Epic Event' with '3 email invites \u2192 RSVP (name, email, phone, number of guests) \u2192 reminders' and 'Glue and Offer' raffle with JV-partner prizes; Section 7 portfolio of proof and Position Ascension Loop. All accurate to the skill."
+        },
+        {
+          "text": "Adapts both concretely to a vintage-furniture pop-up",
+          "passed": true,
+          "evidence": "Concrete translations: '$25 ticket, fully credited toward any purchase', 'The 5 Tells of Real Vintage' replacing Seven Pillars, 'Spot the Reproduction' station, '14-Day Room Refresh Challenge', 'Vintage 101' talks at caf\u00e9s/breweries, 'Win a restored mid-century side table' lead box, upholsterer/florist raffle prizes, stock-planning note on one-of-a-kind inventory."
+        },
+        {
+          "text": "Includes promotion and follow-up steps",
+          "passed": true,
+          "evidence": "Section 8 week -8 to after-closing timeline; three drafted invite emails at ~21/10/3 days out, reminders at 2 days/morning/1 hour; Section 6 ads, retargeting, giveaway; Section 7 non-buyer follow-up within 7 days, NPS/review asks (no gating), waitlist for next pop-up."
+        },
+        {
+          "text": "Includes pricing or attendance targets",
+          "passed": true,
+          "evidence": "Ticket price $25 (test vs $45), 60 tickets, 85% show -> ~51 attendees, ~18 buyers at 35%, AOV $420 -> ~$7,500, cost per ticket under ~$40 (derived from Hormozi's spend-per-show logic), 400+ contacts, workshop math 6 weeks \u00d7 2\u20133 \u00d7 ~12 people \u2248 180 reached."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 1,
+      "eval_name": "adv-100days",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.6,
+        "passed": 3,
+        "failed": 2,
+        "total": 5,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Uses Joshua Latimer's home-services ideas (max CAC and/or front-end offer)",
+          "passed": false,
+          "evidence": "The response admits 'I don't have the exact text of Joshua Latimer's home-services chapter' and offers only ideas 'home-services funnel experts (Latimer among them) are known for'. No maximum CAC concept appears anywhere. The 'front-end offer' is a generic risk-reversal hook ('Garage Back in 1 Afternoon \u2014 Guaranteed... If we're late, $50 off') with no Latimer value ladder, low-priced entry offer, one-offer landing page rationale or seven-step test loop. This is generic advice loosely attributed to Latimer."
+        },
+        {
+          "text": "Borrows from at least one other named expert (e.g. David Frey referrals, Tyler Shaule SMS, Hormozi client-financed acquisition)",
+          "passed": true,
+          "evidence": "'Borrowed expert #2: the event / \"one-day\" funnel' is attributed to 'contributors like Chad Woolner and Jaime Cross', which correctly matches the skill (Woolner's workshop/Epic Event funnels, Cross's ticketed events), and it is adapted into a 'Neighborhood Clean-Out Day' and partner mini-workshop. Thin on book specifics but the attribution is not wrong."
+        },
+        {
+          "text": "Breaks the plan into phases across 100 days",
+          "passed": true,
+          "evidence": "Phase 1 (Days 1-20), Phase 2 (Days 21-50), Phase 3 (Days 51-80), Phase 4 (Days 81-100), each with customer/review goals."
+        },
+        {
+          "text": "Includes acquisition-cost math",
+          "passed": false,
+          "evidence": "Only volume funnel math is given ('Booked quotes needed ~160... Leads needed ~400'). There is no cost-per-customer derivation: no margin, no max CAC, no value-per-customer calculation. The single cost figure, 'Kill ad sets that cost more than $40 per booked job', is an unexplained cap, not acquisition-cost math."
+        },
+        {
+          "text": "Includes reviews/referrals or reactivation",
+          "passed": true,
+          "evidence": "'Back end: reviews, referrals, repeat' section (review ask by text, '$25 off... for every friend who books', partner referrals) plus a Phase 3 text to 'every past lead who didn't book' and Phase 4 'last call' campaign to past customers."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "adv-event",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.8,
+        "passed": 4,
+        "failed": 1,
+        "total": 5,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Uses Jaime Cross's ticketed-event concept",
+          "passed": true,
+          "evidence": "Part 1 'VIP Preview Night' is a ticketed experience ('40 tickets. $15, credited toward any purchase'), and the opener characterizes Cross's approach as 'a ticketed or limited \"experience\"', which matches the skill's core idea (ticketed in-store class). It omits Cross's specifics (the $47\u2013$97 class, the free 14-day challenge, bring-a-friend/refer-two gifts) but the ticketed-event concept itself is used and nothing stated is wrong."
+        },
+        {
+          "text": "Uses Chad Woolner's workshop/event funnel",
+          "passed": false,
+          "evidence": "Part 2's 'Woolner-style teach \u2192 offer' is a generic paid $25 in-store workshop ending in a 15%-off offer. None of Woolner's distinctive funnel appears: the free lunch 'Reboot' workshop held at other businesses, booking through existing relationships, lead boxes, 'welcome guest' outreach, case value, or the Epic Event's 3 invites \u2192 RSVP \u2192 reminders \u2192 'Glue and Offer' raffle. The response itself says 'I don't have the exact text of... Chad Woolner's chapters'. Generic workshop advice labeled as Woolner's."
+        },
+        {
+          "text": "Adapts both concretely to a vintage-furniture pop-up",
+          "passed": true,
+          "evidence": "Concrete vintage adaptations: theme nights ('Mid-Century Night'), sneak-peek hero pieces ('1962 teak credenza'), 'story card' on each piece, 'How to Spot, Score & Style Vintage Furniture' workshop, delivery partner logistics, 'Hunt List' sourcing service."
+        },
+        {
+          "text": "Includes promotion and follow-up steps",
+          "passed": true,
+          "evidence": "'Promotion timeline (3 weeks)' (Early Access List, list-first ticket release, $10\u2013$20/day local ads, '12 tickets left' update, reminder texts) and Part 3 'Week +1: Thank-you email, \"what sold\" recap, unsold-piece flash sale to the list, review ask' plus ongoing 'Next Drop' list."
+        },
+        {
+          "text": "Includes pricing or attendance targets",
+          "passed": true,
+          "evidence": "'Numbers to plan around': 40 VIP tickets \u00d7 $15, 20 workshop seats \u00d7 $25, 300\u2013500 list sign-ups, 60\u201370% VIP conversion at avg $350, 150\u2013300 public visitors at 15\u201325%, $200\u2013$400 ad spend."
+        }
+      ],
+      "notes": []
+    }
+  ],
+  "run_summary": {
+    "with_skill": {
+      "pass_rate": {
+        "mean": 1.0,
+        "stddev": 0.0,
+        "min": 1.0,
+        "max": 1.0
+      },
+      "time_seconds": null,
+      "tokens": null
+    },
+    "without_skill": {
+      "pass_rate": {
+        "mean": 0.7,
+        "stddev": 0.1414,
+        "min": 0.6,
+        "max": 0.8
+      },
+      "time_seconds": null,
+      "tokens": null
+    },
+    "delta": {
+      "pass_rate": "+0.30",
+      "time_seconds": null,
+      "tokens": null
+    }
+  },
+  "notes": [
+    "Time recorded for 0 of 2 with_skill runs, 0 of 2 without_skill runs, so there is no time delta.",
+    "Token count recorded for 0 of 2 with_skill runs, 0 of 2 without_skill runs, so there is no token count delta."
+  ]
+}

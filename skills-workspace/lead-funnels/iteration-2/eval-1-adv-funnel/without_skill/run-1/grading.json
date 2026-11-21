@@ -1,0 +1,35 @@
+{
+ "expectations": [
+  {
+   "text": "Covers all five parts: lead magnet, landing page, thank-you page, sales page, follow-up",
+   "passed": true,
+   "evidence": "Sections '## 1. Lead Magnet', '## 2. Landing (Opt-in) Page', '## 3. Thank-You Page', '## 4. Sales Page / Offer', '## 5. Follow-Up Sequence' cover all five parts."
+  },
+  {
+   "text": "Lead magnet uses a curiosity/pain hook (e.g. 'The # Biggest Mistakes...')",
+   "passed": true,
+   "evidence": "Magnet 'The 7-Point Used Furniture Checklist: How to Spot Solid Wood, Bedbugs, and Overpriced Junk in 60 Seconds' is a pain-focused curiosity hook ('Fixes a real fear. Buying used is scary'); early access is called 'the real hook'. No book attribution claimed, so no misattribution; no 'Biggest Mistakes' formula, but the assertion's example is only an e.g."
+  },
+  {
+   "text": "Includes a thank-you-page offer or self-liquidating offer",
+   "passed": true,
+   "evidence": "Thank-you page item 4: 'Immediate offer (tripwire / self-liquidator): \"Available right now for VIPs only:\" ... \"Claim It \u2014 $20 Hold Deposit\"'; section 6 also does an SLO sanity check (15 sales x ~$80 vs $250 ad spend)."
+  },
+  {
+   "text": "Includes list math (e.g. $1 per name per month) with an estimate",
+   "passed": true,
+   "evidence": "Section 6 list math: 300 subs/month, 5% churn, 4% buying, $100 profit -> 'Value per subscriber per month = 4% x $100 profit = $4.00', month-by-month growth table, LTV \u2248 $80. Concrete estimate given (does not cite the book's $1/name figure, but the assertion's example is an e.g.)."
+  },
+  {
+   "text": "Includes a follow-up sequence or daily publishing plan",
+   "passed": true,
+   "evidence": "'Welcome / indoctrination (first 7 days)' table (Day 0,1,2,3,5,7), weekly Wed/Thu/Sat broadcast rhythm, and behavioral triggers."
+  }
+ ],
+ "summary": {
+  "passed": 5,
+  "failed": 0,
+  "total": 5,
+  "pass_rate": 1.0
+ }
+}

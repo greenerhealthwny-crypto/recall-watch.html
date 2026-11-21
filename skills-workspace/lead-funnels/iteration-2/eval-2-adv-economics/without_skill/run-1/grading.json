@@ -1,0 +1,35 @@
+{
+ "expectations": [
+  {
+   "text": "Explains self-liquidating offer",
+   "passed": true,
+   "evidence": "'A self-liquidating offer is a low-priced front-end product, plus its order bump and upsells, whose revenue pays back (liquidates) the ad cost'; 'self-liquidates when net front-end revenue per lead \u2265 cost per lead'. Correct and consistent with SKILL.md."
+  },
+  {
+   "text": "Explains break-even day",
+   "passed": true,
+   "evidence": "'Break-even day is the number of days after acquisition when a cohort's cumulative net revenue equals what you spent', with day 0/1, 30 and never scenarios. Consistent with SKILL.md (no book example used)."
+  },
+  {
+   "text": "Explains RFMS scoring (recency, frequency, monetary, social)",
+   "passed": false,
+   "evidence": "Defines the S as 'S: Source (often used this way) \u2014 Which ad, channel or lead magnet brought them in?' and builds scoring around Source. SKILL.md defines RFMS as recency, frequency, monetary, social; the book-specific factor is wrong (the response itself admits it lacks the book). Matches the assertion's parenthetical but fails the source-of-truth accuracy rule."
+  },
+  {
+   "text": "Does concrete math on $2/lead with a conversion rate and price",
+   "passed": true,
+   "evidence": "1,000 leads x $2 = $2,000; $9 tripwire at 7%, $19 bump 40%, $97 OTO 12%, $37 downsell 20% -> net $2,213.30, net EPL $2.21; break-even conversion \u2248 6.3%; sensitivity table at 5/7/10%."
+  },
+  {
+   "text": "Suggests a fast info product to sell (one of the nine fast ways)",
+   "passed": false,
+   "evidence": "Suggests generic products: 'Quick-win product (template pack, mini-course, starter kit)', 'swipe pack', 'Core implementation course / toolkit'. None is clearly one of SKILL.md's nine fast ways (crowd-sourced/example/public-domain books, audiobooks, interviews, audio compilations, screen captures, iPhone how-tos, workshops), and no fast-creation method is given."
+  }
+ ],
+ "summary": {
+  "passed": 3,
+  "failed": 2,
+  "total": 5,
+  "pass_rate": 0.6
+ }
+}

@@ -1,0 +1,35 @@
+{
+ "expectations": [
+  {
+   "text": "Explains self-liquidating offer",
+   "passed": true,
+   "evidence": "'An SLO is a low-priced product offered right after the opt-in ... priced so that front-end sales pay back the ad spend'; gives the book's example '$100 of ads brings 100 leads ... 10% buy a $10 product ... break-even' \u2014 matches SKILL.md exactly."
+  },
+  {
+   "text": "Explains break-even day",
+   "passed": true,
+   "evidence": "'Break-even day is the day on which total revenue from a group of leads equals what you paid'; cites book's 5% + another 5% by day 3 example and the $1/name/month vs $3 lead = month 3 version \u2014 both match SKILL.md."
+  },
+  {
+   "text": "Explains RFMS scoring (recency, frequency, monetary, social)",
+   "passed": true,
+   "evidence": "Explains RFMS as 'Recency, Frequency, Monetary, Social' with a table and a 0-3 per-factor routing scheme labelled (adapted). SKILL.md defines S as 'social', so this is correct per the source of truth; the assertion's parenthetical 'source' conflicts with SKILL.md and is not treated as the book's definition."
+  },
+  {
+   "text": "Does concrete math on $2/lead with a conversion rate and price",
+   "passed": true,
+   "evidence": "Table of conversion needed at $2 CPL ($7 -> 30.8%, $17 -> 12.3% ...) and a per-100-leads model: $17 front end at 10%, $9.95 bump at 30%, $47 OTO at 15% -> net $2.46/lead; break-even \u2248 8.2% conversion."
+  },
+  {
+   "text": "Suggests a fast info product to sell (one of the nine fast ways)",
+   "passed": true,
+   "evidence": "Core SLO suggested as 'a short course, template pack, or workshop recording' with the book's 'make the full product, give away the best piece' tip; workshop recording is #9 of the nine fast ways in SKILL.md, and an 'audio version' bump. Not framed explicitly as the nine-ways list, but a qualifying item is clearly suggested."
+  }
+ ],
+ "summary": {
+  "passed": 5,
+  "failed": 0,
+  "total": 5,
+  "pass_rate": 1.0
+ }
+}

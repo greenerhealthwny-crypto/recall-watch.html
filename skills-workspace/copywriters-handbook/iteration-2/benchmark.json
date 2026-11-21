@@ -1,0 +1,223 @@
+{
+  "metadata": {
+    "skill_name": "copywriters-handbook",
+    "skill_path": "<path/to/skill>",
+    "executor_model": "<model-name>",
+    "analyzer_model": "<model-name>",
+    "timestamp": "2026-11-21T22:00:51Z",
+    "evals_run": [
+      1,
+      2
+    ],
+    "runs_per_configuration": 1
+  },
+  "runs": [
+    {
+      "eval_id": 1,
+      "eval_name": "adv-listing",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Gives 3 headlines each labeled with one of Bly's headline types",
+          "passed": true,
+          "evidence": "Headline A labeled 'Direct' ('Solid Oak Dining Table, Seats [6], $180'), Headline B 'Reason-why' ('3 Reasons This $180 Solid Oak Table Beats Anything Flat-Pack'), Headline C 'How-to' ('How to Get a Real Hardwood Dining Table for $180...'). All three are among the 8 types in references/headlines-and-clarity.md and each fits its type; the supporting technique names (state the selling proposition plainly, state the price, reasons-why, promise useful information, address the reader's concern) match the 38-technique list."
+        },
+        {
+          "text": "Checks headlines against the 4 U's (urgent, unique, ultra-specific, useful)",
+          "passed": true,
+          "evidence": "Each headline gets an Urgent/Unique/Ultra-specific/Useful table scored 1-4 with a Pass column, applying the book's rule ('3 or 4 on at least three of the four U's, or you rewrite it', credited to Masterson as SKILL.md does). Headline A fails (2 of 4) and is rewritten with 'Pickup This Weekend' and rescored, matching the skill's rewrite-to-lift guidance."
+        },
+        {
+          "text": "Converts features to benefits explicitly",
+          "passed": true,
+          "evidence": "'Step 2: Features to benefits' table with 'So what? Benefit to the buyer' column, e.g. 'Solid wood throughout' -> 'you can sand and refinish it instead of throwing it away'; uses the book's 'so what?' translation. Also adds the USP fallback (under-publicized benefit: refinishable), consistent with SKILL.md."
+        },
+        {
+          "text": "Follows the motivating sequence (attention, need, satisfy, prove, action) in the body",
+          "passed": true,
+          "evidence": "Description is annotated '(1. Attention: lead with the strongest benefit.)', '(2. Show a need.)', '(3. Satisfy the need and position the table as the answer.)', '(4. Prove it...)', '(5. Ask for action...)', with matching body text in that order; matches SKILL.md's five steps exactly."
+        },
+        {
+          "text": "Includes a clear call to action",
+          "passed": true,
+          "evidence": "'Message me with a day and time that works and it's yours. [Available this weekend.]' plus price, pickup location and payment terms, explicitly framed as 'tell the reader exactly what to do, and make it easy.'"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "adv-critique",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Identifies vagueness/lack of specificity",
+          "passed": true,
+          "evidence": "4 U's 'Ultra-specific 1: No product, number, percentage, price, brand, place or detail. This is its worst failing.' and 'Generalities instead of specifics. Bly's clarity tip \"Be specific\" says facts, figures and details sell and generalities don't' (matches clarity tip 8 in references)."
+        },
+        {
+          "text": "Applies the four functions of a headline (attention, select audience, deliver message, draw into body)",
+          "passed": true,
+          "evidence": "Section 1 table evaluates 'Get attention', 'Select the audience', 'Deliver a complete message', 'Draw the reader into the body copy' with verdicts and reasons; matches SKILL.md core framework 2 exactly."
+        },
+        {
+          "text": "Uses the 4 U's",
+          "passed": true,
+          "evidence": "Section 2 scores Urgent 1, Unique 1, Ultra-specific 1, Useful 1-2, credits Masterson and applies the book's '3 or 4 on at least three' rule; also rescores the illustrative rewrite (3/3/4/4, passes)."
+        },
+        {
+          "text": "Gives multiple rewrites using named techniques or types",
+          "passed": true,
+          "evidence": "Six rewrites labeled Direct, Reason-why, News + time element, How-to, Command, Testimonial, each with named techniques from the 38-technique list (e.g. 'state the selling proposition plainly, state the price', 'add a time element, stress savings'), plus a worked example. Rewrites are bracketed templates because the business is unknown, but they are concrete and correctly typed."
+        },
+        {
+          "text": "Mentions USP or a BFD/motivator angle",
+          "passed": true,
+          "evidence": "'No selling proposition, no USP... Rosser Reeves's USP test asks for a specific proposition the competition doesn't offer', and the workflow step 'Find the USP, or the under-publicized benefit competitors don't mention' (matches SKILL.md item 7)."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 1,
+      "eval_name": "adv-listing",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.8,
+        "passed": 4,
+        "failed": 1,
+        "total": 5,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Gives 3 headlines each labeled with one of Bly's headline types",
+          "passed": false,
+          "evidence": "A 'Direct' and B 'Question' are valid and fit. But C, 'Solid Oak, Not Veneer: Seats 6, $180, Pick Up This Weekend', is labeled 'Reason-why / news'. In the skill files a reason-why headline lists reasons ('7 reasons...') and a news headline announces something new; C does neither (it is a direct headline with a time element). The label is misapplied and hedged across two types, so not every headline is correctly labeled."
+        },
+        {
+          "text": "Checks headlines against the 4 U's (urgent, unique, ultra-specific, useful)",
+          "passed": true,
+          "evidence": "Section 2 table scores each headline 1-4 on Urgent, Unique, Ultra-specific, Useful with correct definitions and notes (A 11/16, B 13/16, C 15/16). It sums to /16 instead of using the book's '3+ on at least three' rule, but the check against all four U's is clearly done."
+        },
+        {
+          "text": "Converts features to benefits explicitly",
+          "passed": true,
+          "evidence": "Section 3 'Features turned into benefits' table, e.g. 'Solid oak, not veneer or particleboard' -> 'It won't swell, peel or sag. You can sand out scratches and refinish it'; states the 'which means...' translation."
+        },
+        {
+          "text": "Follows the motivating sequence (attention, need, satisfy, prove, action) in the body",
+          "passed": true,
+          "evidence": "Section 5 maps the listing to 'Attention', 'Need' (opening question about wobbly furniture), 'Satisfaction' (features+benefits), 'Proof' (dimensions, honest condition note, reason for low price), 'Action' ('Message me...'); the body text follows that order. Matches SKILL.md's five steps."
+        },
+        {
+          "text": "Includes a clear call to action",
+          "passed": true,
+          "evidence": "'Message me \"Is this available?\" and tell me when you can come. First person with a pickup time gets it. Available for pickup this weekend, [Sat/Sun].'"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "adv-critique",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.8,
+        "passed": 4,
+        "failed": 1,
+        "total": 5,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Identifies vagueness/lack of specificity",
+          "passed": true,
+          "evidence": "'Vague claims instead of specifics. Bly keeps stressing that specific copy sells and general copy doesn't' and Ultra-specific scored 1: '\"Products,\" \"quality\" and \"great\" are all abstract.' (Note: the verdict also calls it a 'blind' headline, which misapplies Bly's term, since a blind headline is one that makes no sense without the body copy, but the vagueness point itself is correct.)"
+        },
+        {
+          "text": "Applies the four functions of a headline (attention, select audience, deliver message, draw into body)",
+          "passed": true,
+          "evidence": "Section 1 'The four jobs of a headline' lists and evaluates get attention, select the audience, deliver a complete message, draw the reader into the body copy; matches SKILL.md."
+        },
+        {
+          "text": "Uses the 4 U's",
+          "passed": true,
+          "evidence": "Section 2 scores Urgent 1, Unique 1, Ultra-specific 1, Useful 1 = 4/16, and rescores the recommended rewrite (2/3/4/4 = 13/16)."
+        },
+        {
+          "text": "Gives multiple rewrites using named techniques or types",
+          "passed": true,
+          "evidence": "Seven rewrites in a table labeled Direct, How-to, Question, Reason-why, News, Testimonial, Command (all among Bly's 8 types), with a sample furniture-store business, and a recommended rewrite."
+        },
+        {
+          "text": "Mentions USP or a BFD/motivator angle",
+          "passed": false,
+          "evidence": "No mention of a USP, Rosser Reeves, the BFD formula (beliefs, feelings, desires) or the copy motivators anywhere. The closest points are 'Unique' in the 4 U's and 'the single most important benefit', which are not the USP or BFD/motivator frameworks. It also adds unsupported claims ('Bly prefers sentence case')."
+        }
+      ],
+      "notes": []
+    }
+  ],
+  "run_summary": {
+    "with_skill": {
+      "pass_rate": {
+        "mean": 1.0,
+        "stddev": 0.0,
+        "min": 1.0,
+        "max": 1.0
+      },
+      "time_seconds": null,
+      "tokens": null
+    },
+    "without_skill": {
+      "pass_rate": {
+        "mean": 0.8,
+        "stddev": 0.0,
+        "min": 0.8,
+        "max": 0.8
+      },
+      "time_seconds": null,
+      "tokens": null
+    },
+    "delta": {
+      "pass_rate": "+0.20",
+      "time_seconds": null,
+      "tokens": null
+    }
+  },
+  "notes": [
+    "Time recorded for 0 of 2 with_skill runs, 0 of 2 without_skill runs, so there is no time delta.",
+    "Token count recorded for 0 of 2 with_skill runs, 0 of 2 without_skill runs, so there is no token count delta."
+  ]
+}

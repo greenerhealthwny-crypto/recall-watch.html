@@ -1,7 +1,35 @@
-{"expectations":[
-{"text":"Gives 3 headlines each labeled with one of Bly's headline types","passed":true,"evidence":"Headline A labeled 'Direct' ('Solid Oak Dining Table, Seats [6], $180'), Headline B 'Reason-why' ('3 Reasons This $180 Solid Oak Table Beats Anything Flat-Pack'), Headline C 'How-to' ('How to Get a Real Hardwood Dining Table for $180...'). All three are among the 8 types in references/headlines-and-clarity.md and each fits its type; the supporting technique names (state the selling proposition plainly, state the price, reasons-why, promise useful information, address the reader's concern) match the 38-technique list."},
-{"text":"Checks headlines against the 4 U's (urgent, unique, ultra-specific, useful)","passed":true,"evidence":"Each headline gets an Urgent/Unique/Ultra-specific/Useful table scored 1-4 with a Pass column, applying the book's rule ('3 or 4 on at least three of the four U's, or you rewrite it', credited to Masterson as SKILL.md does). Headline A fails (2 of 4) and is rewritten with 'Pickup This Weekend' and rescored, matching the skill's rewrite-to-lift guidance."},
-{"text":"Converts features to benefits explicitly","passed":true,"evidence":"'Step 2: Features to benefits' table with 'So what? Benefit to the buyer' column, e.g. 'Solid wood throughout' -> 'you can sand and refinish it instead of throwing it away'; uses the book's 'so what?' translation. Also adds the USP fallback (under-publicized benefit: refinishable), consistent with SKILL.md."},
-{"text":"Follows the motivating sequence (attention, need, satisfy, prove, action) in the body","passed":true,"evidence":"Description is annotated '(1. Attention: lead with the strongest benefit.)', '(2. Show a need.)', '(3. Satisfy the need and position the table as the answer.)', '(4. Prove it...)', '(5. Ask for action...)', with matching body text in that order; matches SKILL.md's five steps exactly."},
-{"text":"Includes a clear call to action","passed":true,"evidence":"'Message me with a day and time that works and it's yours. [Available this weekend.]' plus price, pickup location and payment terms, explicitly framed as 'tell the reader exactly what to do, and make it easy.'"}
-],"summary":{"passed":5,"failed":0,"total":5,"pass_rate":1.0}}
+{
+ "expectations": [
+  {
+   "text": "Gives 3 headlines each labeled with one of Bly's headline types",
+   "passed": true,
+   "evidence": "Headline A labeled 'Direct' ('Solid Oak Dining Table, Seats [6], $180'), Headline B 'Reason-why' ('3 Reasons This $180 Solid Oak Table Beats Anything Flat-Pack'), Headline C 'How-to' ('How to Get a Real Hardwood Dining Table for $180...'). All three are among the 8 types in references/headlines-and-clarity.md and each fits its type; the supporting technique names (state the selling proposition plainly, state the price, reasons-why, promise useful information, address the reader's concern) match the 38-technique list."
+  },
+  {
+   "text": "Checks headlines against the 4 U's (urgent, unique, ultra-specific, useful)",
+   "passed": true,
+   "evidence": "Each headline gets an Urgent/Unique/Ultra-specific/Useful table scored 1-4 with a Pass column, applying the book's rule ('3 or 4 on at least three of the four U's, or you rewrite it', credited to Masterson as SKILL.md does). Headline A fails (2 of 4) and is rewritten with 'Pickup This Weekend' and rescored, matching the skill's rewrite-to-lift guidance."
+  },
+  {
+   "text": "Converts features to benefits explicitly",
+   "passed": true,
+   "evidence": "'Step 2: Features to benefits' table with 'So what? Benefit to the buyer' column, e.g. 'Solid wood throughout' -> 'you can sand and refinish it instead of throwing it away'; uses the book's 'so what?' translation. Also adds the USP fallback (under-publicized benefit: refinishable), consistent with SKILL.md."
+  },
+  {
+   "text": "Follows the motivating sequence (attention, need, satisfy, prove, action) in the body",
+   "passed": true,
+   "evidence": "Description is annotated '(1. Attention: lead with the strongest benefit.)', '(2. Show a need.)', '(3. Satisfy the need and position the table as the answer.)', '(4. Prove it...)', '(5. Ask for action...)', with matching body text in that order; matches SKILL.md's five steps exactly."
+  },
+  {
+   "text": "Includes a clear call to action",
+   "passed": true,
+   "evidence": "'Message me with a day and time that works and it's yours. [Available this weekend.]' plus price, pickup location and payment terms, explicitly framed as 'tell the reader exactly what to do, and make it easy.'"
+  }
+ ],
+ "summary": {
+  "passed": 5,
+  "failed": 0,
+  "total": 5,
+  "pass_rate": 1.0
+ }
+}

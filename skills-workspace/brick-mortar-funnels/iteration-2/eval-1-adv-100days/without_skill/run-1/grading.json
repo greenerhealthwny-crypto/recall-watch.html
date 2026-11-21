@@ -1,0 +1,35 @@
+{
+ "expectations": [
+  {
+   "text": "Uses Joshua Latimer's home-services ideas (max CAC and/or front-end offer)",
+   "passed": false,
+   "evidence": "The response admits 'I don't have the exact text of Joshua Latimer's home-services chapter' and offers only ideas 'home-services funnel experts (Latimer among them) are known for'. No maximum CAC concept appears anywhere. The 'front-end offer' is a generic risk-reversal hook ('Garage Back in 1 Afternoon \u2014 Guaranteed... If we're late, $50 off') with no Latimer value ladder, low-priced entry offer, one-offer landing page rationale or seven-step test loop. This is generic advice loosely attributed to Latimer."
+  },
+  {
+   "text": "Borrows from at least one other named expert (e.g. David Frey referrals, Tyler Shaule SMS, Hormozi client-financed acquisition)",
+   "passed": true,
+   "evidence": "'Borrowed expert #2: the event / \"one-day\" funnel' is attributed to 'contributors like Chad Woolner and Jaime Cross', which correctly matches the skill (Woolner's workshop/Epic Event funnels, Cross's ticketed events), and it is adapted into a 'Neighborhood Clean-Out Day' and partner mini-workshop. Thin on book specifics but the attribution is not wrong."
+  },
+  {
+   "text": "Breaks the plan into phases across 100 days",
+   "passed": true,
+   "evidence": "Phase 1 (Days 1-20), Phase 2 (Days 21-50), Phase 3 (Days 51-80), Phase 4 (Days 81-100), each with customer/review goals."
+  },
+  {
+   "text": "Includes acquisition-cost math",
+   "passed": false,
+   "evidence": "Only volume funnel math is given ('Booked quotes needed ~160... Leads needed ~400'). There is no cost-per-customer derivation: no margin, no max CAC, no value-per-customer calculation. The single cost figure, 'Kill ad sets that cost more than $40 per booked job', is an unexplained cap, not acquisition-cost math."
+  },
+  {
+   "text": "Includes reviews/referrals or reactivation",
+   "passed": true,
+   "evidence": "'Back end: reviews, referrals, repeat' section (review ask by text, '$25 off... for every friend who books', partner referrals) plus a Phase 3 text to 'every past lead who didn't book' and Phase 4 'last call' campaign to past customers."
+  }
+ ],
+ "summary": {
+  "passed": 3,
+  "failed": 2,
+  "total": 5,
+  "pass_rate": 0.6
+ }
+}

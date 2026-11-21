@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eval Review</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&family=Lora:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js" integrity="sha384-EnyY0/GSHQGSxSgMwaIPzSESbqoOLSexfnSMN2AP+39Ckmn92stwABZynq1JyzdT" crossorigin="anonymous"></script>
+  <style>
+    :root {
+      --bg: #faf9f5;
+      --surface: #ffffff;
+      --border: #e8e6dc;
+      --text: #141413;
+      --text-muted: #b0aea5;
+      --accent: #d97757;
+      --accent-hover: #c4613f;
+      --green: #788c5d;
+      --green-bg: #eef2e8;
+      --red: #c44;
+      --red-bg: #fceaea;
+      --header-bg: #141413;
+      --header-text: #faf9f5;
+      --radius: 6px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Lora', Georgia, serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ---- Header ---- */
+    .header {
+      background: var(--header-bg);
+      color: var(--header-text);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .header h1 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+    .header .instructions {
+      font-size: 0.8rem;
+      opacity: 0.7;
+      margin-top: 0.25rem;
+    }
+    .header .progress {
+      font-size: 0.875rem;
+      opacity: 0.8;
+      text-align: right;
+    }
+
+    /* ---- Main content ---- */
+    .main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.5rem 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    /* ---- Sections ---- */
+    .section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      flex-shrink: 0;
+    }
+    .section-header {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.75rem 1rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+    }
+    .section-body {
+      padding: 1rem;
+    }
+
+    /* ---- Config badge ---- */
+    .config-badge {
+      display: inline-block;
+      padding: 0.2rem 0.625rem;
+      border-radius: 9999px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      margin-left: 0.75rem;
+      vertical-align: middle;
+    }
+    .config-badge.config-primary {
+      background: rgba(33, 150, 243, 0.12);
+      color: #1976d2;
+    }
+    .config-badge.config-baseline {
+      background: rgba(255, 193, 7, 0.15);
+      color: #f57f17;
+    }
+
+    /* ---- Prompt ---- */
+    .prompt-text {
+      white-space: pre-wrap;
+      font-size: 0.9375rem;
+      line-height: 1.6;
+    }
+
+    /* ---- Outputs ---- */
+    .output-file {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .output-file + .output-file {
+      margin-top: 1rem;
+    }
+    .output-file-header {
+      padding: 0.5rem 0.75rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .output-file-header .dl-btn {
+      font-size: 0.7rem;
+      color: var(--accent);
+      text-decoration: none;
+      cursor: pointer;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-weight: 500;
+      opacity: 0.8;
+    }
+    .output-file-header .dl-btn:hover {
+      opacity: 1;
+      text-decoration: underline;
+    }
+    .output-file-content {
+      padding: 0.75rem;
+      overflow-x: auto;
+    }
+    .output-file-content pre {
+      font-size: 0.8125rem;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+    }
+    .output-file-content img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 4px;
+    }
+    .output-file-content iframe {
+      width: 100%;
+      height: 600px;
+      border: none;
+    }
+    .output-file-content table {
+      border-collapse: collapse;
+      font-size: 0.8125rem;
+      width: 100%;
+    }
+    .output-file-content table td,
+    .output-file-content table th {
+      border: 1px solid var(--border);
+      padding: 0.375rem 0.5rem;
+      text-align: left;
+    }
+    .output-file-content table th {
+      background: var(--bg);
+      font-weight: 600;
+    }
+    .output-file-content .download-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 0.875rem;
+      cursor: pointer;
+    }
+    .output-file-content .download-link:hover {
+      background: var(--border);
+    }
+    .empty-state {
+      color: var(--text-muted);
+      font-style: italic;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    /* ---- Feedback ---- */
+    .prev-feedback {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.625rem 0.75rem;
+      margin-top: 0.75rem;
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+    .prev-feedback-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.25rem;
+      color: var(--text-muted);
+    }
+    .feedback-textarea {
+      width: 100%;
+      min-height: 100px;
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 0.9375rem;
+      line-height: 1.5;
+      resize: vertical;
+      color: var(--text);
+    }
+    .feedback-textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    .feedback-status {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.5rem;
+      min-height: 1.1em;
+    }
+
+    /* ---- Grades (collapsible) ---- */
+    .grades-toggle {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+    }
+    .grades-toggle:hover {
+      color: var(--accent);
+    }
+    .grades-toggle .arrow {
+      margin-right: 0.5rem;
+      transition: transform 0.15s;
+      font-size: 0.75rem;
+    }
+    .grades-toggle .arrow.open {
+      transform: rotate(90deg);
+    }
+    .grades-content {
+      display: none;
+      margin-top: 0.75rem;
+    }
+    .grades-content.open {
+      display: block;
+    }
+    .grades-summary {
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .grade-badge {
+      display: inline-block;
+      padding: 0.125rem 0.5rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .grade-pass { background: var(--green-bg); color: var(--green); }
+    .grade-fail { background: var(--red-bg); color: var(--red); }
+    .assertion-list {
+      list-style: none;
+    }
+    .assertion-item {
+      padding: 0.625rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.8125rem;
+    }
+    .assertion-item:last-child { border-bottom: none; }
+    .assertion-status {
+      font-weight: 600;
+      margin-right: 0.5rem;
+    }
+    .assertion-status.pass { color: var(--green); }
+    .assertion-status.fail { color: var(--red); }
+    .assertion-evidence {
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      margin-top: 0.25rem;
+      padding-left: 1.5rem;
+    }
+
+    /* ---- View tabs ---- */
+    .view-tabs {
+      display: flex;
+      gap: 0;
+      padding: 0 2rem;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .view-tab {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.625rem 1.25rem;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      background: none;
+      color: var(--text-muted);
+      border-bottom: 2px solid transparent;
+      transition: all 0.15s;
+    }
+    .view-tab:hover { color: var(--text); }
+    .view-tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+    .view-panel { display: none; }
+    .view-panel.active { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
+
+    /* ---- Benchmark view ---- */
+    .benchmark-view {
+      padding: 1.5rem 2rem;
+      overflow-y: auto;
+      flex: 1;
+    }
+    .benchmark-table {
+      border-collapse: collapse;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 0.8125rem;
+      width: 100%;
+      margin-bottom: 1.5rem;
+    }
+    .benchmark-table th, .benchmark-table td {
+      padding: 0.625rem 0.75rem;
+      text-align: left;
+      border: 1px solid var(--border);
+    }
+    .benchmark-table th {
+      font-family: 'Poppins', sans-serif;
+      background: var(--header-bg);
+      color: var(--header-text);
+      font-weight: 500;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .benchmark-table tr:hover { background: var(--bg); }
+    .benchmark-table tr.benchmark-row-with { background: rgba(33, 150, 243, 0.06); }
+    .benchmark-table tr.benchmark-row-without { background: rgba(255, 193, 7, 0.06); }
+    .benchmark-table tr.benchmark-row-with:hover { background: rgba(33, 150, 243, 0.12); }
+    .benchmark-table tr.benchmark-row-without:hover { background: rgba(255, 193, 7, 0.12); }
+    .benchmark-table tr.benchmark-row-avg { font-weight: 600; border-top: 2px solid var(--border); }
+    .benchmark-table tr.benchmark-row-avg.benchmark-row-with { background: rgba(33, 150, 243, 0.12); }
+    .benchmark-table tr.benchmark-row-avg.benchmark-row-without { background: rgba(255, 193, 7, 0.12); }
+    .benchmark-delta-positive { color: var(--green); font-weight: 600; }
+    .benchmark-delta-negative { color: var(--red); font-weight: 600; }
+    .benchmark-notes {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem;
+    }
+    .benchmark-notes h3 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+    }
+    .benchmark-notes ul {
+      list-style: disc;
+      padding-left: 1.25rem;
+    }
+    .benchmark-notes li {
+      font-size: 0.8125rem;
+      line-height: 1.6;
+      margin-bottom: 0.375rem;
+    }
+    .benchmark-empty {
+      color: var(--text-muted);
+      font-style: italic;
+      text-align: center;
+      padding: 3rem;
+    }
+
+    /* ---- Navigation ---- */
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+      flex-shrink: 0;
+    }
+    .nav-btn {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.5rem 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text);
+      transition: all 0.15s;
+    }
+    .nav-btn:hover:not(:disabled) {
+      background: var(--bg);
+      border-color: var(--text-muted);
+    }
+    .nav-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    .done-btn {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.5rem 1.5rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: all 0.15s;
+    }
+    .done-btn:hover {
+      background: var(--bg);
+      border-color: var(--text-muted);
+    }
+    .done-btn.ready {
+      border: none;
+      background: var(--accent);
+      color: white;
+      font-weight: 600;
+    }
+    .done-btn.ready:hover {
+      background: var(--accent-hover);
+    }
+    /* ---- Done overlay ---- */
+    .done-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 100;
+      justify-content: center;
+      align-items: center;
+    }
+    .done-overlay.visible {
+      display: flex;
+    }
+    .done-card {
+      background: var(--surface);
+      border-radius: 12px;
+      padding: 2rem 3rem;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      max-width: 500px;
+    }
+    .done-card h2 {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .done-card p {
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
+    }
+    .done-card .btn-row {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+    }
+    .done-card button {
+      padding: 0.5rem 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 0.875rem;
+    }
+    .done-card button:hover {
+      background: var(--bg);
+    }
+    /* ---- Toast ---- */
+    .toast {
+      position: fixed;
+      bottom: 5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--header-bg);
+      color: var(--header-text);
+      padding: 0.625rem 1.25rem;
+      border-radius: var(--radius);
+      font-size: 0.875rem;
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+      z-index: 200;
+    }
+    .toast.visible {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <div id="app" style="height:100vh; display:flex; flex-direction:column;">
+    <div class="header">
+      <div>
+        <h1>Eval Review: <span id="skill-name"></span></h1>
+        <div class="instructions">Review each output and leave feedback below. Navigate with arrow keys or buttons. When done, copy feedback and paste into Claude Code.</div>
+      </div>
+      <div class="progress" id="progress"></div>
+    </div>
+
+    <!-- View tabs (only shown when benchmark data exists) -->
+    <div class="view-tabs" id="view-tabs" style="display:none;">
+      <button class="view-tab active" onclick="switchView('outputs')">Outputs</button>
+      <button class="view-tab" onclick="switchView('benchmark')">Benchmark</button>
+    </div>
+
+    <!-- Outputs panel (qualitative review) -->
+    <div class="view-panel active" id="panel-outputs">
+    <div class="main">
+      <!-- Prompt -->
+      <div class="section">
+        <div class="section-header">Prompt <span class="config-badge" id="config-badge" style="display:none;"></span></div>
+        <div class="section-body">
+          <div class="prompt-text" id="prompt-text"></div>
+        </div>
+      </div>
+
+      <!-- Outputs -->
+      <div class="section">
+        <div class="section-header">Output</div>
+        <div class="section-body" id="outputs-body">
+          <div class="empty-state">No output files found</div>
+        </div>
+      </div>
+
+      <!-- Previous Output (collapsible) -->
+      <div class="section" id="prev-outputs-section" style="display:none;">
+        <div class="section-header">
+          <div class="grades-toggle" onclick="togglePrevOutputs()">
+            <span class="arrow" id="prev-outputs-arrow">&#9654;</span>
+            Previous Output
+          </div>
+        </div>
+        <div class="grades-content" id="prev-outputs-content"></div>
+      </div>
+
+      <!-- Grades (collapsible) -->
+      <div class="section" id="grades-section" style="display:none;">
+        <div class="section-header">
+          <div class="grades-toggle" onclick="toggleGrades()">
+            <span class="arrow" id="grades-arrow">&#9654;</span>
+            Formal Grades
+          </div>
+        </div>
+        <div class="grades-content" id="grades-content"></div>
+      </div>
+
+      <!-- Feedback -->
+      <div class="section">
+        <div class="section-header">Your Feedback</div>
+        <div class="section-body">
+          <textarea
+            class="feedback-textarea"
+            id="feedback"
+            placeholder="What do you think of this output? Any issues, suggestions, or things that look great?"
+          ></textarea>
+          <div class="feedback-status" id="feedback-status"></div>
+          <div class="prev-feedback" id="prev-feedback" style="display:none;">
+            <div class="prev-feedback-label">Previous feedback</div>
+            <div id="prev-feedback-text"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav" id="outputs-nav">
+      <button class="nav-btn" id="prev-btn" onclick="navigate(-1)">&#8592; Previous</button>
+      <button class="done-btn" id="done-btn" onclick="showDoneDialog()">Submit All Reviews</button>
+      <button class="nav-btn" id="next-btn" onclick="navigate(1)">Next &#8594;</button>
+    </div>
+    </div><!-- end panel-outputs -->
+
+    <!-- Benchmark panel (quantitative stats) -->
+    <div class="view-panel" id="panel-benchmark">
+      <div class="benchmark-view" id="benchmark-content">
+        <div class="benchmark-empty">No benchmark data available. Run a benchmark to see quantitative results here.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Done overlay -->
+  <div class="done-overlay" id="done-overlay">
+    <div class="done-card">
+      <h2>Review Complete</h2>
+      <p>Your feedback has been saved. Go back to your Claude Code session and tell Claude you're done reviewing.</p>
+      <div class="btn-row">
+        <button onclick="closeDoneDialog()">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ---- Embedded data (injected by generate_review.py) ----
+    const EMBEDDED_DATA = {"skill_name": "legal-research", "runs": [{"id": "eval-1-adv-issue-with_skill-run-1", "prompt": "A buyer on Facebook Marketplace paid me $200 via a payment app, then filed a chargeback claiming the item never arrived after picking it up in person. I'm in New York. Using Nolo's method, frame the issue and lay out the research path.", "eval_id": 1, "outputs": [{"name": "response.md", "type": "text", "content": "# Facebook Marketplace Chargeback ($200, New York): Framing the Issue and a Research Path\n\n*This is legal information, not legal advice. It follows the method in Nolo's* Legal Research: How to Find & Understand the Law *(19th ed., 2021). Every statute or rule named below is a lead for you to look up and confirm. Read the current text and validate it before you rely on it.*\n\n---\n\n## 0. What to settle first (these facts change the research path)\n\nNolo's method begins with the facts and your goal. Before you research, pin these down:\n\n| Question | Why it matters |\n|---|---|\n| **Which payment app?** (PayPal, Venmo, Cash App, Zelle, Apple Pay, other) | Each has its own **user agreement and dispute process**. That contract, not a statute, will probably decide the first round. |\n| **How did the buyer fund the payment?** (credit card, debit card, bank account, app balance) | A **credit card** brings in the card issuer's chargeback process and federal billing-error law. A bank or debit transfer brings in different rules. An app-balance payment may stay entirely inside the app's own process. |\n| **Is it a true \"chargeback\" or an in-app dispute/claim?** | A chargeback is reversed by the buyer's **card issuer or bank**. An app \"dispute\" is decided by the **app**. They are different forums with different deadlines for your response. |\n| **What proof of handoff do you have?** | Marketplace messages arranging the pickup, time and place, a witness, photos, a signed receipt, the buyer's messages after the pickup. This is what wins both a dispute and a small-claims case. |\n| **Where in New York?** (NYC borough, another city, or a town or village) | The **small claims dollar limit and the court** depend on where you sue (see \u00a74). |\n| **Where does the buyer live?** | You generally have to sue where the defendant lives, works or does business. An out-of-state buyer makes collection much harder. |\n| **Your goal** | Win the platform dispute? Sue for $200 in small claims? Report fraud? Or just understand your options? Nolo says the goal decides how deep you go. |\n\n---\n\n## 1. Frame the issue (Nolo's four steps, Ch. 3)\n\n### Step 1: Civil or criminal? Substantive or procedural? State or federal?\n\n- **Civil, mainly.** You want your money (damages) back from a private person, so this is civil.\n- **A possible criminal side.** Taking an item in person and then falsely claiming it never arrived to get the money back can amount to theft by deception or fraud. This is \"friendly fraud.\" Only a prosecutor brings charges, and they won't get you your $200 back directly. A police report can still be useful evidence in a dispute or in court. Treat it as secondary.\n- **Substantive issues:** Was a contract for the sale of goods formed and performed? Do you have a right to the price? Did the buyer breach, or commit fraud?\n- **Procedural issues:** the dispute or chargeback response process and its deadlines; which small claims court, what to file, serving the buyer, evidence at the hearing, and collecting a judgment.\n- **State or federal?** Both:\n  - **State (New York):** contract and sale-of-goods law (NY Uniform Commercial Code, Article 2), small claims procedure, and the NY Penal Law if you go the criminal route.\n  - **Federal:** the consumer payment rules that shape the bank or card dispute. Nolo's chart lists **consumer protection** as an area of both state and federal law.\n  - **Private contract:** the payment app's **user agreement** and seller-protection terms. It is not \"law\" in the primary-source sense, but it binds you and the buyer as users, and it usually decides the dispute first.\n\n### Step 2: Area(s) of law\n\n- **Contracts / commercial law (sale of goods):** the main area.\n- **Consumer law / creditor-debtor (payment disputes):** chargeback and dispute rules.\n- **Tort / criminal (fraud, larceny):** secondary.\n- **Civil procedure (small claims):** for the remedy.\n\n### Step 3: Which resources will help?\n\nSee \u00a73 (secondary sources) and \u00a74 (primary law).\n\n### Step 4: Write the research question\n\n> **Goal:** Get back my $200, or keep it, after a Facebook Marketplace buyer who picked up the item in person reversed the payment by claiming it never arrived. First through the payment app's or bank's dispute process, and if that fails, through New York small claims court.\n\n**Specific questions:**\n1. What do the payment app's user agreement and seller-protection policy say about in-person pickup and \"item not received\" claims? What is my deadline to respond, and what evidence counts?\n2. If the buyer funded it with a card, what process does the card issuer use, and can I submit evidence through the app?\n3. Under New York's UCC Article 2, was there a completed sale? Can I recover the price for goods the buyer accepted?\n4. Which New York small claims court do I file in, what is its dollar limit, what does filing cost, and how do I serve the buyer?\n5. What evidence will the small claims judge want to see?\n6. Is the buyer's conduct a crime under the NY Penal Law, and is a police report worth filing?\n7. If I win, how do I collect the judgment?\n\n---\n\n## 2. Search terms (Cartwheel) and Boolean queries\n\n| Cartwheel category | Terms |\n|---|---|\n| Major words from the facts | chargeback, payment reversal, item not received, buyer, seller, in-person pickup, Facebook Marketplace |\n| Broader | sale of goods, contract, consumer payment dispute, electronic fund transfer |\n| Narrower | action for the price, acceptance of goods, seller protection, \"friendly fraud\" |\n| Synonyms | dispute, claim, reversal, refund demand; purchaser or vendee, seller or vendor |\n| Antonyms | delivery, receipt, acceptance (the buyer's claim is the opposite of these) |\n| Closely related | breach of contract, unjust enrichment, conversion, fraud, misrepresentation |\n| Procedural | small claims, commercial claims, service of process, judgment enforcement, evidence |\n| Agencies | Consumer Financial Protection Bureau (CFPB), NY Attorney General Consumer Frauds Bureau, NY Department of Financial Services, local police |\n| Long shots | theft of services, larceny by false pretenses, bailment, \"peer-to-peer payment\" |\n\n**Sample Boolean queries:**\n- Google Scholar (Case law \u2192 New York courts): `\"small claims\" (chargeback OR \"payment reversal\") (buyer OR purchaser) \"not received\"`\n- Westlaw or Lexis style: `chargeback /p (sale /s goods) /p (accept! OR deliver!)`\n- General web: `\"in-person\" \"seller protection\" site:paypal.com` (or the site of your app)\n- Price recovery: `\"action for the price\" \"accepted\" goods \"New York\"`\n\nKeep revising as the material gives you new terms. Nolo warns that most research fails when \"the researcher runs out of patience at the index\".\n\n---\n\n## 3. Start with secondary sources (Ch. 2 and 4)\n\nStart here to learn the vocabulary and pick up citations:\n\n1. **The payment app's own help pages and user agreement.** Read this first, since it controls the dispute. Look for: seller protection eligibility (many policies cover only shipped items with tracking, so in-person pickups may be **excluded**), \"item not received\" rules, the response deadline, and how to upload evidence. Save a dated copy of the version in force on the day of the sale.\n2. **Nolo.com:** plain-English articles on small claims court, suing for breach of contract, and collecting a judgment. Nolo's *Everybody's Guide to Small Claims Court* covers preparing evidence and witnesses.\n3. **NY State Courts (nycourts.gov) small claims pages and the CourtHelp self-help site:** forms, filing fees, limits by court, how service works, and what to bring to the hearing. Court self-help staff can explain procedure but cannot give legal advice.\n4. **CFPB (consumerfinance.gov):** explainers on payment-app disputes and on billing-error and electronic-transfer rights. This helps you understand what the buyer's bank or issuer will consider.\n5. **A New York practice guide or encyclopedia at a law library** (for example, a NY Jurisprudence title on sales or small claims). Nolo says a state-specific source is \"almost always best\" for a state-law issue. Ask the law librarian.\n6. **UCC treatises (for example, White & Summers on the Uniform Commercial Code):** for the seller's remedies when a buyer has accepted goods.\n\n---\n\n## 4. Primary law to find and read\n\n*Find and read the current text yourself, using the official New York sources and the annotated codes. Don't rely on these descriptions. Section numbers are leads to confirm, not authority.*\n\n### A. The contract between you and the buyer: NY Uniform Commercial Code, Article 2 (Sales)\n- A sale of a used item for $200 is a **sale of goods**, so UCC Article 2 applies.\n- Look for the sections on **acceptance of goods** (a buyer who takes the item and keeps it has generally accepted it) and the **seller's action for the price** for accepted goods (in the standard UCC numbering this is \u00a7 2-709; confirm it in the NY UCC).\n- Use an **annotated** NY UCC (McKinney's) for the cases that interpret these sections. Nolo stresses that \"court interpretations are part of the statute.\"\n- Statute of frauds: the UCC writing requirement for goods starts at $500. Confirm the threshold. At $200 the sale shouldn't need a signed writing, and your Marketplace messages are evidence of the deal anyway.\n\n### B. The payment rails: federal consumer-payment law (for context and the dispute)\n- **Credit card funding:** the federal **Fair Credit Billing Act** and **Regulation Z** (12 C.F.R. Part 1026) give cardholders billing-error rights, including for goods \"not delivered as agreed\". That is the hook the buyer used. The card issuer investigates, and you, the merchant side, can rebut it with evidence of the handoff.\n- **Bank or debit funding:** the **Electronic Fund Transfer Act** and **Regulation E** (12 C.F.R. Part 1005) mainly protect against *unauthorized* transfers and certain errors. A buyer who authorized the payment and then claims non-delivery usually has weaker rights here than with a card, but check the current rules and the CFPB's guidance on peer-to-peer apps.\n- Get the current text at **ecfr.gov** and **govinfo.gov**. The book points to GPO's FDsys, which govinfo.gov has since replaced.\n- **The key point for you:** these rules decide what the *bank or app* does. They don't decide whether the buyer owes you $200 under contract law. Losing the dispute doesn't stop you from suing the buyer.\n\n### C. The remedy: New York small claims procedure\n- Small claims in New York is set up by court-specific statutes: the **NYC Civil Court Act** (for the five boroughs), the **Uniform City Court Act** (cities outside NYC), the **Uniform Justice Court Act** (towns and villages), and the **Uniform District Court Act** (Nassau and parts of Suffolk). Each has its own small claims article.\n- **Dollar limits differ by court.** As commonly published they are about **$10,000 in NYC**, **$5,000 in city courts** outside NYC, and **$3,000 in town and village courts**. *Verify these on nycourts.gov before filing.* A $200 claim fits in any of them.\n- Look up: where the defendant must live, work or do business; the filing fee; how the clerk serves the defendant (often by mail); what to do if the buyer doesn't appear (a default judgment); and how to enforce a judgment.\n- Small claims courts use simplified rules and are generally not bound by strict rules of evidence. Read the court's own description of how hearings are run.\n\n### D. If you consider the criminal route: the NY Penal Law\n- Read the **larceny** article, including larceny by false pretense or by false promise. Theft of property worth $1,000 or less is generally **petit larceny**, a misdemeanor; confirm the section and threshold.\n- Remember: prosecution belongs to the district attorney. Restitution can follow a conviction, but don't count on it for $200. A police report mainly serves as **evidence** you can send to the app or bank.\n\n### E. Cases\n- Search **Google Scholar** (Case law \u2192 select New York courts), **Justia**, or **FindLaw** for NY decisions on chargebacks, accepted goods, and payment reversals. Use the annotations in the McKinney's UCC volumes too.\n- Most small claims decisions aren't published, and Nolo notes that trial courts generally don't issue binding opinions. The binding authority is **Appellate Term, Appellate Division and Court of Appeals** decisions.\n- When you read a case, separate the **holding** from the **dicta**. Ignore the headnotes for anything you'll rely on. Check whether the case's issue actually matches yours.\n\n---\n\n## 5. Validate everything (Ch. 8)\n\n- **Statutes:** check the **pocket part**, or the online update, of the annotated code. Use the official NY Legislature site (nysenate.gov or public.leginfo.state.ny.us) for current text. Shepardize or KeyCite statutes for amendments and for cases that interpreted them.\n- **Federal regulations:** use **ecfr.gov** for the current version, and check the Federal Register for recent changes.\n- **Cases:** run any case you plan to cite through **Shepard's or KeyCite** to confirm it hasn't been reversed or overruled. You can usually do this free on the public-access terminals at a **county or law school law library**.\n- **App terms:** confirm the version of the user agreement that applied on the date of the sale. Apps update their terms often.\n- **Court limits and fees:** confirm them on nycourts.gov. They change.\n\n---\n\n## 6. Action-oriented plan (in the order Nolo would suggest)\n\n1. **Respond to the dispute now.** Deadlines are short, often about 7\u201310 days; check yours. Upload your evidence: the Marketplace chat setting up the pickup, the time and place, any photo of the item or the handoff, witness names, and any later messages from the buyer.\n2. **Ask the buyer in writing** to cancel the dispute. Keep the message calm and factual. This also creates a record for a judge.\n3. **Report the buyer to Facebook** and keep a screenshot of the report. Optionally file a police report and add it to your dispute evidence.\n4. **If the dispute goes against you,** send a short **demand letter** stating the facts, the $200, and a deadline. Then file in the right **NY small claims court** for the $200 plus filing costs.\n5. **At the hearing,** bring printed messages, photos, witnesses (or a written statement where the court allows it), and the app's dispute decision.\n6. **Prevention next time:** for in-person sales, use cash or a payment method without chargeback rights, or get a signed and dated pickup receipt.\n\n---\n\n## 7. IRAC outline for your notes\n\n- **Issue:** Under New York law, can a seller recover the $200 price from a buyer who accepted an item at an in-person pickup and then reversed the payment by claiming the item never arrived?\n- **Rule:** NY UCC Article 2 on acceptance of goods and the seller's action for the price (confirm the sections). Possibly also general breach-of-contract and unjust-enrichment principles. Add any NY appellate case you find and validate.\n- **Analysis:** Offer and acceptance through Marketplace messages; payment; in-person delivery and acceptance (your evidence); the reversal was a refusal to pay for goods accepted. The buyer's likely defense is that the item was never received or wasn't as described. Rebut it with your proof.\n- **Conclusion:** Likely recoverable if you can prove the handoff. The deciding factor is evidence, not law.\n\n---\n\n## 8. When to involve a lawyer\n\nFor $200, small claims court is designed for you to handle yourself. In many courts you don't need a lawyer, and the clerks help with procedure. A lawyer makes sense only if this is part of a pattern, for example a buyer running this scam on many sellers, or if the app freezes larger sums in your account. For low-cost help, look for New York legal aid, a bar association referral service, or limited-scope (\"unbundled\") help.\n\n**Reminder:** I haven't given you any case names, because I couldn't verify them. Use the search strategy above to find NY cases yourself, and confirm every citation before you rely on it.\n"}], "grading": {"expectations": [{"text": "Frames the issue: civil vs criminal, substantive vs procedural, area of law", "passed": true, "evidence": "Section 1 'Frame the issue (Nolo's four steps, Ch. 3)': 'Civil, mainly' plus 'A possible criminal side'; separate 'Substantive issues' and 'Procedural issues' bullets; state vs federal; Step 2 'Area(s) of law' (contracts/commercial, consumer, tort/criminal, civil procedure). Matches SKILL.md's four-step framing."}, {"text": "Uses the Cartwheel method or keyword brainstorming", "passed": true, "evidence": "Section 2 'Search terms (Cartwheel)' table uses exactly the skill's nine categories (major words, broader, narrower, synonyms, antonyms, closely related, procedural, agencies, long shots) plus Boolean queries; the 'runs out of patience at the index' quote matches the skill."}, {"text": "Points to secondary sources first (e.g. practice guides, Am. Jur., form books) then primary law", "passed": true, "evidence": "Section 3 'Start with secondary sources (Ch. 2 and 4)' before Section 4 'Primary law': Nolo.com/Everybody's Guide to Small Claims Court, NY practice guide or encyclopedia (NY Jurisprudence), UCC treatise; 'state-specific source is almost always best' matches the skill's state-encyclopedia note. Then NY UCC, federal regs, small claims acts, cases."}, {"text": "Mentions checking that law is still good (Shepardize/KeyCite or updates/pocket parts)", "passed": true, "evidence": "Section 5 'Validate everything (Ch. 8)': 'check the pocket part, or the online update', 'Shepardize or KeyCite statutes', 'run any case... through Shepard's or KeyCite', free at county/law school library. Consistent with skill Ch 8."}, {"text": "Mentions small claims court and/or when to hire a lawyer; notes it's not legal advice", "passed": true, "evidence": "Header: 'This is legal information, not legal advice.' Sections 4C, 6 cover NY small claims court; Section 8 'When to involve a lawyer' (pattern of scams, legal aid, limited-scope help)."}], "summary": {"passed": 5, "failed": 0, "total": 5, "pass_rate": 1.0}}}, {"id": "eval-1-adv-issue-without_skill-run-1", "prompt": "A buyer on Facebook Marketplace paid me $200 via a payment app, then filed a chargeback claiming the item never arrived after picking it up in person. I'm in New York. Using Nolo's method, frame the issue and lay out the research path.", "eval_id": 1, "outputs": [{"name": "response.md", "type": "text", "content": "# Marketplace Chargeback After In-Person Pickup (New York): Issue Framing and Research Path\n\n> This is legal research guidance, not legal advice. Every statute, rule, and dollar limit below is from memory. Check each one against a current official source before you rely on it (see Step 6).\n\n## 0. Clear up the facts first\n\nYour facts contain a contradiction that will decide the case: the buyer **picked the item up in person** but told the payment provider it **\"never arrived.\"** Before you research anything, write down your version of events with dates and keep the evidence:\n\n- Marketplace and payment-app messages (meeting time and place, \"got it, thanks,\" and so on)\n- The payment record: app, date, amount, the note attached to it, and whether it was marked \"goods and services\" or \"friends and family\"\n- Any proof of the handoff: witnesses, photos, a safe-exchange-zone or doorbell camera, location history\n- The chargeback or dispute notice and your response deadline\n- The listing itself (description, condition, photos)\n\nAlso find out **which kind of dispute this is**. It changes the analysis:\n\n| Payment method | Who decides | Main governing rules |\n|---|---|---|\n| Credit card behind the app | Card issuer / card network | Fair Credit Billing Act (15 U.S.C. \u00a7 1666 et seq.), Regulation Z (12 C.F.R. pt. 1026) |\n| Debit card or bank-funded transfer | Bank / app | Electronic Fund Transfer Act (15 U.S.C. \u00a7 1693 et seq.), Regulation E (12 C.F.R. pt. 1005) |\n| App's internal dispute (e.g., PayPal or Venmo purchase protection) | The app | The app's user agreement and seller-protection terms (private contract, not statute) |\n\n## 1. Define the problem (Nolo step: state the question in your own words)\n\n**Plain-English question:** A buyer received goods in person, paid for them, and then got the money reversed by falsely claiming non-delivery. Can I get the $200 back, and from whom?\n\n**Framed legal issues:**\n\n1. **Main issue (breach of contract / action for the price):** Under New York law, when a seller delivers goods and the buyer accepts them, then cancels or reverses payment, can the seller recover the price from the buyer?\n2. **Other theories:** Can the seller recover under **unjust enrichment** (the buyer kept both the goods and the money), or for **fraud** (a false statement made to get the payment reversed)?\n3. **Forum and procedure:** Can the seller bring this in **New York small claims court**, in which court and county, and within what time limit?\n4. **Platform track:** Can the seller win the dispute through the payment provider? (This is mostly a contract and terms-of-service question, not a court question.)\n\n## 2. Classify the issue (Nolo step: put it in a legal category)\n\n- **Civil, not criminal.** A false chargeback can sometimes be a crime (for example, larceny by false pretenses under N.Y. Penal Law art. 155). But a prosecutor brings criminal cases, not you, and a criminal case does not put $200 back in your pocket quickly. You can file a police report to support your dispute. Your recovery path is civil.\n- **State law, not federal.** The contract between you and the buyer falls under New York law. Federal law (FCBA/EFTA) controls only the bank's dispute process. It gives *you*, the seller, almost no rights against the buyer.\n- **Substantive area:** sale of goods, which is **UCC Article 2** as adopted in New York (N.Y. U.C.C. Law art. 2). It is also contract law generally.\n- **Procedural area:** small claims court practice in New York.\n\n## 3. Background reading (Nolo step: secondary sources before primary law)\n\nStart with plain-language overviews so you learn the vocabulary (\"acceptance,\" \"action for the price,\" \"unjust enrichment\"):\n\n- Nolo's small-claims and contract-law materials, such as *Everybody's Guide to Small Claims Court* and nolo.com articles on suing buyers and sellers\n- The New York State Unified Court System's small claims pages and its free guide (nycourts.gov, \"Small Claims\")\n- CourtHelp (nycourts.gov/courthelp): forms, venue rules, and how to serve the other side\n- A legal encyclopedia, if you can reach a law library: *New York Jurisprudence 2d* (sales; contracts; restitution), or *Carmody-Wait 2d* for procedure\n- CFPB materials on Regulation E and Z disputes, so you understand the bank's side\n\n## 4. Find the primary law: statutes\n\nPull the current text of each provision below and read it closely. These are starting points, not confirmed citations:\n\n**Sale of goods (N.Y. U.C.C. Law, Article 2):**\n- \u00a7 2-301: the buyer's duty to accept and pay according to the contract\n- \u00a7 2-606: what counts as \"acceptance\" of goods (for example, taking them and not rejecting them)\n- \u00a7 2-607: a buyer who accepts goods must pay at the contract rate\n- \u00a7 2-709: the seller's **action for the price** when the buyer has accepted the goods. This is likely your strongest single provision.\n- \u00a7 2-201: the statute of frauds. It applies only to sales of $500 or more, so it should not affect a $200 sale. Confirm that.\n- \u00a7 2-725: a four-year statute of limitations for sale-of-goods contracts\n\n**Small claims procedure:**\n- N.Y. City Civil Court Act art. 18 (\u00a7 1801 et seq.): small claims in NYC. The limit is believed to be **$10,000**.\n- Uniform City Court Act art. 18: city courts outside NYC (believed to be **$5,000**)\n- Uniform District Court Act art. 18: Nassau and Suffolk district courts (believed to be **$5,000**)\n- Uniform Justice Court Act art. 18: town and village courts (believed to be **$3,000**)\n- Venue: the defendant generally has to **live, work, or have a business office** within the court's area. Confirm this in the act that applies to your court.\n- Commercial claims (art. 18-A) are for businesses. If you are selling as an individual, they probably do not apply.\n\n**Payment-dispute background (federal):**\n- 15 U.S.C. \u00a7 1666 and 12 C.F.R. \u00a7 1026.13 (billing-error resolution on credit cards)\n- 15 U.S.C. \u00a7 1693f and 12 C.F.R. \u00a7 1005.11 (error resolution on electronic fund transfers)\n- Read these to understand the bank's process. You will probably find that they do not give the seller a cause of action.\n\n**Private terms (not law, but binding on you):**\n- The payment app's user agreement and seller-protection policy. Many policies exclude in-person or local-pickup transactions, or require specific proof. Check the version that was in effect on your transaction date.\n- Facebook Marketplace's Commerce/Purchase Policies. Meta generally does not handle off-platform payments.\n\n## 5. Find the primary law: cases\n\nSearch for New York decisions with fact patterns close to yours:\n\n- **Search terms:** \"chargeback\" AND (\"small claims\" OR \"action for the price\"); \"stop payment\" AND \"accepted goods\"; \"unjust enrichment\" AND \"chargeback\"; \"U.C.C. 2-709\" AND \"accepted\"\n- **Sources:** free options are Google Scholar (case law, New York courts), CourtListener, and the NY Official Reports / NY Slip Opinions site. Lower-court decisions in the *Misc. 3d* reporter often cover small claims. Paid options are Westlaw and Lexis, often free at a county or public law library.\n- **Elements to confirm in case law:**\n  - Unjust enrichment: (1) the other party was enriched, (2) at your expense, and (3) equity and good conscience require repayment. Courts often say unjust enrichment is not available where a valid contract covers the same subject. Plead it as an alternative.\n  - Fraud: misrepresentation, the defendant knew it was false, *justifiable reliance by the plaintiff*, and damages. Weak point: the buyer lied to the **bank**, not to you, so your reliance is doubtful. Breach of contract is the cleaner theory.\n- **Small-claims standard:** small claims courts must do \"substantial justice\" under the rules of substantive law, and the formal rules of evidence are relaxed (CCA \u00a7 1804 and its parallels). Look for cases applying this standard.\n\n## 6. Update and verify (Nolo step: make sure the law is current)\n\n- Check every statute in a **current** official or annotated source (nysenate.gov/legislation for New York statutes; uscode.house.gov and ecfr.gov for federal). Small-claims dollar limits change by amendment.\n- Run each case you plan to cite through a citator (Shepard's or KeyCite at a law library; on free tools, check the \"cited by\" lists) to confirm it has not been reversed or overruled.\n- Confirm the current small-claims filing fee, the court's local rules, and service procedures with the clerk of the court where you will file.\n\n## 7. Apply the law and plan next steps\n\n**Likely analysis (to confirm through the research above):** you delivered and the buyer accepted the goods in person. Under UCC \u00a7\u00a7 2-606, 2-607, and 2-709, the buyer owes the price. Reversing the payment does not cancel that debt. It means the buyer still has not paid. The chargeback outcome does not bind a court. Your claim is against the **buyer**, for $200 plus filing and service costs.\n\n**Practical order of operations:**\n1. **Contest the dispute** with the payment app or bank before its deadline. Submit the messages and proof of the handoff.\n2. **Send a written demand** to the buyer, with a deadline, asking for payment. Courts like to see that you made one, and it often settles the matter.\n3. If that fails, **file in small claims** in the court for the area where the buyer lives or works. You will need the buyer's **real name and address** for service. Marketplace profiles often do not show them, so collect what you can now.\n4. **Collecting the money:** winning a judgment is not the same as being paid. Read up on New York judgment enforcement (CPLR art. 52) and the court's collection guidance.\n5. Optional: file a police report or a platform report. A police report can help support your dispute response.\n\n**Open questions to research further:**\n- Was the payment marked \"goods and services\"? If it was sent as \"friends and family,\" how did the buyer reverse it (card chargeback versus an app claim)?\n- Does the app's seller-protection policy cover in-person sales at all?\n- Is the buyer outside your court's area, or outside New York? That raises venue and jurisdiction problems.\n- What is the cost-benefit for a $200 claim? Weigh the filing fee (recoverable as costs), your time, and how likely you are to collect.\n"}], "grading": {"expectations": [{"text": "Frames the issue: civil vs criminal, substantive vs procedural, area of law", "passed": true, "evidence": "Section 2 'Classify the issue': 'Civil, not criminal' (with larceny note), 'State law, not federal', 'Substantive area: sale of goods... UCC Article 2', 'Procedural area: small claims court practice'."}, {"text": "Uses the Cartwheel method or keyword brainstorming", "passed": false, "evidence": "No Cartwheel and no keyword brainstorming step (broader/narrower/synonyms/related terms). Section 5 only lists a few ready-made Boolean case search strings ('\"chargeback\" AND (\"small claims\" OR \"action for the price\")' etc.), which is a query list, not the brainstorming method the assertion requires."}, {"text": "Points to secondary sources first (e.g. practice guides, Am. Jur., form books) then primary law", "passed": true, "evidence": "Section 3 'Background reading (Nolo step: secondary sources before primary law)': Nolo's Everybody's Guide to Small Claims Court, nycourts.gov, CourtHelp, New York Jurisprudence 2d, Carmody-Wait 2d, CFPB; then Sections 4-5 primary statutes and cases."}, {"text": "Mentions checking that law is still good (Shepardize/KeyCite or updates/pocket parts)", "passed": true, "evidence": "Section 6 'Update and verify': current official/annotated source, 'Run each case... through a citator (Shepard's or KeyCite at a law library...)'."}, {"text": "Mentions small claims court and/or when to hire a lawyer; notes it's not legal advice", "passed": true, "evidence": "Opening note: 'This is legal research guidance, not legal advice.' Small claims court discussed throughout (Section 4 small claims acts, Section 7 'file in small claims'). No lawyer guidance, but the assertion is and/or."}], "summary": {"passed": 4, "failed": 1, "total": 5, "pass_rate": 0.8}}}, {"id": "eval-2-adv-memo-with_skill-run-1", "prompt": "Explain how to read a statute and a case for my small-claims dispute, then outline an IRAC memo.", "eval_id": 2, "outputs": [{"name": "response.md", "type": "text", "content": "# Reading a Statute and a Case for a Small-Claims Dispute, Plus an IRAC Memo Outline\n\n*Legal information, not legal advice. This follows Nolo's* Legal Research: How to Find & Understand the Law *(19th ed., 2021).*\n\n---\n\n## First: I need a few facts to make this specific\n\nYou haven't said **which state** you're in or **what the dispute is about**. Both change which statute you read, which cases bind your court, and the small claims rules. Please tell me:\n\n1. **State, and county or city.** Small claims limits, forms and procedures are set state by state, and sometimes court by court.\n2. **What happened,** in a few sentences. Who, what, when, and how much money.\n3. **Which side you're on.** Are you suing (plaintiff) or being sued (defendant)? Is there a hearing date, or a deadline to respond?\n4. **Any documents:** a contract, lease, receipt, invoice, text messages, photos.\n5. **Your goal.** Are you preparing for the hearing, deciding whether to sue, or getting ready to talk to a lawyer?\n\nUntil then, here is the general method. It works for any small claims dispute, and I'll make it specific once I have your answers.\n\n---\n\n## Part 1: Frame the issue before you read anything (Nolo Ch. 3)\n\n- **Civil or criminal?** Small claims is **civil**: one party asks for money from another.\n- **Substantive or procedural?**\n  - *Substantive:* what the law says about your dispute, such as breach of contract, a security deposit, property damage, or a defective product.\n  - *Procedural:* how small claims works, such as the dollar limit, which court, how to serve the other side, the hearing, and collecting the judgment.\n  - You need both.\n- **State or federal?** Almost always **state law** in a state small claims court.\n- **Area of law:** for example contracts, landlord-tenant, consumer, or tort (property damage or negligence).\n- **Write the research question:** \"My goal is to recover $___ from ___ because ___. What law gives me that right, what do I have to prove, and how do I present it in ___ County small claims court?\"\n\nTo find the statute, start with a **secondary source**: a Nolo article or *Everybody's Guide to Small Claims Court*, your state court's small claims self-help pages, or a state legal encyclopedia or practice guide at a law library. These give you the vocabulary and point you to the statute and the leading cases.\n\n---\n\n## Part 2: How to read a statute\n\n### Find the right version\n- Use your state's **official code website**, or an **annotated code** at a law library. The annotated version adds case summaries, history and cross-references.\n- **Check the pocket part** (the supplement at the back of a print volume) or the online update. It shows amendments and repeals.\n- Note the **effective date**. You need the version that was in force when your dispute arose.\n\n### Nolo's seven rules for reading a statute\n1. **Read it at least three times, then read it again.** Slowly, clause by clause.\n2. **Pay close attention to \"and\" and \"or\".** \"And\" means every element is required. \"Or\" means any one is enough. A single word can decide your case.\n3. **Assume every word and every punctuation mark means something.** Watch for \"shall\" (required) versus \"may\" (optional), \"within 30 days\", and lists separated by commas.\n4. **Read it consistently with related statutes.** Look at the sections around it, and the **definitions section** of that chapter, which often defines key words.\n5. **Criminal statutes are read strictly,** with ambiguities resolved for the defendant. This rarely applies in small claims, but know it.\n6. **Read ambiguous language to further the law's purpose,** especially consumer- and tenant-protection laws, which courts tend to read in favor of the people they protect.\n7. **Read it so that it makes sense.** Courts avoid absurd results the legislature couldn't have intended. In Nolo's example, a California court read a \"$100 a day\" penalty as \"up to $100\".\n\n### Then go beyond the text\n- **Follow every cross-reference.**\n- **Read the cases that interpret it.** Nolo says court interpretations are part of the statute. Use the annotations to find them.\n- Other aids: **attorney general opinions** (persuasive, not binding), *Words and Phrases* (one-line definitions from cases), and **legislative history** if the language is truly unclear.\n\n### A practical worksheet for a statute\n| Question | Your notes |\n|---|---|\n| Citation and effective date | |\n| Who does it apply to? (definitions) | |\n| **Elements**: what must be true for it to apply? List each one, and mark the \"and\"s and \"or\"s | |\n| What does it require, allow or prohibit? | |\n| **Remedy**: what can you get? (actual damages, statutory penalty, multiple damages, costs) | |\n| Exceptions and defenses | |\n| Deadlines (notice periods, statute of limitations) | |\n| Cases interpreting it (from the annotations) | |\n| Validated? (pocket part, official site, Shepard's or KeyCite) | |\n\nTurn the elements into a checklist of **facts you must prove** at the hearing, and the **evidence** for each one.\n\n---\n\n## Part 3: How to read a case (Nolo Ch. 6\u20137)\n\n### Read the citation\nCase name (*Plaintiff v. Defendant*; the appealing party may be listed first) \u2192 **volume** \u2192 **reporter** \u2192 **first page** \u2192 **(court and year)**. The court and year tell you whether the case binds your court.\n\n### Know which parts are law\n- **Headnotes and synopsis** at the top are written by the publisher. They are **not law** and \"tend to overly simplify issues\". Use them to find the relevant pages, then read the opinion itself.\n- The opinion itself usually contains: **facts \u2192 issue(s) \u2192 holding \u2192 reasoning**.\n- **Only the majority (or plurality) decision is law.** Concurrences and dissents aren't binding.\n- **Holding versus dicta:** the holding is the ruling needed to decide the case. **Dicta** are side comments that weren't necessary to the decision, and they aren't binding (except, in practice, for every word of the US Supreme Court).\n\n### Is it binding on *your* small claims court?\n- Small claims and other trial-level decisions generally **don't create binding precedent**, and most aren't published.\n- What binds your small claims court: your state's **appellate courts** (the intermediate court of appeals in your region, and the state supreme court) and, on federal questions, federal law.\n- **Out-of-state cases** are only persuasive. They're useful if your state has nothing on point.\n\n### Does it actually help you? (Nolo's analysis steps)\n1. **Identify the precise issue** the court decided and compare it with yours. If they don't match, the case probably won't help.\n2. **Compare the facts.** Are they close enough that the ruling logically applies? Note the differences the other side could use to **distinguish** it.\n3. **Check the court:** binding or only persuasive for your court?\n4. **Check whether it's still good law** (Part 4).\n5. **Prefer recent cases.** Read the newest ones first.\n\n### A worksheet for a case\n| Element | Notes |\n|---|---|\n| Citation, court, year | |\n| Key facts | |\n| Issue | |\n| **Holding** (one sentence) | |\n| Reasoning | |\n| Dicta to ignore (or use only as persuasion) | |\n| Similar to my facts / different from my facts | |\n| Binding or persuasive for my court | |\n| Shepard's or KeyCite result | |\n\n### Where to find cases free\nGoogle Scholar (\"Case law\", then select your state's courts), Justia and FindLaw. Search by issue words plus your statute's citation. Also use the annotations in your state's annotated code. Once you find **one good case,** follow the cases it cites and the cases that cite it.\n\n---\n\n## Part 4: Confirm it's still good law (Nolo Ch. 8)\n\n- **Shepardize or KeyCite** every case and statute you plan to rely on. This confirms it hasn't been reversed, overruled, amended or repealed, and it finds more cases.\n- Key treatment flags: **overruled** (no longer valid); **questioned**, **criticized** or **distinguished** (be careful); **followed** (good).\n- Free option: most **county law libraries** and law school libraries give public access to Lexis or Westlaw. Ask the librarian.\n- For statutes, also check the pocket part and the official code site.\n\n---\n\n## Part 5: IRAC memo outline (Nolo Ch. 9)\n\nA **memo** is a neutral, internal analysis for you, or for a lawyer you might hire. It isn't a brief and it isn't filed. Writing one forces you to face the weak points before the other side raises them. For the hearing itself, turn it into a one-page outline and an organized evidence packet.\n\n```\nMEMORANDUM\nTO:   File (or: Attorney ___)\nFROM: ___\nDATE: ___\nRE:   [Your name] v. [Other party], ___ County Small Claims, amount $___\n\nI. STATEMENT OF FACTS\n   Only the legally relevant facts, in date order, each tied to an exhibit.\n   - [Date]: agreement made (Exhibit 1: contract / texts)\n   - [Date]: what you did (paid, delivered, moved out...)\n   - [Date]: what they did or failed to do\n   - [Date]: your demand for payment (Exhibit __: demand letter)\n   - Amount owed and how you calculated it\n\nII. QUESTION PRESENTED\n   One question, answerable yes or no. Example form:\n   \"Under [State statute \u00a7 ___ / contract law], is [other party] liable to\n   [you] for $___ when [key facts]?\"\n\nIII. BRIEF ANSWER\n   \"Probably yes/no, because ___.\" (one or two sentences)\n\nIV. DISCUSSION (one IRAC block per issue: liability, damages, any defense)\n\n   Issue 1: [e.g., Did the other party breach the agreement?]\n     I - Issue: state it precisely.\n     R - Rule: the statute (quote the key language, cite it) and/or the\n         binding case (citation; one-sentence holding). Note whether the\n         authority is binding or persuasive.\n     A - Analysis: go element by element. For each one, the fact and the\n         evidence that proves it. Compare your facts with the case's facts.\n         State the other side's best argument and your answer to it.\n     C - Conclusion: what the rule means for this issue.\n\n   Issue 2: [e.g., Amount of damages / is a statutory penalty available?]\n     I / R / A / C\n\n   Issue 3: [e.g., Defense the other side may raise: statute of\n            limitations, they already paid, you caused the problem...]\n     I / R / A / C\n\nV. PROCEDURAL CHECKLIST\n   - Is the claim within the court's dollar limit? (verify for your court)\n   - Correct court and county (venue): where the defendant lives or does\n     business, or where the transaction happened (verify local rules)\n   - Within the statute of limitations? (verify for this kind of claim)\n   - Defendant's correct legal name; service completed and proof filed\n   - Hearing date; exhibits copied (one set for you, the judge and the\n     other side); witnesses lined up\n\nVI. CONCLUSION AND NEXT STEPS\n   - Overall prediction and the weakest point\n   - Open questions / research still needed\n   - Validation done: [ ] pocket part  [ ] official code site\n     [ ] Shepard's/KeyCite for each case\n```\n\n**Tips:**\n- Cite properly (case name, volume, reporter, page, court and year). Citations are \"the roadmap\" for the reader.\n- Be **objective**. A memo that hides weaknesses doesn't help you prepare.\n- Stick to **existing law**. Trial judges, including small claims judges, follow precedent. They don't create new law.\n\n---\n\n## Part 6: Small claims practicalities to verify for your state\n\n- The **dollar limit** and whether you can split or reduce your claim to fit under it.\n- **Filing fees,** and how the court serves the defendant.\n- Whether **lawyers are allowed** (some states bar them in small claims) and whether the clerk will help you. Clerks are often required to.\n- **Appeal rights.** Some states let only the defendant appeal, or give a new trial (*de novo*) on appeal.\n- How to **collect** if you win.\n\nYour court's website and self-help center, and Nolo's *Everybody's Guide to Small Claims Court*, cover these. Always confirm against your court's current rules.\n\n---\n\n**Next step:** send me your state, county, and a short summary of the dispute. I'll then fill in the research plan: specific search terms, the likely statute or area of law to read, and a draft question presented. I won't give you case names or statute numbers until we've verified them together.\n"}], "grading": {"expectations": [{"text": "Gives rules for reading statutes (e.g. read definitions, every word matters, cross-references)", "passed": true, "evidence": "Part 2 'Nolo's seven rules for reading a statute' lists all seven in the book's order and wording (read three times then again; 'and'/'or'; every word and punctuation has meaning; consistent with related statutes incl. definitions section; criminal statutes strictly; further purpose; make sense, with the correct California '$100 a day' -> 'up to $100' example), plus 'Follow every cross-reference' and 'court interpretations are part of the statute'. All match SKILL references."}, {"text": "Explains holding vs dicta in cases", "passed": true, "evidence": "Part 3 'Holding versus dicta: the holding is the ruling needed to decide the case. Dicta are side comments... aren't binding (except... US Supreme Court)'; also headnotes not law, majority/plurality only. Matches skill Ch 7."}, {"text": "Explains binding vs persuasive precedent", "passed": true, "evidence": "Part 3 'Is it binding on your small claims court?': trial-level decisions don't create binding precedent; state appellate courts bind; 'Out-of-state cases are only persuasive'; analysis step 3 'binding or only persuasive'."}, {"text": "Outlines IRAC: Issue, Rule, Analysis/Application, Conclusion", "passed": true, "evidence": "Part 5 memo outline with Discussion 'one IRAC block per issue': 'I - Issue', 'R - Rule', 'A - Analysis', 'C - Conclusion'; memo parts (facts, question presented, brief answer, discussion) and 'memo is not a brief' match skill Ch 9."}, {"text": "Includes citation practice or verifying currency of the law", "passed": true, "evidence": "Part 4 'Shepardize or KeyCite every case and statute', pocket part, official code site; Part 3 citation reading (name, volume, reporter, page, court and year); tips 'Citations are \"the roadmap\" for the reader' (book quote)."}], "summary": {"passed": 5, "failed": 0, "total": 5, "pass_rate": 1.0}}}, {"id": "eval-2-adv-memo-without_skill-run-1", "prompt": "Explain how to read a statute and a case for my small-claims dispute, then outline an IRAC memo.", "eval_id": 2, "outputs": [{"name": "response.md", "type": "text", "content": "# Reading a Statute and a Case for a Small-Claims Dispute, Plus an IRAC Memo Outline\n\n> General legal-research guidance, not legal advice. You did not say which state you are in or what the dispute is about, and both matter. Small-claims dollar limits, procedure, and the substantive law differ by state. Fill in your jurisdiction and facts wherever you see [brackets].\n\n---\n\n## Part 1: How to read a statute\n\n1. **Get the official, current text.** Use your state legislature's website or the official code. Check the \"current through\" date. An outdated version, or a summary from a blog, is the most common research mistake.\n2. **Read the whole section, then the parts around it.** Read the section itself and also:\n   - the **definitions** section for the chapter or article (words like \"consumer,\" \"goods,\" \"merchant,\" or \"landlord\" often have special meanings),\n   - neighboring sections that build on it, give exceptions, or set penalties,\n   - any **effective date** and amendment history, so you know which version applied on the date your dispute arose.\n3. **Break it into elements.** Turn the statute into a checklist of everything that must be true. For example: \"A [landlord] who [fails to return a security deposit] within [X days] after [the tenant vacates] is liable for [damages].\" Each bracketed item is an element you have to prove.\n4. **Watch the small words.**\n   - \"shall\" or \"must\" means mandatory. \"May\" means optional.\n   - \"and\" means all elements are required. \"or\" means any one of them is enough.\n   - \"unless,\" \"except,\" and \"provided that\" signal exceptions. Find out who has to prove the exception.\n   - Time limits: \"within 14 days,\" \"no later than,\" and whether the count is calendar days or business days.\n5. **Identify the remedy.** What do you get if you win: actual damages, double or treble damages, attorney's fees, statutory penalties? Is there a cap? Is there a pre-suit notice or demand requirement?\n6. **Check the procedural fit.** Is there a statute of limitations? Does the remedy fit within the small-claims dollar limit? Does the statute require something before you sue, such as written notice?\n7. **See how courts have read it.** An annotated code lists cases interpreting each section. Courts' readings control over your own reading of an ambiguous phrase.\n\n**Statute-reading worksheet:**\n- Citation and version date:\n- Who it applies to:\n- Elements (numbered):\n- Exceptions / defenses:\n- Deadlines:\n- Remedy:\n- Cases interpreting it:\n\n---\n\n## Part 2: How to read a case\n\n1. **Check whether the case matters for you.** Note:\n   - **Court and level:** a decision of your state's highest court binds every lower court in the state. An intermediate appellate decision usually binds the trial courts under it. A decision from another state, or a trial-level decision, is only *persuasive*.\n   - **Date:** is it still good law? Check that it has not been overruled or that the statute has not been amended since. Use Shepard's or KeyCite at a law library, or \"cited by\" lists in free tools.\n2. **Read it in passes.**\n   - First pass: the syllabus or headnotes (written by editors, *not* law) and the conclusion, so you know who won.\n   - Second pass: the full opinion.\n3. **Brief it.** Write down:\n   - **Facts:** what happened (only the facts that mattered to the result)\n   - **Procedural history:** who sued, what the lower court did, why it is on appeal\n   - **Issue:** the legal question the court answered\n   - **Holding:** the court's answer to that question. This is the binding part.\n   - **Reasoning:** why the court decided that way (which statute or rule, and how it applied)\n   - **Disposition:** affirmed, reversed, or remanded\n   - **Dicta:** side comments that were not needed for the result. These can persuade a judge but do not bind one.\n   - Any **concurrence or dissent**, which can show the weak points of the majority's reasoning\n4. **Compare it to your facts.** List the ways your facts are *like* the case (analogize) and *unlike* it (distinguish). Expect the other side to rely on the differences.\n5. **Pull a short quote** stating the rule, with a pinpoint page cite, to show the judge.\n\n**Small-claims tip:** small-claims judges usually want a short, clear explanation rather than a long legal argument. One or two on-point cases, and the statute's text, are often enough. Bring printed copies for the judge and the other side.\n\n---\n\n## Part 3: IRAC memo outline\n\n**MEMORANDUM**\n**To:** [File / self / small-claims judge prep]\n**From:** [You]\n**Date:** [ ]\n**Re:** [Plaintiff] v. [Defendant], [court and county], claim for $[amount]\n\n### Question presented\nOne sentence combining the law and the key facts. *Example:* \"Under [statute \u00a7 ___], is [defendant] liable for [remedy] where [key fact 1] and [key fact 2]?\"\n\n### Brief answer\n\"Probably yes / probably no, because ...\" in two or three sentences.\n\n### Statement of facts\n- A neutral chronology with dates\n- Note the evidence for each fact (contract, texts, receipts, photos, witnesses)\n- Include harmful facts too. You need to answer them.\n\n### Discussion (IRAC for each issue)\n\n**Issue 1: [e.g., breach of contract / statutory violation]**\n- **I (Issue):** State the specific question.\n- **R (Rule):** Quote the statute. List its elements. Add the case rule or holding interpreting it, with citations.\n- **A (Application):** Go element by element:\n  - Element 1, then your facts and evidence, then any analogous or distinguishable case\n  - Element 2, and so on\n  - **Counterarguments:** the other side's likely defenses (statute of limitations, exceptions, failure to mitigate, payment already made, the other party breached first) and your answer to each\n- **C (Conclusion):** Whether this element or claim is likely met.\n\n**Issue 2: [e.g., damages / amount recoverable]**\n- **I:** What amount can be recovered?\n- **R:** The measure of damages, any statutory multiplier or cap, and the small-claims limit in [jurisdiction]\n- **A:** Calculate it with supporting documents: an itemized table, plus costs and filing fee\n- **C:** The total to request\n\n**Issue 3 (if needed): [procedure: right court, venue, deadline, pre-suit notice]**\n- **I / R / A / C** the same way\n\n### Overall conclusion and next steps\n- The likely outcome and the strongest theory\n- Evidence still to gather; witnesses to bring\n- Pre-suit steps (a demand letter, required notices)\n- Filing logistics: court, fee, service on the defendant, hearing date\n- Collection plan if you win\n\n### Sources and verification log\n| Authority | Citation | Checked current? (date / tool) | Binding or persuasive |\n|---|---|---|---|\n| Statute | | | |\n| Case 1 | | | |\n| Case 2 | | | |\n\n---\n\n## Where to find the law (free or low cost)\n- State legislature's site (statutes); your state court system's small-claims self-help pages\n- Google Scholar (case law), CourtListener, Justia, your state court's official opinions site\n- Public or county law libraries, which often offer free Westlaw or Lexis access and librarian help\n- Nolo guides (for example, *Everybody's Guide to Small Claims Court*) for plain-English background\n\n**To tailor this:** tell me your state and county, the type of dispute (deposit, contract, property damage, unpaid sale, and so on), the amount, and the key dates. I can then help identify the specific statutes and the court to research.\n"}], "grading": {"expectations": [{"text": "Gives rules for reading statutes (e.g. read definitions, every word matters, cross-references)", "passed": true, "evidence": "Part 1 'How to read a statute': read the 'definitions section', neighboring sections, 'Watch the small words' (shall/may, and/or, unless/except), break into elements, 'See how courts have read it' via annotated code. Generic but correct; no book misattribution."}, {"text": "Explains holding vs dicta in cases", "passed": true, "evidence": "Part 2 brief: 'Holding: the court's answer to that question. This is the binding part.' and 'Dicta: side comments that were not needed for the result. These can persuade a judge but do not bind one.'"}, {"text": "Explains binding vs persuasive precedent", "passed": true, "evidence": "Part 2 step 1: highest court binds every lower court; intermediate appellate decision binds trial courts under it; 'A decision from another state, or a trial-level decision, is only persuasive'; verification log has 'Binding or persuasive' column."}, {"text": "Outlines IRAC: Issue, Rule, Analysis/Application, Conclusion", "passed": true, "evidence": "Part 3 'Discussion (IRAC for each issue)': I (Issue), R (Rule), A (Application), C (Conclusion) for each issue."}, {"text": "Includes citation practice or verifying currency of the law", "passed": true, "evidence": "Part 2 'Use Shepard's or KeyCite at a law library'; Part 1 'Get the official, current text... Check the \"current through\" date'; 'Sources and verification log' table; pinpoint page cites."}], "summary": {"passed": 5, "failed": 0, "total": 5, "pass_rate": 1.0}}}], "previous_feedback": {}, "previous_outputs": {}, "benchmark": {"metadata": {"skill_name": "legal-research", "skill_path": "\u003cpath/to/skill>", "executor_model": "\u003cmodel-name>", "analyzer_model": "\u003cmodel-name>", "timestamp": "2026-11-21T22:00:50Z", "evals_run": [1, 2], "runs_per_configuration": 1}, "runs": [{"eval_id": 1, "eval_name": "adv-issue", "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 5, "failed": 0, "total": 5, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Frames the issue: civil vs criminal, substantive vs procedural, area of law", "passed": true, "evidence": "Section 1 'Frame the issue (Nolo's four steps, Ch. 3)': 'Civil, mainly' plus 'A possible criminal side'; separate 'Substantive issues' and 'Procedural issues' bullets; state vs federal; Step 2 'Area(s) of law' (contracts/commercial, consumer, tort/criminal, civil procedure). Matches SKILL.md's four-step framing."}, {"text": "Uses the Cartwheel method or keyword brainstorming", "passed": true, "evidence": "Section 2 'Search terms (Cartwheel)' table uses exactly the skill's nine categories (major words, broader, narrower, synonyms, antonyms, closely related, procedural, agencies, long shots) plus Boolean queries; the 'runs out of patience at the index' quote matches the skill."}, {"text": "Points to secondary sources first (e.g. practice guides, Am. Jur., form books) then primary law", "passed": true, "evidence": "Section 3 'Start with secondary sources (Ch. 2 and 4)' before Section 4 'Primary law': Nolo.com/Everybody's Guide to Small Claims Court, NY practice guide or encyclopedia (NY Jurisprudence), UCC treatise; 'state-specific source is almost always best' matches the skill's state-encyclopedia note. Then NY UCC, federal regs, small claims acts, cases."}, {"text": "Mentions checking that law is still good (Shepardize/KeyCite or updates/pocket parts)", "passed": true, "evidence": "Section 5 'Validate everything (Ch. 8)': 'check the pocket part, or the online update', 'Shepardize or KeyCite statutes', 'run any case... through Shepard's or KeyCite', free at county/law school library. Consistent with skill Ch 8."}, {"text": "Mentions small claims court and/or when to hire a lawyer; notes it's not legal advice", "passed": true, "evidence": "Header: 'This is legal information, not legal advice.' Sections 4C, 6 cover NY small claims court; Section 8 'When to involve a lawyer' (pattern of scams, legal aid, limited-scope help)."}], "notes": []}, {"eval_id": 2, "eval_name": "adv-memo", "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 5, "failed": 0, "total": 5, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Gives rules for reading statutes (e.g. read definitions, every word matters, cross-references)", "passed": true, "evidence": "Part 2 'Nolo's seven rules for reading a statute' lists all seven in the book's order and wording (read three times then again; 'and'/'or'; every word and punctuation has meaning; consistent with related statutes incl. definitions section; criminal statutes strictly; further purpose; make sense, with the correct California '$100 a day' -> 'up to $100' example), plus 'Follow every cross-reference' and 'court interpretations are part of the statute'. All match SKILL references."}, {"text": "Explains holding vs dicta in cases", "passed": true, "evidence": "Part 3 'Holding versus dicta: the holding is the ruling needed to decide the case. Dicta are side comments... aren't binding (except... US Supreme Court)'; also headnotes not law, majority/plurality only. Matches skill Ch 7."}, {"text": "Explains binding vs persuasive precedent", "passed": true, "evidence": "Part 3 'Is it binding on your small claims court?': trial-level decisions don't create binding precedent; state appellate courts bind; 'Out-of-state cases are only persuasive'; analysis step 3 'binding or only persuasive'."}, {"text": "Outlines IRAC: Issue, Rule, Analysis/Application, Conclusion", "passed": true, "evidence": "Part 5 memo outline with Discussion 'one IRAC block per issue': 'I - Issue', 'R - Rule', 'A - Analysis', 'C - Conclusion'; memo parts (facts, question presented, brief answer, discussion) and 'memo is not a brief' match skill Ch 9."}, {"text": "Includes citation practice or verifying currency of the law", "passed": true, "evidence": "Part 4 'Shepardize or KeyCite every case and statute', pocket part, official code site; Part 3 citation reading (name, volume, reporter, page, court and year); tips 'Citations are \"the roadmap\" for the reader' (book quote)."}], "notes": []}, {"eval_id": 1, "eval_name": "adv-issue", "configuration": "without_skill", "run_number": 1, "result": {"pass_rate": 0.8, "passed": 4, "failed": 1, "total": 5, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Frames the issue: civil vs criminal, substantive vs procedural, area of law", "passed": true, "evidence": "Section 2 'Classify the issue': 'Civil, not criminal' (with larceny note), 'State law, not federal', 'Substantive area: sale of goods... UCC Article 2', 'Procedural area: small claims court practice'."}, {"text": "Uses the Cartwheel method or keyword brainstorming", "passed": false, "evidence": "No Cartwheel and no keyword brainstorming step (broader/narrower/synonyms/related terms). Section 5 only lists a few ready-made Boolean case search strings ('\"chargeback\" AND (\"small claims\" OR \"action for the price\")' etc.), which is a query list, not the brainstorming method the assertion requires."}, {"text": "Points to secondary sources first (e.g. practice guides, Am. Jur., form books) then primary law", "passed": true, "evidence": "Section 3 'Background reading (Nolo step: secondary sources before primary law)': Nolo's Everybody's Guide to Small Claims Court, nycourts.gov, CourtHelp, New York Jurisprudence 2d, Carmody-Wait 2d, CFPB; then Sections 4-5 primary statutes and cases."}, {"text": "Mentions checking that law is still good (Shepardize/KeyCite or updates/pocket parts)", "passed": true, "evidence": "Section 6 'Update and verify': current official/annotated source, 'Run each case... through a citator (Shepard's or KeyCite at a law library...)'."}, {"text": "Mentions small claims court and/or when to hire a lawyer; notes it's not legal advice", "passed": true, "evidence": "Opening note: 'This is legal research guidance, not legal advice.' Small claims court discussed throughout (Section 4 small claims acts, Section 7 'file in small claims'). No lawyer guidance, but the assertion is and/or."}], "notes": []}, {"eval_id": 2, "eval_name": "adv-memo", "configuration": "without_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 5, "failed": 0, "total": 5, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Gives rules for reading statutes (e.g. read definitions, every word matters, cross-references)", "passed": true, "evidence": "Part 1 'How to read a statute': read the 'definitions section', neighboring sections, 'Watch the small words' (shall/may, and/or, unless/except), break into elements, 'See how courts have read it' via annotated code. Generic but correct; no book misattribution."}, {"text": "Explains holding vs dicta in cases", "passed": true, "evidence": "Part 2 brief: 'Holding: the court's answer to that question. This is the binding part.' and 'Dicta: side comments that were not needed for the result. These can persuade a judge but do not bind one.'"}, {"text": "Explains binding vs persuasive precedent", "passed": true, "evidence": "Part 2 step 1: highest court binds every lower court; intermediate appellate decision binds trial courts under it; 'A decision from another state, or a trial-level decision, is only persuasive'; verification log has 'Binding or persuasive' column."}, {"text": "Outlines IRAC: Issue, Rule, Analysis/Application, Conclusion", "passed": true, "evidence": "Part 3 'Discussion (IRAC for each issue)': I (Issue), R (Rule), A (Application), C (Conclusion) for each issue."}, {"text": "Includes citation practice or verifying currency of the law", "passed": true, "evidence": "Part 2 'Use Shepard's or KeyCite at a law library'; Part 1 'Get the official, current text... Check the \"current through\" date'; 'Sources and verification log' table; pinpoint page cites."}], "notes": []}], "run_summary": {"with_skill": {"pass_rate": {"mean": 1.0, "stddev": 0.0, "min": 1.0, "max": 1.0}, "time_seconds": null, "tokens": null}, "without_skill": {"pass_rate": {"mean": 0.9, "stddev": 0.1414, "min": 0.8, "max": 1.0}, "time_seconds": null, "tokens": null}, "delta": {"pass_rate": "+0.10", "time_seconds": null, "tokens": null}}, "notes": ["Time recorded for 0 of 2 with_skill runs, 0 of 2 without_skill runs, so there is no time delta.", "Token count recorded for 0 of 2 with_skill runs, 0 of 2 without_skill runs, so there is no token count delta."]}};
+
+    // ---- State ----
+    let feedbackMap = {};  // run_id -> feedback text
+    let currentIndex = 0;
+    let visitedRuns = new Set();
+
+    // ---- Init ----
+    async function init() {
+      // Load saved feedback from server — but only if this isn't a fresh
+      // iteration (indicated by previous_feedback being present). When
+      // previous feedback exists, the feedback.json on disk is stale from
+      // the prior iteration and should not pre-fill the textareas.
+      const hasPrevious = Object.keys(EMBEDDED_DATA.previous_feedback || {}).length > 0
+        || Object.keys(EMBEDDED_DATA.previous_outputs || {}).length > 0;
+      if (!hasPrevious) {
+        try {
+          const resp = await fetch("/api/feedback");
+          const data = await resp.json();
+          if (data.reviews) {
+            for (const r of data.reviews) feedbackMap[r.run_id] = r.feedback;
+          }
+        } catch { /* first run, no feedback yet */ }
+      }
+
+      document.getElementById("skill-name").textContent = EMBEDDED_DATA.skill_name;
+      showRun(0);
+
+      // Wire up feedback auto-save
+      const textarea = document.getElementById("feedback");
+      let saveTimeout = null;
+      textarea.addEventListener("input", () => {
+        clearTimeout(saveTimeout);
+        document.getElementById("feedback-status").textContent = "";
+        saveTimeout = setTimeout(() => saveCurrentFeedback(), 800);
+      });
+    }
+
+    // ---- Navigation ----
+    function navigate(delta) {
+      const newIndex = currentIndex + delta;
+      if (newIndex >= 0 && newIndex < EMBEDDED_DATA.runs.length) {
+        saveCurrentFeedback();
+        showRun(newIndex);
+      }
+    }
+
+    function updateNavButtons() {
+      document.getElementById("prev-btn").disabled = currentIndex === 0;
+      document.getElementById("next-btn").disabled =
+        currentIndex === EMBEDDED_DATA.runs.length - 1;
+    }
+
+    // ---- Show a run ----
+    function showRun(index) {
+      currentIndex = index;
+      const run = EMBEDDED_DATA.runs[index];
+
+      // Progress
+      document.getElementById("progress").textContent =
+        `${index + 1} of ${EMBEDDED_DATA.runs.length}`;
+
+      // Prompt
+      document.getElementById("prompt-text").textContent = run.prompt;
+
+      // Config badge
+      const badge = document.getElementById("config-badge");
+      const configMatch = run.id.match(/(with_skill|without_skill|new_skill|old_skill)/);
+      if (configMatch) {
+        const config = configMatch[1];
+        const isBaseline = config === "without_skill" || config === "old_skill";
+        badge.textContent = config.replace(/_/g, " ");
+        badge.className = "config-badge " + (isBaseline ? "config-baseline" : "config-primary");
+        badge.style.display = "inline-block";
+      } else {
+        badge.style.display = "none";
+      }
+
+      // Outputs
+      renderOutputs(run);
+
+      // Previous outputs
+      renderPrevOutputs(run);
+
+      // Grades
+      renderGrades(run);
+
+      // Previous feedback
+      const prevFb = (EMBEDDED_DATA.previous_feedback || {})[run.id];
+      const prevEl = document.getElementById("prev-feedback");
+      if (prevFb) {
+        document.getElementById("prev-feedback-text").textContent = prevFb;
+        prevEl.style.display = "block";
+      } else {
+        prevEl.style.display = "none";
+      }
+
+      // Feedback
+      document.getElementById("feedback").value = feedbackMap[run.id] || "";
+      document.getElementById("feedback-status").textContent = "";
+
+      updateNavButtons();
+
+      // Track visited runs and promote done button when all visited
+      visitedRuns.add(index);
+      const doneBtn = document.getElementById("done-btn");
+      if (visitedRuns.size >= EMBEDDED_DATA.runs.length) {
+        doneBtn.classList.add("ready");
+      }
+
+      // Scroll main content to top
+      document.querySelector(".main").scrollTop = 0;
+    }
+
+    // ---- Render outputs ----
+    function renderOutputs(run) {
+      const container = document.getElementById("outputs-body");
+      container.innerHTML = "";
+
+      const outputs = run.outputs || [];
+      if (outputs.length === 0) {
+        container.innerHTML = '<div class="empty-state">No output files</div>';
+        return;
+      }
+
+      for (const file of outputs) {
+        const fileDiv = document.createElement("div");
+        fileDiv.className = "output-file";
+
+        // Always show file header with download link
+        const header = document.createElement("div");
+        header.className = "output-file-header";
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = file.name;
+        header.appendChild(nameSpan);
+        const dlBtn = document.createElement("a");
+        dlBtn.className = "dl-btn";
+        dlBtn.textContent = "Download";
+        dlBtn.download = file.name;
+        dlBtn.href = getDownloadUri(file);
+        header.appendChild(dlBtn);
+        fileDiv.appendChild(header);
+
+        const content = document.createElement("div");
+        content.className = "output-file-content";
+
+        if (file.type === "text") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          content.appendChild(pre);
+        } else if (file.type === "image") {
+          const img = document.createElement("img");
+          img.src = file.data_uri;
+          img.alt = file.name;
+          content.appendChild(img);
+        } else if (file.type === "pdf") {
+          const iframe = document.createElement("iframe");
+          iframe.src = file.data_uri;
+          content.appendChild(iframe);
+        } else if (file.type === "xlsx") {
+          renderXlsx(content, file.data_b64);
+        } else if (file.type === "binary") {
+          const a = document.createElement("a");
+          a.className = "download-link";
+          a.href = file.data_uri;
+          a.download = file.name;
+          a.textContent = "Download " + file.name;
+          content.appendChild(a);
+        } else if (file.type === "error") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          pre.style.color = "var(--red)";
+          content.appendChild(pre);
+        }
+
+        fileDiv.appendChild(content);
+        container.appendChild(fileDiv);
+      }
+    }
+
+    // ---- XLSX rendering via SheetJS ----
+    function renderXlsx(container, b64Data) {
+      try {
+        const raw = Uint8Array.from(atob(b64Data), c => c.charCodeAt(0));
+        const wb = XLSX.read(raw, { type: "array" });
+
+        for (let i = 0; i < wb.SheetNames.length; i++) {
+          const sheetName = wb.SheetNames[i];
+          const ws = wb.Sheets[sheetName];
+
+          if (wb.SheetNames.length > 1) {
+            const sheetLabel = document.createElement("div");
+            sheetLabel.style.cssText =
+              "font-weight:600; font-size:0.8rem; color:#b0aea5; margin-top:0.5rem; margin-bottom:0.25rem;";
+            sheetLabel.textContent = "Sheet: " + sheetName;
+            container.appendChild(sheetLabel);
+          }
+
+          const htmlStr = XLSX.utils.sheet_to_html(ws, { editable: false });
+          const wrapper = document.createElement("div");
+          wrapper.innerHTML = htmlStr;
+          container.appendChild(wrapper);
+        }
+      } catch (err) {
+        container.textContent = "Error rendering spreadsheet: " + err.message;
+      }
+    }
+
+    // ---- Grades ----
+    function renderGrades(run) {
+      const section = document.getElementById("grades-section");
+      const content = document.getElementById("grades-content");
+
+      if (!run.grading) {
+        section.style.display = "none";
+        return;
+      }
+
+      const grading = run.grading;
+      section.style.display = "block";
+      // Reset to collapsed
+      content.classList.remove("open");
+      document.getElementById("grades-arrow").classList.remove("open");
+
+      const summary = grading.summary || {};
+      const expectations = grading.expectations || [];
+
+      let html = '<div style="padding: 1rem;">';
+
+      // Summary line
+      const passRate = summary.pass_rate != null
+        ? Math.round(summary.pass_rate * 100) + "%"
+        : "?";
+      const badgeClass = summary.pass_rate >= 0.8 ? "grade-pass" : summary.pass_rate >= 0.5 ? "" : "grade-fail";
+      html += '<div class="grades-summary">';
+      html += '<span class="grade-badge ' + badgeClass + '">' + passRate + '</span>';
+      html += '<span>' + escapeHtml(summary.passed || 0) + ' passed, ' + escapeHtml(summary.failed || 0) + ' failed of ' + escapeHtml(summary.total || 0) + '</span>';
+      html += '</div>';
+
+      // Assertions list
+      html += '<ul class="assertion-list">';
+      for (const exp of expectations) {
+        const statusClass = exp.passed ? "pass" : "fail";
+        const statusIcon = exp.passed ? "\u2713" : "\u2717";
+        html += '<li class="assertion-item">';
+        html += '<span class="assertion-status ' + statusClass + '">' + statusIcon + '</span>';
+        html += '<span>' + escapeHtml(exp.text) + '</span>';
+        if (exp.evidence) {
+          html += '<div class="assertion-evidence">' + escapeHtml(exp.evidence) + '</div>';
+        }
+        html += '</li>';
+      }
+      html += '</ul>';
+
+      html += '</div>';
+      content.innerHTML = html;
+    }
+
+    function toggleGrades() {
+      const content = document.getElementById("grades-content");
+      const arrow = document.getElementById("grades-arrow");
+      content.classList.toggle("open");
+      arrow.classList.toggle("open");
+    }
+
+    // ---- Previous outputs (collapsible) ----
+    function renderPrevOutputs(run) {
+      const section = document.getElementById("prev-outputs-section");
+      const content = document.getElementById("prev-outputs-content");
+      const prevOutputs = (EMBEDDED_DATA.previous_outputs || {})[run.id];
+
+      if (!prevOutputs || prevOutputs.length === 0) {
+        section.style.display = "none";
+        return;
+      }
+
+      section.style.display = "block";
+      // Reset to collapsed
+      content.classList.remove("open");
+      document.getElementById("prev-outputs-arrow").classList.remove("open");
+
+      // Render the files into the content area
+      content.innerHTML = "";
+      const wrapper = document.createElement("div");
+      wrapper.style.padding = "1rem";
+
+      for (const file of prevOutputs) {
+        const fileDiv = document.createElement("div");
+        fileDiv.className = "output-file";
+
+        const header = document.createElement("div");
+        header.className = "output-file-header";
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = file.name;
+        header.appendChild(nameSpan);
+        const dlBtn = document.createElement("a");
+        dlBtn.className = "dl-btn";
+        dlBtn.textContent = "Download";
+        dlBtn.download = file.name;
+        dlBtn.href = getDownloadUri(file);
+        header.appendChild(dlBtn);
+        fileDiv.appendChild(header);
+
+        const fc = document.createElement("div");
+        fc.className = "output-file-content";
+
+        if (file.type === "text") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          fc.appendChild(pre);
+        } else if (file.type === "image") {
+          const img = document.createElement("img");
+          img.src = file.data_uri;
+          img.alt = file.name;
+          fc.appendChild(img);
+        } else if (file.type === "pdf") {
+          const iframe = document.createElement("iframe");
+          iframe.src = file.data_uri;
+          fc.appendChild(iframe);
+        } else if (file.type === "xlsx") {
+          renderXlsx(fc, file.data_b64);
+        } else if (file.type === "binary") {
+          const a = document.createElement("a");
+          a.className = "download-link";
+          a.href = file.data_uri;
+          a.download = file.name;
+          a.textContent = "Download " + file.name;
+          fc.appendChild(a);
+        }
+
+        fileDiv.appendChild(fc);
+        wrapper.appendChild(fileDiv);
+      }
+
+      content.appendChild(wrapper);
+    }
+
+    function togglePrevOutputs() {
+      const content = document.getElementById("prev-outputs-content");
+      const arrow = document.getElementById("prev-outputs-arrow");
+      content.classList.toggle("open");
+      arrow.classList.toggle("open");
+    }
+
+    // ---- Feedback (saved to server -> feedback.json) ----
+    function saveCurrentFeedback() {
+      const run = EMBEDDED_DATA.runs[currentIndex];
+      const text = document.getElementById("feedback").value;
+
+      if (text.trim() === "") {
+        delete feedbackMap[run.id];
+      } else {
+        feedbackMap[run.id] = text;
+      }
+
+      // Build reviews array from map
+      const reviews = [];
+      for (const [run_id, feedback] of Object.entries(feedbackMap)) {
+        if (feedback.trim()) {
+          reviews.push({ run_id, feedback, timestamp: new Date().toISOString() });
+        }
+      }
+
+      fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reviews, status: "in_progress" }),
+      }).then(() => {
+        document.getElementById("feedback-status").textContent = "Saved";
+      }).catch(() => {
+        // Static mode or server unavailable — no-op on auto-save,
+        // feedback will be downloaded on final submit
+        document.getElementById("feedback-status").textContent = "Will download on submit";
+      });
+    }
+
+    // ---- Done ----
+    function showDoneDialog() {
+      // Save current textarea to feedbackMap (but don't POST yet)
+      const run = EMBEDDED_DATA.runs[currentIndex];
+      const text = document.getElementById("feedback").value;
+      if (text.trim() === "") {
+        delete feedbackMap[run.id];
+      } else {
+        feedbackMap[run.id] = text;
+      }
+
+      // POST once with status: complete — include ALL runs so the model
+      // can distinguish "no feedback" (looks good) from "not reviewed"
+      const reviews = [];
+      const ts = new Date().toISOString();
+      for (const r of EMBEDDED_DATA.runs) {
+        reviews.push({ run_id: r.id, feedback: feedbackMap[r.id] || "", timestamp: ts });
+      }
+      const payload = JSON.stringify({ reviews, status: "complete" }, null, 2);
+      fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: payload,
+      }).then(() => {
+        document.getElementById("done-overlay").classList.add("visible");
+      }).catch(() => {
+        // Server not available (static mode) — download as file
+        const blob = new Blob([payload], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "feedback.json";
+        a.click();
+        URL.revokeObjectURL(url);
+        document.getElementById("done-overlay").classList.add("visible");
+      });
+    }
+
+    function closeDoneDialog() {
+      // Reset status back to in_progress
+      saveCurrentFeedback();
+      document.getElementById("done-overlay").classList.remove("visible");
+    }
+
+    // ---- Toast ----
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("visible");
+      setTimeout(() => toast.classList.remove("visible"), 2000);
+    }
+
+    // ---- Keyboard nav ----
+    document.addEventListener("keydown", (e) => {
+      // Don't capture when typing in textarea
+      if (e.target.tagName === "TEXTAREA") return;
+
+      if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+        e.preventDefault();
+        navigate(-1);
+      } else if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+        e.preventDefault();
+        navigate(1);
+      }
+    });
+
+    // ---- Util ----
+    function getDownloadUri(file) {
+      if (file.data_uri) return file.data_uri;
+      if (file.data_b64) return "data:application/octet-stream;base64," + file.data_b64;
+      if (file.type === "text") return "data:text/plain;charset=utf-8," + encodeURIComponent(file.content);
+      return "#";
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement("div");
+      div.textContent = text;
+      return div.innerHTML.replace(/"/g, "&quot;");
+    }
+
+    // ---- View switching ----
+    function switchView(view) {
+      document.querySelectorAll(".view-tab").forEach(t => t.classList.remove("active"));
+      document.querySelectorAll(".view-panel").forEach(p => p.classList.remove("active"));
+      document.querySelector(`[onclick="switchView('${view}')"]`).classList.add("active");
+      document.getElementById("panel-" + view).classList.add("active");
+    }
+
+    // ---- Benchmark rendering ----
+    function renderBenchmark() {
+      const data = EMBEDDED_DATA.benchmark;
+      if (!data) return;
+
+      // Show the tabs
+      document.getElementById("view-tabs").style.display = "flex";
+
+      const container = document.getElementById("benchmark-content");
+      const summary = data.run_summary || {};
+      const metadata = data.metadata || {};
+      const notes = data.notes || [];
+
+      let html = "";
+
+      // Header
+      html += "<h2 style='font-family: Poppins, sans-serif; margin-bottom: 0.5rem;'>Benchmark Results</h2>";
+      html += "<p style='color: var(--text-muted); font-size: 0.875rem; margin-bottom: 1.25rem;'>";
+      if (metadata.skill_name) html += "<strong>" + escapeHtml(metadata.skill_name) + "</strong> &mdash; ";
+      if (metadata.timestamp) html += escapeHtml(metadata.timestamp) + " &mdash; ";
+      if (metadata.evals_run) html += "Evals: " + escapeHtml(metadata.evals_run.join(", ")) + " &mdash; ";
+      html += escapeHtml(metadata.runs_per_configuration || "?") + (metadata.runs_per_configuration === 1 ? " run" : " runs") + " per configuration";
+      html += "</p>";
+
+      // Summary table
+      html += '<table class="benchmark-table">';
+
+      function fmtStat(stat, pct) {
+        if (!stat) return "—";
+        const suffix = pct ? "%" : "";
+        const m = pct ? (stat.mean * 100).toFixed(0) : stat.mean.toFixed(1);
+        const s = pct ? (stat.stddev * 100).toFixed(0) : stat.stddev.toFixed(1);
+        return m + suffix + " ± " + s + suffix;
+      }
+
+      function deltaClass(val) {
+        if (!val) return "";
+        const n = parseFloat(val);
+        if (n > 0) return "benchmark-delta-positive";
+        if (n < 0) return "benchmark-delta-negative";
+        return "";
+      }
+
+      // Discover config names dynamically (everything except "delta")
+      const configs = Object.keys(summary).filter(k => k !== "delta");
+      const configA = configs[0] || "config_a";
+      const configB = configs[1] || "config_b";
+      const labelA = configA.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      const labelB = configB.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      const a = summary[configA] || {};
+      const b = summary[configB] || {};
+      const delta = summary.delta || {};
+      // With a single configuration there is nothing to compare: only its column is shown
+      const compare = cells => configs.length >= 2 ? cells : "";
+
+      html += "<thead><tr><th>Metric</th><th>" + escapeHtml(labelA) + "</th>" + compare("<th>" + escapeHtml(labelB) + "</th><th>Delta</th>") + "</tr></thead>";
+      html += "<tbody>";
+
+      html += "<tr><td><strong>Pass Rate</strong></td>";
+      html += "<td>" + fmtStat(a.pass_rate, true) + "</td>";
+      html += compare("<td>" + fmtStat(b.pass_rate, true) + "</td>");
+      html += compare('<td class="' + deltaClass(delta.pass_rate) + '">' + escapeHtml(delta.pass_rate || "—") + "</td>") + "</tr>";
+
+      // Time (only show row if data exists)
+      if (a.time_seconds || b.time_seconds) {
+        html += "<tr><td><strong>Time (s)</strong></td>";
+        html += "<td>" + fmtStat(a.time_seconds, false) + "</td>";
+        html += compare("<td>" + fmtStat(b.time_seconds, false) + "</td>");
+        html += compare('<td class="' + deltaClass(delta.time_seconds) + '">' + escapeHtml(delta.time_seconds ? delta.time_seconds + "s" : "—") + "</td>") + "</tr>";
+      }
+
+      // Tokens (only show row if data exists)
+      if (a.tokens || b.tokens) {
+        html += "<tr><td><strong>Tokens</strong></td>";
+        html += "<td>" + fmtStat(a.tokens, false) + "</td>";
+        html += compare("<td>" + fmtStat(b.tokens, false) + "</td>");
+        html += compare('<td class="' + deltaClass(delta.tokens) + '">' + escapeHtml(delta.tokens || "—") + "</td>") + "</tr>";
+      }
+
+      html += "</tbody></table>";
+
+      // Per-eval breakdown (if runs data available)
+      const runs = data.runs || [];
+      if (runs.length > 0) {
+        // Numeric ids first, then ids that are names
+        const rank = id => typeof id === "number" ? 0 : 1;
+        const evalIds = [...new Set(runs.map(r => r.eval_id))].sort((a, b) =>
+          rank(a) - rank(b) || (rank(a) ? String(a).localeCompare(String(b)) : a - b));
+
+        html += "<h3 style='font-family: Poppins, sans-serif; margin-bottom: 0.75rem;'>Per-Eval Breakdown</h3>";
+
+        const hasTime = runs.some(r => r.result && r.result.time_seconds != null);
+        const hasErrors = runs.some(r => r.result && r.result.errors > 0);
+
+        for (const evalId of evalIds) {
+          const evalRuns = runs.filter(r => r.eval_id === evalId);
+          const evalName = evalRuns[0] && evalRuns[0].eval_name ? evalRuns[0].eval_name : "Eval " + evalId;
+
+          html += "<h4 style='font-family: Poppins, sans-serif; margin: 1rem 0 0.5rem; color: var(--text);'>" + escapeHtml(evalName) + "</h4>";
+          html += '<table class="benchmark-table">';
+          html += "<thead><tr><th>Config</th><th>Run</th><th>Pass Rate</th>";
+          if (hasTime) html += "<th>Time (s)</th>";
+          if (hasErrors) html += "<th>Crashes During Execution</th>";
+          html += "</tr></thead>";
+          html += "<tbody>";
+
+          // Group by config and render with average rows
+          const configGroups = [...new Set(evalRuns.map(r => r.configuration))];
+          for (let ci = 0; ci < configGroups.length; ci++) {
+            const config = configGroups[ci];
+            const configRuns = evalRuns.filter(r => r.configuration === config);
+            if (configRuns.length === 0) continue;
+
+            const rowClass = ci === 0 ? "benchmark-row-with" : "benchmark-row-without";
+            const configLabel = escapeHtml(config.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase()));
+
+            for (const run of configRuns) {
+              const r = run.result || {};
+              const prClass = r.pass_rate >= 0.8 ? "benchmark-delta-positive" : r.pass_rate < 0.5 ? "benchmark-delta-negative" : "";
+              html += '<tr class="' + rowClass + '">';
+              html += "<td>" + configLabel + "</td>";
+              html += "<td>" + escapeHtml(run.run_number) + "</td>";
+              html += '<td class="' + prClass + '">' + ((r.pass_rate || 0) * 100).toFixed(0) + "% (" + escapeHtml(r.passed || 0) + "/" + escapeHtml(r.total || 0) + ")</td>";
+              if (hasTime) html += "<td>" + (r.time_seconds != null ? r.time_seconds.toFixed(1) : "—") + "</td>";
+              if (hasErrors) html += "<td>" + escapeHtml(r.errors || 0) + "</td>";
+              html += "</tr>";
+            }
+
+            // Average row
+            const rates = configRuns.map(r => (r.result || {}).pass_rate || 0);
+            const avgRate = rates.reduce((a, b) => a + b, 0) / rates.length;
+            const avgPrClass = avgRate >= 0.8 ? "benchmark-delta-positive" : avgRate < 0.5 ? "benchmark-delta-negative" : "";
+            html += '<tr class="benchmark-row-avg ' + rowClass + '">';
+            html += "<td>" + configLabel + "</td>";
+            html += "<td>Avg</td>";
+            html += '<td class="' + avgPrClass + '">' + (avgRate * 100).toFixed(0) + "%</td>";
+            if (hasTime) {
+              const times = configRuns.map(r => (r.result || {}).time_seconds).filter(t => t != null);
+              html += "<td>" + (times.length ? (times.reduce((a, b) => a + b, 0) / times.length).toFixed(1) : "—") + "</td>";
+            }
+            if (hasErrors) html += "<td></td>";
+            html += "</tr>";
+          }
+          html += "</tbody></table>";
+
+          // Per-assertion detail for this eval
+          const runsWithExpectations = {};
+          for (const config of configGroups) {
+            runsWithExpectations[config] = evalRuns.filter(r => r.configuration === config && r.expectations && r.expectations.length > 0);
+          }
+          const hasAnyExpectations = Object.values(runsWithExpectations).some(runs => runs.length > 0);
+          if (hasAnyExpectations) {
+            // Collect all unique assertion texts across all configs
+            const allAssertions = [];
+            const seen = new Set();
+            for (const config of configGroups) {
+              for (const run of runsWithExpectations[config]) {
+                for (const exp of (run.expectations || [])) {
+                  if (!seen.has(exp.text)) {
+                    seen.add(exp.text);
+                    allAssertions.push(exp.text);
+                  }
+                }
+              }
+            }
+
+            html += '<table class="benchmark-table" style="margin-top: 0.5rem;">';
+            html += "<thead><tr><th>Assertion</th>";
+            for (const config of configGroups) {
+              const label = config.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+              html += "<th>" + escapeHtml(label) + "</th>";
+            }
+            html += "</tr></thead><tbody>";
+
+            for (const assertionText of allAssertions) {
+              html += "<tr><td>" + escapeHtml(assertionText) + "</td>";
+
+              for (const config of configGroups) {
+                html += "<td>";
+                for (const run of runsWithExpectations[config]) {
+                  const exp = (run.expectations || []).find(e => e.text === assertionText);
+                  if (exp) {
+                    const cls = exp.passed ? "benchmark-delta-positive" : "benchmark-delta-negative";
+                    const icon = exp.passed ? "\u2713" : "\u2717";
+                    html += '<span class="' + cls + '" title="Run ' + escapeHtml(run.run_number) + ': ' + escapeHtml(exp.evidence || "") + '">' + icon + "</span> ";
+                  } else {
+                    html += "— ";
+                  }
+                }
+                html += "</td>";
+              }
+              html += "</tr>";
+            }
+            html += "</tbody></table>";
+          }
+        }
+      }
+
+      // Notes
+      if (notes.length > 0) {
+        html += '<div class="benchmark-notes">';
+        html += "<h3>Analysis Notes</h3>";
+        html += "<ul>";
+        for (const note of notes) {
+          html += "<li>" + escapeHtml(note) + "</li>";
+        }
+        html += "</ul></div>";
+      }
+
+      container.innerHTML = html;
+    }
+
+    // ---- Start ----
+    init();
+    renderBenchmark();
+  </script>
+</body>
+</html>

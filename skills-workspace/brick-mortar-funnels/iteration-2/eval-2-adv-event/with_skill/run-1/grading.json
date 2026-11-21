@@ -1,0 +1,35 @@
+{
+ "expectations": [
+  {
+   "text": "Uses Jaime Cross's ticketed-event concept",
+   "passed": true,
+   "evidence": "Section 3 'a Cross-style ticketed First Look' cites her accurate details: '$47\u2013$97' class, factory tour and origin story, 'Seven Pillars of True Beauty', hand massage/sampling stations, free 14-Day True Beauty Challenge on the thank-you page, bring-a-friend free full-size serum, refer-two free products, DiscoverTrueBeauty.com, 'Director of Happiness' - all matching references/experts.md."
+  },
+  {
+   "text": "Uses Chad Woolner's workshop/event funnel",
+   "passed": true,
+   "evidence": "Section 4 adapts 'The 30-Minute Reboot' (real value, 'not a thinly veiled sales pitch'), booking order (existing relationships -> lead boxes -> 'welcome guest' outreach with ~90% failure), ~3 workshops/week; Section 5 runs the 'Epic Event' with '3 email invites \u2192 RSVP (name, email, phone, number of guests) \u2192 reminders' and 'Glue and Offer' raffle with JV-partner prizes; Section 7 portfolio of proof and Position Ascension Loop. All accurate to the skill."
+  },
+  {
+   "text": "Adapts both concretely to a vintage-furniture pop-up",
+   "passed": true,
+   "evidence": "Concrete translations: '$25 ticket, fully credited toward any purchase', 'The 5 Tells of Real Vintage' replacing Seven Pillars, 'Spot the Reproduction' station, '14-Day Room Refresh Challenge', 'Vintage 101' talks at caf\u00e9s/breweries, 'Win a restored mid-century side table' lead box, upholsterer/florist raffle prizes, stock-planning note on one-of-a-kind inventory."
+  },
+  {
+   "text": "Includes promotion and follow-up steps",
+   "passed": true,
+   "evidence": "Section 8 week -8 to after-closing timeline; three drafted invite emails at ~21/10/3 days out, reminders at 2 days/morning/1 hour; Section 6 ads, retargeting, giveaway; Section 7 non-buyer follow-up within 7 days, NPS/review asks (no gating), waitlist for next pop-up."
+  },
+  {
+   "text": "Includes pricing or attendance targets",
+   "passed": true,
+   "evidence": "Ticket price $25 (test vs $45), 60 tickets, 85% show -> ~51 attendees, ~18 buyers at 35%, AOV $420 -> ~$7,500, cost per ticket under ~$40 (derived from Hormozi's spend-per-show logic), 400+ contacts, workshop math 6 weeks \u00d7 2\u20133 \u00d7 ~12 people \u2248 180 reached."
+  }
+ ],
+ "summary": {
+  "passed": 5,
+  "failed": 0,
+  "total": 5,
+  "pass_rate": 1.0
+ }
+}

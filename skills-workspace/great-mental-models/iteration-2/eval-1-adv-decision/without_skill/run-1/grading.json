@@ -1,0 +1,35 @@
+{
+ "expectations": [
+  {
+   "text": "Applies at least five named models",
+   "passed": true,
+   "evidence": "Lists all nine Vol. 1 models correctly and applies seven in depth (sections 1-7), plus the razors briefly in '8 & 9'. The names match SKILL.md."
+  },
+  {
+   "text": "Uses second-order thinking with concrete consequences",
+   "passed": true,
+   "evidence": "Section 5 table: 'Lose employer health insurance and 401(k) match... Harder to get a mortgage (lenders often want 2 years of self-employment history)', 'push local prices down by flooding your own market', 'career skills and network fade'."
+  },
+  {
+   "text": "Uses inversion (e.g. what would guarantee failure)",
+   "passed": true,
+   "evidence": "Section 7 'How to make sure this fails': 8 items ('Quit with less than 3 months of savings', 'Depend 100% on one platform'), each turned into a rule. This is generic; it has no Jacobi or force field, but it is correct inversion."
+  },
+  {
+   "text": "Uses circle of competence and/or probabilistic thinking with numbers",
+   "passed": true,
+   "evidence": "Probabilistic section with numbers: 'Bad case (say 30%)... Base case (say 50%)... Good case (say 20%)', plus fat tails and base rates. Circle of competence is applied correctly but generically (no Lifer/Stranger or the book's three steps)."
+  },
+  {
+   "text": "Ends with a decision rule or test, not just a list",
+   "passed": true,
+   "evidence": "'Putting It Together: A Decision Rule' - 'Quit when all of these are true' with 6 testable conditions (e.g. 3-6 months net profit >= 60-75% of take-home, 6-12 months runway) and a written exit ramp. The 'one-way/two-way door' framing is not presented as the book's."
+  }
+ ],
+ "summary": {
+  "passed": 5,
+  "failed": 0,
+  "total": 5,
+  "pass_rate": 1.0
+ }
+}

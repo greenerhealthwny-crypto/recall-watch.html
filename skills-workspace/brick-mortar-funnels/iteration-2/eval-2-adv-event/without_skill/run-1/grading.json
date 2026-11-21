@@ -1,0 +1,35 @@
+{
+ "expectations": [
+  {
+   "text": "Uses Jaime Cross's ticketed-event concept",
+   "passed": true,
+   "evidence": "Part 1 'VIP Preview Night' is a ticketed experience ('40 tickets. $15, credited toward any purchase'), and the opener characterizes Cross's approach as 'a ticketed or limited \"experience\"', which matches the skill's core idea (ticketed in-store class). It omits Cross's specifics (the $47\u2013$97 class, the free 14-day challenge, bring-a-friend/refer-two gifts) but the ticketed-event concept itself is used and nothing stated is wrong."
+  },
+  {
+   "text": "Uses Chad Woolner's workshop/event funnel",
+   "passed": false,
+   "evidence": "Part 2's 'Woolner-style teach \u2192 offer' is a generic paid $25 in-store workshop ending in a 15%-off offer. None of Woolner's distinctive funnel appears: the free lunch 'Reboot' workshop held at other businesses, booking through existing relationships, lead boxes, 'welcome guest' outreach, case value, or the Epic Event's 3 invites \u2192 RSVP \u2192 reminders \u2192 'Glue and Offer' raffle. The response itself says 'I don't have the exact text of... Chad Woolner's chapters'. Generic workshop advice labeled as Woolner's."
+  },
+  {
+   "text": "Adapts both concretely to a vintage-furniture pop-up",
+   "passed": true,
+   "evidence": "Concrete vintage adaptations: theme nights ('Mid-Century Night'), sneak-peek hero pieces ('1962 teak credenza'), 'story card' on each piece, 'How to Spot, Score & Style Vintage Furniture' workshop, delivery partner logistics, 'Hunt List' sourcing service."
+  },
+  {
+   "text": "Includes promotion and follow-up steps",
+   "passed": true,
+   "evidence": "'Promotion timeline (3 weeks)' (Early Access List, list-first ticket release, $10\u2013$20/day local ads, '12 tickets left' update, reminder texts) and Part 3 'Week +1: Thank-you email, \"what sold\" recap, unsold-piece flash sale to the list, review ask' plus ongoing 'Next Drop' list."
+  },
+  {
+   "text": "Includes pricing or attendance targets",
+   "passed": true,
+   "evidence": "'Numbers to plan around': 40 VIP tickets \u00d7 $15, 20 workshop seats \u00d7 $25, 300\u2013500 list sign-ups, 60\u201370% VIP conversion at avg $350, 150\u2013300 public visitors at 15\u201325%, $200\u2013$400 ad spend."
+  }
+ ],
+ "summary": {
+  "passed": 4,
+  "failed": 1,
+  "total": 5,
+  "pass_rate": 0.8
+ }
+}

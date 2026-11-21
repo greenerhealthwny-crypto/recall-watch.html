@@ -1,0 +1,223 @@
+{
+  "metadata": {
+    "skill_name": "art-of-focus",
+    "skill_path": "<path/to/skill>",
+    "executor_model": "<model-name>",
+    "analyzer_model": "<model-name>",
+    "timestamp": "2026-11-21T22:00:51Z",
+    "evals_run": [
+      1,
+      2
+    ],
+    "runs_per_configuration": 1
+  },
+  "runs": [
+    {
+      "eval_id": 1,
+      "eval_name": "adv-formula",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Starts with the anti-vision",
+          "passed": true,
+          "evidence": "'Step 1: Anti-vision' asks for 'the life you refuse to live: how you don't want to look, feel and act, the money that would be too little, the places you'd hate... until you feel uncomfortable. Then use that discomfort as fuel' - matches SKILL.md formula step 1."
+        },
+        {
+          "text": "Moves to vision derived from it",
+          "passed": true,
+          "evidence": "'Step 2: Vision... Using the anti-vision as raw material, write the future you do want... big, not limited by your current beliefs, and emotionally compelling'; prompt 1 'Inverse of the anti-vision'; quotes 'Dance between the two' - all match SKILL.md."
+        },
+        {
+          "text": "Purpose / path of mastery",
+          "passed": true,
+          "evidence": "'Step 3: Purpose and the path of mastery' turns vision into a purpose statement and 'a big goal', plus skills to master - matches SKILL.md step 3 (purpose -> big goal)."
+        },
+        {
+          "text": "Breaks goals from yearly to monthly, weekly and daily",
+          "passed": true,
+          "evidence": "Step 4 table: Big goal -> Yearly -> Monthly -> Weekly -> Daily, and says each level 'frames your attention, and repels distractions' - matches SKILL.md wording."
+        },
+        {
+          "text": "Gives prompts/questions the user can answer",
+          "passed": true,
+          "evidence": "Numbered prompts in every step (e.g. 'What income feels insultingly small to me...', 'Finish this line: I am becoming someone who ___ so that ___') plus a fill-in table; clearly labels prompts as its own working version rather than the book's."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "adv-business",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "'You are the niche' idea",
+          "passed": true,
+          "evidence": "Section 1: '\"The most profitable niche is you\": the overlap of your skills, interests and experience'; 'Koe warns against \"niching down\" into work you'd hate... solve problems you've already solved for yourself' - matches SKILL.md."
+        },
+        {
+          "text": "Skill stack: message, medium, results-oriented skills",
+          "passed": true,
+          "evidence": "Section 3 covers 'The message' (relatable, understandable or actionable), 'The medium' ('In business, distribution equals freedom'), 'Results-oriented skills' (writing, speaking, marketing, selling; message and medium evergreen) and creative problem-solving - all match SKILL.md."
+        },
+        {
+          "text": "Project to product progression",
+          "passed": true,
+          "evidence": "Section 2 '(\"project to product\")' quotes 'Everyone is an entrepreneur; some just choose to get paid for the problems they solve in their personal life' and 'you become an entrepreneur when you take your projects public' - matches SKILL.md."
+        },
+        {
+          "text": "Fill, empty, use content/learning loop",
+          "passed": true,
+          "evidence": "Section 6: 'Fill: study styles, prices... Empty: walks, reflection... Use: do your most focused work... in your highest-energy hours'; 'Treat the whole thing as an experiment' - matches SKILL.md lifestyle design."
+        },
+        {
+          "text": "Concrete plan for the furniture interest",
+          "passed": true,
+          "evidence": "Furniture-specific product ladder (flips -> audience -> sourcing checklist/pricing guide -> course/coaching -> brand partnerships) and a week-by-week 30-day plan (e.g. 'Post 3 flips in a before, process, after format'), labelled as its own application."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 1,
+      "eval_name": "adv-formula",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.8,
+        "passed": 4,
+        "failed": 1,
+        "total": 5,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Starts with the anti-vision",
+          "passed": true,
+          "evidence": "'Step 1: Anti-Vision (the stakes)' with prompts about an average Tuesday in five/ten years, body, bank account; consistent with SKILL.md step 1."
+        },
+        {
+          "text": "Moves to vision derived from it",
+          "passed": true,
+          "evidence": "'Step 2: Vision... The vision is the opposite pole... Keep it next to your anti-vision... one pushes you, one pulls you' - vision explicitly framed against the anti-vision, consistent with 'dance between the two'."
+        },
+        {
+          "text": "Purpose / path of mastery",
+          "passed": false,
+          "evidence": "'Step 3: Purpose' never mentions the path of mastery or turning purpose into a big goal (it jumps to a '1-Year Goal'). Its attributions ('Koe treats purpose as something you build through action, not something you discover') are not supported by SKILL.md. The response also inserts an invented 5th step, 'Constraints', and a 'win condition/lose condition/rules' game model as part of the book's formula, which SKILL.md does not contain (its formula is anti-vision, vision, purpose/path of mastery)."
+        },
+        {
+          "text": "Breaks goals from yearly to monthly, weekly and daily",
+          "passed": true,
+          "evidence": "Sections 4a '1-Year Goal', 4b '1-Month Goal', 4c 'Weekly Goal', 4d 'Daily Priorities' - the yearly->monthly->weekly->daily cascade matches SKILL.md."
+        },
+        {
+          "text": "Gives prompts/questions the user can answer",
+          "passed": true,
+          "evidence": "Every step has numbered prompts (e.g. 'Finish this sentence five times: \"I refuse to become someone who...\"', 'What one task, if I finish it today, makes today a win?') plus a one-page table."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "adv-business",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.4,
+        "passed": 2,
+        "failed": 3,
+        "total": 5,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "'You are the niche' idea",
+          "passed": true,
+          "evidence": "Opening: 'Dan Koe's core idea is that you are the niche. You don't need to pick a narrow market and fake interest in it. You build a business around what you already do...'; 'talking to the version of yourself from two or three years ago' - consistent with SKILL.md."
+        },
+        {
+          "text": "Skill stack: message, medium, results-oriented skills",
+          "passed": false,
+          "evidence": "The message / medium / results-oriented skills stack is never named or described. Section 2 'Content Engine' is generic content advice (hub piece, repurposing) and does not present Koe's skill stack or 'specialized generalism'."
+        },
+        {
+          "text": "Project to product progression",
+          "passed": false,
+          "evidence": "No 'project to product' idea (taking personal projects public). Instead it presents an invented 'Learn / Do / Teach' three-layer model as 'His model', not in SKILL.md, plus a generic pricing product ladder."
+        },
+        {
+          "text": "Fill, empty, use content/learning loop",
+          "passed": false,
+          "evidence": "Fill / empty / use is absent. The only routine mentioned, 'Koe's routine is about two hours of focused creation each morning', is not in SKILL.md."
+        },
+        {
+          "text": "Concrete plan for the furniture interest",
+          "passed": true,
+          "evidence": "Concrete furniture plan: content ideas ('$15 Facebook Marketplace dresser -> $400 sale'), product table ('The Thrift Flip Playbook' $20-$50), and a Days 1-30 / 31-60 / 61-90 plan."
+        }
+      ],
+      "notes": []
+    }
+  ],
+  "run_summary": {
+    "with_skill": {
+      "pass_rate": {
+        "mean": 1.0,
+        "stddev": 0.0,
+        "min": 1.0,
+        "max": 1.0
+      },
+      "time_seconds": null,
+      "tokens": null
+    },
+    "without_skill": {
+      "pass_rate": {
+        "mean": 0.6,
+        "stddev": 0.2828,
+        "min": 0.4,
+        "max": 0.8
+      },
+      "time_seconds": null,
+      "tokens": null
+    },
+    "delta": {
+      "pass_rate": "+0.40",
+      "time_seconds": null,
+      "tokens": null
+    }
+  },
+  "notes": [
+    "Time recorded for 0 of 2 with_skill runs, 0 of 2 without_skill runs, so there is no time delta.",
+    "Token count recorded for 0 of 2 with_skill runs, 0 of 2 without_skill runs, so there is no token count delta."
+  ]
+}

@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eval Review</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&family=Lora:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js" integrity="sha384-EnyY0/GSHQGSxSgMwaIPzSESbqoOLSexfnSMN2AP+39Ckmn92stwABZynq1JyzdT" crossorigin="anonymous"></script>
+  <style>
+    :root {
+      --bg: #faf9f5;
+      --surface: #ffffff;
+      --border: #e8e6dc;
+      --text: #141413;
+      --text-muted: #b0aea5;
+      --accent: #d97757;
+      --accent-hover: #c4613f;
+      --green: #788c5d;
+      --green-bg: #eef2e8;
+      --red: #c44;
+      --red-bg: #fceaea;
+      --header-bg: #141413;
+      --header-text: #faf9f5;
+      --radius: 6px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Lora', Georgia, serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ---- Header ---- */
+    .header {
+      background: var(--header-bg);
+      color: var(--header-text);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .header h1 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+    .header .instructions {
+      font-size: 0.8rem;
+      opacity: 0.7;
+      margin-top: 0.25rem;
+    }
+    .header .progress {
+      font-size: 0.875rem;
+      opacity: 0.8;
+      text-align: right;
+    }
+
+    /* ---- Main content ---- */
+    .main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.5rem 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    /* ---- Sections ---- */
+    .section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      flex-shrink: 0;
+    }
+    .section-header {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.75rem 1rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+    }
+    .section-body {
+      padding: 1rem;
+    }
+
+    /* ---- Config badge ---- */
+    .config-badge {
+      display: inline-block;
+      padding: 0.2rem 0.625rem;
+      border-radius: 9999px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      margin-left: 0.75rem;
+      vertical-align: middle;
+    }
+    .config-badge.config-primary {
+      background: rgba(33, 150, 243, 0.12);
+      color: #1976d2;
+    }
+    .config-badge.config-baseline {
+      background: rgba(255, 193, 7, 0.15);
+      color: #f57f17;
+    }
+
+    /* ---- Prompt ---- */
+    .prompt-text {
+      white-space: pre-wrap;
+      font-size: 0.9375rem;
+      line-height: 1.6;
+    }
+
+    /* ---- Outputs ---- */
+    .output-file {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .output-file + .output-file {
+      margin-top: 1rem;
+    }
+    .output-file-header {
+      padding: 0.5rem 0.75rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .output-file-header .dl-btn {
+      font-size: 0.7rem;
+      color: var(--accent);
+      text-decoration: none;
+      cursor: pointer;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-weight: 500;
+      opacity: 0.8;
+    }
+    .output-file-header .dl-btn:hover {
+      opacity: 1;
+      text-decoration: underline;
+    }
+    .output-file-content {
+      padding: 0.75rem;
+      overflow-x: auto;
+    }
+    .output-file-content pre {
+      font-size: 0.8125rem;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+    }
+    .output-file-content img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 4px;
+    }
+    .output-file-content iframe {
+      width: 100%;
+      height: 600px;
+      border: none;
+    }
+    .output-file-content table {
+      border-collapse: collapse;
+      font-size: 0.8125rem;
+      width: 100%;
+    }
+    .output-file-content table td,
+    .output-file-content table th {
+      border: 1px solid var(--border);
+      padding: 0.375rem 0.5rem;
+      text-align: left;
+    }
+    .output-file-content table th {
+      background: var(--bg);
+      font-weight: 600;
+    }
+    .output-file-content .download-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 0.875rem;
+      cursor: pointer;
+    }
+    .output-file-content .download-link:hover {
+      background: var(--border);
+    }
+    .empty-state {
+      color: var(--text-muted);
+      font-style: italic;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    /* ---- Feedback ---- */
+    .prev-feedback {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.625rem 0.75rem;
+      margin-top: 0.75rem;
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+    .prev-feedback-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.25rem;
+      color: var(--text-muted);
+    }
+    .feedback-textarea {
+      width: 100%;
+      min-height: 100px;
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 0.9375rem;
+      line-height: 1.5;
+      resize: vertical;
+      color: var(--text);
+    }
+    .feedback-textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    .feedback-status {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.5rem;
+      min-height: 1.1em;
+    }
+
+    /* ---- Grades (collapsible) ---- */
+    .grades-toggle {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+    }
+    .grades-toggle:hover {
+      color: var(--accent);
+    }
+    .grades-toggle .arrow {
+      margin-right: 0.5rem;
+      transition: transform 0.15s;
+      font-size: 0.75rem;
+    }
+    .grades-toggle .arrow.open {
+      transform: rotate(90deg);
+    }
+    .grades-content {
+      display: none;
+      margin-top: 0.75rem;
+    }
+    .grades-content.open {
+      display: block;
+    }
+    .grades-summary {
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .grade-badge {
+      display: inline-block;
+      padding: 0.125rem 0.5rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .grade-pass { background: var(--green-bg); color: var(--green); }
+    .grade-fail { background: var(--red-bg); color: var(--red); }
+    .assertion-list {
+      list-style: none;
+    }
+    .assertion-item {
+      padding: 0.625rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.8125rem;
+    }
+    .assertion-item:last-child { border-bottom: none; }
+    .assertion-status {
+      font-weight: 600;
+      margin-right: 0.5rem;
+    }
+    .assertion-status.pass { color: var(--green); }
+    .assertion-status.fail { color: var(--red); }
+    .assertion-evidence {
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      margin-top: 0.25rem;
+      padding-left: 1.5rem;
+    }
+
+    /* ---- View tabs ---- */
+    .view-tabs {
+      display: flex;
+      gap: 0;
+      padding: 0 2rem;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .view-tab {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.625rem 1.25rem;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      background: none;
+      color: var(--text-muted);
+      border-bottom: 2px solid transparent;
+      transition: all 0.15s;
+    }
+    .view-tab:hover { color: var(--text); }
+    .view-tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+    .view-panel { display: none; }
+    .view-panel.active { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
+
+    /* ---- Benchmark view ---- */
+    .benchmark-view {
+      padding: 1.5rem 2rem;
+      overflow-y: auto;
+      flex: 1;
+    }
+    .benchmark-table {
+      border-collapse: collapse;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 0.8125rem;
+      width: 100%;
+      margin-bottom: 1.5rem;
+    }
+    .benchmark-table th, .benchmark-table td {
+      padding: 0.625rem 0.75rem;
+      text-align: left;
+      border: 1px solid var(--border);
+    }
+    .benchmark-table th {
+      font-family: 'Poppins', sans-serif;
+      background: var(--header-bg);
+      color: var(--header-text);
+      font-weight: 500;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .benchmark-table tr:hover { background: var(--bg); }
+    .benchmark-table tr.benchmark-row-with { background: rgba(33, 150, 243, 0.06); }
+    .benchmark-table tr.benchmark-row-without { background: rgba(255, 193, 7, 0.06); }
+    .benchmark-table tr.benchmark-row-with:hover { background: rgba(33, 150, 243, 0.12); }
+    .benchmark-table tr.benchmark-row-without:hover { background: rgba(255, 193, 7, 0.12); }
+    .benchmark-table tr.benchmark-row-avg { font-weight: 600; border-top: 2px solid var(--border); }
+    .benchmark-table tr.benchmark-row-avg.benchmark-row-with { background: rgba(33, 150, 243, 0.12); }
+    .benchmark-table tr.benchmark-row-avg.benchmark-row-without { background: rgba(255, 193, 7, 0.12); }
+    .benchmark-delta-positive { color: var(--green); font-weight: 600; }
+    .benchmark-delta-negative { color: var(--red); font-weight: 600; }
+    .benchmark-notes {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem;
+    }
+    .benchmark-notes h3 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+    }
+    .benchmark-notes ul {
+      list-style: disc;
+      padding-left: 1.25rem;
+    }
+    .benchmark-notes li {
+      font-size: 0.8125rem;
+      line-height: 1.6;
+      margin-bottom: 0.375rem;
+    }
+    .benchmark-empty {
+      color: var(--text-muted);
+      font-style: italic;
+      text-align: center;
+      padding: 3rem;
+    }
+
+    /* ---- Navigation ---- */
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+      flex-shrink: 0;
+    }
+    .nav-btn {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.5rem 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text);
+      transition: all 0.15s;
+    }
+    .nav-btn:hover:not(:disabled) {
+      background: var(--bg);
+      border-color: var(--text-muted);
+    }
+    .nav-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    .done-btn {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.5rem 1.5rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: all 0.15s;
+    }
+    .done-btn:hover {
+      background: var(--bg);
+      border-color: var(--text-muted);
+    }
+    .done-btn.ready {
+      border: none;
+      background: var(--accent);
+      color: white;
+      font-weight: 600;
+    }
+    .done-btn.ready:hover {
+      background: var(--accent-hover);
+    }
+    /* ---- Done overlay ---- */
+    .done-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 100;
+      justify-content: center;
+      align-items: center;
+    }
+    .done-overlay.visible {
+      display: flex;
+    }
+    .done-card {
+      background: var(--surface);
+      border-radius: 12px;
+      padding: 2rem 3rem;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      max-width: 500px;
+    }
+    .done-card h2 {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .done-card p {
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
+    }
+    .done-card .btn-row {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+    }
+    .done-card button {
+      padding: 0.5rem 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 0.875rem;
+    }
+    .done-card button:hover {
+      background: var(--bg);
+    }
+    /* ---- Toast ---- */
+    .toast {
+      position: fixed;
+      bottom: 5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--header-bg);
+      color: var(--header-text);
+      padding: 0.625rem 1.25rem;
+      border-radius: var(--radius);
+      font-size: 0.875rem;
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+      z-index: 200;
+    }
+    .toast.visible {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <div id="app" style="height:100vh; display:flex; flex-direction:column;">
+    <div class="header">
+      <div>
+        <h1>Eval Review: <span id="skill-name"></span></h1>
+        <div class="instructions">Review each output and leave feedback below. Navigate with arrow keys or buttons. When done, copy feedback and paste into Claude Code.</div>
+      </div>
+      <div class="progress" id="progress"></div>
+    </div>
+
+    <!-- View tabs (only shown when benchmark data exists) -->
+    <div class="view-tabs" id="view-tabs" style="display:none;">
+      <button class="view-tab active" onclick="switchView('outputs')">Outputs</button>
+      <button class="view-tab" onclick="switchView('benchmark')">Benchmark</button>
+    </div>
+
+    <!-- Outputs panel (qualitative review) -->
+    <div class="view-panel active" id="panel-outputs">
+    <div class="main">
+      <!-- Prompt -->
+      <div class="section">
+        <div class="section-header">Prompt <span class="config-badge" id="config-badge" style="display:none;"></span></div>
+        <div class="section-body">
+          <div class="prompt-text" id="prompt-text"></div>
+        </div>
+      </div>
+
+      <!-- Outputs -->
+      <div class="section">
+        <div class="section-header">Output</div>
+        <div class="section-body" id="outputs-body">
+          <div class="empty-state">No output files found</div>
+        </div>
+      </div>
+
+      <!-- Previous Output (collapsible) -->
+      <div class="section" id="prev-outputs-section" style="display:none;">
+        <div class="section-header">
+          <div class="grades-toggle" onclick="togglePrevOutputs()">
+            <span class="arrow" id="prev-outputs-arrow">&#9654;</span>
+            Previous Output
+          </div>
+        </div>
+        <div class="grades-content" id="prev-outputs-content"></div>
+      </div>
+
+      <!-- Grades (collapsible) -->
+      <div class="section" id="grades-section" style="display:none;">
+        <div class="section-header">
+          <div class="grades-toggle" onclick="toggleGrades()">
+            <span class="arrow" id="grades-arrow">&#9654;</span>
+            Formal Grades
+          </div>
+        </div>
+        <div class="grades-content" id="grades-content"></div>
+      </div>
+
+      <!-- Feedback -->
+      <div class="section">
+        <div class="section-header">Your Feedback</div>
+        <div class="section-body">
+          <textarea
+            class="feedback-textarea"
+            id="feedback"
+            placeholder="What do you think of this output? Any issues, suggestions, or things that look great?"
+          ></textarea>
+          <div class="feedback-status" id="feedback-status"></div>
+          <div class="prev-feedback" id="prev-feedback" style="display:none;">
+            <div class="prev-feedback-label">Previous feedback</div>
+            <div id="prev-feedback-text"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav" id="outputs-nav">
+      <button class="nav-btn" id="prev-btn" onclick="navigate(-1)">&#8592; Previous</button>
+      <button class="done-btn" id="done-btn" onclick="showDoneDialog()">Submit All Reviews</button>
+      <button class="nav-btn" id="next-btn" onclick="navigate(1)">Next &#8594;</button>
+    </div>
+    </div><!-- end panel-outputs -->
+
+    <!-- Benchmark panel (quantitative stats) -->
+    <div class="view-panel" id="panel-benchmark">
+      <div class="benchmark-view" id="benchmark-content">
+        <div class="benchmark-empty">No benchmark data available. Run a benchmark to see quantitative results here.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Done overlay -->
+  <div class="done-overlay" id="done-overlay">
+    <div class="done-card">
+      <h2>Review Complete</h2>
+      <p>Your feedback has been saved. Go back to your Claude Code session and tell Claude you're done reviewing.</p>
+      <div class="btn-row">
+        <button onclick="closeDoneDialog()">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ---- Embedded data (injected by generate_review.py) ----
+    const EMBEDDED_DATA = {"skill_name": "lead-funnels", "runs": [{"id": "eval-1-adv-funnel-with_skill-run-1", "prompt": "Design a complete lead funnel for a local reseller who flips furniture on Facebook Marketplace: lead magnet, landing page, thank-you page, sales page and follow-up, plus list math.", "eval_id": 1, "outputs": [{"name": "response.md", "type": "text", "content": "# Lead Funnel for a Local Furniture Flipper (Facebook Marketplace)\n\nBuilt on the five-part lead funnel from Russell Brunson's *Lead Funnels Swipe File*: lead magnet, landing page, thank-you page, sales page, follow-up funnel. Labels: **(book)** means the idea comes from the book; **(adapted)** means I changed it to fit a local physical-goods business; **(assumption)** marks numbers I made up for illustration that you should replace with your own.\n\n---\n\n## 0. First, where the book's model does not fit as-is\n\nThe book is written mostly for **info products and online offers**: unlimited copies, national traffic, a $7\u2013$37 product on the thank-you page. A furniture flipper is different in four ways, and the funnel has to account for them:\n\n| Book assumption | Your reality | What changes |\n|---|---|---|\n| Unlimited inventory (an ebook sells 1,000 times) | Every piece is one of a kind, and you can only flip so many a month | The list's job is to **sell each piece faster and closer to asking price**, and to **find inventory**, not to sell the same item to 10% of the list |\n| National audience | Buyers have to live within driving distance | Your list will be smaller. Quality (local, active buyers) beats size |\n| You own the traffic page | Marketplace is Facebook's platform. Buyers there are *Facebook's* contacts, not yours | The whole point of the funnel is to move buyers from Marketplace onto **your own list**: \"the money is in the list\" **(book)** |\n| The \"$1 per name per month\" rule of thumb | That figure is Brunson's estimate for online info lists **(book)** | Work out your own value per name from your profit per flip (section 6) |\n\nYou actually have **two lists to build**:\n1. **Buyers** (demand): people who want good used furniture before it hits Marketplace.\n2. **Sellers** (supply): people moving, downsizing or clearing an estate who want furniture gone fast. For most flippers, steady supply is the harder problem.\n\nThe funnel below covers both. Start with the buyer funnel; add the seller funnel once the first one works. \"Done is better than perfect\" **(book)**.\n\n---\n\n## 1. Lead magnet\n\n**Rules from the book:** keep it simple, attach a curiosity hook, focus on **pain**, and make several so you can test which hits **(book)**.\n\n### Buyer-side pains\n- Getting beaten to a good deal on Marketplace because someone messaged first.\n- Buying something that turns out to be particleboard, wobbly, smelly, or carrying bed bugs.\n- Not knowing whether a price is fair.\n- Driving 40 minutes to a no-show or a scam.\n- Buying a piece that does not fit through the door.\n\n### Primary magnet: the \"First Dibs\" drop list (adapted)\nA free VIP list that gets **new pieces 24 hours before they are posted on Marketplace**, with photos, measurements and price. This is a **newsletter-style magnet**, modeled on Groupon's local-deals opt-in (#18) and on the newsletter magnets in the swipe file (#9, #25) **(book)**. For a local reseller it's the strongest offer because it solves the biggest pain: missing out on good pieces.\n\n### Secondary magnet: a pain-point guide\nUse the book's formula, \"The (#) Biggest Mistakes (audience) Make (when doing X)\" **(book)**:\n\n> **\"The 7 Biggest Mistakes People Make Buying Used Furniture on Facebook Marketplace (and how to spot a solid-wood bargain in 30 seconds)\"**\n\nA one- or two-page PDF, in the spirit of Brendon Burchard's \"1-Page Productivity Planner\" **(book)**. Possible contents: the drawer-joint test (dovetail vs. staples), the solid-wood vs. veneer vs. particleboard check, bed-bug and smoke checks, measure-the-doorway first, fair-price ranges for common pieces in your area, and safe pickup and payment habits.\n\nWhich of the nine fast formats this uses **(book)**: a short text guide, plus an \"iPhone how-to\" video (#8 in the book's list) of you doing the 30-second wood check. Your before/after flips are also a natural \"example book\" (#2): \"12 Flips That Sold in Under 24 Hours.\"\n\n### Hooks to test (3\u20135, one \"Mistakes\" hook required)\n1. \"The 7 Biggest Mistakes People Make Buying Used Furniture on Marketplace\"\n2. \"See Our Best Pieces 24 Hours Before Anyone Else in [Town]\"\n3. \"Why the Good Dressers Are Gone Before You Even See Them\"\n4. \"The 30-Second Test That Tells You if It's Real Wood\"\n5. \"Get First Dibs: Restored Solid-Wood Furniture, Delivered in [Town]\"\n\nThe same magnet can carry different titles **(book)**. Test 2 and 3 against each other first.\n\n### Seller-side magnet\n> **\"Moving? Get a Same-Week Cash Offer and Free Pickup for Your Furniture\"**\n\nFormat: a quote or booking request, modeled on the local-service lead funnels in the swipe file: Roto-Rooter's \"Call Now / Schedule Service Online\" (#54) and \"Find Reliable, Low Cost Tree Service\" (#74), both of which ask for name, email, phone and a few questions **(book)**.\n\n---\n\n## 2. Landing page\n\n**Three elements only** **(book)**: an intriguing headline, an image of the lead magnet, an opt-in form. Spend 5\u201310 minutes building it, then test and adjust **(book)**.\n\n### Buyer landing page (draft)\n\n> **Headline:** See Our Best Furniture 24 Hours Before It Hits Marketplace\n> **Subhead:** Free \"First Dibs\" list for [Town / 25-mile radius]. Plus: *The 7 Biggest Mistakes People Make Buying Used Furniture on Marketplace* (free PDF).\n> **Image:** a before/after of a recent flip next to a mockup of the PDF cover.\n> **Form:**\n> - First name\n> - Email\n> - \"What are you hunting for?\" (checkboxes: dressers, tables, chairs/sofas, mid-century, outdoor, kids)\n> - *Optional:* mobile number, with an unticked box: \"Text me new drops. Message and data rates may apply. Reply STOP to opt out.\"\n> **Button:** \"Give Me First Dibs\"\n> **One line of proof:** \"47 pieces sold to list members before they were ever posted.\" (Use your real number. Leave it off until you have one.)\n\nKeep fields minimal. The interest question is worth its cost because it lets you send dresser people only dressers. The book shows several funnels asking \"name + email + questions\" (#4, #35, #63) **(book)**.\n\n**Conversion benchmark:** the book says a good page converts about 20\u201330% (the Marketing Secrets Blackbook page hit 55.63%) **(book)**. Warm traffic from your own buyers should beat cold ad traffic; measure it.\n\n### Seller landing page (draft)\n> **Headline:** Moving or Downsizing? Get a Cash Offer for Your Furniture This Week\n> **Image:** your truck/van, or you carrying a dresser out of a house.\n> **Form:** name, email, phone, zip code, \"What do you want gone?\" plus a photo upload.\n> **Button:** \"Get My Offer\"\n\n### Where the traffic comes from (adapted)\n- **Every Marketplace listing:** a line in the description such as \"Want first dibs on pieces like this? Search '[Your Business Name] First Dibs'\" or a link to your Facebook Page. **Check Facebook's current Commerce Policies first.** Marketplace has rules on external links and on moving buyers off-platform, and they change. A Facebook Page or Group you own is a safer bridge.\n- **At every pickup or delivery:** the highest-quality lead you will ever get is someone who just bought from you. Hand them a card with a QR code to the opt-in page, or ask: \"Want me to text you when I get another piece like this?\" Then collect consent properly (see compliance below).\n- **A sticker or tag on every piece you sell** (\"Restored by ___ \u00b7 first dibs at [QR]\"). The piece sits in a living room, and guests ask where it came from.\n- **Free list-building before ads** **(book, adapted)**: the book suggests guesting on podcasts and blogs. For you, the local equivalents are Nextdoor, local Facebook groups (where rules allow), realtors and stagers, moving companies and estate-sale organizers. The last three are also seller-lead sources.\n- **Paid:** small local Facebook/Instagram ads to the \"Mistakes\" guide, radius-targeted. Only after the organic version converts.\n\n---\n\n## 3. Thank-you page\n\n**Two jobs only** **(book)**: deliver what you promised (a download button right on the page), then push one next step. **No bait-and-switch** **(book)**.\n\n### Buyer thank-you page (draft)\n\n> **You're on the First Dibs list.**\n> Your guide: **[Download \"The 7 Biggest Mistakes\u2026\" PDF]**\n> You'll get our next drop by email [and text] before it goes on Marketplace.\n>\n> **One next step:** Here's what's available *right now*, before Marketplace sees it \u2192 **[See This Week's Pieces]**\n\nThe next step goes to your **live inventory page** (the \"sales page\" below). It's the physical-goods version of the book's thank-you-page offer: the reader is at peak interest, so show them what they can buy today.\n\nIf you have no inventory listed that day, use the book's beginner fallback: send them to the place where you publish, such as your Instagram or TikTok of before/after flips **(book)**.\n\n### Seller thank-you page\n> \"Got it. I'll text you within 24 hours with an offer or a few questions. Want a faster offer? Reply with photos of the back and the drawers.\" Plus a link to two or three before/after flips so they see you're real. Fisher Investments (#76) and the local service funnels (#54, #74) use a similar \"here's what happens next\" thank-you page **(book)**.\n\n---\n\n## 4. Sales page (adapted: there is no ebook to sell)\n\nThe book's sales page sells a **self-liquidating offer (SLO)**: a low-price product whose front-end sales pay for the ads, and which turns leads into *customers* **(book)**. The book also says you can skip this part until you have a product **(book)**.\n\nFor a reseller, the honest adaptation is:\n\n### A. The \"First Dibs\" inventory page (core)\n- One page (a simple site, a Shopify page, or even a public photo album) listing current pieces: photos, dimensions, condition notes, price, pickup/delivery area.\n- **\"Reserve with a deposit\"** button (for example, a refundable $25 deposit holds it 48 hours). This beats \"is this still available?\" messages and no-shows.\n- Each piece shows \"List members see this 24 hours early\" so buyers who come from Marketplace learn the list exists.\n\n### B. Optional true SLO-style add-ons (low price, high volume)\nThese are the closest thing you have to the book's $7\u2013$15 thank-you-page products (for example \"44 Sensational Salads\" leading to a $15 cleanse, #27) **(book)**:\n- **Delivery + placement** for $39\u2013$79 (assumption: set your own price). It's high margin if you already own a truck.\n- **A furniture care kit** (wax, felt pads, touch-up marker, microfiber cloth) for $15\u2013$20. Unlike your furniture, you can sell this item many times.\n- **Custom refinish or paint on request** (\"Pick the color before I finish it\"). This is a pre-sale, which means no inventory risk.\n- Affiliate products such as cleaners or furniture-safe paint are possible too **(book: affiliate offers are allowed)**. Disclose affiliate links.\n\n### C. Seller side\nThe \"sales page\" is your **offer**: a cash price and a pickup time. Close by text or phone.\n\n---\n\n## 5. Follow-up funnel\n\nThe book uses automated email, SMS and Messenger plus broadcasts, and scores contacts by **RFMS: recency, frequency, monetary, social** **(book)**.\n\n### Buyer sequence (automated)\n| When | Channel | Message |\n|---|---|---|\n| Day 0 | Email | Deliver the guide again plus \"Here's what's available now\" |\n| Day 1 | Email | **Story:** one flip, start to finish. \"Found this $20 dresser on a curb. Here's what I did, and the mistake I almost made.\" Document the journey **(book)** |\n| Day 3 | Email | **Mistake #1 in depth** + one current piece that passes the test |\n| Day 5 | Email | **Offer:** \"This week's drop\" + delivery add-on |\n| Day 7 | Email | \"Reply and tell me what you're hunting for. I'll keep an eye out.\" This feeds the custom-request list, and replies help deliverability |\n| Ongoing | Email + SMS (opted-in only) | **Weekly \"Thursday Drop\"** broadcast: 3\u20138 pieces, 24 hours before Marketplace. SMS only for pieces matching what they asked for |\n\n### Seller sequence\n- Instant auto-text: \"Got your request. Offer within 24 hours.\"\n- If they don't book: day 2 \"still need it gone?\" and day 7 \"moving date coming up?\" Then quarterly: \"Know anyone moving? I pay $X for referrals.\" **(adapted)**\n\n### RFMS scoring (adapted for furniture)\n| Factor | Score up when\u2026 |\n|---|---|\n| **Recency** | they opened or clicked a drop recently, or bought recently |\n| **Frequency** | they've bought more than once, or click most drops |\n| **Monetary** | total spent, and whether they buy big pieces (sofa or dining set vs. a side table) |\n| **Social** | they referred a buyer or seller, left a review, shared a post, or tagged you |\n\nUse the scores to give your top 20\u201350 buyers an **\"inner circle\" text** an hour before the email drop. Re-engage contacts with low recency scores, or prune them.\n\n### Daily publishing (book)\nPick one medium you can stand and post daily **(book)**. For a flipper, short-form video is the obvious choice: before/after, the \"find,\" the repair, the reveal. Every video ends with \"Get first dibs: link in bio.\" You only need to be one or two steps ahead of your audience **(book)**. Showing your process is the content.\n\n---\n\n## 6. List math (rebuilt for a local reseller)\n\nThe book's rule of thumb is about **$1 per name per month** if you do the relationship poorly, and $2\u2013$50 with a strong relationship **(book)**. Those figures come from online info marketing. **Don't assume them for a local furniture list.** Calculate your own from your numbers.\n\n### Formula\n```\nValue per name per month = (list sales per month \u00d7 average profit per sale) \u00f7 list size\n```\n\n### Worked example (all numbers are assumptions; replace them)\n- List: **500** local buyers\n- Average **profit** per flip (sale price minus purchase, materials and gas): **$110**\n- List members buying per month: **2%** = 10 pieces\n- Add-ons: 4 deliveries \u00d7 $40 profit = $160\n\nMonthly list profit = 10 \u00d7 $110 + $160 = **$1,260**, so **\u2248 $2.52 per name per month**.\n\n| Scenario | % of list buying/month | Pieces | Profit/month | $/name/month |\n|---|---|---|---|---|\n| Weak | 0.5% | 2.5 | $275 | $0.55 |\n| Base | 2% | 10 | $1,260 | $2.52 |\n| Strong | 4% | 20 | $2,360 | $4.72 |\n\n### The capacity ceiling (the part info marketers skip)\nIf you can only source and restore **15 pieces a month**, you can't sell 20 pieces to the list. Past the point where the list buys everything you make, list growth doesn't add revenue in a straight line. It pays you in other ways:\n- **Faster sales:** pieces sell in hours, not weeks, so less storage and more turns.\n- **Higher prices:** list buyers get first look and don't haggle the way cold Marketplace buyers do. You can test pricing 10\u201315% higher, or \"first dibs at full price, then Marketplace.\"\n- **Less time** spent answering \"is this available?\" messages.\n- At that point the **bottleneck is supply**, which is why the seller list matters.\n\n### Seller-list math\n```\nValue of a seller lead = (% of seller leads you buy from) \u00d7 (pieces per buy) \u00d7 (profit per piece)\n```\nExample (assumption): 1 in 8 seller leads turns into a buy, averaging 2 usable pieces at $110 profit, so each seller lead is worth **\u2248 $27**. That's why paying for seller leads can make sense even when paying for buyer leads doesn't.\n\n### Ad math and break-even\nThe book says leads typically cost **$1\u2013$3** in Brunson's market, and computes break-even by value per name: at $1/name/month and a $3 lead, you break even in month 3 **(book)**.\n\nYour version (assumptions):\n- Buyer lead from a local ad: **$2**. At $2.52/name/month, break-even comes in **month 1**. At the weak $0.55, it's **month 4**.\n- **Front-end recovery (SLO thinking):** if 3% of new leads buy a $40-profit delivery or care kit on the thank-you page, that's $1.20 back per lead right away. That covers 60% of a $2 lead before any furniture sells.\n- **Rule:** don't scale paid ads until you know your real profit per flip and your real list conversion rate from 4\u20138 weeks of organic list growth. Track by source (pickup card, Marketplace listing, ad), because buyers who already bought from you will be worth far more than ad leads.\n\n---\n\n## 7. Swipe-file funnels to model\n\nFrom the 114 examples in the book **(book)**:\n1. **#18 Groupon, \"Save up to 70% on 1000s of Awesome Local Deals.\"** A local-deals newsletter opt-in. This is the model for the \"First Dibs\" drop list.\n2. **#54 Roto-Rooter, \"Call Now for Immediate Service / Schedule Service Online\"** and **#74 \"Find Reliable, Low Cost Tree Service.\"** Local service request funnels asking for name, email, phone and questions. These are the model for the seller \"cash offer + pickup\" funnel.\n3. **#27 Beyond Diet, \"44 Sensational Salads\" \u2192 $15 product.** A simple free magnet leading to a cheap paid offer on the thank-you page. This is the model for the care-kit or delivery add-on.\n4. Also useful: **#67 \"Download the First 2 Chapters, Free!\"** (give away part, sell the whole: a free \"Mistakes\" guide, a paid \"flip-ready\" restored piece), and **#41 \"Personalized Numerology Report\"** (personalization: \"tell me what you're hunting for and I'll match pieces\").\n\n---\n\n## 8. Compliance and platform cautions\n\n- **Email:** follow CAN-SPAM (physical address, working unsubscribe, honest subject lines). Follow GDPR/CASL if any contacts are outside the US.\n- **SMS:** marketing texts in the US require **prior express written consent** under the TCPA. Use the unticked checkbox, keep proof of consent, honor STOP, and check your state's rules (some states are stricter). Don't add buyers to your text list just because they messaged you about a dresser.\n- **Facebook Marketplace:** read Meta's current Commerce Policies and Marketplace rules before putting links in listings or steering buyers off-platform. Running a Facebook Page or Group is the low-risk bridge.\n- **Business basics:** check whether your city or state requires a resale or sales-tax permit for regular reselling.\n- **Affiliate links:** disclose them **(std)**.\n- **Revenue figures** in the book, and the numbers above, are illustrations, not guarantees **(book)**.\n\n---\n\n## One-page summary\n\n| Part | Buyer funnel | Seller funnel |\n|---|---|---|\n| **Lead magnet** | \"First Dibs\" drop list (24h early access) + \"7 Biggest Mistakes Buying Used Furniture on Marketplace\" PDF | \"Cash offer + free pickup this week\" |\n| **Landing page** | Headline + before/after image + name, email, interests (optional SMS) | Headline + photo + name, email, phone, zip, photos |\n| **Thank-you page** | Download button + \"See this week's pieces\" | \"Offer within 24h\" + proof flips |\n| **Sales page** | Inventory page with deposit-to-reserve; add-ons: delivery, care kit, custom finish | Your cash offer |\n| **Follow-up** | Day 0/1/3/5/7 sequence + weekly Thursday Drop + RFMS-scored inner circle | Auto-text + 2-touch nudge + quarterly referral ask |\n| **Math** | Value/name = list profit \u00f7 list size (\u2248$0.55\u2013$4.72 in the example); capped by how many pieces you can flip | Seller lead \u2248 $27 in the example; usually the better place to spend ad money |\n"}], "grading": {"expectations": [{"text": "Covers all five parts: lead magnet, landing page, thank-you page, sales page, follow-up", "passed": true, "evidence": "Sections '## 1. Lead magnet', '## 2. Landing page', '## 3. Thank-you page', '## 4. Sales page', '## 5. Follow-up funnel', plus a one-page summary table of all five. Matches SKILL.md's five parts."}, {"text": "Lead magnet uses a curiosity/pain hook (e.g. 'The # Biggest Mistakes...')", "passed": true, "evidence": "Uses the book's formula verbatim ('The (#) Biggest Mistakes (audience) Make (when doing X)') to produce 'The 7 Biggest Mistakes People Make Buying Used Furniture on Facebook Marketplace', lists 5 hooks with a required Mistakes hook, and cites the pain focus; matches SKILL.md."}, {"text": "Includes a thank-you-page offer or self-liquidating offer", "passed": true, "evidence": "Thank-you page delivers the PDF then one next step '[See This Week's Pieces]'; section 4 explains the SLO ('front-end sales pay for the ads') and proposes $39-$79 delivery / $15-$20 care-kit add-ons, citing #27 '44 Sensational Salads' -> $15 (matches examples.md)."}, {"text": "Includes list math (e.g. $1 per name per month) with an estimate", "passed": true, "evidence": "Section 6 cites '$1 per name per month ... $2-$50 with a strong relationship (book)' and '$1-$3' leads / month-3 break-even (all match SKILL.md), then estimates 500 names x 2% x $110 = $1,260 \u2248 $2.52/name/month with weak/base/strong scenarios."}, {"text": "Includes a follow-up sequence or daily publishing plan", "passed": true, "evidence": "Day 0/1/3/5/7 buyer email table plus weekly 'Thursday Drop', seller sequence, RFMS scoring (recency, frequency, monetary, social \u2014 correct per SKILL.md) and a 'Daily publishing (book)' section ('one or two steps ahead')."}], "summary": {"passed": 5, "failed": 0, "total": 5, "pass_rate": 1.0}}}, {"id": "eval-1-adv-funnel-without_skill-run-1", "prompt": "Design a complete lead funnel for a local reseller who flips furniture on Facebook Marketplace: lead magnet, landing page, thank-you page, sales page and follow-up, plus list math.", "eval_id": 1, "outputs": [{"name": "response.md", "type": "text", "content": "# Lead Funnel: Local Furniture Flipper (Facebook Marketplace)\n\n## 0. Strategy in one paragraph\n\nA Marketplace flipper's problem is that every listing is a one-off: a buyer messages, buys a dresser (or doesn't), and is gone. The funnel turns those one-off conversations, plus cheap local ad traffic, into an **owned list** (SMS + email) of local people who furnish homes. Then every new piece goes to that list first, before it hits Marketplace. That gives faster sales, fewer lowballers, repeat buyers and referrals. Secondary audience: **sellers** (people moving, estates, landlords) who will offer you inventory cheaply. The funnel below is for buyers. A short seller variant comes at the end.\n\n**Avatar:** a local 25\u201345-year-old renter or first-time homeowner, or a young family. They want solid-wood or mid-century or \"looks expensive\" furniture without paying retail. They're nervous about quality, smell, bugs and pickup logistics.\n\n---\n\n## 1. Lead Magnet\n\n**Name:** *\"The VIP Drop List: First Look at Restored Pieces Before They Hit Marketplace\"*, bundled with a free PDF: *\"The 7-Point Used Furniture Checklist: How to Spot Solid Wood, Bedbugs, and Overpriced Junk in 60 Seconds.\"*\n\nWhy this works:\n- **Specific and local.** Only people near you want it, so the list is pre-qualified.\n- **Fixes a real fear.** Buying used is scary, and the checklist builds trust that you know quality.\n- **Ongoing value.** Early access, 24\u201348 hours before the public listing, is the real hook. The PDF is the immediate gratification.\n- **Cheap to make.** One 2\u20133 page PDF plus a weekly text.\n\nAlternates to test:\n- \"Free room-styling consult: send a photo of your space, get 3 piece suggestions under $300.\"\n- A monthly $50 store-credit giveaway for list members (only use this as a list-builder, because it attracts freebie-seekers).\n\nEntry points (traffic sources):\n1. Every Marketplace listing description: \"Want first dibs on pieces like this? Text DROP to (555) 123-4567 or join at [link].\"\n2. Every buyer conversation, at pickup: \"I post new pieces to my VIP list first. Want on it?\" (collect the phone number on the spot).\n3. A QR code sticker on the underside or back of every sold piece, plus a business card in drawers.\n4. Local FB/IG ads ($5\u201310/day, 10\u201315 mile radius) showing before/after flips.\n5. Local FB groups, Nextdoor and buy-nothing groups (value posts, not spam).\n\n---\n\n## 2. Landing (Opt-in) Page\n\nMobile-first, one page, one action.\n\n**Headline:**\n> Get First Dibs on Restored Solid-Wood Furniture in [City], Before It Hits Marketplace\n\n**Subhead:**\n> Join 400+ locals on the VIP Drop List. New pieces every week, 24 hours early, at VIP prices. Plus a free 7-Point Used Furniture Checklist.\n\n**Hero visual:** a before/after slider of one dramatic flip (a $40 curb dresser that became a $325 showpiece).\n\n**Bullets:**\n- See every new piece **24 hours before the public**, so the best ones never reach Marketplace\n- **VIP-only pricing** (usually 10% below the listed price)\n- Free checklist: spot solid wood vs. particleboard, bedbug signs, and fair prices\n- Local delivery available, so no begging a friend with a truck\n\n**Form:** First name, mobile number (required, with an SMS consent checkbox), email (optional). Button: **\"Send Me the VIP List \u2192\"**\n\n**Trust:**\n- 3 short reviews with first name and neighborhood (\"Bought a mid-century credenza, Sarah, [Neighborhood]\")\n- \"Every piece is cleaned, inspected and smoke-free\"\n- A photo of you or your workspace (local, human, real)\n- \"Unsubscribe anytime. Max 2 texts a week.\"\n\nTools: Carrd, Leadpages, Systeme.io or a ConvertKit landing page. SMS via SimpleTexting, Textedly or EZ Texting. The form connects to both email and SMS.\n\n---\n\n## 3. Thank-You Page\n\nIts job is to confirm, deliver, set expectations and make an immediate offer.\n\n**Headline:** \"You're in! Check your texts.\"\n\n1. **Delivery:** a \"Download the 7-Point Checklist\" button, which is also sent by text and email.\n2. **Expectations:** \"Drops go out Thursdays at 7 pm. Save my number as *[Name] Furniture* so you don't miss one.\"\n3. **Micro-commitment:** \"What are you hunting for?\" with one-tap buttons: Dresser / Dining set / Sofa / Desk / Accent chair / Bed frame / Other. This tags the lead for segmented alerts.\n4. **Immediate offer (tripwire / self-liquidator):** \"Available right now for VIPs only:\" a gallery of 3\u20136 current pieces with VIP prices and a **\"Claim It \u2014 $20 Hold Deposit\"** button (Stripe, Square or Venmo link). The deposit is credited to the purchase and refundable if the piece isn't as described.\n5. **Referral:** \"Know someone moving or furnishing? Share this link, and you both get $15 off your next piece.\"\n\n---\n\n## 4. Sales Page / Offer\n\nThere are two layers: the **per-piece sales page** for each drop, and a **core paid offer** that increases average order value.\n\n### 4a. Weekly Drop page (the recurring sales page)\nA simple gallery page (or a Shopify / Square Online \"Drop\" collection) updated every Thursday:\n- Each piece: 3\u20135 photos (styled, natural light), dimensions, material, condition notes, before photo, VIP price vs. public price, and a \"Hold it: $20 deposit\" button\n- Scarcity that's real: \"One of one. When it's gone, it's gone.\" Show \"SOLD\" badges on pieces that have sold (social proof that drops move fast)\n- Delivery upsell: \"+$35 local delivery & placement (within 10 miles)\"\n- Bundle upsell: \"Add the matching nightstand: save $40\"\n\n### 4b. Core / premium offers (move beyond one-piece-at-a-time)\n| Offer | Price | Who it's for |\n|---|---|---|\n| **Room Refresh Bundle**: 3\u20135 coordinated pieces for a bedroom or living room, delivered and placed | $600\u2013$1,500 | New movers, Airbnb hosts |\n| **Custom Flip / Sourcing Request**: \"Tell me what you want, I'll find and restore it in 2\u20133 weeks\" ($50 deposit) | $50 deposit, then piece price | People with specific needs |\n| **Refinish Your Own Piece**: customer brings an heirloom and you paint or refinish it | $150\u2013$400 | Sentimental owners |\n| **Staging Rental** for realtors and landlords | $300\u2013$800/month | B2B (higher value, recurring) |\n\n**Sales-page copy skeleton for the Room Refresh Bundle:**\n- Headline: \"Furnish Your Whole Bedroom With Restored Solid Wood for Less Than One IKEA Dresser Costs New\"\n- Problem: particleboard that wobbles in a year, retail prices, weekend-long pickups\n- Solution and proof: before/after gallery, testimonials, price comparison table (retail vs. you)\n- Offer stack: pieces, cleaning and inspection, delivery, placement, 7-day \"not as described\" guarantee\n- Guarantee: \"If anything isn't as described when it arrives, I'll take it back, no hassle.\"\n- CTA: \"Book a free 10-minute style call\" or \"Reserve with a $100 deposit\"\n\n---\n\n## 5. Follow-Up Sequence\n\nThe channels are SMS (primary, because local buyers act fast) and email (secondary, for richer content).\n\n### Welcome / indoctrination (first 7 days)\n| Day | Channel | Message |\n|---|---|---|\n| 0 (instant) | SMS + email | \"Hey {first}, it's [Name]. Here's your checklist: [link]. Drops every Thu 7 pm. Reply with what you're hunting for and I'll flag it for you.\" |\n| 1 | Email | Your story: \"How a $15 curbside dresser started this,\" with before/after photos and why you only flip solid wood |\n| 2 | SMS | \"Quick one: this walnut nightstand is VIP-only until Fri at $85 (going to Marketplace at $110). Want it? [link]\" |\n| 3 | Email | Value: \"3 ways to tell solid wood in 10 seconds\" plus a testimonial |\n| 5 | Email | Social proof: \"What Sarah's living room looks like now,\" a customer photo and the Room Refresh Bundle |\n| 7 | SMS | \"Drop tonight at 7! 6 new pieces incl. a mid-century credenza. First look: [link]\" |\n\n### Ongoing broadcast (weekly rhythm)\n- **Wednesday:** teaser SMS: \"Tomorrow's drop has a [farmhouse table]. Set a reminder \ud83d\udc40\" (keep emojis minimal and on-brand)\n- **Thursday 7 pm:** drop SMS and email, the main sales event\n- **Saturday:** \"Last chance before these go public on Marketplace Sunday\" SMS\n- **Monthly:** behind-the-scenes email (a time-lapse of a restoration) plus a referral reminder\n\n### Segmented / behavioral triggers\n- **Tagged \"dresser\" and a dresser comes in:** personal SMS 2 hours before the drop: \"You said you wanted a dresser. This one's yours if you want it.\"\n- **Clicked but didn't buy:** next day, \"Still thinking about the oak desk? Happy to send more photos or measurements.\"\n- **Bought:** day 1 thank-you plus care tips; day 7, \"How's it looking? Send a pic for a $10 credit\" (UGC and reviews); day 30, referral ask plus the bundle offer\n- **No clicks in 60 days:** re-engagement: \"Still want drops? Reply YES to stay on.\" Remove anyone who doesn't reply (protects SMS costs and deliverability)\n\n### Seller-side mini funnel (inventory sourcing)\nLead magnet: \"Moving? Get a cash offer on your furniture in 24 hours. Text photos to [number].\" Follow-up: instant auto-reply, then a quote within 24 hours, then pickup scheduling. List them separately. Realtors, property managers and movers are referral partners.\n\n---\n\n## 6. List Math\n\nAssumptions (conservative, local; adjust these with your real numbers):\n\n| Metric | Assumption |\n|---|---|\n| Landing page visitors/month (ads + listings + QR + groups) | 1,000 |\n| Opt-in rate (local, specific offer, mobile) | 30% |\n| **New subscribers/month** | **300** |\n| Ad spend | $250/mo ($8/day) |\n| Cost per lead (blended, organic leads are free) | ~$0.83 |\n| Monthly list churn/unsubscribes | 5% |\n| % of list buying in a given month | 4% |\n| Average order value (piece + delivery/upsell) | $180 |\n| Average gross margin per order (sale \u2212 acquisition cost \u2212 materials) | ~55% \u2192 ~$100 |\n\n**Month-by-month list growth** (add 300, lose 5%):\n\n| Month | List size (end) | Buyers (4%) | Revenue (@$180) | Gross profit (@$100) |\n|---|---|---|---|---|\n| 1 | 300 | 12 | $2,160 | $1,200 |\n| 3 | ~856 | 34 | $6,120 | $3,400 |\n| 6 | ~1,600 | 64 | $11,520 | $6,400 |\n| 12 | ~2,770 | 111 | $19,980 | $11,100 |\n\n(Formula: List(n) = List(n\u22121) \u00d7 0.95 + 300; it levels off around 300 / 0.05 = 6,000.)\n\n**Key unit economics:**\n- **Value per subscriber per month** = 4% \u00d7 $100 profit = **$4.00 gross profit**\n- **Cost per subscriber** \u2248 $0.83, so a subscriber pays back in about a week of list life\n- **Subscriber lifetime** at 5% churn is about 20 months, so **lifetime value is about $80 gross profit per subscriber**\n- **Maximum affordable CPL**: even at a $5 CPL you'd see 16:1 LTV:CAC on gross profit, so you can scale ads well before the math breaks\n\n**The real constraint is inventory, not leads.** At 111 buyers/month by month 12 you need about 25\u201330 pieces per week, more than one person can source and restore. Plan for it:\n- Once the list passes about 1,000, **raise prices 10\u201320%**. Demand from the list outruns supply, and pieces sell in hours.\n- Shift toward **bundles, custom sourcing and staging rentals**, which give more revenue per piece of work.\n- Put ad spend into the **seller-side funnel** to secure cheaper, steadier inventory.\n\n**Sanity check on the tripwire / self-liquidating step:** if 5% of new subscribers place a $20 hold deposit that converts to an average $150 sale, then 300 subs \u00d7 5% = 15 sales \u00d7 ~$80 profit \u2248 $1,200/month on the front end alone. That's roughly 4\u20135x the $250 ad spend, so the ads pay for themselves before the list's back-end value is counted.\n\n---\n\n## 7. KPIs to track weekly\n1. Opt-in rate (landing page), target 25%+\n2. Cost per lead, target under $2\n3. Drop-night click rate (SMS), target 15\u201325%\n4. Sell-through within 48 hours of a drop, target 60%+ (if higher, raise prices)\n5. Revenue per subscriber per month\n6. Repeat purchase rate and referrals per month\n7. Inventory days-on-hand\n\n## 8. Tech stack (cheap)\n- Landing and thank-you pages: Carrd ($19/yr) or Systeme.io (free tier)\n- Email: MailerLite or Kit (free up to 1,000 subs)\n- SMS: SimpleTexting or Textedly (~$30\u201360/mo). Get explicit consent and include STOP language (TCPA compliance)\n- Payments and deposits: Square or Stripe payment links\n- Drop gallery: Square Online, Shopify Starter or a simple Google Photos album link\n- Tracking: UTM links per source (listing, QR, ad, group) so you know which channel builds the list\n"}], "grading": {"expectations": [{"text": "Covers all five parts: lead magnet, landing page, thank-you page, sales page, follow-up", "passed": true, "evidence": "Sections '## 1. Lead Magnet', '## 2. Landing (Opt-in) Page', '## 3. Thank-You Page', '## 4. Sales Page / Offer', '## 5. Follow-Up Sequence' cover all five parts."}, {"text": "Lead magnet uses a curiosity/pain hook (e.g. 'The # Biggest Mistakes...')", "passed": true, "evidence": "Magnet 'The 7-Point Used Furniture Checklist: How to Spot Solid Wood, Bedbugs, and Overpriced Junk in 60 Seconds' is a pain-focused curiosity hook ('Fixes a real fear. Buying used is scary'); early access is called 'the real hook'. No book attribution claimed, so no misattribution; no 'Biggest Mistakes' formula, but the assertion's example is only an e.g."}, {"text": "Includes a thank-you-page offer or self-liquidating offer", "passed": true, "evidence": "Thank-you page item 4: 'Immediate offer (tripwire / self-liquidator): \"Available right now for VIPs only:\" ... \"Claim It \u2014 $20 Hold Deposit\"'; section 6 also does an SLO sanity check (15 sales x ~$80 vs $250 ad spend)."}, {"text": "Includes list math (e.g. $1 per name per month) with an estimate", "passed": true, "evidence": "Section 6 list math: 300 subs/month, 5% churn, 4% buying, $100 profit -> 'Value per subscriber per month = 4% x $100 profit = $4.00', month-by-month growth table, LTV \u2248 $80. Concrete estimate given (does not cite the book's $1/name figure, but the assertion's example is an e.g.)."}, {"text": "Includes a follow-up sequence or daily publishing plan", "passed": true, "evidence": "'Welcome / indoctrination (first 7 days)' table (Day 0,1,2,3,5,7), weekly Wed/Thu/Sat broadcast rhythm, and behavioral triggers."}], "summary": {"passed": 5, "failed": 0, "total": 5, "pass_rate": 1.0}}}, {"id": "eval-2-adv-economics-with_skill-run-1", "prompt": "My ad costs $2 per lead. I want to break even on day one. Using the Lead Funnels Swipe File, explain self-liquidating offers, break-even day and RFMS, and design the numbers.", "eval_id": 2, "outputs": [{"name": "response.md", "type": "text", "content": "# Breaking Even on Day One at $2 per Lead\n\nBased on the *Lead Funnels Swipe File* (Russell Brunson / ClickFunnels). Labels: **(book)** means the idea comes from the book; **(adapted)** or **(assumption)** marks my additions and illustrative numbers you should replace with your real data.\n\n---\n\n## 1. The three concepts\n\n### Self-liquidating offer (SLO) (book)\nAn SLO is a low-priced product offered right after the opt-in, usually on the thank-you page or a sales page. It's priced so that **front-end sales pay back the ad spend that bought the leads**. The ad campaign \"liquidates\" itself. You end up with:\n- leads that cost you nothing net (\"free leads,\" in the book's words), and\n- a **customer list**, which is worth more than a list of people who only took a freebie.\n\n**The book's example:** $100 of ads brings 100 leads ($1 per lead). If 10% buy a $10 product, that's $100 back, which is break-even **(book)**.\n\n### Break-even day (book)\nBreak-even day is the day on which **total revenue from a group of leads equals what you paid for them**. Not everyone buys at once. The book's example: if only 5% buy at first, follow-up can bring in another 5% by day 3, so you break even **on day 3** **(book)**.\n\nThe book's other version runs on lead value: at about **$1 per name per month** and a **$3** lead cost, you break even in **month 3** **(book)**. At your **$2** cost and the same $1/month, that method gives month 2. Day one requires the SLO to do all the work.\n\n### RFMS (book)\nThe book scores contacts in the follow-up funnel by **RFMS: Recency, Frequency, Monetary, Social** **(book)**. The book names the four factors. The definitions and point scheme below are my working version **(adapted)**:\n\n| Factor | Meaning | Example signal |\n|---|---|---|\n| **Recency** | How recently they engaged or bought | Opened or clicked in the last 7 days; bought in the last 30 |\n| **Frequency** | How often they engage or buy | Number of purchases; clicks in the last 10 emails |\n| **Monetary** | How much they've spent | Lifetime spend; whether they took the bump or the upsell |\n| **Social** | How they engage socially | Messenger replies, shares, comments, referrals |\n\nRFMS doesn't help you break even on day one. It's how you **turn the leads who didn't buy on day one into profit later**, and decide who gets which offer.\n\n---\n\n## 2. What day-one break-even requires\n\nAt $2 per lead, the condition is:\n\n```\nNet revenue collected in the first 24 hours \u00f7 leads acquired \u2265 $2.00\n```\n\nEquivalently: **front-end conversion rate \u00d7 net revenue per buyer \u2265 $2**.\n\nUse **net**, not gross. Subtract, per sale:\n- payment processing (I assume about 2.9% + $0.30 per transaction, a common US card rate; check your processor);\n- refunds (I assume 5%; replace with your real rate);\n- any per-unit cost (zero for digital; product, shipping and handling for physical, which matters for \"free + shipping\" books);\n- affiliate commissions, if affiliates sent the traffic.\n\nFixed costs (software, your time) are left out of the per-lead break-even. Cover them from profit after break-even.\n\n### Why a single cheap product is not enough at $2\n\nConversion needed to recover $2 per lead from **one product with no bump or upsell** (net of the assumed fees):\n\n| Price | Net per sale | Conversion needed for day-one break-even |\n|---|---|---|\n| $7 | $6.50 | **30.8%** (unrealistic) |\n| $17 | $16.21 | **12.3%** (hard) |\n| $27 | $25.92 | **7.7%** |\n| $47 | $45.34 | **4.4%** |\n\nThe book's example (10% buying at $10) works at **$1** per lead. At **$2** you need to double the money per lead: 10% at about $20 net, or 5% at about $40 net. The usual fix is to keep the front-end price low enough to convert and **raise the average cart value** with an order bump and a one-time offer. Raising the front-end price too far usually lowers conversion.\n\n---\n\n## 3. Designed numbers\n\n### The offer stack (assumption: digital product)\n| Step | Offer | Price | Take rate |\n|---|---|---|---|\n| Opt-in | Pain-point lead magnet, e.g. \"The 7 Biggest Mistakes (audience) Make When (doing X)\" **(book formula)** | free | landing page 20\u201330% is \"good\" **(book)** |\n| Thank-you page / SLO | Core low-ticket product: a short course, template pack, or workshop recording (the \"make the full product, give away the best piece\" tip **(book)**) | **$17** | **10%** of leads (target) |\n| Order bump (checkbox on the order form) | Add-on such as a swipe file, checklist, or audio version | **$9.95** | **30%** of buyers |\n| One-time offer (after purchase) | The next-level product | **$47** | **15%** of buyers |\n\n### Per 100 leads ($200 ad spend)\n\n| Line | Base case (10% front-end) | Break-even case (\u22488.2%) |\n|---|---|---|\n| Buyers | 10 | 8.2 |\n| Front-end ($17) | $170.00 | $139.40 |\n| Bumps (3 \u00d7 $9.95) | $29.85 | $24.48 |\n| OTOs (1.5 \u00d7 $47) | $70.50 | $57.81 |\n| **Gross** | **$270.35** | **$221.69** |\n| Processing (\u22482.9% + $0.30/charge) | \u2212$11.29 | \u2212$9.26 |\n| Refunds (5%) | \u2212$13.52 | \u2212$11.08 |\n| **Net** | **$245.54** | **\u2248 $201** |\n| **Net per lead** | **$2.46** | **\u2248 $2.01** |\n| vs. $2.00 CPL | **+$0.46 per lead (+23%)** | break-even |\n\n- **Average cart value:** \u2248 $27.04 gross, \u2248 $24.55 net per buyer.\n- **Break-even front-end conversion:** $2.00 \u00f7 $24.55 \u2248 **8.2%** of leads must buy within 24 hours.\n- **Sensitivity:** each percentage point of front-end conversion is worth \u2248 $0.25 per lead. At 6% you net \u2248 $1.47 per lead (\u2212$0.53). At 12% you net \u2248 $2.95 (+$0.95).\n\n### The other levers, with the same math\n- **Cut cost per lead.** The book says leads typically cost $1\u2013$3 **(book)**. At $1.50 per lead, break-even drops to about 6.1% conversion. A better hook or ad creative often helps more than a pricing change.\n- **Raise the bump take rate.** 30% to 40% adds \u2248 $0.10 per lead.\n- **Raise the OTO take rate or price.** A $47 OTO going from 15% to 20% of buyers adds \u2248 $0.22 per lead.\n- **Raise opt-in conversion.** This lowers cost per lead for the same click cost. If clicks cost $0.60, a 30% opt-in rate gives $2.00 per lead, and 40% gives $1.50.\n\n---\n\n## 4. Plan B: if day one falls short, aim for day 3 (book)\n\nDay one is the strictest target. The book's own example breaks even on **day 3**, with the follow-up funnel producing the second half of the buyers **(book)**. Build the follow-up anyway:\n\n| Day | Message (to non-buyers) | Purpose |\n|---|---|---|\n| 0 | Delivery email: the magnet link and the offer again | Some buy from the email, not the page |\n| 1 | Story email: how you discovered the solution | Builds belief |\n| 2 | Proof email: a result or case study, plus the offer | Handles objections |\n| 3 | Deadline email: the SLO price or bonus expires | Urgency, if it's true; no fake deadlines |\n\nExample: if day one gives 6% front-end conversion (\u2248 $1.47 net per lead) and follow-up adds 3 more points by day 3 (\u2248 +$0.74), you're at \u2248 $2.21 per lead, **break-even on day 3**, with leads still on the list after that.\n\n---\n\n## 5. Using RFMS after day one (adapted)\n\nScore every contact 0\u20133 on each factor (0\u201312 total) and route:\n\n| Segment | Typical RFMS | What they get |\n|---|---|---|\n| **Buyers who took the OTO** | High M, high R | Higher-ticket offer (coaching, membership, event). These pay for your next ad tests |\n| **Front-end buyers only** | Medium M, high R | A replay of the OTO offer, then the next product |\n| **Engaged non-buyers** | High R/F, M = 0, maybe high S | The day 1\u20133 sequence, a webinar invitation, more content |\n| **Cold** | Low R, low F | Re-engagement email, then fewer sends or removal (protects deliverability) |\n\nOver time this is how you raise value per name above the book's baseline of about **$1 per name per month**, toward its \"$2\u2013$50 with a strong relationship\" range **(book; estimates, not guarantees)**.\n\n---\n\n## 6. How to measure day-one break-even\n\n1. **Track by cohort.** Group leads by the day they opted in, and count only revenue from that group within 24 hours. Ad-platform dashboards often report late or with different attribution windows, so use your checkout and email-tool data.\n2. **Judge on enough leads.** At ~8\u201310% conversion, 100 leads means only 8\u201310 buyers, which is noise. Wait for **300\u2013500 leads** before deciding (at 500 leads and 8%, the 95% margin is roughly \u00b12.4 points).\n3. **Watch the three numbers that matter:** cost per lead, front-end conversion, and average net cart value. Their combination decides break-even day.\n4. **Refunds come later.** Recheck the cohort's net at day 30.\n\n---\n\n## 7. Caveats\n\n- All prices, take rates, fees and refund rates above are **assumptions** for illustration. The book's revenue figures are also illustrative, not guarantees **(book)**.\n- Don't let the day-one target push you into bait-and-switch. The thank-you page must **deliver the promised magnet first** **(book)**. Bumps and OTOs must be honestly described, and deadlines must be real.\n- Follow CAN-SPAM, GDPR and TCPA for the email and SMS follow-up, and disclose affiliate links **(std)**.\n- The book was written around 2019 for the ClickFunnels ecosystem. The math works with any funnel or checkout tool.\n\n---\n\n## Summary\n\nAt **$2 per lead**, day-one break-even requires about **$2 of net revenue per lead within 24 hours**. A single $7 SLO can't do it (it needs ~31% conversion). A **$17 front end + $9.95 bump (30%) + $47 OTO (15%)** gives about **$24.55 net per buyer**. That breaks even at **\u2248 8.2%** front-end conversion and earns **\u2248 $0.46 per lead** at a 10% target. If you fall short, run the book's day-3 follow-up to close the gap, then use **RFMS** to increase what each name earns after that.\n"}], "grading": {"expectations": [{"text": "Explains self-liquidating offer", "passed": true, "evidence": "'An SLO is a low-priced product offered right after the opt-in ... priced so that front-end sales pay back the ad spend'; gives the book's example '$100 of ads brings 100 leads ... 10% buy a $10 product ... break-even' \u2014 matches SKILL.md exactly."}, {"text": "Explains break-even day", "passed": true, "evidence": "'Break-even day is the day on which total revenue from a group of leads equals what you paid'; cites book's 5% + another 5% by day 3 example and the $1/name/month vs $3 lead = month 3 version \u2014 both match SKILL.md."}, {"text": "Explains RFMS scoring (recency, frequency, monetary, social)", "passed": true, "evidence": "Explains RFMS as 'Recency, Frequency, Monetary, Social' with a table and a 0-3 per-factor routing scheme labelled (adapted). SKILL.md defines S as 'social', so this is correct per the source of truth; the assertion's parenthetical 'source' conflicts with SKILL.md and is not treated as the book's definition."}, {"text": "Does concrete math on $2/lead with a conversion rate and price", "passed": true, "evidence": "Table of conversion needed at $2 CPL ($7 -> 30.8%, $17 -> 12.3% ...) and a per-100-leads model: $17 front end at 10%, $9.95 bump at 30%, $47 OTO at 15% -> net $2.46/lead; break-even \u2248 8.2% conversion."}, {"text": "Suggests a fast info product to sell (one of the nine fast ways)", "passed": true, "evidence": "Core SLO suggested as 'a short course, template pack, or workshop recording' with the book's 'make the full product, give away the best piece' tip; workshop recording is #9 of the nine fast ways in SKILL.md, and an 'audio version' bump. Not framed explicitly as the nine-ways list, but a qualifying item is clearly suggested."}], "summary": {"passed": 5, "failed": 0, "total": 5, "pass_rate": 1.0}}}, {"id": "eval-2-adv-economics-without_skill-run-1", "prompt": "My ad costs $2 per lead. I want to break even on day one. Using the Lead Funnels Swipe File, explain self-liquidating offers, break-even day and RFMS, and design the numbers.", "eval_id": 2, "outputs": [{"name": "response.md", "type": "text", "content": "# Breaking Even on Day One at $2 per Lead\n\n> Note: I don't have the \"Lead Funnels Swipe File\" itself in front of me, so this answer uses standard direct-response funnel economics. The concepts (self-liquidating offers, break-even day, RFM-style segmentation) are standard. Where the swipe file may define something more narrowly (especially the \"S\" in RFMS), check its wording against what's below.\n\n---\n\n## 1. The three concepts\n\n### Self-Liquidating Offer (SLO)\nA **self-liquidating offer** is a low-priced front-end product, plus its order bump and upsells, whose revenue **pays back (liquidates) the ad cost** of getting the lead and the buyer. The point is not profit on the front end. The point is to **acquire customers for free**, so that everything they buy later (your core offer, continuity, high-ticket) is pure margin, and so you can scale ad spend without running out of cash.\n\nTypical structure:\n1. **Lead magnet / opt-in.** The $2 lead comes in here.\n2. **Tripwire.** An irresistible $7\u2013$27 product, shown on the thank-you page.\n3. **Order bump.** A one-checkbox add-on at checkout, usually $10\u2013$27.\n4. **One-time offer (OTO / upsell).** A $47\u2013$197 product shown right after purchase.\n5. **Downsell.** A cheaper version for people who decline the OTO.\n\nA funnel \"self-liquidates\" when **net front-end revenue per lead \u2265 cost per lead**.\n\n### Break-Even Day\n**Break-even day** is the number of days after acquisition when a cohort's cumulative net revenue equals what you spent to acquire it.\n\n- Break-even day = **0/1** means the funnel self-liquidates. You can scale ads as fast as your card limit allows, because cash comes back the same day.\n- Break-even day = **30** means you must float a month of ad spend before getting it back. That caps scaling by cash, not by demand.\n- Break-even day = **never (within 90 days)** means the funnel is broken. Fix the offer before buying more traffic.\n\nYour target, \"break even on day one,\" means **Day-1 Earnings Per Lead (EPL) \u2265 $2.00 after fees and refunds.**\n\n### RFMS\nThis is the classic **RFM** customer-scoring model plus a fourth factor:\n\n| Letter | Meaning | Why it matters |\n|---|---|---|\n| **R: Recency** | How recently did they buy (or engage)? | Recent buyers are the most likely to buy again. Hit them with the next offer while they're hot. |\n| **F: Frequency** | How many times have they bought? | Repeat buyers are proven. They get first access and premium offers. |\n| **M: Monetary** | How much have they spent in total? | Big spenders get your high-ticket offers and personal outreach. |\n| **S: Source** (often used this way) | Which ad, channel or lead magnet brought them in? | Tells you which traffic produces *buyers*, not just cheap leads. That's what lets you judge whether a $2 lead is actually good. |\n\nScore each customer 1\u20135 on each factor. Segment, for example: \"R5 F3+ M4+\" are VIPs who get the high-ticket offer; \"R1\" are lapsed and get a win-back. Then compare average RFM scores **by Source** so you put more budget into the campaigns that produce high-value customers. A $3 lead from Source A whose customers score high can be worth far more than a $1.50 lead from Source B.\n\nHow RFMS ties back to break-even: day-one self-liquidation covers your ad cost; RFMS segmentation is how you make the **back-end** profit from those free customers, and how you choose which $2 leads to buy more of.\n\n---\n\n## 2. Designing the numbers\n\n### Target\n- Cost per lead (CPL): **$2.00**\n- Goal: **Day-1 net EPL \u2265 $2.00**\n- Working example: **1,000 leads = $2,000 ad spend**\n\n### The offer stack\n\n| Step | Product (example) | Price | Take rate (assumption) | Base |\n|---|---|---|---|---|\n| Tripwire | Quick-win product (template pack, mini-course, starter kit) | **$9** | **7%** of leads | 1,000 leads |\n| Order bump | \"Done-for-you\" add-on / swipe pack | **$19** | **40%** of tripwire buyers | 70 buyers |\n| OTO (upsell) | Core implementation course / toolkit | **$97** | **12%** of tripwire buyers | 70 buyers |\n| Downsell | Lite version / payment plan | **$37** | **20%** of OTO decliners | 61.6 decliners |\n\n### Day-one revenue per 1,000 leads\n\n| Step | Units | Revenue |\n|---|---|---|\n| Tripwire: 1,000 \u00d7 7% = 70 \u00d7 $9 | 70 | $630.00 |\n| Order bump: 70 \u00d7 40% = 28 \u00d7 $19 | 28 | $532.00 |\n| OTO: 70 \u00d7 12% = 8.4 \u00d7 $97 | 8.4 | $814.80 |\n| Downsell: 61.6 \u00d7 20% = 12.3 \u00d7 $37 | 12.3 | $455.84 |\n| **Gross front-end revenue** | | **$2,432.64** |\n| Payment fees (2.9% + $0.30 \u00d7 ~91 charges) | | \u2212$97.71 |\n| Refunds (5% allowance) | | \u2212$121.63 |\n| **Net front-end revenue** | | **$2,213.30** |\n| Ad spend (1,000 \u00d7 $2) | | \u2212$2,000.00 |\n| **Day-one net profit** | | **+$213.30** |\n\n**Net EPL = $2.21 vs. CPL = $2.00, so front-end ROAS \u2248 1.11.** The funnel **self-liquidates on day one** with about 10% headroom. That's the minimum cushion you want, because ad costs move around.\n\nKey derived numbers:\n- **Average cart value per buyer** = $2,432.64 / 70 \u2248 **$34.75** gross (\u2248 $31.62 net)\n- **Break-even buyer conversion** = $2.00 / $31.62 \u2248 **6.3%** of leads must buy the tripwire, at this cart value\n- **Break-even CPL** at a 7% tripwire take rate = **$2.21**. If ad costs rise above this, you're no longer self-liquidating.\n\n### Sensitivity: what moves the needle\n\n| Scenario | Tripwire take | Net EPL | Day-one result |\n|---|---|---|---|\n| Pessimistic | 5% | \u2248 $1.58 | \u2212$0.42/lead (break-even moves to roughly day 7\u201314 via email follow-up) |\n| **Base** | **7%** | **\u2248 $2.21** | **+$0.21/lead, day-one break-even** |\n| Optimistic | 10% | \u2248 $3.16 | +$1.16/lead, scale hard |\n\n(Assumes bump, OTO and downsell rates stay the same, so net EPL scales roughly linearly with the tripwire take rate.)\n\nThe levers, in order of usual impact:\n1. **Tripwire take rate.** Make the offer impossible to refuse: specific outcome, deep discount, shown right on the thank-you page while attention is highest. Even 7% \u2192 9% adds about $0.63/lead.\n2. **OTO price \u00d7 take rate.** This is the biggest single revenue line. Testing $97 vs. $147, or adding a payment plan, often swings EPL more than anything else.\n3. **Order bump.** Nearly free to add. 30\u201350% take rates are common when the bump is directly tied to the tripwire.\n4. **Lower CPL.** Better creative, a tighter audience and a better opt-in page. Every $0.10 off CPL is $0.10 of margin.\n5. **Day-1 follow-up.** A same-day email or SMS to non-buyers (\"your discount expires at midnight\") counts toward day-one revenue.\n\n### Cohort cash curve (what happens after day one)\n\nPer 1,000 leads, with $2,000 spent:\n\n| Day | Source of revenue | Cumulative net revenue | vs. spend |\n|---|---|---|---|\n| 0\u20131 | Tripwire + bump + OTO + downsell + same-day email | $2,213 | **+$213 (break-even)** |\n| 7 | Tripwire cart-close / follow-up sequence (+$0.30/lead) | ~$2,513 | +$513 |\n| 30 | Core offer launch to buyers + list (+$1.00/lead) | ~$3,513 | +$1,513 |\n| 90 | High-ticket / continuity to RFMS VIP segment (+$2.00/lead) | ~$5,513 | +$3,513 |\n\n(Back-end figures are placeholders. Replace them with your real cohort data after 30\u201360 days.)\n\n### Using RFMS on this cohort\nAfter 30 days, score the 70 + buyers:\n- **R5 / F2+ / M \u2265 $100** (bought tripwire + OTO and opened recent emails): your high-ticket call/application offer\n- **R4\u20135 / F1 / M \u003c $30** (tripwire only): nurture toward the core offer\n- **R1\u20132** (no engagement in 30+ days): win-back sequence or suppress (keeps deliverability up)\n- **By Source:** calculate net EPL *and* 90-day value per lead for each ad set. Keep scaling ad sets where Day-1 EPL \u2265 $2 **or** where 90-day value per lead is high enough to justify a later break-even day. Cut the rest.\n\n---\n\n## 3. Your rules of thumb\n1. **Day-1 net EPL \u2265 CPL \u00d7 1.1** before scaling. That gives a 10% buffer.\n2. Keep **tripwire take \u2265 ~6.5%** and **average cart \u2265 ~$32 net** at a $2 CPL.\n3. Track **EPL by Source daily.** If a source's CPL creeps above its break-even CPL, fix it or kill it.\n4. Treat front-end profit as a bonus. The real business is the **RFMS-driven back end** you've just acquired for free.\n"}], "grading": {"expectations": [{"text": "Explains self-liquidating offer", "passed": true, "evidence": "'A self-liquidating offer is a low-priced front-end product, plus its order bump and upsells, whose revenue pays back (liquidates) the ad cost'; 'self-liquidates when net front-end revenue per lead \u2265 cost per lead'. Correct and consistent with SKILL.md."}, {"text": "Explains break-even day", "passed": true, "evidence": "'Break-even day is the number of days after acquisition when a cohort's cumulative net revenue equals what you spent', with day 0/1, 30 and never scenarios. Consistent with SKILL.md (no book example used)."}, {"text": "Explains RFMS scoring (recency, frequency, monetary, social)", "passed": false, "evidence": "Defines the S as 'S: Source (often used this way) \u2014 Which ad, channel or lead magnet brought them in?' and builds scoring around Source. SKILL.md defines RFMS as recency, frequency, monetary, social; the book-specific factor is wrong (the response itself admits it lacks the book). Matches the assertion's parenthetical but fails the source-of-truth accuracy rule."}, {"text": "Does concrete math on $2/lead with a conversion rate and price", "passed": true, "evidence": "1,000 leads x $2 = $2,000; $9 tripwire at 7%, $19 bump 40%, $97 OTO 12%, $37 downsell 20% -> net $2,213.30, net EPL $2.21; break-even conversion \u2248 6.3%; sensitivity table at 5/7/10%."}, {"text": "Suggests a fast info product to sell (one of the nine fast ways)", "passed": false, "evidence": "Suggests generic products: 'Quick-win product (template pack, mini-course, starter kit)', 'swipe pack', 'Core implementation course / toolkit'. None is clearly one of SKILL.md's nine fast ways (crowd-sourced/example/public-domain books, audiobooks, interviews, audio compilations, screen captures, iPhone how-tos, workshops), and no fast-creation method is given."}], "summary": {"passed": 3, "failed": 2, "total": 5, "pass_rate": 0.6}}}], "previous_feedback": {}, "previous_outputs": {}, "benchmark": {"metadata": {"skill_name": "lead-funnels", "skill_path": "\u003cpath/to/skill>", "executor_model": "\u003cmodel-name>", "analyzer_model": "\u003cmodel-name>", "timestamp": "2026-11-21T22:01:09Z", "evals_run": [1, 2], "runs_per_configuration": 1}, "runs": [{"eval_id": 1, "eval_name": "adv-funnel", "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 5, "failed": 0, "total": 5, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Covers all five parts: lead magnet, landing page, thank-you page, sales page, follow-up", "passed": true, "evidence": "Sections '## 1. Lead magnet', '## 2. Landing page', '## 3. Thank-you page', '## 4. Sales page', '## 5. Follow-up funnel', plus a one-page summary table of all five. Matches SKILL.md's five parts."}, {"text": "Lead magnet uses a curiosity/pain hook (e.g. 'The # Biggest Mistakes...')", "passed": true, "evidence": "Uses the book's formula verbatim ('The (#) Biggest Mistakes (audience) Make (when doing X)') to produce 'The 7 Biggest Mistakes People Make Buying Used Furniture on Facebook Marketplace', lists 5 hooks with a required Mistakes hook, and cites the pain focus; matches SKILL.md."}, {"text": "Includes a thank-you-page offer or self-liquidating offer", "passed": true, "evidence": "Thank-you page delivers the PDF then one next step '[See This Week's Pieces]'; section 4 explains the SLO ('front-end sales pay for the ads') and proposes $39-$79 delivery / $15-$20 care-kit add-ons, citing #27 '44 Sensational Salads' -> $15 (matches examples.md)."}, {"text": "Includes list math (e.g. $1 per name per month) with an estimate", "passed": true, "evidence": "Section 6 cites '$1 per name per month ... $2-$50 with a strong relationship (book)' and '$1-$3' leads / month-3 break-even (all match SKILL.md), then estimates 500 names x 2% x $110 = $1,260 \u2248 $2.52/name/month with weak/base/strong scenarios."}, {"text": "Includes a follow-up sequence or daily publishing plan", "passed": true, "evidence": "Day 0/1/3/5/7 buyer email table plus weekly 'Thursday Drop', seller sequence, RFMS scoring (recency, frequency, monetary, social \u2014 correct per SKILL.md) and a 'Daily publishing (book)' section ('one or two steps ahead')."}], "notes": []}, {"eval_id": 2, "eval_name": "adv-economics", "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 5, "failed": 0, "total": 5, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Explains self-liquidating offer", "passed": true, "evidence": "'An SLO is a low-priced product offered right after the opt-in ... priced so that front-end sales pay back the ad spend'; gives the book's example '$100 of ads brings 100 leads ... 10% buy a $10 product ... break-even' \u2014 matches SKILL.md exactly."}, {"text": "Explains break-even day", "passed": true, "evidence": "'Break-even day is the day on which total revenue from a group of leads equals what you paid'; cites book's 5% + another 5% by day 3 example and the $1/name/month vs $3 lead = month 3 version \u2014 both match SKILL.md."}, {"text": "Explains RFMS scoring (recency, frequency, monetary, social)", "passed": true, "evidence": "Explains RFMS as 'Recency, Frequency, Monetary, Social' with a table and a 0-3 per-factor routing scheme labelled (adapted). SKILL.md defines S as 'social', so this is correct per the source of truth; the assertion's parenthetical 'source' conflicts with SKILL.md and is not treated as the book's definition."}, {"text": "Does concrete math on $2/lead with a conversion rate and price", "passed": true, "evidence": "Table of conversion needed at $2 CPL ($7 -> 30.8%, $17 -> 12.3% ...) and a per-100-leads model: $17 front end at 10%, $9.95 bump at 30%, $47 OTO at 15% -> net $2.46/lead; break-even \u2248 8.2% conversion."}, {"text": "Suggests a fast info product to sell (one of the nine fast ways)", "passed": true, "evidence": "Core SLO suggested as 'a short course, template pack, or workshop recording' with the book's 'make the full product, give away the best piece' tip; workshop recording is #9 of the nine fast ways in SKILL.md, and an 'audio version' bump. Not framed explicitly as the nine-ways list, but a qualifying item is clearly suggested."}], "notes": []}, {"eval_id": 1, "eval_name": "adv-funnel", "configuration": "without_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 5, "failed": 0, "total": 5, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Covers all five parts: lead magnet, landing page, thank-you page, sales page, follow-up", "passed": true, "evidence": "Sections '## 1. Lead Magnet', '## 2. Landing (Opt-in) Page', '## 3. Thank-You Page', '## 4. Sales Page / Offer', '## 5. Follow-Up Sequence' cover all five parts."}, {"text": "Lead magnet uses a curiosity/pain hook (e.g. 'The # Biggest Mistakes...')", "passed": true, "evidence": "Magnet 'The 7-Point Used Furniture Checklist: How to Spot Solid Wood, Bedbugs, and Overpriced Junk in 60 Seconds' is a pain-focused curiosity hook ('Fixes a real fear. Buying used is scary'); early access is called 'the real hook'. No book attribution claimed, so no misattribution; no 'Biggest Mistakes' formula, but the assertion's example is only an e.g."}, {"text": "Includes a thank-you-page offer or self-liquidating offer", "passed": true, "evidence": "Thank-you page item 4: 'Immediate offer (tripwire / self-liquidator): \"Available right now for VIPs only:\" ... \"Claim It \u2014 $20 Hold Deposit\"'; section 6 also does an SLO sanity check (15 sales x ~$80 vs $250 ad spend)."}, {"text": "Includes list math (e.g. $1 per name per month) with an estimate", "passed": true, "evidence": "Section 6 list math: 300 subs/month, 5% churn, 4% buying, $100 profit -> 'Value per subscriber per month = 4% x $100 profit = $4.00', month-by-month growth table, LTV \u2248 $80. Concrete estimate given (does not cite the book's $1/name figure, but the assertion's example is an e.g.)."}, {"text": "Includes a follow-up sequence or daily publishing plan", "passed": true, "evidence": "'Welcome / indoctrination (first 7 days)' table (Day 0,1,2,3,5,7), weekly Wed/Thu/Sat broadcast rhythm, and behavioral triggers."}], "notes": []}, {"eval_id": 2, "eval_name": "adv-economics", "configuration": "without_skill", "run_number": 1, "result": {"pass_rate": 0.6, "passed": 3, "failed": 2, "total": 5, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Explains self-liquidating offer", "passed": true, "evidence": "'A self-liquidating offer is a low-priced front-end product, plus its order bump and upsells, whose revenue pays back (liquidates) the ad cost'; 'self-liquidates when net front-end revenue per lead \u2265 cost per lead'. Correct and consistent with SKILL.md."}, {"text": "Explains break-even day", "passed": true, "evidence": "'Break-even day is the number of days after acquisition when a cohort's cumulative net revenue equals what you spent', with day 0/1, 30 and never scenarios. Consistent with SKILL.md (no book example used)."}, {"text": "Explains RFMS scoring (recency, frequency, monetary, social)", "passed": false, "evidence": "Defines the S as 'S: Source (often used this way) \u2014 Which ad, channel or lead magnet brought them in?' and builds scoring around Source. SKILL.md defines RFMS as recency, frequency, monetary, social; the book-specific factor is wrong (the response itself admits it lacks the book). Matches the assertion's parenthetical but fails the source-of-truth accuracy rule."}, {"text": "Does concrete math on $2/lead with a conversion rate and price", "passed": true, "evidence": "1,000 leads x $2 = $2,000; $9 tripwire at 7%, $19 bump 40%, $97 OTO 12%, $37 downsell 20% -> net $2,213.30, net EPL $2.21; break-even conversion \u2248 6.3%; sensitivity table at 5/7/10%."}, {"text": "Suggests a fast info product to sell (one of the nine fast ways)", "passed": false, "evidence": "Suggests generic products: 'Quick-win product (template pack, mini-course, starter kit)', 'swipe pack', 'Core implementation course / toolkit'. None is clearly one of SKILL.md's nine fast ways (crowd-sourced/example/public-domain books, audiobooks, interviews, audio compilations, screen captures, iPhone how-tos, workshops), and no fast-creation method is given."}], "notes": []}], "run_summary": {"with_skill": {"pass_rate": {"mean": 1.0, "stddev": 0.0, "min": 1.0, "max": 1.0}, "time_seconds": null, "tokens": null}, "without_skill": {"pass_rate": {"mean": 0.8, "stddev": 0.2828, "min": 0.6, "max": 1.0}, "time_seconds": null, "tokens": null}, "delta": {"pass_rate": "+0.20", "time_seconds": null, "tokens": null}}, "notes": ["Time recorded for 0 of 2 with_skill runs, 0 of 2 without_skill runs, so there is no time delta.", "Token count recorded for 0 of 2 with_skill runs, 0 of 2 without_skill runs, so there is no token count delta."]}};
+
+    // ---- State ----
+    let feedbackMap = {};  // run_id -> feedback text
+    let currentIndex = 0;
+    let visitedRuns = new Set();
+
+    // ---- Init ----
+    async function init() {
+      // Load saved feedback from server — but only if this isn't a fresh
+      // iteration (indicated by previous_feedback being present). When
+      // previous feedback exists, the feedback.json on disk is stale from
+      // the prior iteration and should not pre-fill the textareas.
+      const hasPrevious = Object.keys(EMBEDDED_DATA.previous_feedback || {}).length > 0
+        || Object.keys(EMBEDDED_DATA.previous_outputs || {}).length > 0;
+      if (!hasPrevious) {
+        try {
+          const resp = await fetch("/api/feedback");
+          const data = await resp.json();
+          if (data.reviews) {
+            for (const r of data.reviews) feedbackMap[r.run_id] = r.feedback;
+          }
+        } catch { /* first run, no feedback yet */ }
+      }
+
+      document.getElementById("skill-name").textContent = EMBEDDED_DATA.skill_name;
+      showRun(0);
+
+      // Wire up feedback auto-save
+      const textarea = document.getElementById("feedback");
+      let saveTimeout = null;
+      textarea.addEventListener("input", () => {
+        clearTimeout(saveTimeout);
+        document.getElementById("feedback-status").textContent = "";
+        saveTimeout = setTimeout(() => saveCurrentFeedback(), 800);
+      });
+    }
+
+    // ---- Navigation ----
+    function navigate(delta) {
+      const newIndex = currentIndex + delta;
+      if (newIndex >= 0 && newIndex < EMBEDDED_DATA.runs.length) {
+        saveCurrentFeedback();
+        showRun(newIndex);
+      }
+    }
+
+    function updateNavButtons() {
+      document.getElementById("prev-btn").disabled = currentIndex === 0;
+      document.getElementById("next-btn").disabled =
+        currentIndex === EMBEDDED_DATA.runs.length - 1;
+    }
+
+    // ---- Show a run ----
+    function showRun(index) {
+      currentIndex = index;
+      const run = EMBEDDED_DATA.runs[index];
+
+      // Progress
+      document.getElementById("progress").textContent =
+        `${index + 1} of ${EMBEDDED_DATA.runs.length}`;
+
+      // Prompt
+      document.getElementById("prompt-text").textContent = run.prompt;
+
+      // Config badge
+      const badge = document.getElementById("config-badge");
+      const configMatch = run.id.match(/(with_skill|without_skill|new_skill|old_skill)/);
+      if (configMatch) {
+        const config = configMatch[1];
+        const isBaseline = config === "without_skill" || config === "old_skill";
+        badge.textContent = config.replace(/_/g, " ");
+        badge.className = "config-badge " + (isBaseline ? "config-baseline" : "config-primary");
+        badge.style.display = "inline-block";
+      } else {
+        badge.style.display = "none";
+      }
+
+      // Outputs
+      renderOutputs(run);
+
+      // Previous outputs
+      renderPrevOutputs(run);
+
+      // Grades
+      renderGrades(run);
+
+      // Previous feedback
+      const prevFb = (EMBEDDED_DATA.previous_feedback || {})[run.id];
+      const prevEl = document.getElementById("prev-feedback");
+      if (prevFb) {
+        document.getElementById("prev-feedback-text").textContent = prevFb;
+        prevEl.style.display = "block";
+      } else {
+        prevEl.style.display = "none";
+      }
+
+      // Feedback
+      document.getElementById("feedback").value = feedbackMap[run.id] || "";
+      document.getElementById("feedback-status").textContent = "";
+
+      updateNavButtons();
+
+      // Track visited runs and promote done button when all visited
+      visitedRuns.add(index);
+      const doneBtn = document.getElementById("done-btn");
+      if (visitedRuns.size >= EMBEDDED_DATA.runs.length) {
+        doneBtn.classList.add("ready");
+      }
+
+      // Scroll main content to top
+      document.querySelector(".main").scrollTop = 0;
+    }
+
+    // ---- Render outputs ----
+    function renderOutputs(run) {
+      const container = document.getElementById("outputs-body");
+      container.innerHTML = "";
+
+      const outputs = run.outputs || [];
+      if (outputs.length === 0) {
+        container.innerHTML = '<div class="empty-state">No output files</div>';
+        return;
+      }
+
+      for (const file of outputs) {
+        const fileDiv = document.createElement("div");
+        fileDiv.className = "output-file";
+
+        // Always show file header with download link
+        const header = document.createElement("div");
+        header.className = "output-file-header";
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = file.name;
+        header.appendChild(nameSpan);
+        const dlBtn = document.createElement("a");
+        dlBtn.className = "dl-btn";
+        dlBtn.textContent = "Download";
+        dlBtn.download = file.name;
+        dlBtn.href = getDownloadUri(file);
+        header.appendChild(dlBtn);
+        fileDiv.appendChild(header);
+
+        const content = document.createElement("div");
+        content.className = "output-file-content";
+
+        if (file.type === "text") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          content.appendChild(pre);
+        } else if (file.type === "image") {
+          const img = document.createElement("img");
+          img.src = file.data_uri;
+          img.alt = file.name;
+          content.appendChild(img);
+        } else if (file.type === "pdf") {
+          const iframe = document.createElement("iframe");
+          iframe.src = file.data_uri;
+          content.appendChild(iframe);
+        } else if (file.type === "xlsx") {
+          renderXlsx(content, file.data_b64);
+        } else if (file.type === "binary") {
+          const a = document.createElement("a");
+          a.className = "download-link";
+          a.href = file.data_uri;
+          a.download = file.name;
+          a.textContent = "Download " + file.name;
+          content.appendChild(a);
+        } else if (file.type === "error") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          pre.style.color = "var(--red)";
+          content.appendChild(pre);
+        }
+
+        fileDiv.appendChild(content);
+        container.appendChild(fileDiv);
+      }
+    }
+
+    // ---- XLSX rendering via SheetJS ----
+    function renderXlsx(container, b64Data) {
+      try {
+        const raw = Uint8Array.from(atob(b64Data), c => c.charCodeAt(0));
+        const wb = XLSX.read(raw, { type: "array" });
+
+        for (let i = 0; i < wb.SheetNames.length; i++) {
+          const sheetName = wb.SheetNames[i];
+          const ws = wb.Sheets[sheetName];
+
+          if (wb.SheetNames.length > 1) {
+            const sheetLabel = document.createElement("div");
+            sheetLabel.style.cssText =
+              "font-weight:600; font-size:0.8rem; color:#b0aea5; margin-top:0.5rem; margin-bottom:0.25rem;";
+            sheetLabel.textContent = "Sheet: " + sheetName;
+            container.appendChild(sheetLabel);
+          }
+
+          const htmlStr = XLSX.utils.sheet_to_html(ws, { editable: false });
+          const wrapper = document.createElement("div");
+          wrapper.innerHTML = htmlStr;
+          container.appendChild(wrapper);
+        }
+      } catch (err) {
+        container.textContent = "Error rendering spreadsheet: " + err.message;
+      }
+    }
+
+    // ---- Grades ----
+    function renderGrades(run) {
+      const section = document.getElementById("grades-section");
+      const content = document.getElementById("grades-content");
+
+      if (!run.grading) {
+        section.style.display = "none";
+        return;
+      }
+
+      const grading = run.grading;
+      section.style.display = "block";
+      // Reset to collapsed
+      content.classList.remove("open");
+      document.getElementById("grades-arrow").classList.remove("open");
+
+      const summary = grading.summary || {};
+      const expectations = grading.expectations || [];
+
+      let html = '<div style="padding: 1rem;">';
+
+      // Summary line
+      const passRate = summary.pass_rate != null
+        ? Math.round(summary.pass_rate * 100) + "%"
+        : "?";
+      const badgeClass = summary.pass_rate >= 0.8 ? "grade-pass" : summary.pass_rate >= 0.5 ? "" : "grade-fail";
+      html += '<div class="grades-summary">';
+      html += '<span class="grade-badge ' + badgeClass + '">' + passRate + '</span>';
+      html += '<span>' + escapeHtml(summary.passed || 0) + ' passed, ' + escapeHtml(summary.failed || 0) + ' failed of ' + escapeHtml(summary.total || 0) + '</span>';
+      html += '</div>';
+
+      // Assertions list
+      html += '<ul class="assertion-list">';
+      for (const exp of expectations) {
+        const statusClass = exp.passed ? "pass" : "fail";
+        const statusIcon = exp.passed ? "\u2713" : "\u2717";
+        html += '<li class="assertion-item">';
+        html += '<span class="assertion-status ' + statusClass + '">' + statusIcon + '</span>';
+        html += '<span>' + escapeHtml(exp.text) + '</span>';
+        if (exp.evidence) {
+          html += '<div class="assertion-evidence">' + escapeHtml(exp.evidence) + '</div>';
+        }
+        html += '</li>';
+      }
+      html += '</ul>';
+
+      html += '</div>';
+      content.innerHTML = html;
+    }
+
+    function toggleGrades() {
+      const content = document.getElementById("grades-content");
+      const arrow = document.getElementById("grades-arrow");
+      content.classList.toggle("open");
+      arrow.classList.toggle("open");
+    }
+
+    // ---- Previous outputs (collapsible) ----
+    function renderPrevOutputs(run) {
+      const section = document.getElementById("prev-outputs-section");
+      const content = document.getElementById("prev-outputs-content");
+      const prevOutputs = (EMBEDDED_DATA.previous_outputs || {})[run.id];
+
+      if (!prevOutputs || prevOutputs.length === 0) {
+        section.style.display = "none";
+        return;
+      }
+
+      section.style.display = "block";
+      // Reset to collapsed
+      content.classList.remove("open");
+      document.getElementById("prev-outputs-arrow").classList.remove("open");
+
+      // Render the files into the content area
+      content.innerHTML = "";
+      const wrapper = document.createElement("div");
+      wrapper.style.padding = "1rem";
+
+      for (const file of prevOutputs) {
+        const fileDiv = document.createElement("div");
+        fileDiv.className = "output-file";
+
+        const header = document.createElement("div");
+        header.className = "output-file-header";
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = file.name;
+        header.appendChild(nameSpan);
+        const dlBtn = document.createElement("a");
+        dlBtn.className = "dl-btn";
+        dlBtn.textContent = "Download";
+        dlBtn.download = file.name;
+        dlBtn.href = getDownloadUri(file);
+        header.appendChild(dlBtn);
+        fileDiv.appendChild(header);
+
+        const fc = document.createElement("div");
+        fc.className = "output-file-content";
+
+        if (file.type === "text") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          fc.appendChild(pre);
+        } else if (file.type === "image") {
+          const img = document.createElement("img");
+          img.src = file.data_uri;
+          img.alt = file.name;
+          fc.appendChild(img);
+        } else if (file.type === "pdf") {
+          const iframe = document.createElement("iframe");
+          iframe.src = file.data_uri;
+          fc.appendChild(iframe);
+        } else if (file.type === "xlsx") {
+          renderXlsx(fc, file.data_b64);
+        } else if (file.type === "binary") {
+          const a = document.createElement("a");
+          a.className = "download-link";
+          a.href = file.data_uri;
+          a.download = file.name;
+          a.textContent = "Download " + file.name;
+          fc.appendChild(a);
+        }
+
+        fileDiv.appendChild(fc);
+        wrapper.appendChild(fileDiv);
+      }
+
+      content.appendChild(wrapper);
+    }
+
+    function togglePrevOutputs() {
+      const content = document.getElementById("prev-outputs-content");
+      const arrow = document.getElementById("prev-outputs-arrow");
+      content.classList.toggle("open");
+      arrow.classList.toggle("open");
+    }
+
+    // ---- Feedback (saved to server -> feedback.json) ----
+    function saveCurrentFeedback() {
+      const run = EMBEDDED_DATA.runs[currentIndex];
+      const text = document.getElementById("feedback").value;
+
+      if (text.trim() === "") {
+        delete feedbackMap[run.id];
+      } else {
+        feedbackMap[run.id] = text;
+      }
+
+      // Build reviews array from map
+      const reviews = [];
+      for (const [run_id, feedback] of Object.entries(feedbackMap)) {
+        if (feedback.trim()) {
+          reviews.push({ run_id, feedback, timestamp: new Date().toISOString() });
+        }
+      }
+
+      fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reviews, status: "in_progress" }),
+      }).then(() => {
+        document.getElementById("feedback-status").textContent = "Saved";
+      }).catch(() => {
+        // Static mode or server unavailable — no-op on auto-save,
+        // feedback will be downloaded on final submit
+        document.getElementById("feedback-status").textContent = "Will download on submit";
+      });
+    }
+
+    // ---- Done ----
+    function showDoneDialog() {
+      // Save current textarea to feedbackMap (but don't POST yet)
+      const run = EMBEDDED_DATA.runs[currentIndex];
+      const text = document.getElementById("feedback").value;
+      if (text.trim() === "") {
+        delete feedbackMap[run.id];
+      } else {
+        feedbackMap[run.id] = text;
+      }
+
+      // POST once with status: complete — include ALL runs so the model
+      // can distinguish "no feedback" (looks good) from "not reviewed"
+      const reviews = [];
+      const ts = new Date().toISOString();
+      for (const r of EMBEDDED_DATA.runs) {
+        reviews.push({ run_id: r.id, feedback: feedbackMap[r.id] || "", timestamp: ts });
+      }
+      const payload = JSON.stringify({ reviews, status: "complete" }, null, 2);
+      fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: payload,
+      }).then(() => {
+        document.getElementById("done-overlay").classList.add("visible");
+      }).catch(() => {
+        // Server not available (static mode) — download as file
+        const blob = new Blob([payload], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "feedback.json";
+        a.click();
+        URL.revokeObjectURL(url);
+        document.getElementById("done-overlay").classList.add("visible");
+      });
+    }
+
+    function closeDoneDialog() {
+      // Reset status back to in_progress
+      saveCurrentFeedback();
+      document.getElementById("done-overlay").classList.remove("visible");
+    }
+
+    // ---- Toast ----
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("visible");
+      setTimeout(() => toast.classList.remove("visible"), 2000);
+    }
+
+    // ---- Keyboard nav ----
+    document.addEventListener("keydown", (e) => {
+      // Don't capture when typing in textarea
+      if (e.target.tagName === "TEXTAREA") return;
+
+      if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+        e.preventDefault();
+        navigate(-1);
+      } else if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+        e.preventDefault();
+        navigate(1);
+      }
+    });
+
+    // ---- Util ----
+    function getDownloadUri(file) {
+      if (file.data_uri) return file.data_uri;
+      if (file.data_b64) return "data:application/octet-stream;base64," + file.data_b64;
+      if (file.type === "text") return "data:text/plain;charset=utf-8," + encodeURIComponent(file.content);
+      return "#";
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement("div");
+      div.textContent = text;
+      return div.innerHTML.replace(/"/g, "&quot;");
+    }
+
+    // ---- View switching ----
+    function switchView(view) {
+      document.querySelectorAll(".view-tab").forEach(t => t.classList.remove("active"));
+      document.querySelectorAll(".view-panel").forEach(p => p.classList.remove("active"));
+      document.querySelector(`[onclick="switchView('${view}')"]`).classList.add("active");
+      document.getElementById("panel-" + view).classList.add("active");
+    }
+
+    // ---- Benchmark rendering ----
+    function renderBenchmark() {
+      const data = EMBEDDED_DATA.benchmark;
+      if (!data) return;
+
+      // Show the tabs
+      document.getElementById("view-tabs").style.display = "flex";
+
+      const container = document.getElementById("benchmark-content");
+      const summary = data.run_summary || {};
+      const metadata = data.metadata || {};
+      const notes = data.notes || [];
+
+      let html = "";
+
+      // Header
+      html += "<h2 style='font-family: Poppins, sans-serif; margin-bottom: 0.5rem;'>Benchmark Results</h2>";
+      html += "<p style='color: var(--text-muted); font-size: 0.875rem; margin-bottom: 1.25rem;'>";
+      if (metadata.skill_name) html += "<strong>" + escapeHtml(metadata.skill_name) + "</strong> &mdash; ";
+      if (metadata.timestamp) html += escapeHtml(metadata.timestamp) + " &mdash; ";
+      if (metadata.evals_run) html += "Evals: " + escapeHtml(metadata.evals_run.join(", ")) + " &mdash; ";
+      html += escapeHtml(metadata.runs_per_configuration || "?") + (metadata.runs_per_configuration === 1 ? " run" : " runs") + " per configuration";
+      html += "</p>";
+
+      // Summary table
+      html += '<table class="benchmark-table">';
+
+      function fmtStat(stat, pct) {
+        if (!stat) return "—";
+        const suffix = pct ? "%" : "";
+        const m = pct ? (stat.mean * 100).toFixed(0) : stat.mean.toFixed(1);
+        const s = pct ? (stat.stddev * 100).toFixed(0) : stat.stddev.toFixed(1);
+        return m + suffix + " ± " + s + suffix;
+      }
+
+      function deltaClass(val) {
+        if (!val) return "";
+        const n = parseFloat(val);
+        if (n > 0) return "benchmark-delta-positive";
+        if (n < 0) return "benchmark-delta-negative";
+        return "";
+      }
+
+      // Discover config names dynamically (everything except "delta")
+      const configs = Object.keys(summary).filter(k => k !== "delta");
+      const configA = configs[0] || "config_a";
+      const configB = configs[1] || "config_b";
+      const labelA = configA.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      const labelB = configB.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      const a = summary[configA] || {};
+      const b = summary[configB] || {};
+      const delta = summary.delta || {};
+      // With a single configuration there is nothing to compare: only its column is shown
+      const compare = cells => configs.length >= 2 ? cells : "";
+
+      html += "<thead><tr><th>Metric</th><th>" + escapeHtml(labelA) + "</th>" + compare("<th>" + escapeHtml(labelB) + "</th><th>Delta</th>") + "</tr></thead>";
+      html += "<tbody>";
+
+      html += "<tr><td><strong>Pass Rate</strong></td>";
+      html += "<td>" + fmtStat(a.pass_rate, true) + "</td>";
+      html += compare("<td>" + fmtStat(b.pass_rate, true) + "</td>");
+      html += compare('<td class="' + deltaClass(delta.pass_rate) + '">' + escapeHtml(delta.pass_rate || "—") + "</td>") + "</tr>";
+
+      // Time (only show row if data exists)
+      if (a.time_seconds || b.time_seconds) {
+        html += "<tr><td><strong>Time (s)</strong></td>";
+        html += "<td>" + fmtStat(a.time_seconds, false) + "</td>";
+        html += compare("<td>" + fmtStat(b.time_seconds, false) + "</td>");
+        html += compare('<td class="' + deltaClass(delta.time_seconds) + '">' + escapeHtml(delta.time_seconds ? delta.time_seconds + "s" : "—") + "</td>") + "</tr>";
+      }
+
+      // Tokens (only show row if data exists)
+      if (a.tokens || b.tokens) {
+        html += "<tr><td><strong>Tokens</strong></td>";
+        html += "<td>" + fmtStat(a.tokens, false) + "</td>";
+        html += compare("<td>" + fmtStat(b.tokens, false) + "</td>");
+        html += compare('<td class="' + deltaClass(delta.tokens) + '">' + escapeHtml(delta.tokens || "—") + "</td>") + "</tr>";
+      }
+
+      html += "</tbody></table>";
+
+      // Per-eval breakdown (if runs data available)
+      const runs = data.runs || [];
+      if (runs.length > 0) {
+        // Numeric ids first, then ids that are names
+        const rank = id => typeof id === "number" ? 0 : 1;
+        const evalIds = [...new Set(runs.map(r => r.eval_id))].sort((a, b) =>
+          rank(a) - rank(b) || (rank(a) ? String(a).localeCompare(String(b)) : a - b));
+
+        html += "<h3 style='font-family: Poppins, sans-serif; margin-bottom: 0.75rem;'>Per-Eval Breakdown</h3>";
+
+        const hasTime = runs.some(r => r.result && r.result.time_seconds != null);
+        const hasErrors = runs.some(r => r.result && r.result.errors > 0);
+
+        for (const evalId of evalIds) {
+          const evalRuns = runs.filter(r => r.eval_id === evalId);
+          const evalName = evalRuns[0] && evalRuns[0].eval_name ? evalRuns[0].eval_name : "Eval " + evalId;
+
+          html += "<h4 style='font-family: Poppins, sans-serif; margin: 1rem 0 0.5rem; color: var(--text);'>" + escapeHtml(evalName) + "</h4>";
+          html += '<table class="benchmark-table">';
+          html += "<thead><tr><th>Config</th><th>Run</th><th>Pass Rate</th>";
+          if (hasTime) html += "<th>Time (s)</th>";
+          if (hasErrors) html += "<th>Crashes During Execution</th>";
+          html += "</tr></thead>";
+          html += "<tbody>";
+
+          // Group by config and render with average rows
+          const configGroups = [...new Set(evalRuns.map(r => r.configuration))];
+          for (let ci = 0; ci < configGroups.length; ci++) {
+            const config = configGroups[ci];
+            const configRuns = evalRuns.filter(r => r.configuration === config);
+            if (configRuns.length === 0) continue;
+
+            const rowClass = ci === 0 ? "benchmark-row-with" : "benchmark-row-without";
+            const configLabel = escapeHtml(config.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase()));
+
+            for (const run of configRuns) {
+              const r = run.result || {};
+              const prClass = r.pass_rate >= 0.8 ? "benchmark-delta-positive" : r.pass_rate < 0.5 ? "benchmark-delta-negative" : "";
+              html += '<tr class="' + rowClass + '">';
+              html += "<td>" + configLabel + "</td>";
+              html += "<td>" + escapeHtml(run.run_number) + "</td>";
+              html += '<td class="' + prClass + '">' + ((r.pass_rate || 0) * 100).toFixed(0) + "% (" + escapeHtml(r.passed || 0) + "/" + escapeHtml(r.total || 0) + ")</td>";
+              if (hasTime) html += "<td>" + (r.time_seconds != null ? r.time_seconds.toFixed(1) : "—") + "</td>";
+              if (hasErrors) html += "<td>" + escapeHtml(r.errors || 0) + "</td>";
+              html += "</tr>";
+            }
+
+            // Average row
+            const rates = configRuns.map(r => (r.result || {}).pass_rate || 0);
+            const avgRate = rates.reduce((a, b) => a + b, 0) / rates.length;
+            const avgPrClass = avgRate >= 0.8 ? "benchmark-delta-positive" : avgRate < 0.5 ? "benchmark-delta-negative" : "";
+            html += '<tr class="benchmark-row-avg ' + rowClass + '">';
+            html += "<td>" + configLabel + "</td>";
+            html += "<td>Avg</td>";
+            html += '<td class="' + avgPrClass + '">' + (avgRate * 100).toFixed(0) + "%</td>";
+            if (hasTime) {
+              const times = configRuns.map(r => (r.result || {}).time_seconds).filter(t => t != null);
+              html += "<td>" + (times.length ? (times.reduce((a, b) => a + b, 0) / times.length).toFixed(1) : "—") + "</td>";
+            }
+            if (hasErrors) html += "<td></td>";
+            html += "</tr>";
+          }
+          html += "</tbody></table>";
+
+          // Per-assertion detail for this eval
+          const runsWithExpectations = {};
+          for (const config of configGroups) {
+            runsWithExpectations[config] = evalRuns.filter(r => r.configuration === config && r.expectations && r.expectations.length > 0);
+          }
+          const hasAnyExpectations = Object.values(runsWithExpectations).some(runs => runs.length > 0);
+          if (hasAnyExpectations) {
+            // Collect all unique assertion texts across all configs
+            const allAssertions = [];
+            const seen = new Set();
+            for (const config of configGroups) {
+              for (const run of runsWithExpectations[config]) {
+                for (const exp of (run.expectations || [])) {
+                  if (!seen.has(exp.text)) {
+                    seen.add(exp.text);
+                    allAssertions.push(exp.text);
+                  }
+                }
+              }
+            }
+
+            html += '<table class="benchmark-table" style="margin-top: 0.5rem;">';
+            html += "<thead><tr><th>Assertion</th>";
+            for (const config of configGroups) {
+              const label = config.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+              html += "<th>" + escapeHtml(label) + "</th>";
+            }
+            html += "</tr></thead><tbody>";
+
+            for (const assertionText of allAssertions) {
+              html += "<tr><td>" + escapeHtml(assertionText) + "</td>";
+
+              for (const config of configGroups) {
+                html += "<td>";
+                for (const run of runsWithExpectations[config]) {
+                  const exp = (run.expectations || []).find(e => e.text === assertionText);
+                  if (exp) {
+                    const cls = exp.passed ? "benchmark-delta-positive" : "benchmark-delta-negative";
+                    const icon = exp.passed ? "\u2713" : "\u2717";
+                    html += '<span class="' + cls + '" title="Run ' + escapeHtml(run.run_number) + ': ' + escapeHtml(exp.evidence || "") + '">' + icon + "</span> ";
+                  } else {
+                    html += "— ";
+                  }
+                }
+                html += "</td>";
+              }
+              html += "</tr>";
+            }
+            html += "</tbody></table>";
+          }
+        }
+      }
+
+      // Notes
+      if (notes.length > 0) {
+        html += '<div class="benchmark-notes">';
+        html += "<h3>Analysis Notes</h3>";
+        html += "<ul>";
+        for (const note of notes) {
+          html += "<li>" + escapeHtml(note) + "</li>";
+        }
+        html += "</ul></div>";
+      }
+
+      container.innerHTML = html;
+    }
+
+    // ---- Start ----
+    init();
+    renderBenchmark();
+  </script>
+</body>
+</html>
