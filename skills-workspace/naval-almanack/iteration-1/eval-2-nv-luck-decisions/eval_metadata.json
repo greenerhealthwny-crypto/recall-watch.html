@@ -1,0 +1,13 @@
+{
+ "eval_id": 2,
+ "eval_name": "nv-luck-decisions",
+ "prompt": "What does Naval say about the kinds of luck and about making decisions, per the Almanack?",
+ "assertions": [
+  "Lists four kinds of luck",
+  "Blind luck and luck from hustle/energy",
+  "Luck from being good at spotting it (skill in a field)",
+  "Luck that finds you due to unique character/brand (the goal)",
+  "'If you can't decide, the answer is no'",
+  "Mentions shedding identity for clear thinking, or the three big decisions (where you live, who you're with, what you do), or reading"
+ ]
+}

@@ -1,0 +1,40 @@
+{
+ "expectations": [
+  {
+   "text": "Lists four kinds of luck",
+   "passed": true,
+   "evidence": "Numbered list of four kinds of luck"
+  },
+  {
+   "text": "Blind luck and luck from hustle/energy",
+   "passed": true,
+   "evidence": "Items 1-2: blind luck and luck from hustling/persistence"
+  },
+  {
+   "text": "Luck from being good at spotting it (skill in a field)",
+   "passed": true,
+   "evidence": "Item 3: preparation, knowing your field well enough to spot opportunity"
+  },
+  {
+   "text": "Luck that finds you due to unique character/brand (the goal)",
+   "passed": true,
+   "evidence": "Item 4: unique character, luck that finds you; called the one Naval cares most about"
+  },
+  {
+   "text": "'If you can't decide, the answer is no'",
+   "passed": true,
+   "evidence": "Practical heuristics quote 'If you can't decide, the answer is no.'"
+  },
+  {
+   "text": "Mentions shedding identity for clear thinking, or the three big decisions (where you live, who you're with, what you do), or reading",
+   "passed": true,
+   "evidence": "'Get rid of ego and identity'; three big decisions (where you live, who you're with, what you do); read widely"
+  }
+ ],
+ "summary": {
+  "passed": 6,
+  "failed": 0,
+  "total": 6,
+  "pass_rate": 1.0
+ }
+}

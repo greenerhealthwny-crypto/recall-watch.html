@@ -1,0 +1,342 @@
+{
+  "metadata": {
+    "skill_name": "naval-almanack",
+    "skill_path": "<path/to/skill>",
+    "executor_model": "<model-name>",
+    "analyzer_model": "<model-name>",
+    "timestamp": "2026-11-21T21:43:54Z",
+    "evals_run": [
+      1,
+      2,
+      3
+    ],
+    "runs_per_configuration": 1
+  },
+  "runs": [
+    {
+      "eval_id": 1,
+      "eval_name": "nv-wealth",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Seek wealth, not money or status (with definitions: assets that earn while you sleep)",
+          "passed": true,
+          "evidence": "Section 1 defines wealth as 'assets that earn while you sleep', money and status separately"
+        },
+        {
+          "text": "Specific knowledge: cannot be trained for; found through genuine curiosity",
+          "passed": true,
+          "evidence": "Section 3: 'knowledge you cannot be trained for', found via 'genuine curiosity and passion'"
+        },
+        {
+          "text": "Leverage: labor, capital, code and media; code and media are permissionless",
+          "passed": true,
+          "evidence": "Section 6 lists labor, capital, code and media; quotes 'Code and media are permissionless leverage'"
+        },
+        {
+          "text": "Own equity \u2014 you won't get rich renting out your time",
+          "passed": true,
+          "evidence": "Section 2 quotes 'You're not going to get rich renting out your time' and says own equity"
+        },
+        {
+          "text": "Accountability and/or playing long-term games with long-term people (compound interest)",
+          "passed": true,
+          "evidence": "Sections 4-5: long-term games with long-term people, compound interest quote; accountability under your own name"
+        },
+        {
+          "text": "Productize yourself and/or 'learn to sell, learn to build' and/or judgment over hours",
+          "passed": true,
+          "evidence": "Sections 7-9: judgment over hours, Productize yourself, 'Learn to sell. Learn to build.'"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "nv-luck-decisions",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Lists four kinds of luck",
+          "passed": true,
+          "evidence": "Table lists four kinds of luck numbered 1-4"
+        },
+        {
+          "text": "Blind luck and luck from hustle/energy",
+          "passed": true,
+          "evidence": "Rows 1-2: blind luck and luck from hustle"
+        },
+        {
+          "text": "Luck from being good at spotting it (skill in a field)",
+          "passed": true,
+          "evidence": "Row 3: luck from spotting it by knowing a field well"
+        },
+        {
+          "text": "Luck that finds you due to unique character/brand (the goal)",
+          "passed": true,
+          "evidence": "Row 4: luck from character/brand; 'The goal is the fourth kind'"
+        },
+        {
+          "text": "'If you can't decide, the answer is no'",
+          "passed": true,
+          "evidence": "Decision section 2 quotes 'If you can't decide, the answer is no.'"
+        },
+        {
+          "text": "Mentions shedding identity for clear thinking, or the three big decisions (where you live, who you're with, what you do), or reading",
+          "passed": true,
+          "evidence": "Decision sections 1, 3, 6: drop identity/ego, three big decisions, reading"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 3,
+      "eval_name": "nv-happiness",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Happiness is a choice and a skill you can develop/learn",
+          "passed": true,
+          "evidence": "Section 1 quotes 'Happiness is a choice you make and a skill you develop.'"
+        },
+        {
+          "text": "Desire is a contract you make with yourself to be unhappy until you get what you want",
+          "passed": true,
+          "evidence": "Section 2 quotes the desire-contract line verbatim"
+        },
+        {
+          "text": "Happiness = state when nothing is missing and/or peace is happiness at rest",
+          "passed": true,
+          "evidence": "Section 1: 'the state when nothing is missing'; 'Peace is happiness at rest'"
+        },
+        {
+          "text": "Success doesn't earn happiness and/or envy is the enemy of happiness",
+          "passed": true,
+          "evidence": "Section 3: success doesn't earn happiness; 'Envy is the enemy of happiness'"
+        },
+        {
+          "text": "Built by habits such as meditation (and exercise, reading)",
+          "passed": true,
+          "evidence": "Section 4: meditation, exercise, less screen time"
+        },
+        {
+          "text": "Mentions presence/acceptance or 'retirement is when you stop sacrificing today for an imaginary tomorrow'",
+          "passed": true,
+          "evidence": "Section 5: acceptance, present moment, quotes the retirement line"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 1,
+      "eval_name": "nv-wealth",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Seek wealth, not money or status (with definitions: assets that earn while you sleep)",
+          "passed": true,
+          "evidence": "Section 1 quotes 'Wealth is having assets that earn while you sleep' and contrasts money/status"
+        },
+        {
+          "text": "Specific knowledge: cannot be trained for; found through genuine curiosity",
+          "passed": true,
+          "evidence": "Section 3: 'knowledge that cannot be trained for', found by following genuine curiosity"
+        },
+        {
+          "text": "Leverage: labor, capital, code and media; code and media are permissionless",
+          "passed": true,
+          "evidence": "Section 5 lists labor, capital, code and media, calls the last 'permissionless leverage'"
+        },
+        {
+          "text": "Own equity \u2014 you won't get rich renting out your time",
+          "passed": true,
+          "evidence": "Section 2 quotes renting-out-time line and 'You must own equity'"
+        },
+        {
+          "text": "Accountability and/or playing long-term games with long-term people (compound interest)",
+          "passed": true,
+          "evidence": "Section 4 accountability; Section 8 long-term games and compound interest"
+        },
+        {
+          "text": "Productize yourself and/or 'learn to sell, learn to build' and/or judgment over hours",
+          "passed": true,
+          "evidence": "Section 9 'Productize yourself'; Section 3 learn to sell and build; Section 7 earn with your mind not time"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "nv-luck-decisions",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Lists four kinds of luck",
+          "passed": true,
+          "evidence": "Numbered list of four kinds of luck"
+        },
+        {
+          "text": "Blind luck and luck from hustle/energy",
+          "passed": true,
+          "evidence": "Items 1-2: blind luck and luck from hustling/persistence"
+        },
+        {
+          "text": "Luck from being good at spotting it (skill in a field)",
+          "passed": true,
+          "evidence": "Item 3: preparation, knowing your field well enough to spot opportunity"
+        },
+        {
+          "text": "Luck that finds you due to unique character/brand (the goal)",
+          "passed": true,
+          "evidence": "Item 4: unique character, luck that finds you; called the one Naval cares most about"
+        },
+        {
+          "text": "'If you can't decide, the answer is no'",
+          "passed": true,
+          "evidence": "Practical heuristics quote 'If you can't decide, the answer is no.'"
+        },
+        {
+          "text": "Mentions shedding identity for clear thinking, or the three big decisions (where you live, who you're with, what you do), or reading",
+          "passed": true,
+          "evidence": "'Get rid of ego and identity'; three big decisions (where you live, who you're with, what you do); read widely"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 3,
+      "eval_name": "nv-happiness",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Happiness is a choice and a skill you can develop/learn",
+          "passed": true,
+          "evidence": "Section 1 quotes 'Happiness is a choice you make and a skill you develop.'"
+        },
+        {
+          "text": "Desire is a contract you make with yourself to be unhappy until you get what you want",
+          "passed": true,
+          "evidence": "Section 2 quotes the desire-contract line verbatim"
+        },
+        {
+          "text": "Happiness = state when nothing is missing and/or peace is happiness at rest",
+          "passed": true,
+          "evidence": "Section 2: what's there when the sense of something missing is removed; Section 4 'Peace is happiness at rest'"
+        },
+        {
+          "text": "Success doesn't earn happiness and/or envy is the enemy of happiness",
+          "passed": true,
+          "evidence": "Section 4: can't buy happiness with external success; Section 5 discusses envy"
+        },
+        {
+          "text": "Built by habits such as meditation (and exercise, reading)",
+          "passed": true,
+          "evidence": "Section 5: meditation (choiceless awareness), daily exercise"
+        },
+        {
+          "text": "Mentions presence/acceptance or 'retirement is when you stop sacrificing today for an imaginary tomorrow'",
+          "passed": true,
+          "evidence": "Sections 3-4: presence and acceptance (change/accept/leave)"
+        }
+      ],
+      "notes": []
+    }
+  ],
+  "run_summary": {
+    "with_skill": {
+      "pass_rate": {
+        "mean": 1.0,
+        "stddev": 0.0,
+        "min": 1.0,
+        "max": 1.0
+      },
+      "time_seconds": null,
+      "tokens": null
+    },
+    "without_skill": {
+      "pass_rate": {
+        "mean": 1.0,
+        "stddev": 0.0,
+        "min": 1.0,
+        "max": 1.0
+      },
+      "time_seconds": null,
+      "tokens": null
+    },
+    "delta": {
+      "pass_rate": "+0.00",
+      "time_seconds": null,
+      "tokens": null
+    }
+  },
+  "notes": [
+    "Time recorded for 0 of 3 with_skill runs, 0 of 3 without_skill runs, so there is no time delta.",
+    "Token count recorded for 0 of 3 with_skill runs, 0 of 3 without_skill runs, so there is no token count delta."
+  ]
+}

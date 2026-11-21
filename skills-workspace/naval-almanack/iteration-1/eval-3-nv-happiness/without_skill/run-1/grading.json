@@ -1,0 +1,40 @@
+{
+ "expectations": [
+  {
+   "text": "Happiness is a choice and a skill you can develop/learn",
+   "passed": true,
+   "evidence": "Section 1 quotes 'Happiness is a choice you make and a skill you develop.'"
+  },
+  {
+   "text": "Desire is a contract you make with yourself to be unhappy until you get what you want",
+   "passed": true,
+   "evidence": "Section 2 quotes the desire-contract line verbatim"
+  },
+  {
+   "text": "Happiness = state when nothing is missing and/or peace is happiness at rest",
+   "passed": true,
+   "evidence": "Section 2: what's there when the sense of something missing is removed; Section 4 'Peace is happiness at rest'"
+  },
+  {
+   "text": "Success doesn't earn happiness and/or envy is the enemy of happiness",
+   "passed": true,
+   "evidence": "Section 4: can't buy happiness with external success; Section 5 discusses envy"
+  },
+  {
+   "text": "Built by habits such as meditation (and exercise, reading)",
+   "passed": true,
+   "evidence": "Section 5: meditation (choiceless awareness), daily exercise"
+  },
+  {
+   "text": "Mentions presence/acceptance or 'retirement is when you stop sacrificing today for an imaginary tomorrow'",
+   "passed": true,
+   "evidence": "Sections 3-4: presence and acceptance (change/accept/leave)"
+  }
+ ],
+ "summary": {
+  "passed": 6,
+  "failed": 0,
+  "total": 6,
+  "pass_rate": 1.0
+ }
+}

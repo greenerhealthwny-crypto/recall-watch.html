@@ -1,0 +1,40 @@
+{
+ "expectations": [
+  {
+   "text": "Seek wealth, not money or status (with definitions: assets that earn while you sleep)",
+   "passed": true,
+   "evidence": "Section 1 quotes 'Wealth is having assets that earn while you sleep' and contrasts money/status"
+  },
+  {
+   "text": "Specific knowledge: cannot be trained for; found through genuine curiosity",
+   "passed": true,
+   "evidence": "Section 3: 'knowledge that cannot be trained for', found by following genuine curiosity"
+  },
+  {
+   "text": "Leverage: labor, capital, code and media; code and media are permissionless",
+   "passed": true,
+   "evidence": "Section 5 lists labor, capital, code and media, calls the last 'permissionless leverage'"
+  },
+  {
+   "text": "Own equity \u2014 you won't get rich renting out your time",
+   "passed": true,
+   "evidence": "Section 2 quotes renting-out-time line and 'You must own equity'"
+  },
+  {
+   "text": "Accountability and/or playing long-term games with long-term people (compound interest)",
+   "passed": true,
+   "evidence": "Section 4 accountability; Section 8 long-term games and compound interest"
+  },
+  {
+   "text": "Productize yourself and/or 'learn to sell, learn to build' and/or judgment over hours",
+   "passed": true,
+   "evidence": "Section 9 'Productize yourself'; Section 3 learn to sell and build; Section 7 earn with your mind not time"
+  }
+ ],
+ "summary": {
+  "passed": 6,
+  "failed": 0,
+  "total": 6,
+  "pass_rate": 1.0
+ }
+}

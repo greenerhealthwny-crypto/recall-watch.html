@@ -1,0 +1,13 @@
+{
+ "eval_id": 1,
+ "eval_name": "nv-wealth",
+ "prompt": "According to The Almanack of Naval Ravikant, how do I get rich without getting lucky? Give me the key principles.",
+ "assertions": [
+  "Seek wealth, not money or status (with definitions: assets that earn while you sleep)",
+  "Specific knowledge: cannot be trained for; found through genuine curiosity",
+  "Leverage: labor, capital, code and media; code and media are permissionless",
+  "Own equity \u2014 you won't get rich renting out your time",
+  "Accountability and/or playing long-term games with long-term people (compound interest)",
+  "Productize yourself and/or 'learn to sell, learn to build' and/or judgment over hours"
+ ]
+}

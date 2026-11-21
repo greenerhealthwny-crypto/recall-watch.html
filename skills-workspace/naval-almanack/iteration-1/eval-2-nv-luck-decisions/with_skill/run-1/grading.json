@@ -1,0 +1,40 @@
+{
+ "expectations": [
+  {
+   "text": "Lists four kinds of luck",
+   "passed": true,
+   "evidence": "Table lists four kinds of luck numbered 1-4"
+  },
+  {
+   "text": "Blind luck and luck from hustle/energy",
+   "passed": true,
+   "evidence": "Rows 1-2: blind luck and luck from hustle"
+  },
+  {
+   "text": "Luck from being good at spotting it (skill in a field)",
+   "passed": true,
+   "evidence": "Row 3: luck from spotting it by knowing a field well"
+  },
+  {
+   "text": "Luck that finds you due to unique character/brand (the goal)",
+   "passed": true,
+   "evidence": "Row 4: luck from character/brand; 'The goal is the fourth kind'"
+  },
+  {
+   "text": "'If you can't decide, the answer is no'",
+   "passed": true,
+   "evidence": "Decision section 2 quotes 'If you can't decide, the answer is no.'"
+  },
+  {
+   "text": "Mentions shedding identity for clear thinking, or the three big decisions (where you live, who you're with, what you do), or reading",
+   "passed": true,
+   "evidence": "Decision sections 1, 3, 6: drop identity/ego, three big decisions, reading"
+  }
+ ],
+ "summary": {
+  "passed": 6,
+  "failed": 0,
+  "total": 6,
+  "pass_rate": 1.0
+ }
+}
