@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eval Review</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&family=Lora:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js" integrity="sha384-EnyY0/GSHQGSxSgMwaIPzSESbqoOLSexfnSMN2AP+39Ckmn92stwABZynq1JyzdT" crossorigin="anonymous"></script>
+  <style>
+    :root {
+      --bg: #faf9f5;
+      --surface: #ffffff;
+      --border: #e8e6dc;
+      --text: #141413;
+      --text-muted: #b0aea5;
+      --accent: #d97757;
+      --accent-hover: #c4613f;
+      --green: #788c5d;
+      --green-bg: #eef2e8;
+      --red: #c44;
+      --red-bg: #fceaea;
+      --header-bg: #141413;
+      --header-text: #faf9f5;
+      --radius: 6px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Lora', Georgia, serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ---- Header ---- */
+    .header {
+      background: var(--header-bg);
+      color: var(--header-text);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .header h1 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+    .header .instructions {
+      font-size: 0.8rem;
+      opacity: 0.7;
+      margin-top: 0.25rem;
+    }
+    .header .progress {
+      font-size: 0.875rem;
+      opacity: 0.8;
+      text-align: right;
+    }
+
+    /* ---- Main content ---- */
+    .main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.5rem 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    /* ---- Sections ---- */
+    .section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      flex-shrink: 0;
+    }
+    .section-header {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.75rem 1rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+    }
+    .section-body {
+      padding: 1rem;
+    }
+
+    /* ---- Config badge ---- */
+    .config-badge {
+      display: inline-block;
+      padding: 0.2rem 0.625rem;
+      border-radius: 9999px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      margin-left: 0.75rem;
+      vertical-align: middle;
+    }
+    .config-badge.config-primary {
+      background: rgba(33, 150, 243, 0.12);
+      color: #1976d2;
+    }
+    .config-badge.config-baseline {
+      background: rgba(255, 193, 7, 0.15);
+      color: #f57f17;
+    }
+
+    /* ---- Prompt ---- */
+    .prompt-text {
+      white-space: pre-wrap;
+      font-size: 0.9375rem;
+      line-height: 1.6;
+    }
+
+    /* ---- Outputs ---- */
+    .output-file {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .output-file + .output-file {
+      margin-top: 1rem;
+    }
+    .output-file-header {
+      padding: 0.5rem 0.75rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .output-file-header .dl-btn {
+      font-size: 0.7rem;
+      color: var(--accent);
+      text-decoration: none;
+      cursor: pointer;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-weight: 500;
+      opacity: 0.8;
+    }
+    .output-file-header .dl-btn:hover {
+      opacity: 1;
+      text-decoration: underline;
+    }
+    .output-file-content {
+      padding: 0.75rem;
+      overflow-x: auto;
+    }
+    .output-file-content pre {
+      font-size: 0.8125rem;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+    }
+    .output-file-content img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 4px;
+    }
+    .output-file-content iframe {
+      width: 100%;
+      height: 600px;
+      border: none;
+    }
+    .output-file-content table {
+      border-collapse: collapse;
+      font-size: 0.8125rem;
+      width: 100%;
+    }
+    .output-file-content table td,
+    .output-file-content table th {
+      border: 1px solid var(--border);
+      padding: 0.375rem 0.5rem;
+      text-align: left;
+    }
+    .output-file-content table th {
+      background: var(--bg);
+      font-weight: 600;
+    }
+    .output-file-content .download-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 0.875rem;
+      cursor: pointer;
+    }
+    .output-file-content .download-link:hover {
+      background: var(--border);
+    }
+    .empty-state {
+      color: var(--text-muted);
+      font-style: italic;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    /* ---- Feedback ---- */
+    .prev-feedback {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.625rem 0.75rem;
+      margin-top: 0.75rem;
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+    .prev-feedback-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.25rem;
+      color: var(--text-muted);
+    }
+    .feedback-textarea {
+      width: 100%;
+      min-height: 100px;
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 0.9375rem;
+      line-height: 1.5;
+      resize: vertical;
+      color: var(--text);
+    }
+    .feedback-textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    .feedback-status {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.5rem;
+      min-height: 1.1em;
+    }
+
+    /* ---- Grades (collapsible) ---- */
+    .grades-toggle {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+    }
+    .grades-toggle:hover {
+      color: var(--accent);
+    }
+    .grades-toggle .arrow {
+      margin-right: 0.5rem;
+      transition: transform 0.15s;
+      font-size: 0.75rem;
+    }
+    .grades-toggle .arrow.open {
+      transform: rotate(90deg);
+    }
+    .grades-content {
+      display: none;
+      margin-top: 0.75rem;
+    }
+    .grades-content.open {
+      display: block;
+    }
+    .grades-summary {
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .grade-badge {
+      display: inline-block;
+      padding: 0.125rem 0.5rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .grade-pass { background: var(--green-bg); color: var(--green); }
+    .grade-fail { background: var(--red-bg); color: var(--red); }
+    .assertion-list {
+      list-style: none;
+    }
+    .assertion-item {
+      padding: 0.625rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.8125rem;
+    }
+    .assertion-item:last-child { border-bottom: none; }
+    .assertion-status {
+      font-weight: 600;
+      margin-right: 0.5rem;
+    }
+    .assertion-status.pass { color: var(--green); }
+    .assertion-status.fail { color: var(--red); }
+    .assertion-evidence {
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      margin-top: 0.25rem;
+      padding-left: 1.5rem;
+    }
+
+    /* ---- View tabs ---- */
+    .view-tabs {
+      display: flex;
+      gap: 0;
+      padding: 0 2rem;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .view-tab {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.625rem 1.25rem;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      background: none;
+      color: var(--text-muted);
+      border-bottom: 2px solid transparent;
+      transition: all 0.15s;
+    }
+    .view-tab:hover { color: var(--text); }
+    .view-tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+    .view-panel { display: none; }
+    .view-panel.active { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
+
+    /* ---- Benchmark view ---- */
+    .benchmark-view {
+      padding: 1.5rem 2rem;
+      overflow-y: auto;
+      flex: 1;
+    }
+    .benchmark-table {
+      border-collapse: collapse;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 0.8125rem;
+      width: 100%;
+      margin-bottom: 1.5rem;
+    }
+    .benchmark-table th, .benchmark-table td {
+      padding: 0.625rem 0.75rem;
+      text-align: left;
+      border: 1px solid var(--border);
+    }
+    .benchmark-table th {
+      font-family: 'Poppins', sans-serif;
+      background: var(--header-bg);
+      color: var(--header-text);
+      font-weight: 500;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .benchmark-table tr:hover { background: var(--bg); }
+    .benchmark-table tr.benchmark-row-with { background: rgba(33, 150, 243, 0.06); }
+    .benchmark-table tr.benchmark-row-without { background: rgba(255, 193, 7, 0.06); }
+    .benchmark-table tr.benchmark-row-with:hover { background: rgba(33, 150, 243, 0.12); }
+    .benchmark-table tr.benchmark-row-without:hover { background: rgba(255, 193, 7, 0.12); }
+    .benchmark-table tr.benchmark-row-avg { font-weight: 600; border-top: 2px solid var(--border); }
+    .benchmark-table tr.benchmark-row-avg.benchmark-row-with { background: rgba(33, 150, 243, 0.12); }
+    .benchmark-table tr.benchmark-row-avg.benchmark-row-without { background: rgba(255, 193, 7, 0.12); }
+    .benchmark-delta-positive { color: var(--green); font-weight: 600; }
+    .benchmark-delta-negative { color: var(--red); font-weight: 600; }
+    .benchmark-notes {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem;
+    }
+    .benchmark-notes h3 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+    }
+    .benchmark-notes ul {
+      list-style: disc;
+      padding-left: 1.25rem;
+    }
+    .benchmark-notes li {
+      font-size: 0.8125rem;
+      line-height: 1.6;
+      margin-bottom: 0.375rem;
+    }
+    .benchmark-empty {
+      color: var(--text-muted);
+      font-style: italic;
+      text-align: center;
+      padding: 3rem;
+    }
+
+    /* ---- Navigation ---- */
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+      flex-shrink: 0;
+    }
+    .nav-btn {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.5rem 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text);
+      transition: all 0.15s;
+    }
+    .nav-btn:hover:not(:disabled) {
+      background: var(--bg);
+      border-color: var(--text-muted);
+    }
+    .nav-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    .done-btn {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.5rem 1.5rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: all 0.15s;
+    }
+    .done-btn:hover {
+      background: var(--bg);
+      border-color: var(--text-muted);
+    }
+    .done-btn.ready {
+      border: none;
+      background: var(--accent);
+      color: white;
+      font-weight: 600;
+    }
+    .done-btn.ready:hover {
+      background: var(--accent-hover);
+    }
+    /* ---- Done overlay ---- */
+    .done-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 100;
+      justify-content: center;
+      align-items: center;
+    }
+    .done-overlay.visible {
+      display: flex;
+    }
+    .done-card {
+      background: var(--surface);
+      border-radius: 12px;
+      padding: 2rem 3rem;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      max-width: 500px;
+    }
+    .done-card h2 {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .done-card p {
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
+    }
+    .done-card .btn-row {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+    }
+    .done-card button {
+      padding: 0.5rem 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 0.875rem;
+    }
+    .done-card button:hover {
+      background: var(--bg);
+    }
+    /* ---- Toast ---- */
+    .toast {
+      position: fixed;
+      bottom: 5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--header-bg);
+      color: var(--header-text);
+      padding: 0.625rem 1.25rem;
+      border-radius: var(--radius);
+      font-size: 0.875rem;
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+      z-index: 200;
+    }
+    .toast.visible {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <div id="app" style="height:100vh; display:flex; flex-direction:column;">
+    <div class="header">
+      <div>
+        <h1>Eval Review: <span id="skill-name"></span></h1>
+        <div class="instructions">Review each output and leave feedback below. Navigate with arrow keys or buttons. When done, copy feedback and paste into Claude Code.</div>
+      </div>
+      <div class="progress" id="progress"></div>
+    </div>
+
+    <!-- View tabs (only shown when benchmark data exists) -->
+    <div class="view-tabs" id="view-tabs" style="display:none;">
+      <button class="view-tab active" onclick="switchView('outputs')">Outputs</button>
+      <button class="view-tab" onclick="switchView('benchmark')">Benchmark</button>
+    </div>
+
+    <!-- Outputs panel (qualitative review) -->
+    <div class="view-panel active" id="panel-outputs">
+    <div class="main">
+      <!-- Prompt -->
+      <div class="section">
+        <div class="section-header">Prompt <span class="config-badge" id="config-badge" style="display:none;"></span></div>
+        <div class="section-body">
+          <div class="prompt-text" id="prompt-text"></div>
+        </div>
+      </div>
+
+      <!-- Outputs -->
+      <div class="section">
+        <div class="section-header">Output</div>
+        <div class="section-body" id="outputs-body">
+          <div class="empty-state">No output files found</div>
+        </div>
+      </div>
+
+      <!-- Previous Output (collapsible) -->
+      <div class="section" id="prev-outputs-section" style="display:none;">
+        <div class="section-header">
+          <div class="grades-toggle" onclick="togglePrevOutputs()">
+            <span class="arrow" id="prev-outputs-arrow">&#9654;</span>
+            Previous Output
+          </div>
+        </div>
+        <div class="grades-content" id="prev-outputs-content"></div>
+      </div>
+
+      <!-- Grades (collapsible) -->
+      <div class="section" id="grades-section" style="display:none;">
+        <div class="section-header">
+          <div class="grades-toggle" onclick="toggleGrades()">
+            <span class="arrow" id="grades-arrow">&#9654;</span>
+            Formal Grades
+          </div>
+        </div>
+        <div class="grades-content" id="grades-content"></div>
+      </div>
+
+      <!-- Feedback -->
+      <div class="section">
+        <div class="section-header">Your Feedback</div>
+        <div class="section-body">
+          <textarea
+            class="feedback-textarea"
+            id="feedback"
+            placeholder="What do you think of this output? Any issues, suggestions, or things that look great?"
+          ></textarea>
+          <div class="feedback-status" id="feedback-status"></div>
+          <div class="prev-feedback" id="prev-feedback" style="display:none;">
+            <div class="prev-feedback-label">Previous feedback</div>
+            <div id="prev-feedback-text"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav" id="outputs-nav">
+      <button class="nav-btn" id="prev-btn" onclick="navigate(-1)">&#8592; Previous</button>
+      <button class="done-btn" id="done-btn" onclick="showDoneDialog()">Submit All Reviews</button>
+      <button class="nav-btn" id="next-btn" onclick="navigate(1)">Next &#8594;</button>
+    </div>
+    </div><!-- end panel-outputs -->
+
+    <!-- Benchmark panel (quantitative stats) -->
+    <div class="view-panel" id="panel-benchmark">
+      <div class="benchmark-view" id="benchmark-content">
+        <div class="benchmark-empty">No benchmark data available. Run a benchmark to see quantitative results here.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Done overlay -->
+  <div class="done-overlay" id="done-overlay">
+    <div class="done-card">
+      <h2>Review Complete</h2>
+      <p>Your feedback has been saved. Go back to your Claude Code session and tell Claude you're done reviewing.</p>
+      <div class="btn-row">
+        <button onclick="closeDoneDialog()">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ---- Embedded data (injected by generate_review.py) ----
+    const EMBEDDED_DATA = {"skill_name": "greatest-salesman", "runs": [{"id": "eval-1-gs-method-with_skill-run-1", "prompt": "How exactly does The Greatest Salesman in the World tell you to read the scrolls? Give me the schedule and why it works.", "eval_id": 1, "outputs": [{"name": "response.md", "type": "text", "content": "# How *The Greatest Salesman in the World* tells you to read the scrolls\n\nOg Mandino doesn't leave the reading to chance. The method is laid out in **Scroll I**, the scroll about forming good habits. Following the method is meant to be the first good habit you form.\n\n## The schedule\n\n**Rule 1: One scroll for 30 days.** You stay with a single scroll for thirty days in a row. Only then do you move on to the next one.\n\n**Rule 2: Three readings a day, at fixed times.**\n\n| When | How |\n|---|---|\n| When you get up in the morning | Read it **silently** |\n| After your midday meal | Read it **silently** again |\n| Just before you go to bed | Read it **aloud** |\n\n**Rule 3: Don't skip a day.** The scroll warns that a missed day \"cannot be retrieved.\" There's no catching up by reading twice as much the next day.\n\n**Rule 4: Go through all ten in order.** Ten scrolls at 30 days each comes to about **ten months**. After that, the principles are meant to be part of how you think and act.\n\n### What the ten months look like\n\n| Month | Scroll | Key line |\n|---|---|---|\n| 1 | I: Habits | \"Today I begin a new life.\" |\n| 2 | II: Love | \"I will greet this day with love in my heart.\" |\n| 3 | III: Persistence | \"I will persist until I succeed.\" |\n| 4 | IV: Self-worth | \"I am nature's greatest miracle.\" |\n| 5 | V: Urgency | \"I will live this day as if it is my last.\" |\n| 6 | VI: Emotions | \"Today I will be master of my emotions.\" |\n| 7 | VII: Laughter | \"I will laugh at the world.\" |\n| 8 | VIII: Goals | \"Today I will multiply my value a hundredfold.\" |\n| 9 | IX: Action | \"I will act now.\" |\n| 10 | X: Prayer | The salesman's prayer: \"Guide me.\" |\n\n## Why it works, according to the book\n\n**1. Habits decide success or failure.** Scroll I says the only real difference between people who fail and people who succeed is their **habits**. Good habits are \"the key to all success,\" and bad habits are \"the unlocked door to failure.\" So the first law is: *I will form good habits and become their slave.*\n\n**2. Only a habit can beat a habit.** Willpower and good intentions won't break an old habit. You need a new habit to replace it. The daily reading is that new habit: a deliberate routine set up to push out the old patterns.\n\n**3. Repetition reaches the \"other mind.\"** The book says your conscious resolutions fade, but the words you repeat sink into a deeper, \"mysterious\" mind (we'd call it the subconscious) that never sleeps. Once the words are lodged there, they start to drive your reactions on their own. You don't have to remember to persist or to stay calm. You just respond that way. Reading aloud just before sleep hands the words to that mind at the end of the day.\n\n**4. An act repeated becomes a pleasure.** The scroll lays out a progression. A repeated act gets **easy**, then it becomes a **pleasure**, and once it's a pleasure you do it by nature, as a **habit**. Thirty days of three readings a day comes to about 90 exposures per scroll. That's enough to carry each principle through those stages.\n\n**5. Patience is built in.** Scroll I compares the olive tree, which takes a hundred years, with the onion plant, which takes nine weeks, and says the reader has \"lived as an onion plant.\" The slow 30-day pace per scroll is on purpose. Lasting change comes from steady repetition, not a quick read-through.\n\n**6. Fixed times make it automatic.** Linking the readings to waking, lunch and bedtime ties the new habit to things you already do every day. You don't have to decide each day whether to read. The time of day is the cue.\n\n## Making it work today (practical adaptation)\n\nThese suggestions are mine, not the book's.\n\n- **Set up the cues.** Put three 2-minute reminders in your calendar: morning, after lunch, bedtime.\n- **Track the streak.** Mark off 30 boxes for each scroll and start the next scroll on day 31.\n- **Add one behavior.** While you read a scroll, also practice what it teaches. During Scroll III, make one more call or attempt after you feel like stopping. During Scroll IX, start any task as soon as you think of it.\n- **Keep the aloud reading.** It feels awkward at first, but the book treats it as an important part of the method, so don't swap it for another silent read.\n\nA note: the book is an inspirational parable with religious themes, especially in Scroll X's prayer. If prayer doesn't fit your beliefs, you can read Scroll X as a daily intention or reflection and keep the same schedule.\n"}], "grading": {"expectations": [{"text": "States each scroll is read for 30 days before moving to the next", "passed": true, "evidence": "30 days per scroll"}, {"text": "Gives the three daily readings: silently on rising, silently after the midday meal, aloud before retiring", "passed": true, "evidence": "Silent on rising, after midday meal, aloud before bed"}, {"text": "Explains the purpose: forming good habits / reaching the subconscious ('other mind') through repetition", "passed": true, "evidence": "Habit/other mind"}, {"text": "Notes the first scroll's law: form good habits and become their slave (only a habit subdues a habit)", "passed": true, "evidence": "Form good habits and become their slave"}, {"text": "Mentions not skipping a day and/or the ~10 month total", "passed": true, "evidence": "Don't skip a day; ten months"}, {"text": "Lists or references the ten scroll themes (love, persist, miracle, last day, emotions, laugh, multiply value, act now, prayer)", "passed": true, "evidence": "Scroll themes table"}], "summary": {"passed": 6, "failed": 0, "total": 6, "pass_rate": 1.0}}}, {"id": "eval-1-gs-method-without_skill-run-1", "prompt": "How exactly does The Greatest Salesman in the World tell you to read the scrolls? Give me the schedule and why it works.", "eval_id": 1, "outputs": [{"name": "response.md", "type": "text", "content": "# How *The Greatest Salesman in the World* Tells You to Read the Scrolls\n\nOg Mandino's 1968 book is a parable. An old merchant named Hafid gives a young camel boy ten ancient scrolls. The first scroll (\"The Scroll Marked I\") is mostly a set of instructions for how to read the other nine, and how to read itself. Following those instructions is the whole method.\n\n## The schedule\n\n**1. One scroll at a time, for 30 days.**\nYou read a single scroll every day for thirty days before you go on to the next one. You don't skip around, read ahead, or move on early.\n\n**2. Three readings every day.**\n- **When you wake up:** read it silently.\n- **After your midday meal:** read it silently again.\n- **Before you go to sleep:** read it again, and this time **read it aloud**.\n\n**3. Repeat every day for the 30 days.**\nThe next morning you start again with the same scroll. After thirty days you move on to Scroll II and follow the same routine.\n\n**4. Go through all ten scrolls in order.**\n10 scrolls \u00d7 30 days = **300 days**, about ten months. That's 90 readings per scroll and roughly 900 in total.\n\n### The ten scrolls, in order\n\n| Scroll | Theme |\n|---|---|\n| I | Today I begin a new life. I will form good habits and become their slave. (the method itself) |\n| II | I will greet this day with love in my heart. |\n| III | I will persist until I succeed. |\n| IV | I am nature's greatest miracle. |\n| V | I will live this day as if it is my last. |\n| VI | Today I will be master of my emotions. |\n| VII | I will laugh at the world. |\n| VIII | Today I will multiply my value a hundredfold. |\n| IX | I will act now. |\n| X | A prayer for guidance. |\n\n## Why it works (the book's reasoning)\n\n**Failure comes from bad habits, not missing knowledge.** Scroll I says the only real difference between people who fail and people who succeed is their habits. Good intentions and wisdom don't help if your habits pull the other way.\n\n**Only a habit can beat a habit.** You can't get rid of a bad habit by deciding to. You have to push it out with a new one. In the book's words, \"only a habit can subdue another habit.\" The daily repetition is how you build the new habits.\n\n**Repetition reaches the subconscious mind.** The scroll says that reading the words again and again lets them sink into the part of the mind that \"never sleeps.\" Once they're there, they shape what you dream about and how you act. In time you respond to the world the way the scrolls describe without having to stop and think about it.\n\n**Reading becomes doing.** The first stage is the habit of reading the scrolls. After a while, the ideas in them become your reflexes: you greet people with love, you persist, you act now. The book says you will \"become the words.\"\n\n**The 30-day stretch gives each idea time to take hold.** A whole month on one scroll keeps it in front of you long enough to become routine. It also has to last past the first few days, which the scroll warns are the hardest, when the old habits push back and you'll be tempted to quit. Reading three times a day means the message starts your day, interrupts its middle, and is the last thing in your head before sleep. Reading it aloud at night adds hearing and speaking to seeing, which strengthens the impression.\n\n**Discipline is part of the lesson.** Doing the program is already practice in what the scrolls teach, especially persistence (Scroll III) and acting now (Scroll IX). If you can keep the reading schedule for 300 days, you've shown you can keep other commitments too.\n\n## In short\n\nRead one scroll three times a day: silently when you wake, silently after lunch, and aloud before bed. Do this for 30 days, then go on to the next scroll, through all ten (about 10 months). The book's idea is that this repetition replaces your bad habits with good ones by planting the principles in your subconscious until you act on them automatically.\n"}], "grading": {"expectations": [{"text": "States each scroll is read for 30 days before moving to the next", "passed": true, "evidence": "Thirty days per scroll"}, {"text": "Gives the three daily readings: silently on rising, silently after the midday meal, aloud before retiring", "passed": true, "evidence": "Wake/lunch/bed aloud"}, {"text": "Explains the purpose: forming good habits / reaching the subconscious ('other mind') through repetition", "passed": true, "evidence": "Habits and repetition explained"}, {"text": "Notes the first scroll's law: form good habits and become their slave (only a habit subdues a habit)", "passed": true, "evidence": "Scroll I habits"}, {"text": "Mentions not skipping a day and/or the ~10 month total", "passed": true, "evidence": "No skipping; 10 months"}, {"text": "Lists or references the ten scroll themes (love, persist, miracle, last day, emotions, laugh, multiply value, act now, prayer)", "passed": true, "evidence": "Themes referenced"}], "summary": {"passed": 6, "failed": 0, "total": 6, "pass_rate": 1.0}}}, {"id": "eval-2-gs-rejection-with_skill-run-1", "prompt": "I'm in sales and I keep getting rejected and feeling down. What would Og Mandino's scrolls tell me to do?", "eval_id": 2, "outputs": [{"name": "response.md", "type": "text", "content": "# What Og Mandino's Scrolls Say About Rejection\n\nRejection is part of sales, and feeling down about it is normal. *The Greatest Salesman in the World* (Og Mandino, 1968) was written for exactly this. In the story, the young camel boy Hafid fails for days to sell a single robe in Bethlehem and rides home sure he has failed. Then his master Pathros gives him ten scrolls, and they make him the greatest salesman in the world.\n\nThree scrolls speak most directly to you right now: **III** (rejection), **VI** (low mood) and **VII** (perspective).\n\n## 1. Scroll III: \"I will persist until I succeed.\" Treat each \"no\" as progress\n\nThis is the scroll for rejection.\n\n- **The law of averages.** Every failure raises the odds that the next attempt succeeds. In Mandino's words, \"Each nay I hear will bring me closer to the sound of yea.\" You have to fail often to succeed once, so a \"no\" is a step forward, not a verdict on you.\n- **The oak and the blade.** Each day's work is one blow against a great oak. No single blow looks like it does anything, but together they bring the tree down.\n- **Drop the defeat words.** The scroll tells you to stop using *quit, cannot, unable, impossible, hopeless*.\n- **One more attempt.** When you're tired at the end of the day and want to go home, try once more. If that fails, try again.\n\n**Do this:** set a daily minimum of calls or attempts. After you hit it and want to stop, make one more \"persistence call.\"\n\n## 2. Scroll VI: \"Today I will be master of my emotions.\" Answer the mood with an action\n\nMandino says moods come and go in cycles, like tides and seasons. A dead flower holds the seed of the next bloom, so today's slump won't last. The key is not to let the mood decide what you do. Answer each feeling with an action:\n\n- \"If I feel depressed I will sing.\"\n- \"If I feel sad I will laugh.\"\n- \"If I feel fear I will plunge ahead.\"\n- \"If I feel incompetent I will remember past success.\"\n- \"If I feel insignificant I will remember my goals.\"\n\nThe scroll also covers the buyer's side. A prospect who's short with you today may just be in a bad mood. Make allowances, and try them again another day. Their \"no\" is often about their day, not about you.\n\n**Do this:** write your own \"If I feel X, I will Y\" list on a card and keep it where you can see it. For example: \"If I feel rejected, I will review my last win and dial the next number.\"\n\n## 3. Scroll VII: \"I will laugh at the world.\" Shrink the setback\n\n- Four words bring things back into balance: **\"This too shall pass.\"** They work for a bad week and for a great one.\n- Laugh at yourself. Mandino says a man is most comical when he takes himself too seriously. Laughter brings failures down to their true size.\n\n**Do this:** when a deal falls through, say \"This too shall pass,\" then make the next call.\n\n## Supporting scrolls, if they fit\n\n- **Scroll IV, \"I am nature's greatest miracle\":** a rejection doesn't measure your worth. You are rare, and rarity has value. List three things that set you apart and build your pitch around them, not around copying others.\n- **Scroll IX, \"I will act now\":** brooding after a \"no\" is the real danger. The cure is the next action, right away.\n- **Scroll V, \"I will live this day as if it is my last\":** don't drag yesterday's rejections into today. Each day starts fresh.\n- **Scroll II, love:** silently say \"I love you\" before each call and find one genuine thing to praise in the prospect. It changes how you come across, and it changes how a \"no\" feels.\n\n## How to use them: Mandino's 30-day method\n\nThe book insists that reading a scroll once isn't enough. The words have to become habit (Scroll I).\n\n1. Pick **one** scroll. Given what you describe, start with **Scroll III (persistence)**.\n2. Read it **silently when you wake up**, **silently after lunch**, and **aloud just before bed**.\n3. Keep going for **30 days** without skipping. Mandino warns that a missed day can't be retrieved.\n4. On day 31, move to the next scroll. Scroll VI (emotions) and then VII (laughter) are good next picks.\n\nIf you don't have the book, write the scroll's key line on a card (\"I will persist until I succeed\") and read that three times a day, along with your own if/then list.\n\n## An honest note\n\nThe scrolls are about mindset and motivation, not a sales-technique manual. If rejections stay high over many weeks, also look at the mechanics: who you're targeting, your opening, your offer and your follow-up. Persistence works best when you keep making the approach better too.\n\nAnd if \"feeling down\" turns into something heavier that won't lift, such as trouble sleeping, losing interest in things, or feeling hopeless, please talk to someone you trust or a professional. That's about more than sales, and you deserve real support.\n\nHafid's whole story begins with what looked like a failure. As Scroll III puts it: **\"I will persist until I succeed.\"**\n"}], "grading": {"expectations": [{"text": "Uses scroll III 'I will persist until I succeed' with the law of averages (each no brings me closer to yes)", "passed": true, "evidence": "Scroll III law of averages"}, {"text": "Mentions making one more attempt / call before going home", "passed": true, "evidence": "One more attempt"}, {"text": "Uses scroll VI emotions with counter-actions (e.g., if I feel depressed I will sing; if I feel fear I will plunge ahead)", "passed": true, "evidence": "Counter-actions: sing, plunge ahead"}, {"text": "Uses scroll VII laughter and 'This too shall pass'", "passed": true, "evidence": "This too shall pass"}, {"text": "Includes scroll II greeting with love (silently say 'I love you') or scroll IX 'I will act now'", "passed": true, "evidence": "I love you / act now"}, {"text": "Gives a concrete daily routine (e.g., 30-day reading schedule)", "passed": true, "evidence": "30-day reading routine"}], "summary": {"passed": 6, "failed": 0, "total": 6, "pass_rate": 1.0}}}, {"id": "eval-2-gs-rejection-without_skill-run-1", "prompt": "I'm in sales and I keep getting rejected and feeling down. What would Og Mandino's scrolls tell me to do?", "eval_id": 2, "outputs": [{"name": "response.md", "type": "text", "content": "# What Og Mandino's Scrolls Say About Rejection\n\nIn *The Greatest Salesman in the World* (1968), Og Mandino tells the story of Hafid, a camel boy who becomes the richest merchant of his time. Hafid's secret is ten scrolls he reads every day. A lot of the book is about the exact problem you describe: hearing \"no\" over and over and feeling it wear you down. Here is what the scrolls would tell you.\n\n---\n\n## 1. Treat every \"no\" as progress (Scroll III: *\"I will persist until I succeed\"*)\n\nThis is the scroll most directly about rejection. Its main idea is that a \"no\" doesn't mean you failed. It's a step toward the next \"yes.\" Paraphrasing the scroll: each refusal moves you closer to acceptance, and each frown prepares you for the smile that comes next.\n\nWhat it asks you to do:\n- **Think of the work as many small blows against a big oak tree.** No single swing fells it, but each one counts.\n- **Remove defeatist words from how you talk to yourself**, words like *quit, cannot, impossible, hopeless, failure*.\n- **Make one more call.** When you want to stop for the day, make one more attempt, and try to end the day on an effort instead of a retreat.\n- **See yourself as a lion, not a sheep.** You weren't born to wait for someone to push you forward.\n\n**In practice:** Track your activity, not only your results. If you know your ratio, say 1 close per 20 calls, then every rejection is a known part of the process and not a judgment of you.\n\n---\n\n## 2. Run your emotions; don't let them run you (Scroll VI: *\"Today I will be master of my emotions\"*)\n\nMandino says moods rise and fall like tides, and a salesman who acts only when he feels good will fail. A well-known line from this scroll says the weak let their thoughts control their actions, while the strong make their actions control their thoughts.\n\nThe scroll lists specific actions to take against specific bad moods:\n- If I feel **depressed**, I will sing.\n- If I feel **sad**, I will laugh.\n- If I feel **fear**, I will plunge ahead.\n- If I feel **inferior**, I will wear new garments.\n- If I feel **uncertain**, I will raise my voice.\n- If I feel **incompetent**, I will remember past success.\n- If I feel **insignificant**, I will remember my goals.\n\nThe scroll also says **your prospects have moods too.** A harsh \"no\" often reflects the buyer's bad day, not your worth. Don't take it personally, and come back another day.\n\n---\n\n## 3. Remember that this too shall pass (Scroll VII: *\"I will laugh at the world\"*)\n\nLaughter keeps things in proportion. When a rejection stings, tell yourself *\"This too shall pass.\"* Mandino applies the phrase to good fortune as well, so a big win shouldn't make you arrogant either. A bad week, a lost deal, a rude prospect: none of it is permanent. Don't take yourself so seriously that each \"no\" feels like the end of the world.\n\n---\n\n## 4. Know your own worth (Scroll IV: *\"I am nature's greatest miracle\"*)\n\nRejection can make you feel like the problem. This scroll reminds you that no one else in the world has your mix of abilities, voice and character. Use that uniqueness. Don't copy other people, and stop measuring your value by today's results.\n\n---\n\n## 5. Lead with love, even toward the people who reject you (Scroll II: *\"I will greet this day with love in my heart\"*)\n\nMandino calls love the greatest secret of success. In practice it is a shield: love \"can melt hearts and disarm resistance.\" Bless the prospect who turns you down, and look for something to admire in them. That keeps you from getting bitter or defensive, and it makes you easier to buy from next time.\n\n---\n\n## 6. Live today as if it were your last (Scroll V)\n\nDon't dwell on yesterday's rejections, and don't dread tomorrow's. Yesterday is gone and tomorrow isn't promised. Put full effort into today's calls and let the rest go.\n\n---\n\n## 7. Act now (Scroll IX: *\"I will act now\"*)\n\nWhen you feel down, it's easy to procrastinate. You avoid the phone, over-prepare and wait until you \"feel ready.\" Mandino's answer is to repeat *\"I will act now\"* and make the call before your feelings talk you out of it. Action is what beats the fear.\n\n---\n\n## 8. Keep raising your goals and your value (Scroll VIII: *\"Today I will multiply my value a hundredfold\"*)\n\nSet goals for the day, week, month and year that stretch you a bit, and try to beat yesterday's performance. Every rejection is a chance to sharpen your pitch, product knowledge and listening.\n\n---\n\n## 9. Ask for guidance, not for things (Scroll X)\n\nThe last scroll is a prayer. It asks not for gold or sales but for **guidance**: the wisdom to find the way and the strength to keep going. Whatever your beliefs, it's about humility and help with the inner struggle, not the outcome.\n\n---\n\n## 10. Build the habit (Scroll I: *\"Today I begin a new life\"*)\n\nMandino says the difference between people who fail and people who succeed is mostly their **habits**. His method:\n- **Read one scroll three times a day for 30 days** (on waking, after lunch and before bed, the last time aloud) before moving to the next scroll.\n- That takes about ten months for all ten scrolls. The repetition rewires your automatic reactions, so persistence and control over your emotions become reflexes instead of willpower.\n\n---\n\n## A simple daily plan based on the scrolls\n\n1. **Morning:** Read today's scroll aloud. Say *\"I will persist until I succeed\"* and *\"I will act now.\"*\n2. **Before calls:** Set an activity goal, such as a number of calls or meetings, and not only a sales target.\n3. **After each \"no\":** Tell yourself *\"Each no brings me closer to yes,\"* write down one thing you learned, and move to the next call right away.\n4. **When the mood drops:** Use the Scroll VI antidote. Put on music, laugh, stand up and raise your voice, or review a past win.\n5. **End of day:** Make one more call. Then tell yourself *\"This too shall pass\"* and let the day go.\n\n---\n\n**A caring note:** Mandino's scrolls are a strong tool for resilience, but if feeling down turns into something heavier or lasts a long time, like trouble sleeping, losing interest in things or hopelessness, please talk to someone you trust or a mental health professional. Persistence matters, and so does taking care of yourself.\n"}], "grading": {"expectations": [{"text": "Uses scroll III 'I will persist until I succeed' with the law of averages (each no brings me closer to yes)", "passed": true, "evidence": "Each no closer to yes (law-of-averages idea, term not named)"}, {"text": "Mentions making one more attempt / call before going home", "passed": true, "evidence": "Make one more call"}, {"text": "Uses scroll VI emotions with counter-actions (e.g., if I feel depressed I will sing; if I feel fear I will plunge ahead)", "passed": true, "evidence": "Sing / plunge ahead counter-actions"}, {"text": "Uses scroll VII laughter and 'This too shall pass'", "passed": true, "evidence": "This too shall pass"}, {"text": "Includes scroll II greeting with love (silently say 'I love you') or scroll IX 'I will act now'", "passed": true, "evidence": "Act now / love referenced"}, {"text": "Gives a concrete daily routine (e.g., 30-day reading schedule)", "passed": true, "evidence": "Daily plan with 30-day schedule"}], "summary": {"passed": 6, "failed": 0, "total": 6, "pass_rate": 1.0}}}, {"id": "eval-3-gs-story-with_skill-run-1", "prompt": "Summarize the story of The Greatest Salesman in the World: who is Hafid, what happens with the robe, and who gets the scrolls in the end?", "eval_id": 3, "outputs": [{"name": "response.md", "type": "text", "content": "# The story of *The Greatest Salesman in the World* (Og Mandino, 1968)\n\nThe book is a short parable. The story is a frame around ten \"scrolls\" of success, and it has three parts: an old man looking back, a test he faced as a boy, and a handover at the end.\n\n## Who is Hafid?\n\n- When the book opens, **Hafid** is old and very rich, and lives in **Damascus**. People call him \"the greatest salesman in the world.\"\n- He gives away his fortune, and he tells his loyal bookkeeper, **Erasmus**, the secret of how he became so successful.\n- Then the story goes back in time. Hafid started out as a lowly **camel boy** working for the merchant **Pathros of Palmyra**. He wanted more from life and asked Pathros to let him become a salesman.\n\n## What happens with the robe?\n\n1. **The test.** Pathros gives Hafid one fine **red robe** and sends him to **Bethlehem** to sell it. This shows whether Hafid can sell.\n2. **The failure.** Hafid tries for days and makes no sale.\n3. **The gift.** He finds a **newborn baby in a cave** with no warm covering. He wraps the baby in the robe, so he gives away the one thing he was supposed to sell.\n4. **The star.** He rides back to Pathros sure that he has failed. Above him shines the **brightest star he has ever seen**, and it follows him.\n5. **The sign.** Pathros sees the star over Hafid and knows it is the sign he has been waiting for. Hafid did not sell the robe, but he passed the real test. Pathros gives him a chest holding the **ten scrolls**, which teach the principles of success.\n\nThe robe comes back at the end of the story (see below).\n\n## What are the scrolls?\n\nHafid follows the scrolls and becomes rich. Each scroll teaches one principle:\n\n| Scroll | Principle |\n|---|---|\n| I | Form good habits (\"Today I begin a new life\"). This scroll also gives the reading method: read each scroll three times a day for 30 days. |\n| II | Greet each day with love in your heart |\n| III | Persist until you succeed |\n| IV | You are nature's greatest miracle |\n| V | Live each day as if it is your last |\n| VI | Be master of your emotions |\n| VII | Laugh at the world (\"This too shall pass\") |\n| VIII | Multiply your value a hundredfold |\n| IX | Act now |\n| X | Pray for guidance (the salesman's prayer) |\n\n## Who gets the scrolls in the end?\n\n- In old age, Hafid keeps the scrolls and waits for the person they are meant for next.\n- That person is **Paul (Saul of Tarsus)**. He arrives carrying a robe that came from **Jesus' crucifixion**.\n- Hafid looks at the robe and finds the marks of **Tola** and **Pathros** on it. It is **the same red robe** he wrapped around the baby in the Bethlehem cave. That means the baby was Jesus.\n- So Hafid knows Paul is the one he has been waiting for, and he gives the scrolls to him. The chain that Pathros started is passed on.\n\n## A note on the ending and the themes\n\n- The edition ends with a preview of the sequel, *Part II: The End of the Story*. In it Hafid, at sixty, decides to begin \"a second life\" of helping others.\n- The story has strong Christian themes: the baby in Bethlehem, the star, Paul, and prayer. These are the book's own framing. The ideas in the scrolls (habits, persistence, controlling your moods, taking action) also work as plain advice for anyone.\n\nIf you want to go further, I can go through any scroll in detail or set up the 30-day reading routine from Scroll I.\n"}], "grading": {"expectations": [{"text": "Hafid begins as a camel boy for the merchant Pathros", "passed": true, "evidence": "Camel boy for Pathros"}, {"text": "He is sent to Bethlehem to sell a robe and gives it to warm a newborn infant in a cave", "passed": true, "evidence": "Bethlehem robe to infant in cave"}, {"text": "A bright star follows him, which Pathros recognizes as a sign and gives him the ten scrolls", "passed": true, "evidence": "Star; Pathros gives scrolls"}, {"text": "As an old man in Damascus Hafid gives away his wealth and confides in his bookkeeper Erasmus", "passed": true, "evidence": "Damascus, Erasmus"}, {"text": "The scrolls go to Paul (Saul of Tarsus)", "passed": true, "evidence": "Paul / Saul of Tarsus"}, {"text": "Paul brings the robe (marked by Tola/Pathros) that Hafid had given away", "passed": true, "evidence": "Robe with Tola/Pathros marks"}], "summary": {"passed": 6, "failed": 0, "total": 6, "pass_rate": 1.0}}}, {"id": "eval-3-gs-story-without_skill-run-1", "prompt": "Summarize the story of The Greatest Salesman in the World: who is Hafid, what happens with the robe, and who gets the scrolls in the end?", "eval_id": 3, "outputs": [{"name": "response.md", "type": "text", "content": "# The Greatest Salesman in the World: Story Summary\n\n*Og Mandino, 1968*\n\n## The frame: an old man giving his fortune away\n\nThe book opens in Damascus. Hafid, by now very old, is known as the greatest salesman in the world. He tells his loyal bookkeeper Erasmus to sell off his trading empire and give the money to the poor, keeping only enough for himself and his wife to live on. Then he takes Erasmus to a hidden room in his warehouse, where a small chest sits under guard. It holds the secret of his success, and he has been waiting years for the one person meant to receive it. He then tells the story of how he got it.\n\n## Who is Hafid?\n\nHafid starts as a poor camel boy in the caravan of **Pathros**, a rich and respected merchant. He is in love with **Lisha**, daughter of the wealthy Calneh, but he knows her father will never let her marry a camel boy. So he asks Pathros to make him a salesman, hoping to earn his fortune and be worthy of her.\n\n## What happens with the robe?\n\nPathros tests him. He gives Hafid one fine **red robe** and sends him to sell it in the poor village of **Bethlehem**.\n\n- For three days Hafid tries and fails to sell it, and he grows discouraged.\n- On the last night he finds a young couple sheltering in a cave behind an inn. They have a newborn baby and nothing to keep him warm from the cold.\n- Out of pity, Hafid wraps the infant in the robe and leaves it with them, even though he thinks this means he has failed his test.\n\nAs he rides back to the caravan in shame, a **bright star** seems to follow him and shine above his head. Pathros sees the star and understands it as the sign he had been told to wait for. Years before, he had been told that a young man with the star over him would be the next person to receive the scrolls. The child Hafid helped is, by implication, the infant Jesus.\n\n## The scrolls\n\nPathros, now old and dying, gives Hafid a chest holding **ten scrolls**. These contain the principles of success that made Pathros rich. He sets conditions:\n\n- Hafid must read the scrolls in order, one at a time. He reads each scroll **three times a day for thirty days** before going on to the next. That way each principle becomes a habit.\n- He must give away half of whatever he earns to people in need.\n- He must not share the scrolls with anyone until he receives a sign showing who should have them next.\n\nHafid follows the method, builds a huge trading empire based in Damascus, marries Lisha, and becomes the greatest salesman in the world. (The middle of the book is the text of the ten scrolls themselves. Two of them are \"I will greet this day with love in my heart\" and \"I will persist until I succeed.\")\n\n## Who gets the scrolls in the end?\n\nYears later, after Lisha has died and while Hafid lives quietly and waits, a stranger comes to see him: **Saul of Tarsus**, the man later called the Apostle **Paul**. Paul tells Hafid about his conversion on the road to Damascus. He is struggling to spread the message of Jesus, and a voice told him to seek out the greatest salesman in the world.\n\nPaul shows Hafid a **red robe**. It belonged to Jesus, and Roman soldiers gambled for it at the crucifixion. Hafid recognizes the markings of Pathros's house on it. It is the same robe he once wrapped around the baby in Bethlehem. This is the sign he had waited for. Hafid gives the chest of scrolls to **Paul**, who will use their principles to \"sell\" the greatest message of all.\n"}], "grading": {"expectations": [{"text": "Hafid begins as a camel boy for the merchant Pathros", "passed": true, "evidence": "Camel boy for Pathros"}, {"text": "He is sent to Bethlehem to sell a robe and gives it to warm a newborn infant in a cave", "passed": true, "evidence": "Robe to baby in Bethlehem cave"}, {"text": "A bright star follows him, which Pathros recognizes as a sign and gives him the ten scrolls", "passed": true, "evidence": "Star and scrolls"}, {"text": "As an old man in Damascus Hafid gives away his wealth and confides in his bookkeeper Erasmus", "passed": true, "evidence": "Erasmus in Damascus"}, {"text": "The scrolls go to Paul (Saul of Tarsus)", "passed": true, "evidence": "Saul of Tarsus / Paul"}, {"text": "Paul brings the robe (marked by Tola/Pathros) that Hafid had given away", "passed": true, "evidence": "Same robe, Pathros markings"}], "summary": {"passed": 6, "failed": 0, "total": 6, "pass_rate": 1.0}}}], "previous_feedback": {}, "previous_outputs": {}, "benchmark": {"metadata": {"skill_name": "greatest-salesman", "skill_path": "\u003cpath/to/skill>", "executor_model": "\u003cmodel-name>", "analyzer_model": "\u003cmodel-name>", "timestamp": "2026-11-21T21:22:58Z", "evals_run": [1, 2, 3], "runs_per_configuration": 1}, "runs": [{"eval_id": 1, "eval_name": "gs-method", "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 6, "failed": 0, "total": 6, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "States each scroll is read for 30 days before moving to the next", "passed": true, "evidence": "30 days per scroll"}, {"text": "Gives the three daily readings: silently on rising, silently after the midday meal, aloud before retiring", "passed": true, "evidence": "Silent on rising, after midday meal, aloud before bed"}, {"text": "Explains the purpose: forming good habits / reaching the subconscious ('other mind') through repetition", "passed": true, "evidence": "Habit/other mind"}, {"text": "Notes the first scroll's law: form good habits and become their slave (only a habit subdues a habit)", "passed": true, "evidence": "Form good habits and become their slave"}, {"text": "Mentions not skipping a day and/or the ~10 month total", "passed": true, "evidence": "Don't skip a day; ten months"}, {"text": "Lists or references the ten scroll themes (love, persist, miracle, last day, emotions, laugh, multiply value, act now, prayer)", "passed": true, "evidence": "Scroll themes table"}], "notes": []}, {"eval_id": 2, "eval_name": "gs-rejection", "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 6, "failed": 0, "total": 6, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Uses scroll III 'I will persist until I succeed' with the law of averages (each no brings me closer to yes)", "passed": true, "evidence": "Scroll III law of averages"}, {"text": "Mentions making one more attempt / call before going home", "passed": true, "evidence": "One more attempt"}, {"text": "Uses scroll VI emotions with counter-actions (e.g., if I feel depressed I will sing; if I feel fear I will plunge ahead)", "passed": true, "evidence": "Counter-actions: sing, plunge ahead"}, {"text": "Uses scroll VII laughter and 'This too shall pass'", "passed": true, "evidence": "This too shall pass"}, {"text": "Includes scroll II greeting with love (silently say 'I love you') or scroll IX 'I will act now'", "passed": true, "evidence": "I love you / act now"}, {"text": "Gives a concrete daily routine (e.g., 30-day reading schedule)", "passed": true, "evidence": "30-day reading routine"}], "notes": []}, {"eval_id": 3, "eval_name": "gs-story", "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 6, "failed": 0, "total": 6, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Hafid begins as a camel boy for the merchant Pathros", "passed": true, "evidence": "Camel boy for Pathros"}, {"text": "He is sent to Bethlehem to sell a robe and gives it to warm a newborn infant in a cave", "passed": true, "evidence": "Bethlehem robe to infant in cave"}, {"text": "A bright star follows him, which Pathros recognizes as a sign and gives him the ten scrolls", "passed": true, "evidence": "Star; Pathros gives scrolls"}, {"text": "As an old man in Damascus Hafid gives away his wealth and confides in his bookkeeper Erasmus", "passed": true, "evidence": "Damascus, Erasmus"}, {"text": "The scrolls go to Paul (Saul of Tarsus)", "passed": true, "evidence": "Paul / Saul of Tarsus"}, {"text": "Paul brings the robe (marked by Tola/Pathros) that Hafid had given away", "passed": true, "evidence": "Robe with Tola/Pathros marks"}], "notes": []}, {"eval_id": 1, "eval_name": "gs-method", "configuration": "without_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 6, "failed": 0, "total": 6, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "States each scroll is read for 30 days before moving to the next", "passed": true, "evidence": "Thirty days per scroll"}, {"text": "Gives the three daily readings: silently on rising, silently after the midday meal, aloud before retiring", "passed": true, "evidence": "Wake/lunch/bed aloud"}, {"text": "Explains the purpose: forming good habits / reaching the subconscious ('other mind') through repetition", "passed": true, "evidence": "Habits and repetition explained"}, {"text": "Notes the first scroll's law: form good habits and become their slave (only a habit subdues a habit)", "passed": true, "evidence": "Scroll I habits"}, {"text": "Mentions not skipping a day and/or the ~10 month total", "passed": true, "evidence": "No skipping; 10 months"}, {"text": "Lists or references the ten scroll themes (love, persist, miracle, last day, emotions, laugh, multiply value, act now, prayer)", "passed": true, "evidence": "Themes referenced"}], "notes": []}, {"eval_id": 2, "eval_name": "gs-rejection", "configuration": "without_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 6, "failed": 0, "total": 6, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Uses scroll III 'I will persist until I succeed' with the law of averages (each no brings me closer to yes)", "passed": true, "evidence": "Each no closer to yes (law-of-averages idea, term not named)"}, {"text": "Mentions making one more attempt / call before going home", "passed": true, "evidence": "Make one more call"}, {"text": "Uses scroll VI emotions with counter-actions (e.g., if I feel depressed I will sing; if I feel fear I will plunge ahead)", "passed": true, "evidence": "Sing / plunge ahead counter-actions"}, {"text": "Uses scroll VII laughter and 'This too shall pass'", "passed": true, "evidence": "This too shall pass"}, {"text": "Includes scroll II greeting with love (silently say 'I love you') or scroll IX 'I will act now'", "passed": true, "evidence": "Act now / love referenced"}, {"text": "Gives a concrete daily routine (e.g., 30-day reading schedule)", "passed": true, "evidence": "Daily plan with 30-day schedule"}], "notes": []}, {"eval_id": 3, "eval_name": "gs-story", "configuration": "without_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 6, "failed": 0, "total": 6, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Hafid begins as a camel boy for the merchant Pathros", "passed": true, "evidence": "Camel boy for Pathros"}, {"text": "He is sent to Bethlehem to sell a robe and gives it to warm a newborn infant in a cave", "passed": true, "evidence": "Robe to baby in Bethlehem cave"}, {"text": "A bright star follows him, which Pathros recognizes as a sign and gives him the ten scrolls", "passed": true, "evidence": "Star and scrolls"}, {"text": "As an old man in Damascus Hafid gives away his wealth and confides in his bookkeeper Erasmus", "passed": true, "evidence": "Erasmus in Damascus"}, {"text": "The scrolls go to Paul (Saul of Tarsus)", "passed": true, "evidence": "Saul of Tarsus / Paul"}, {"text": "Paul brings the robe (marked by Tola/Pathros) that Hafid had given away", "passed": true, "evidence": "Same robe, Pathros markings"}], "notes": []}], "run_summary": {"with_skill": {"pass_rate": {"mean": 1.0, "stddev": 0.0, "min": 1.0, "max": 1.0}, "time_seconds": null, "tokens": null}, "without_skill": {"pass_rate": {"mean": 1.0, "stddev": 0.0, "min": 1.0, "max": 1.0}, "time_seconds": null, "tokens": null}, "delta": {"pass_rate": "+0.00", "time_seconds": null, "tokens": null}}, "notes": ["Time recorded for 0 of 3 with_skill runs, 0 of 3 without_skill runs, so there is no time delta.", "Token count recorded for 0 of 3 with_skill runs, 0 of 3 without_skill runs, so there is no token count delta."]}};
+
+    // ---- State ----
+    let feedbackMap = {};  // run_id -> feedback text
+    let currentIndex = 0;
+    let visitedRuns = new Set();
+
+    // ---- Init ----
+    async function init() {
+      // Load saved feedback from server — but only if this isn't a fresh
+      // iteration (indicated by previous_feedback being present). When
+      // previous feedback exists, the feedback.json on disk is stale from
+      // the prior iteration and should not pre-fill the textareas.
+      const hasPrevious = Object.keys(EMBEDDED_DATA.previous_feedback || {}).length > 0
+        || Object.keys(EMBEDDED_DATA.previous_outputs || {}).length > 0;
+      if (!hasPrevious) {
+        try {
+          const resp = await fetch("/api/feedback");
+          const data = await resp.json();
+          if (data.reviews) {
+            for (const r of data.reviews) feedbackMap[r.run_id] = r.feedback;
+          }
+        } catch { /* first run, no feedback yet */ }
+      }
+
+      document.getElementById("skill-name").textContent = EMBEDDED_DATA.skill_name;
+      showRun(0);
+
+      // Wire up feedback auto-save
+      const textarea = document.getElementById("feedback");
+      let saveTimeout = null;
+      textarea.addEventListener("input", () => {
+        clearTimeout(saveTimeout);
+        document.getElementById("feedback-status").textContent = "";
+        saveTimeout = setTimeout(() => saveCurrentFeedback(), 800);
+      });
+    }
+
+    // ---- Navigation ----
+    function navigate(delta) {
+      const newIndex = currentIndex + delta;
+      if (newIndex >= 0 && newIndex < EMBEDDED_DATA.runs.length) {
+        saveCurrentFeedback();
+        showRun(newIndex);
+      }
+    }
+
+    function updateNavButtons() {
+      document.getElementById("prev-btn").disabled = currentIndex === 0;
+      document.getElementById("next-btn").disabled =
+        currentIndex === EMBEDDED_DATA.runs.length - 1;
+    }
+
+    // ---- Show a run ----
+    function showRun(index) {
+      currentIndex = index;
+      const run = EMBEDDED_DATA.runs[index];
+
+      // Progress
+      document.getElementById("progress").textContent =
+        `${index + 1} of ${EMBEDDED_DATA.runs.length}`;
+
+      // Prompt
+      document.getElementById("prompt-text").textContent = run.prompt;
+
+      // Config badge
+      const badge = document.getElementById("config-badge");
+      const configMatch = run.id.match(/(with_skill|without_skill|new_skill|old_skill)/);
+      if (configMatch) {
+        const config = configMatch[1];
+        const isBaseline = config === "without_skill" || config === "old_skill";
+        badge.textContent = config.replace(/_/g, " ");
+        badge.className = "config-badge " + (isBaseline ? "config-baseline" : "config-primary");
+        badge.style.display = "inline-block";
+      } else {
+        badge.style.display = "none";
+      }
+
+      // Outputs
+      renderOutputs(run);
+
+      // Previous outputs
+      renderPrevOutputs(run);
+
+      // Grades
+      renderGrades(run);
+
+      // Previous feedback
+      const prevFb = (EMBEDDED_DATA.previous_feedback || {})[run.id];
+      const prevEl = document.getElementById("prev-feedback");
+      if (prevFb) {
+        document.getElementById("prev-feedback-text").textContent = prevFb;
+        prevEl.style.display = "block";
+      } else {
+        prevEl.style.display = "none";
+      }
+
+      // Feedback
+      document.getElementById("feedback").value = feedbackMap[run.id] || "";
+      document.getElementById("feedback-status").textContent = "";
+
+      updateNavButtons();
+
+      // Track visited runs and promote done button when all visited
+      visitedRuns.add(index);
+      const doneBtn = document.getElementById("done-btn");
+      if (visitedRuns.size >= EMBEDDED_DATA.runs.length) {
+        doneBtn.classList.add("ready");
+      }
+
+      // Scroll main content to top
+      document.querySelector(".main").scrollTop = 0;
+    }
+
+    // ---- Render outputs ----
+    function renderOutputs(run) {
+      const container = document.getElementById("outputs-body");
+      container.innerHTML = "";
+
+      const outputs = run.outputs || [];
+      if (outputs.length === 0) {
+        container.innerHTML = '<div class="empty-state">No output files</div>';
+        return;
+      }
+
+      for (const file of outputs) {
+        const fileDiv = document.createElement("div");
+        fileDiv.className = "output-file";
+
+        // Always show file header with download link
+        const header = document.createElement("div");
+        header.className = "output-file-header";
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = file.name;
+        header.appendChild(nameSpan);
+        const dlBtn = document.createElement("a");
+        dlBtn.className = "dl-btn";
+        dlBtn.textContent = "Download";
+        dlBtn.download = file.name;
+        dlBtn.href = getDownloadUri(file);
+        header.appendChild(dlBtn);
+        fileDiv.appendChild(header);
+
+        const content = document.createElement("div");
+        content.className = "output-file-content";
+
+        if (file.type === "text") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          content.appendChild(pre);
+        } else if (file.type === "image") {
+          const img = document.createElement("img");
+          img.src = file.data_uri;
+          img.alt = file.name;
+          content.appendChild(img);
+        } else if (file.type === "pdf") {
+          const iframe = document.createElement("iframe");
+          iframe.src = file.data_uri;
+          content.appendChild(iframe);
+        } else if (file.type === "xlsx") {
+          renderXlsx(content, file.data_b64);
+        } else if (file.type === "binary") {
+          const a = document.createElement("a");
+          a.className = "download-link";
+          a.href = file.data_uri;
+          a.download = file.name;
+          a.textContent = "Download " + file.name;
+          content.appendChild(a);
+        } else if (file.type === "error") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          pre.style.color = "var(--red)";
+          content.appendChild(pre);
+        }
+
+        fileDiv.appendChild(content);
+        container.appendChild(fileDiv);
+      }
+    }
+
+    // ---- XLSX rendering via SheetJS ----
+    function renderXlsx(container, b64Data) {
+      try {
+        const raw = Uint8Array.from(atob(b64Data), c => c.charCodeAt(0));
+        const wb = XLSX.read(raw, { type: "array" });
+
+        for (let i = 0; i < wb.SheetNames.length; i++) {
+          const sheetName = wb.SheetNames[i];
+          const ws = wb.Sheets[sheetName];
+
+          if (wb.SheetNames.length > 1) {
+            const sheetLabel = document.createElement("div");
+            sheetLabel.style.cssText =
+              "font-weight:600; font-size:0.8rem; color:#b0aea5; margin-top:0.5rem; margin-bottom:0.25rem;";
+            sheetLabel.textContent = "Sheet: " + sheetName;
+            container.appendChild(sheetLabel);
+          }
+
+          const htmlStr = XLSX.utils.sheet_to_html(ws, { editable: false });
+          const wrapper = document.createElement("div");
+          wrapper.innerHTML = htmlStr;
+          container.appendChild(wrapper);
+        }
+      } catch (err) {
+        container.textContent = "Error rendering spreadsheet: " + err.message;
+      }
+    }
+
+    // ---- Grades ----
+    function renderGrades(run) {
+      const section = document.getElementById("grades-section");
+      const content = document.getElementById("grades-content");
+
+      if (!run.grading) {
+        section.style.display = "none";
+        return;
+      }
+
+      const grading = run.grading;
+      section.style.display = "block";
+      // Reset to collapsed
+      content.classList.remove("open");
+      document.getElementById("grades-arrow").classList.remove("open");
+
+      const summary = grading.summary || {};
+      const expectations = grading.expectations || [];
+
+      let html = '<div style="padding: 1rem;">';
+
+      // Summary line
+      const passRate = summary.pass_rate != null
+        ? Math.round(summary.pass_rate * 100) + "%"
+        : "?";
+      const badgeClass = summary.pass_rate >= 0.8 ? "grade-pass" : summary.pass_rate >= 0.5 ? "" : "grade-fail";
+      html += '<div class="grades-summary">';
+      html += '<span class="grade-badge ' + badgeClass + '">' + passRate + '</span>';
+      html += '<span>' + escapeHtml(summary.passed || 0) + ' passed, ' + escapeHtml(summary.failed || 0) + ' failed of ' + escapeHtml(summary.total || 0) + '</span>';
+      html += '</div>';
+
+      // Assertions list
+      html += '<ul class="assertion-list">';
+      for (const exp of expectations) {
+        const statusClass = exp.passed ? "pass" : "fail";
+        const statusIcon = exp.passed ? "\u2713" : "\u2717";
+        html += '<li class="assertion-item">';
+        html += '<span class="assertion-status ' + statusClass + '">' + statusIcon + '</span>';
+        html += '<span>' + escapeHtml(exp.text) + '</span>';
+        if (exp.evidence) {
+          html += '<div class="assertion-evidence">' + escapeHtml(exp.evidence) + '</div>';
+        }
+        html += '</li>';
+      }
+      html += '</ul>';
+
+      html += '</div>';
+      content.innerHTML = html;
+    }
+
+    function toggleGrades() {
+      const content = document.getElementById("grades-content");
+      const arrow = document.getElementById("grades-arrow");
+      content.classList.toggle("open");
+      arrow.classList.toggle("open");
+    }
+
+    // ---- Previous outputs (collapsible) ----
+    function renderPrevOutputs(run) {
+      const section = document.getElementById("prev-outputs-section");
+      const content = document.getElementById("prev-outputs-content");
+      const prevOutputs = (EMBEDDED_DATA.previous_outputs || {})[run.id];
+
+      if (!prevOutputs || prevOutputs.length === 0) {
+        section.style.display = "none";
+        return;
+      }
+
+      section.style.display = "block";
+      // Reset to collapsed
+      content.classList.remove("open");
+      document.getElementById("prev-outputs-arrow").classList.remove("open");
+
+      // Render the files into the content area
+      content.innerHTML = "";
+      const wrapper = document.createElement("div");
+      wrapper.style.padding = "1rem";
+
+      for (const file of prevOutputs) {
+        const fileDiv = document.createElement("div");
+        fileDiv.className = "output-file";
+
+        const header = document.createElement("div");
+        header.className = "output-file-header";
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = file.name;
+        header.appendChild(nameSpan);
+        const dlBtn = document.createElement("a");
+        dlBtn.className = "dl-btn";
+        dlBtn.textContent = "Download";
+        dlBtn.download = file.name;
+        dlBtn.href = getDownloadUri(file);
+        header.appendChild(dlBtn);
+        fileDiv.appendChild(header);
+
+        const fc = document.createElement("div");
+        fc.className = "output-file-content";
+
+        if (file.type === "text") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          fc.appendChild(pre);
+        } else if (file.type === "image") {
+          const img = document.createElement("img");
+          img.src = file.data_uri;
+          img.alt = file.name;
+          fc.appendChild(img);
+        } else if (file.type === "pdf") {
+          const iframe = document.createElement("iframe");
+          iframe.src = file.data_uri;
+          fc.appendChild(iframe);
+        } else if (file.type === "xlsx") {
+          renderXlsx(fc, file.data_b64);
+        } else if (file.type === "binary") {
+          const a = document.createElement("a");
+          a.className = "download-link";
+          a.href = file.data_uri;
+          a.download = file.name;
+          a.textContent = "Download " + file.name;
+          fc.appendChild(a);
+        }
+
+        fileDiv.appendChild(fc);
+        wrapper.appendChild(fileDiv);
+      }
+
+      content.appendChild(wrapper);
+    }
+
+    function togglePrevOutputs() {
+      const content = document.getElementById("prev-outputs-content");
+      const arrow = document.getElementById("prev-outputs-arrow");
+      content.classList.toggle("open");
+      arrow.classList.toggle("open");
+    }
+
+    // ---- Feedback (saved to server -> feedback.json) ----
+    function saveCurrentFeedback() {
+      const run = EMBEDDED_DATA.runs[currentIndex];
+      const text = document.getElementById("feedback").value;
+
+      if (text.trim() === "") {
+        delete feedbackMap[run.id];
+      } else {
+        feedbackMap[run.id] = text;
+      }
+
+      // Build reviews array from map
+      const reviews = [];
+      for (const [run_id, feedback] of Object.entries(feedbackMap)) {
+        if (feedback.trim()) {
+          reviews.push({ run_id, feedback, timestamp: new Date().toISOString() });
+        }
+      }
+
+      fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reviews, status: "in_progress" }),
+      }).then(() => {
+        document.getElementById("feedback-status").textContent = "Saved";
+      }).catch(() => {
+        // Static mode or server unavailable — no-op on auto-save,
+        // feedback will be downloaded on final submit
+        document.getElementById("feedback-status").textContent = "Will download on submit";
+      });
+    }
+
+    // ---- Done ----
+    function showDoneDialog() {
+      // Save current textarea to feedbackMap (but don't POST yet)
+      const run = EMBEDDED_DATA.runs[currentIndex];
+      const text = document.getElementById("feedback").value;
+      if (text.trim() === "") {
+        delete feedbackMap[run.id];
+      } else {
+        feedbackMap[run.id] = text;
+      }
+
+      // POST once with status: complete — include ALL runs so the model
+      // can distinguish "no feedback" (looks good) from "not reviewed"
+      const reviews = [];
+      const ts = new Date().toISOString();
+      for (const r of EMBEDDED_DATA.runs) {
+        reviews.push({ run_id: r.id, feedback: feedbackMap[r.id] || "", timestamp: ts });
+      }
+      const payload = JSON.stringify({ reviews, status: "complete" }, null, 2);
+      fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: payload,
+      }).then(() => {
+        document.getElementById("done-overlay").classList.add("visible");
+      }).catch(() => {
+        // Server not available (static mode) — download as file
+        const blob = new Blob([payload], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "feedback.json";
+        a.click();
+        URL.revokeObjectURL(url);
+        document.getElementById("done-overlay").classList.add("visible");
+      });
+    }
+
+    function closeDoneDialog() {
+      // Reset status back to in_progress
+      saveCurrentFeedback();
+      document.getElementById("done-overlay").classList.remove("visible");
+    }
+
+    // ---- Toast ----
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("visible");
+      setTimeout(() => toast.classList.remove("visible"), 2000);
+    }
+
+    // ---- Keyboard nav ----
+    document.addEventListener("keydown", (e) => {
+      // Don't capture when typing in textarea
+      if (e.target.tagName === "TEXTAREA") return;
+
+      if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+        e.preventDefault();
+        navigate(-1);
+      } else if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+        e.preventDefault();
+        navigate(1);
+      }
+    });
+
+    // ---- Util ----
+    function getDownloadUri(file) {
+      if (file.data_uri) return file.data_uri;
+      if (file.data_b64) return "data:application/octet-stream;base64," + file.data_b64;
+      if (file.type === "text") return "data:text/plain;charset=utf-8," + encodeURIComponent(file.content);
+      return "#";
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement("div");
+      div.textContent = text;
+      return div.innerHTML.replace(/"/g, "&quot;");
+    }
+
+    // ---- View switching ----
+    function switchView(view) {
+      document.querySelectorAll(".view-tab").forEach(t => t.classList.remove("active"));
+      document.querySelectorAll(".view-panel").forEach(p => p.classList.remove("active"));
+      document.querySelector(`[onclick="switchView('${view}')"]`).classList.add("active");
+      document.getElementById("panel-" + view).classList.add("active");
+    }
+
+    // ---- Benchmark rendering ----
+    function renderBenchmark() {
+      const data = EMBEDDED_DATA.benchmark;
+      if (!data) return;
+
+      // Show the tabs
+      document.getElementById("view-tabs").style.display = "flex";
+
+      const container = document.getElementById("benchmark-content");
+      const summary = data.run_summary || {};
+      const metadata = data.metadata || {};
+      const notes = data.notes || [];
+
+      let html = "";
+
+      // Header
+      html += "<h2 style='font-family: Poppins, sans-serif; margin-bottom: 0.5rem;'>Benchmark Results</h2>";
+      html += "<p style='color: var(--text-muted); font-size: 0.875rem; margin-bottom: 1.25rem;'>";
+      if (metadata.skill_name) html += "<strong>" + escapeHtml(metadata.skill_name) + "</strong> &mdash; ";
+      if (metadata.timestamp) html += escapeHtml(metadata.timestamp) + " &mdash; ";
+      if (metadata.evals_run) html += "Evals: " + escapeHtml(metadata.evals_run.join(", ")) + " &mdash; ";
+      html += escapeHtml(metadata.runs_per_configuration || "?") + (metadata.runs_per_configuration === 1 ? " run" : " runs") + " per configuration";
+      html += "</p>";
+
+      // Summary table
+      html += '<table class="benchmark-table">';
+
+      function fmtStat(stat, pct) {
+        if (!stat) return "—";
+        const suffix = pct ? "%" : "";
+        const m = pct ? (stat.mean * 100).toFixed(0) : stat.mean.toFixed(1);
+        const s = pct ? (stat.stddev * 100).toFixed(0) : stat.stddev.toFixed(1);
+        return m + suffix + " ± " + s + suffix;
+      }
+
+      function deltaClass(val) {
+        if (!val) return "";
+        const n = parseFloat(val);
+        if (n > 0) return "benchmark-delta-positive";
+        if (n < 0) return "benchmark-delta-negative";
+        return "";
+      }
+
+      // Discover config names dynamically (everything except "delta")
+      const configs = Object.keys(summary).filter(k => k !== "delta");
+      const configA = configs[0] || "config_a";
+      const configB = configs[1] || "config_b";
+      const labelA = configA.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      const labelB = configB.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      const a = summary[configA] || {};
+      const b = summary[configB] || {};
+      const delta = summary.delta || {};
+      // With a single configuration there is nothing to compare: only its column is shown
+      const compare = cells => configs.length >= 2 ? cells : "";
+
+      html += "<thead><tr><th>Metric</th><th>" + escapeHtml(labelA) + "</th>" + compare("<th>" + escapeHtml(labelB) + "</th><th>Delta</th>") + "</tr></thead>";
+      html += "<tbody>";
+
+      html += "<tr><td><strong>Pass Rate</strong></td>";
+      html += "<td>" + fmtStat(a.pass_rate, true) + "</td>";
+      html += compare("<td>" + fmtStat(b.pass_rate, true) + "</td>");
+      html += compare('<td class="' + deltaClass(delta.pass_rate) + '">' + escapeHtml(delta.pass_rate || "—") + "</td>") + "</tr>";
+
+      // Time (only show row if data exists)
+      if (a.time_seconds || b.time_seconds) {
+        html += "<tr><td><strong>Time (s)</strong></td>";
+        html += "<td>" + fmtStat(a.time_seconds, false) + "</td>";
+        html += compare("<td>" + fmtStat(b.time_seconds, false) + "</td>");
+        html += compare('<td class="' + deltaClass(delta.time_seconds) + '">' + escapeHtml(delta.time_seconds ? delta.time_seconds + "s" : "—") + "</td>") + "</tr>";
+      }
+
+      // Tokens (only show row if data exists)
+      if (a.tokens || b.tokens) {
+        html += "<tr><td><strong>Tokens</strong></td>";
+        html += "<td>" + fmtStat(a.tokens, false) + "</td>";
+        html += compare("<td>" + fmtStat(b.tokens, false) + "</td>");
+        html += compare('<td class="' + deltaClass(delta.tokens) + '">' + escapeHtml(delta.tokens || "—") + "</td>") + "</tr>";
+      }
+
+      html += "</tbody></table>";
+
+      // Per-eval breakdown (if runs data available)
+      const runs = data.runs || [];
+      if (runs.length > 0) {
+        // Numeric ids first, then ids that are names
+        const rank = id => typeof id === "number" ? 0 : 1;
+        const evalIds = [...new Set(runs.map(r => r.eval_id))].sort((a, b) =>
+          rank(a) - rank(b) || (rank(a) ? String(a).localeCompare(String(b)) : a - b));
+
+        html += "<h3 style='font-family: Poppins, sans-serif; margin-bottom: 0.75rem;'>Per-Eval Breakdown</h3>";
+
+        const hasTime = runs.some(r => r.result && r.result.time_seconds != null);
+        const hasErrors = runs.some(r => r.result && r.result.errors > 0);
+
+        for (const evalId of evalIds) {
+          const evalRuns = runs.filter(r => r.eval_id === evalId);
+          const evalName = evalRuns[0] && evalRuns[0].eval_name ? evalRuns[0].eval_name : "Eval " + evalId;
+
+          html += "<h4 style='font-family: Poppins, sans-serif; margin: 1rem 0 0.5rem; color: var(--text);'>" + escapeHtml(evalName) + "</h4>";
+          html += '<table class="benchmark-table">';
+          html += "<thead><tr><th>Config</th><th>Run</th><th>Pass Rate</th>";
+          if (hasTime) html += "<th>Time (s)</th>";
+          if (hasErrors) html += "<th>Crashes During Execution</th>";
+          html += "</tr></thead>";
+          html += "<tbody>";
+
+          // Group by config and render with average rows
+          const configGroups = [...new Set(evalRuns.map(r => r.configuration))];
+          for (let ci = 0; ci < configGroups.length; ci++) {
+            const config = configGroups[ci];
+            const configRuns = evalRuns.filter(r => r.configuration === config);
+            if (configRuns.length === 0) continue;
+
+            const rowClass = ci === 0 ? "benchmark-row-with" : "benchmark-row-without";
+            const configLabel = escapeHtml(config.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase()));
+
+            for (const run of configRuns) {
+              const r = run.result || {};
+              const prClass = r.pass_rate >= 0.8 ? "benchmark-delta-positive" : r.pass_rate < 0.5 ? "benchmark-delta-negative" : "";
+              html += '<tr class="' + rowClass + '">';
+              html += "<td>" + configLabel + "</td>";
+              html += "<td>" + escapeHtml(run.run_number) + "</td>";
+              html += '<td class="' + prClass + '">' + ((r.pass_rate || 0) * 100).toFixed(0) + "% (" + escapeHtml(r.passed || 0) + "/" + escapeHtml(r.total || 0) + ")</td>";
+              if (hasTime) html += "<td>" + (r.time_seconds != null ? r.time_seconds.toFixed(1) : "—") + "</td>";
+              if (hasErrors) html += "<td>" + escapeHtml(r.errors || 0) + "</td>";
+              html += "</tr>";
+            }
+
+            // Average row
+            const rates = configRuns.map(r => (r.result || {}).pass_rate || 0);
+            const avgRate = rates.reduce((a, b) => a + b, 0) / rates.length;
+            const avgPrClass = avgRate >= 0.8 ? "benchmark-delta-positive" : avgRate < 0.5 ? "benchmark-delta-negative" : "";
+            html += '<tr class="benchmark-row-avg ' + rowClass + '">';
+            html += "<td>" + configLabel + "</td>";
+            html += "<td>Avg</td>";
+            html += '<td class="' + avgPrClass + '">' + (avgRate * 100).toFixed(0) + "%</td>";
+            if (hasTime) {
+              const times = configRuns.map(r => (r.result || {}).time_seconds).filter(t => t != null);
+              html += "<td>" + (times.length ? (times.reduce((a, b) => a + b, 0) / times.length).toFixed(1) : "—") + "</td>";
+            }
+            if (hasErrors) html += "<td></td>";
+            html += "</tr>";
+          }
+          html += "</tbody></table>";
+
+          // Per-assertion detail for this eval
+          const runsWithExpectations = {};
+          for (const config of configGroups) {
+            runsWithExpectations[config] = evalRuns.filter(r => r.configuration === config && r.expectations && r.expectations.length > 0);
+          }
+          const hasAnyExpectations = Object.values(runsWithExpectations).some(runs => runs.length > 0);
+          if (hasAnyExpectations) {
+            // Collect all unique assertion texts across all configs
+            const allAssertions = [];
+            const seen = new Set();
+            for (const config of configGroups) {
+              for (const run of runsWithExpectations[config]) {
+                for (const exp of (run.expectations || [])) {
+                  if (!seen.has(exp.text)) {
+                    seen.add(exp.text);
+                    allAssertions.push(exp.text);
+                  }
+                }
+              }
+            }
+
+            html += '<table class="benchmark-table" style="margin-top: 0.5rem;">';
+            html += "<thead><tr><th>Assertion</th>";
+            for (const config of configGroups) {
+              const label = config.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+              html += "<th>" + escapeHtml(label) + "</th>";
+            }
+            html += "</tr></thead><tbody>";
+
+            for (const assertionText of allAssertions) {
+              html += "<tr><td>" + escapeHtml(assertionText) + "</td>";
+
+              for (const config of configGroups) {
+                html += "<td>";
+                for (const run of runsWithExpectations[config]) {
+                  const exp = (run.expectations || []).find(e => e.text === assertionText);
+                  if (exp) {
+                    const cls = exp.passed ? "benchmark-delta-positive" : "benchmark-delta-negative";
+                    const icon = exp.passed ? "\u2713" : "\u2717";
+                    html += '<span class="' + cls + '" title="Run ' + escapeHtml(run.run_number) + ': ' + escapeHtml(exp.evidence || "") + '">' + icon + "</span> ";
+                  } else {
+                    html += "— ";
+                  }
+                }
+                html += "</td>";
+              }
+              html += "</tr>";
+            }
+            html += "</tbody></table>";
+          }
+        }
+      }
+
+      // Notes
+      if (notes.length > 0) {
+        html += '<div class="benchmark-notes">';
+        html += "<h3>Analysis Notes</h3>";
+        html += "<ul>";
+        for (const note of notes) {
+          html += "<li>" + escapeHtml(note) + "</li>";
+        }
+        html += "</ul></div>";
+      }
+
+      container.innerHTML = html;
+    }
+
+    // ---- Start ----
+    init();
+    renderBenchmark();
+  </script>
+</body>
+</html>

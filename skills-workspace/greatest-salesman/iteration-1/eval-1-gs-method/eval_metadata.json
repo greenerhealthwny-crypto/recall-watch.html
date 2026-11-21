@@ -1,0 +1,13 @@
+{
+ "eval_id": 1,
+ "eval_name": "gs-method",
+ "prompt": "How exactly does The Greatest Salesman in the World tell you to read the scrolls? Give me the schedule and why it works.",
+ "assertions": [
+  "States each scroll is read for 30 days before moving to the next",
+  "Gives the three daily readings: silently on rising, silently after the midday meal, aloud before retiring",
+  "Explains the purpose: forming good habits / reaching the subconscious ('other mind') through repetition",
+  "Notes the first scroll's law: form good habits and become their slave (only a habit subdues a habit)",
+  "Mentions not skipping a day and/or the ~10 month total",
+  "Lists or references the ten scroll themes (love, persist, miracle, last day, emotions, laugh, multiply value, act now, prayer)"
+ ]
+}

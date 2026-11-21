@@ -1,0 +1,40 @@
+{
+ "expectations": [
+  {
+   "text": "Uses scroll III 'I will persist until I succeed' with the law of averages (each no brings me closer to yes)",
+   "passed": true,
+   "evidence": "Each no closer to yes (law-of-averages idea, term not named)"
+  },
+  {
+   "text": "Mentions making one more attempt / call before going home",
+   "passed": true,
+   "evidence": "Make one more call"
+  },
+  {
+   "text": "Uses scroll VI emotions with counter-actions (e.g., if I feel depressed I will sing; if I feel fear I will plunge ahead)",
+   "passed": true,
+   "evidence": "Sing / plunge ahead counter-actions"
+  },
+  {
+   "text": "Uses scroll VII laughter and 'This too shall pass'",
+   "passed": true,
+   "evidence": "This too shall pass"
+  },
+  {
+   "text": "Includes scroll II greeting with love (silently say 'I love you') or scroll IX 'I will act now'",
+   "passed": true,
+   "evidence": "Act now / love referenced"
+  },
+  {
+   "text": "Gives a concrete daily routine (e.g., 30-day reading schedule)",
+   "passed": true,
+   "evidence": "Daily plan with 30-day schedule"
+  }
+ ],
+ "summary": {
+  "passed": 6,
+  "failed": 0,
+  "total": 6,
+  "pass_rate": 1.0
+ }
+}

@@ -1,0 +1,13 @@
+{
+ "eval_id": 2,
+ "eval_name": "gs-rejection",
+ "prompt": "I'm in sales and I keep getting rejected and feeling down. What would Og Mandino's scrolls tell me to do?",
+ "assertions": [
+  "Uses scroll III 'I will persist until I succeed' with the law of averages (each no brings me closer to yes)",
+  "Mentions making one more attempt / call before going home",
+  "Uses scroll VI emotions with counter-actions (e.g., if I feel depressed I will sing; if I feel fear I will plunge ahead)",
+  "Uses scroll VII laughter and 'This too shall pass'",
+  "Includes scroll II greeting with love (silently say 'I love you') or scroll IX 'I will act now'",
+  "Gives a concrete daily routine (e.g., 30-day reading schedule)"
+ ]
+}

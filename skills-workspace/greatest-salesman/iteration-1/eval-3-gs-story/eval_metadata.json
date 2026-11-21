@@ -1,0 +1,13 @@
+{
+ "eval_id": 3,
+ "eval_name": "gs-story",
+ "prompt": "Summarize the story of The Greatest Salesman in the World: who is Hafid, what happens with the robe, and who gets the scrolls in the end?",
+ "assertions": [
+  "Hafid begins as a camel boy for the merchant Pathros",
+  "He is sent to Bethlehem to sell a robe and gives it to warm a newborn infant in a cave",
+  "A bright star follows him, which Pathros recognizes as a sign and gives him the ten scrolls",
+  "As an old man in Damascus Hafid gives away his wealth and confides in his bookkeeper Erasmus",
+  "The scrolls go to Paul (Saul of Tarsus)",
+  "Paul brings the robe (marked by Tola/Pathros) that Hafid had given away"
+ ]
+}

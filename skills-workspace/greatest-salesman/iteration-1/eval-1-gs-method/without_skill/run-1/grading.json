@@ -1,0 +1,40 @@
+{
+ "expectations": [
+  {
+   "text": "States each scroll is read for 30 days before moving to the next",
+   "passed": true,
+   "evidence": "Thirty days per scroll"
+  },
+  {
+   "text": "Gives the three daily readings: silently on rising, silently after the midday meal, aloud before retiring",
+   "passed": true,
+   "evidence": "Wake/lunch/bed aloud"
+  },
+  {
+   "text": "Explains the purpose: forming good habits / reaching the subconscious ('other mind') through repetition",
+   "passed": true,
+   "evidence": "Habits and repetition explained"
+  },
+  {
+   "text": "Notes the first scroll's law: form good habits and become their slave (only a habit subdues a habit)",
+   "passed": true,
+   "evidence": "Scroll I habits"
+  },
+  {
+   "text": "Mentions not skipping a day and/or the ~10 month total",
+   "passed": true,
+   "evidence": "No skipping; 10 months"
+  },
+  {
+   "text": "Lists or references the ten scroll themes (love, persist, miracle, last day, emotions, laugh, multiply value, act now, prayer)",
+   "passed": true,
+   "evidence": "Themes referenced"
+  }
+ ],
+ "summary": {
+  "passed": 6,
+  "failed": 0,
+  "total": 6,
+  "pass_rate": 1.0
+ }
+}

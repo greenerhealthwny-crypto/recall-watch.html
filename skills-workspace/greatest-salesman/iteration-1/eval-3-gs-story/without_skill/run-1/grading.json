@@ -1,0 +1,40 @@
+{
+ "expectations": [
+  {
+   "text": "Hafid begins as a camel boy for the merchant Pathros",
+   "passed": true,
+   "evidence": "Camel boy for Pathros"
+  },
+  {
+   "text": "He is sent to Bethlehem to sell a robe and gives it to warm a newborn infant in a cave",
+   "passed": true,
+   "evidence": "Robe to baby in Bethlehem cave"
+  },
+  {
+   "text": "A bright star follows him, which Pathros recognizes as a sign and gives him the ten scrolls",
+   "passed": true,
+   "evidence": "Star and scrolls"
+  },
+  {
+   "text": "As an old man in Damascus Hafid gives away his wealth and confides in his bookkeeper Erasmus",
+   "passed": true,
+   "evidence": "Erasmus in Damascus"
+  },
+  {
+   "text": "The scrolls go to Paul (Saul of Tarsus)",
+   "passed": true,
+   "evidence": "Saul of Tarsus / Paul"
+  },
+  {
+   "text": "Paul brings the robe (marked by Tola/Pathros) that Hafid had given away",
+   "passed": true,
+   "evidence": "Same robe, Pathros markings"
+  }
+ ],
+ "summary": {
+  "passed": 6,
+  "failed": 0,
+  "total": 6,
+  "pass_rate": 1.0
+ }
+}
