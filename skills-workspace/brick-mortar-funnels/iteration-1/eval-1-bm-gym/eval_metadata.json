@@ -1,0 +1,13 @@
+{
+ "eval_id": 1,
+ "eval_name": "bm-gym",
+ "prompt": "I own a small gym and only have about $1,000 for marketing. Using the Brick & Mortar Funnels book, how would Alex Hormozi get 100 members in 100 days? Include the numbers.",
+ "assertions": [
+  "Explains client-financed acquisition (point-of-sale cash covers this customer AND the next)",
+  "Recommends high-ticket packages/challenge offers instead of a cheap commodity membership (e.g., 6-Week challenge, $99/week tiers)",
+  "Gives the ~$1,100 average cash per sale (e.g., 1 whale $2,500, 1 above average $1,200, 3 normal $600 out of 5 sales from 10 prospects)",
+  "Calculates spend per show (~$550 per show at 50% close, so ~$275 per show)",
+  "Describes the funnel: ad -> opt-in -> scheduling page -> Facebook group, and contacting all leads",
+  "Mentions the follow-on sales (food, supplements, 12-month, paid in full) and/or the $1 -> $3 reinvestment rule"
+ ]
+}

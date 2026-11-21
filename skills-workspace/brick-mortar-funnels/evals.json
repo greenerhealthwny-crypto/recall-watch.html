@@ -1,0 +1,32 @@
+{
+  "skill_name": "brick-mortar-funnels",
+  "evals": [
+    {"id": 1, "name": "bm-gym",
+     "prompt": "I own a small gym and only have about $1,000 for marketing. Using the Brick & Mortar Funnels book, how would Alex Hormozi get 100 members in 100 days? Include the numbers.",
+     "assertions": [
+      "Explains client-financed acquisition (point-of-sale cash covers this customer AND the next)",
+      "Recommends high-ticket packages/challenge offers instead of a cheap commodity membership (e.g., 6-Week challenge, $99/week tiers)",
+      "Gives the ~$1,100 average cash per sale (e.g., 1 whale $2,500, 1 above average $1,200, 3 normal $600 out of 5 sales from 10 prospects)",
+      "Calculates spend per show (~$550 per show at 50% close, so ~$275 per show)",
+      "Describes the funnel: ad -> opt-in -> scheduling page -> Facebook group, and contacting all leads",
+      "Mentions the follow-on sales (food, supplements, 12-month, paid in full) and/or the $1 -> $3 reinvestment rule"]},
+    {"id": 2, "name": "bm-home-service",
+     "prompt": "I run a window cleaning company. Per the Brick & Mortar Funnels book, how do I figure out how much I can spend to get a customer and what offers and steps should I use to get 100 new clients?",
+     "assertions": [
+      "Explains max CAC = annual revenue per client x profit margin (e.g., $40 x 30 = $1,200 x 25% = $300)",
+      "Explains the value ladder / front-end offers (e.g., 10 exterior windows for $99)",
+      "Says to build one landing page per single offer (not a broad website)",
+      "Lists ad copy elements: hook headline, body, benefits, urgency/scarcity",
+      "Covers traffic sources including emailing existing clients, Facebook posts/Live, and Facebook ads, then measuring results",
+      "Adds at least one other expert tactic from the book (e.g., Shaule reactivation/SMS or review/referral funnel, Frey referrals)"]},
+    {"id": 3, "name": "bm-dentist",
+     "prompt": "I'm a dentist. What does the Brick & Mortar Funnels book recommend to get 100 new patients in 100 days, and how would I get reviews and referrals?",
+     "assertions": [
+      "Describes Anissa Holmes' four-phase plan with day ranges (1-45 warm audience; 46-50 funnels; 51-80 nurture; 81-100 traffic)",
+      "Includes the local business gift card giveaway and smile makeover competition",
+      "Mentions building Facebook retargeting audiences and training the team on phone conversion",
+      "Mentions high-value treatment funnels (implants, Invisalign) and/or the 30-Day Floss Challenge",
+      "Covers reviews/referrals via Tyler Shaule's NPS rate-review-referral funnel (~300 five-star reviews) or similar book method",
+      "Includes compliance cautions (e.g., TCPA/SMS consent, HIPAA/testimonials, review gating)"]}
+  ]
+}
