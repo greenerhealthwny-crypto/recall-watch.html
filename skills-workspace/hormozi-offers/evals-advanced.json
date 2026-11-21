@@ -1,0 +1,30 @@
+{
+ "skill_name": "hormozi-offers",
+ "level": "advanced",
+ "evals": [
+  {
+   "id": 1,
+   "name": "adv-offer",
+   "prompt": "I clean out garages and haul junk. Competitors charge $300 a load. Build me a Grand Slam Offer using $100M Offers: dream outcome, problems, solutions, delivery vehicles, trim and stack, plus pricing, guarantee and a MAGIC name.",
+   "assertions": [
+    "Follows the five-step build: dream outcome, problems, solutions, delivery vehicles, trim and stack",
+    "Uses the Value Equation (dream outcome, likelihood, time delay, effort)",
+    "Recommends premium pricing rather than undercutting $300",
+    "Includes a specific guarantee and scarcity/urgency and bonuses",
+    "Gives a name using M-A-G-I-C"
+   ]
+  },
+  {
+   "id": 2,
+   "name": "adv-market",
+   "prompt": "Rank these markets for a new coaching offer using Hormozi's starving-crowd criteria: (a) busy moms wanting to lose weight, (b) dentists wanting more patients, (c) teenagers wanting to learn guitar.",
+   "assertions": [
+    "Uses the four criteria: massive pain, purchasing power, easy to target, growing",
+    "Scores each market on the criteria",
+    "Ranks dentists high on purchasing power and targetability and teens low on purchasing power",
+    "Notes market matters more than offer or persuasion (order of importance)",
+    "Gives a clear final ranking with reasoning"
+   ]
+  }
+ ]
+}

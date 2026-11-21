@@ -1,0 +1,30 @@
+{
+ "skill_name": "getting-things-done",
+ "level": "advanced",
+ "evals": [
+  {
+   "id": 1,
+   "name": "adv-setup",
+   "prompt": "I'm starting a Marketplace flipping side hustle on top of a job and family. Set up a full GTD system for it: lists, contexts, a sample project with natural planning, and a Weekly Review checklist.",
+   "assertions": [
+    "Sets up the list categories (projects, next actions, waiting for, calendar, someday/maybe, reference)",
+    "Uses contexts (e.g. @car, @phone, @computer)",
+    "Runs natural planning on a project (purpose, outcome, brainstorm, organize, next actions)",
+    "Gives a Weekly Review checklist (get clear, get current, get creative)",
+    "Applies the two-minute rule and/or clarifying questions"
+   ]
+  },
+  {
+   "id": 2,
+   "name": "adv-horizons",
+   "prompt": "Map my life onto GTD's horizons of focus: I want to quit my job in 2 years and run my own business.",
+   "assertions": [
+    "Names the horizons from Ground/runway through Horizon 5 (purpose/principles)",
+    "Places the 2-year goal at the right horizon (vision, ~3-5 years, or goals 1-2 years)",
+    "Gives concrete content at each horizon",
+    "Connects horizons to next actions",
+    "Mentions reviewing higher horizons periodically"
+   ]
+  }
+ ]
+}

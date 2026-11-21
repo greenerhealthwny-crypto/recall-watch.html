@@ -1,0 +1,12 @@
+{
+ "eval_id": 2,
+ "eval_name": "adv-critique",
+ "prompt": "Critique this headline with Bly's rules and rewrite it: 'Quality Products At Great Prices - Check Us Out!'",
+ "assertions": [
+  "Identifies vagueness/lack of specificity",
+  "Applies the four functions of a headline (attention, select audience, deliver message, draw into body)",
+  "Uses the 4 U's",
+  "Gives multiple rewrites using named techniques or types",
+  "Mentions USP or a BFD/motivator angle"
+ ]
+}

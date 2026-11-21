@@ -1,0 +1,30 @@
+{
+ "skill_name": "copywriters-handbook",
+ "level": "advanced",
+ "evals": [
+  {
+   "id": 1,
+   "name": "adv-listing",
+   "prompt": "Write a Facebook Marketplace listing for a used solid-oak dining table ($180) using Bly's techniques. Give 3 headlines with the headline type named, check them against the 4 U's, and convert features to benefits.",
+   "assertions": [
+    "Gives 3 headlines each labeled with one of Bly's headline types",
+    "Checks headlines against the 4 U's (urgent, unique, ultra-specific, useful)",
+    "Converts features to benefits explicitly",
+    "Follows the motivating sequence (attention, need, satisfy, prove, action) in the body",
+    "Includes a clear call to action"
+   ]
+  },
+  {
+   "id": 2,
+   "name": "adv-critique",
+   "prompt": "Critique this headline with Bly's rules and rewrite it: 'Quality Products At Great Prices - Check Us Out!'",
+   "assertions": [
+    "Identifies vagueness/lack of specificity",
+    "Applies the four functions of a headline (attention, select audience, deliver message, draw into body)",
+    "Uses the 4 U's",
+    "Gives multiple rewrites using named techniques or types",
+    "Mentions USP or a BFD/motivator angle"
+   ]
+  }
+ ]
+}

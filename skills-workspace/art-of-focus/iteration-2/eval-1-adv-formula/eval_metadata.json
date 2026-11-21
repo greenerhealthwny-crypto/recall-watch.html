@@ -1,0 +1,12 @@
+{
+ "eval_id": 1,
+ "eval_name": "adv-formula",
+ "prompt": "Run me through Dan Koe's full formula in The Art of Focus with prompts I can answer today: anti-vision, vision, purpose, and goals from yearly to daily.",
+ "assertions": [
+  "Starts with the anti-vision",
+  "Moves to vision derived from it",
+  "Purpose / path of mastery",
+  "Breaks goals from yearly to monthly, weekly and daily",
+  "Gives prompts/questions the user can answer"
+ ]
+}

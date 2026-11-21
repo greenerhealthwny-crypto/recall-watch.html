@@ -1,0 +1,30 @@
+{
+ "skill_name": "art-of-focus",
+ "level": "advanced",
+ "evals": [
+  {
+   "id": 1,
+   "name": "adv-formula",
+   "prompt": "Run me through Dan Koe's full formula in The Art of Focus with prompts I can answer today: anti-vision, vision, purpose, and goals from yearly to daily.",
+   "assertions": [
+    "Starts with the anti-vision",
+    "Moves to vision derived from it",
+    "Purpose / path of mastery",
+    "Breaks goals from yearly to monthly, weekly and daily",
+    "Gives prompts/questions the user can answer"
+   ]
+  },
+  {
+   "id": 2,
+   "name": "adv-business",
+   "prompt": "I like flipping thrift furniture and talking about it. How would Dan Koe turn that into a one-person business?",
+   "assertions": [
+    "'You are the niche' idea",
+    "Skill stack: message, medium, results-oriented skills",
+    "Project to product progression",
+    "Fill, empty, use content/learning loop",
+    "Concrete plan for the furniture interest"
+   ]
+  }
+ ]
+}

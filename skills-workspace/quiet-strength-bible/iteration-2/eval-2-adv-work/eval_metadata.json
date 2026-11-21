@@ -1,0 +1,12 @@
+{
+ "eval_id": 2,
+ "eval_name": "adv-work",
+ "prompt": "I'm starting a side business and worried about money and integrity. Build a 7-day devotional using Proverbs and the NT on work, wealth and integrity.",
+ "assertions": [
+  "Provides a 7-day structure",
+  "Uses Proverbs passages on work or wealth",
+  "Uses NT passages on money/integrity",
+  "Each day includes an application or reflection question",
+  "Stays faithful to scripture rather than prosperity-gospel promises"
+ ]
+}

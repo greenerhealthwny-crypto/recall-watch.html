@@ -1,0 +1,30 @@
+{
+ "skill_name": "naval-almanack",
+ "level": "advanced",
+ "evals": [
+  {
+   "id": 1,
+   "name": "adv-apply",
+   "prompt": "Apply Naval's framework to a Facebook Marketplace furniture flipper: where is the specific knowledge, which leverage is available, and how do they stop renting out their time?",
+   "assertions": [
+    "Identifies possible specific knowledge for a flipper",
+    "Names leverage types and highlights code/media as permissionless",
+    "Moves toward equity/ownership rather than trading hours",
+    "Uses accountability or long-term games",
+    "Gives concrete next steps"
+   ]
+  },
+  {
+   "id": 2,
+   "name": "adv-tension",
+   "prompt": "Naval says desire is a contract to be unhappy, but also that you should seek wealth. How does the Almanack reconcile those?",
+   "assertions": [
+    "Quotes or paraphrases the desire contract idea",
+    "States the seek-wealth idea",
+    "Explains one-desire-at-a-time or choosing desires carefully",
+    "Explains wealth as freedom/means to stop playing games",
+    "Mentions peace/happiness being separate from success"
+   ]
+  }
+ ]
+}

@@ -1,0 +1,12 @@
+{
+ "eval_id": 1,
+ "eval_name": "adv-window",
+ "prompt": "I'm working a job and want to move to owning a system using Myron Golden's Window of Opportunity. Map my path from H.A.J. to O.A.S. starting with $0 and a Facebook Marketplace account.",
+ "assertions": [
+  "Names the four window panes: Have A Job, Own A Job, Sow Money Seeds, Own A System",
+  "Places the user's starting point correctly and maps the steps",
+  "Explains why O.A.S. is best",
+  "Uses the financial house (income, outgo, wealth reducing liabilities, income producing assets)",
+  "Gives concrete Marketplace-based steps"
+ ]
+}

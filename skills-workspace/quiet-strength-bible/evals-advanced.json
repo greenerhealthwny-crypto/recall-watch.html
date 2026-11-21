@@ -1,0 +1,30 @@
+{
+ "skill_name": "quiet-strength-bible",
+ "level": "advanced",
+ "evals": [
+  {
+   "id": 1,
+   "name": "adv-study",
+   "prompt": "Using the Quiet Strength Bible's study method, walk me through a full study of Philippians 4:6-7 on anxiety, and give related verses from the Verse Finder.",
+   "assertions": [
+    "Uses the three-step method: observation, interpretation, application",
+    "Applies each step to Philippians 4:6-7 specifically",
+    "Gives related verses on fear/anxiety or prayer",
+    "Connects to Dungy's 'God's playbook' framing or the Principles/Practices/Priorities structure",
+    "Gives a concrete personal application"
+   ]
+  },
+  {
+   "id": 2,
+   "name": "adv-work",
+   "prompt": "I'm starting a side business and worried about money and integrity. Build a 7-day devotional using Proverbs and the NT on work, wealth and integrity.",
+   "assertions": [
+    "Provides a 7-day structure",
+    "Uses Proverbs passages on work or wealth",
+    "Uses NT passages on money/integrity",
+    "Each day includes an application or reflection question",
+    "Stays faithful to scripture rather than prosperity-gospel promises"
+   ]
+  }
+ ]
+}

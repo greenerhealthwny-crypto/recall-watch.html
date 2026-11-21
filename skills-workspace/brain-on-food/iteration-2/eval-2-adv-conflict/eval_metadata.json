@@ -1,0 +1,12 @@
+{
+ "eval_id": 2,
+ "eval_name": "adv-conflict",
+ "prompt": "I read that gluten and MSG wreck mental health and I'm considering cutting both plus all caffeine. What does Naidoo actually say, and where might I be overdoing it (e.g. orthorexia)?",
+ "assertions": [
+  "States Naidoo's nuanced position on gluten (sensitivity varies, not universal ban)",
+  "States her position on MSG/glutamates",
+  "Gives her caffeine guidance as a limit rather than a ban",
+  "Raises orthorexia as a risk of over-restriction",
+  "Recommends a measured approach (e.g. elimination trial, professional input)"
+ ]
+}

@@ -1,0 +1,30 @@
+{
+ "skill_name": "greatest-salesman",
+ "level": "advanced",
+ "evals": [
+  {
+   "id": 1,
+   "name": "adv-rejection",
+   "prompt": "I'm a new salesperson and got rejected 40 times this week. Build me a 30-day plan using Og Mandino's scrolls, tell me which scroll to start with and why, and explain the law of averages idea.",
+   "assertions": [
+    "Explains the 30-day reading method: silently on waking, after the midday meal, aloud before bed",
+    "Notes Scroll I (habits) is the first scroll / scrolls are read in order",
+    "Explains persistence and the law of averages (each no brings a yes closer)",
+    "Uses mood mastery or 'This too shall pass' for rejection",
+    "Gives a concrete daily routine"
+   ]
+  },
+  {
+   "id": 2,
+   "name": "adv-compare",
+   "prompt": "Compare Og Mandino's ten scrolls with modern habit science. Where do they agree, and where is Mandino's method unusual?",
+   "assertions": [
+    "Lists or references the ten scrolls accurately",
+    "Connects Scroll I's habit-formation idea to modern habit science",
+    "Notes something unusual (e.g. reading aloud 3x/day, 30 days per scroll, prayer scroll)",
+    "Covers emotional control and/or act now",
+    "Distinguishes what the book says from the comparison"
+   ]
+  }
+ ]
+}

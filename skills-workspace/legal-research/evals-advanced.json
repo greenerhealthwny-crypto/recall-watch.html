@@ -1,0 +1,30 @@
+{
+ "skill_name": "legal-research",
+ "level": "advanced",
+ "evals": [
+  {
+   "id": 1,
+   "name": "adv-issue",
+   "prompt": "A buyer on Facebook Marketplace paid me $200 via a payment app, then filed a chargeback claiming the item never arrived after picking it up in person. I'm in New York. Using Nolo's method, frame the issue and lay out the research path.",
+   "assertions": [
+    "Frames the issue: civil vs criminal, substantive vs procedural, area of law",
+    "Uses the Cartwheel method or keyword brainstorming",
+    "Points to secondary sources first (e.g. practice guides, Am. Jur., form books) then primary law",
+    "Mentions checking that law is still good (Shepardize/KeyCite or updates/pocket parts)",
+    "Mentions small claims court and/or when to hire a lawyer; notes it's not legal advice"
+   ]
+  },
+  {
+   "id": 2,
+   "name": "adv-memo",
+   "prompt": "Explain how to read a statute and a case for my small-claims dispute, then outline an IRAC memo.",
+   "assertions": [
+    "Gives rules for reading statutes (e.g. read definitions, every word matters, cross-references)",
+    "Explains holding vs dicta in cases",
+    "Explains binding vs persuasive precedent",
+    "Outlines IRAC: Issue, Rule, Analysis/Application, Conclusion",
+    "Includes citation practice or verifying currency of the law"
+   ]
+  }
+ ]
+}

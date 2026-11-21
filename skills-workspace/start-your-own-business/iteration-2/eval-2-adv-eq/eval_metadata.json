@@ -1,0 +1,12 @@
+{
+ "eval_id": 2,
+ "eval_name": "adv-eq",
+ "prompt": "Score me on Levitt's Entrepreneurial Quotient idea: I'm 34, hate risk, love people, have $2,000 saved and a full-time job. What would Levitt say about obsessive drive, the X factor and happenstance in my case, and how should I start?",
+ "assertions": [
+  "References the Entrepreneurial Quotient quiz/self-assessment",
+  "Addresses obsessive drive as a requirement",
+  "Explains the X factor and/or happenstance in founders' stories",
+  "Gives advice consistent with keeping risk low (starting small, protecting capital) tied to the user's situation",
+  "Is honest that the quiz is self-assessment, not a verdict"
+ ]
+}

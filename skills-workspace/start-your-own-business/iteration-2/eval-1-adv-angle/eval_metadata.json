@@ -1,0 +1,12 @@
+{
+ "eval_id": 1,
+ "eval_name": "adv-angle",
+ "prompt": "I want to open a used-furniture resale shop in a town that already has two thrift stores and a Goodwill. Using Mortimer Levitt's book, stress-test the idea: what question must I answer, how could I 'give more without charging more', and which parts of the complete package are most at risk? Be concrete.",
+ "assertions": [
+  "Poses Levitt's core question: why should customers come to me instead of where they go now",
+  "Applies 'giving more without charging more' with concrete furniture-shop examples",
+  "Walks through the complete package elements (presentation, service, product, finance, timing, execution) and flags the riskiest",
+  "Draws a lesson from Levitt's own failures (e.g. advertising that did not pay, weak name, no second-in-command)",
+  "Ends with a concrete go/no-go test or next steps rather than generic encouragement"
+ ]
+}

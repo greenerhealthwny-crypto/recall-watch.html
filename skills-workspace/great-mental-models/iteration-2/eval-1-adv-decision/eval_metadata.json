@@ -1,0 +1,12 @@
+{
+ "eval_id": 1,
+ "eval_name": "adv-decision",
+ "prompt": "I'm deciding whether to quit my job to flip furniture full-time. Run it through at least five of the nine models in The Great Mental Models, Vol. 1.",
+ "assertions": [
+  "Applies at least five named models",
+  "Uses second-order thinking with concrete consequences",
+  "Uses inversion (e.g. what would guarantee failure)",
+  "Uses circle of competence and/or probabilistic thinking with numbers",
+  "Ends with a decision rule or test, not just a list"
+ ]
+}

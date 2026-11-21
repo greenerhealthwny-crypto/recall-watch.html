@@ -1,0 +1,12 @@
+{
+ "eval_id": 2,
+ "eval_name": "adv-memo",
+ "prompt": "Explain how to read a statute and a case for my small-claims dispute, then outline an IRAC memo.",
+ "assertions": [
+  "Gives rules for reading statutes (e.g. read definitions, every word matters, cross-references)",
+  "Explains holding vs dicta in cases",
+  "Explains binding vs persuasive precedent",
+  "Outlines IRAC: Issue, Rule, Analysis/Application, Conclusion",
+  "Includes citation practice or verifying currency of the law"
+ ]
+}

@@ -1,0 +1,30 @@
+{
+ "skill_name": "managing-your-money",
+ "level": "advanced",
+ "evals": [
+  {
+   "id": 1,
+   "name": "adv-budget",
+   "prompt": "I earn $2,400/month, have $3,100 in credit-card debt at 24% APR and no savings. Using the Consumer Reports guide, build a four-step budget and a 12-month plan, and flag anything in the 1989 book that no longer applies.",
+   "assertions": [
+    "Uses the book's four-step budgeting approach",
+    "Prioritizes an emergency fund and high-interest debt with numbers",
+    "Gives a month-by-month or phased 12-month plan",
+    "Flags at least one dated 1989 figure or rule (e.g. tax or IRA limits) as changed",
+    "Mentions protecting the credit rating/report"
+   ]
+  },
+  {
+   "id": 2,
+   "name": "adv-insure",
+   "prompt": "I'm 29, single, renting, own a 2012 car worth $5k and freelance. What insurance do I actually need per this guide, and what's likely a waste?",
+   "assertions": [
+    "Covers medical/health insurance as a priority for a freelancer",
+    "Addresses life insurance need for a single person with no dependents (likely low)",
+    "Addresses renter's/property coverage",
+    "Addresses auto coverage decisions for a low-value car (e.g. dropping collision)",
+    "Flags disability or other coverage and notes dated details"
+   ]
+  }
+ ]
+}

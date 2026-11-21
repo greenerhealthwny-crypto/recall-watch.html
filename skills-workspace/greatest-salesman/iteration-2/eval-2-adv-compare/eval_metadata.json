@@ -1,0 +1,12 @@
+{
+ "eval_id": 2,
+ "eval_name": "adv-compare",
+ "prompt": "Compare Og Mandino's ten scrolls with modern habit science. Where do they agree, and where is Mandino's method unusual?",
+ "assertions": [
+  "Lists or references the ten scrolls accurately",
+  "Connects Scroll I's habit-formation idea to modern habit science",
+  "Notes something unusual (e.g. reading aloud 3x/day, 30 days per scroll, prayer scroll)",
+  "Covers emotional control and/or act now",
+  "Distinguishes what the book says from the comparison"
+ ]
+}

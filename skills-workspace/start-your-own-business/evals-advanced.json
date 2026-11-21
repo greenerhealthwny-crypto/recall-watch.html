@@ -1,0 +1,30 @@
+{
+ "skill_name": "start-your-own-business",
+ "level": "advanced",
+ "evals": [
+  {
+   "id": 1,
+   "name": "adv-angle",
+   "prompt": "I want to open a used-furniture resale shop in a town that already has two thrift stores and a Goodwill. Using Mortimer Levitt's book, stress-test the idea: what question must I answer, how could I 'give more without charging more', and which parts of the complete package are most at risk? Be concrete.",
+   "assertions": [
+    "Poses Levitt's core question: why should customers come to me instead of where they go now",
+    "Applies 'giving more without charging more' with concrete furniture-shop examples",
+    "Walks through the complete package elements (presentation, service, product, finance, timing, execution) and flags the riskiest",
+    "Draws a lesson from Levitt's own failures (e.g. advertising that did not pay, weak name, no second-in-command)",
+    "Ends with a concrete go/no-go test or next steps rather than generic encouragement"
+   ]
+  },
+  {
+   "id": 2,
+   "name": "adv-eq",
+   "prompt": "Score me on Levitt's Entrepreneurial Quotient idea: I'm 34, hate risk, love people, have $2,000 saved and a full-time job. What would Levitt say about obsessive drive, the X factor and happenstance in my case, and how should I start?",
+   "assertions": [
+    "References the Entrepreneurial Quotient quiz/self-assessment",
+    "Addresses obsessive drive as a requirement",
+    "Explains the X factor and/or happenstance in founders' stories",
+    "Gives advice consistent with keeping risk low (starting small, protecting capital) tied to the user's situation",
+    "Is honest that the quiz is self-assessment, not a verdict"
+   ]
+  }
+ ]
+}

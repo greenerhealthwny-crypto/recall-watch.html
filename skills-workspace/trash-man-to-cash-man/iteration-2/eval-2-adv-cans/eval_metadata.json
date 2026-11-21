@@ -1,0 +1,12 @@
+{
+ "eval_id": 2,
+ "eval_name": "adv-cans",
+ "prompt": "I'll make $500 this month from side sales. Split it using Golden's six money cans and explain each can.",
+ "assertions": [
+  "Lists six cans: tithe, finish free, educate, save, have fun, pay bills",
+  "Uses the percentages (10/10/10/10/10/50 or as stated)",
+  "Applies them to $500 with dollar amounts",
+  "Explains purpose of each can",
+  "Mentions a mental trap or 'you are in the marketing business'"
+ ]
+}

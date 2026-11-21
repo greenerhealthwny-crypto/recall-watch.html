@@ -1,0 +1,12 @@
+{
+ "eval_id": 1,
+ "eval_name": "adv-listing",
+ "prompt": "Write a Facebook Marketplace listing for a used solid-oak dining table ($180) using Bly's techniques. Give 3 headlines with the headline type named, check them against the 4 U's, and convert features to benefits.",
+ "assertions": [
+  "Gives 3 headlines each labeled with one of Bly's headline types",
+  "Checks headlines against the 4 U's (urgent, unique, ultra-specific, useful)",
+  "Converts features to benefits explicitly",
+  "Follows the motivating sequence (attention, need, satisfy, prove, action) in the body",
+  "Includes a clear call to action"
+ ]
+}

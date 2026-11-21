@@ -1,0 +1,12 @@
+{
+ "eval_id": 2,
+ "eval_name": "adv-event",
+ "prompt": "Adapt Jaime Cross's retail event idea and Chad Woolner's workshop funnel for a small vintage-furniture pop-up.",
+ "assertions": [
+  "Uses Jaime Cross's ticketed-event concept",
+  "Uses Chad Woolner's workshop/event funnel",
+  "Adapts both concretely to a vintage-furniture pop-up",
+  "Includes promotion and follow-up steps",
+  "Includes pricing or attendance targets"
+ ]
+}

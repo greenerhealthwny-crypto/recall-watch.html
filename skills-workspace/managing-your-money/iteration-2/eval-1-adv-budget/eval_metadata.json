@@ -1,0 +1,12 @@
+{
+ "eval_id": 1,
+ "eval_name": "adv-budget",
+ "prompt": "I earn $2,400/month, have $3,100 in credit-card debt at 24% APR and no savings. Using the Consumer Reports guide, build a four-step budget and a 12-month plan, and flag anything in the 1989 book that no longer applies.",
+ "assertions": [
+  "Uses the book's four-step budgeting approach",
+  "Prioritizes an emergency fund and high-interest debt with numbers",
+  "Gives a month-by-month or phased 12-month plan",
+  "Flags at least one dated 1989 figure or rule (e.g. tax or IRA limits) as changed",
+  "Mentions protecting the credit rating/report"
+ ]
+}

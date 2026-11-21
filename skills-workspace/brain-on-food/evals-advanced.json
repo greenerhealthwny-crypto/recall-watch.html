@@ -1,0 +1,30 @@
+{
+ "skill_name": "brain-on-food",
+ "level": "advanced",
+ "evals": [
+  {
+   "id": 1,
+   "name": "adv-plan",
+   "prompt": "My partner has ADHD and I have anxiety. We share meals. Build a 3-day dinner plan using Dr. Uma Naidoo's guidance that serves both of us, and explain which nutrients target which condition.",
+   "assertions": [
+    "Gives a concrete 3-day dinner plan",
+    "Ties anxiety foods to Naidoo's guidance (e.g. fermented foods/probiotics, omega-3s, fiber, avoiding refined sugar or excess caffeine/alcohol)",
+    "Ties ADHD foods to her guidance (e.g. protein, omega-3s, limiting sugar/additives, low glycemic load)",
+    "Explains the gut-brain mechanism (microbiome, inflammation, vagus nerve or HPA axis)",
+    "Includes a caveat that diet complements, not replaces, treatment"
+   ]
+  },
+  {
+   "id": 2,
+   "name": "adv-conflict",
+   "prompt": "I read that gluten and MSG wreck mental health and I'm considering cutting both plus all caffeine. What does Naidoo actually say, and where might I be overdoing it (e.g. orthorexia)?",
+   "assertions": [
+    "States Naidoo's nuanced position on gluten (sensitivity varies, not universal ban)",
+    "States her position on MSG/glutamates",
+    "Gives her caffeine guidance as a limit rather than a ban",
+    "Raises orthorexia as a risk of over-restriction",
+    "Recommends a measured approach (e.g. elimination trial, professional input)"
+   ]
+  }
+ ]
+}

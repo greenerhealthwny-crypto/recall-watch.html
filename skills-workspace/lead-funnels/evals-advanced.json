@@ -1,0 +1,30 @@
+{
+ "skill_name": "lead-funnels",
+ "level": "advanced",
+ "evals": [
+  {
+   "id": 1,
+   "name": "adv-funnel",
+   "prompt": "Design a complete lead funnel for a local reseller who flips furniture on Facebook Marketplace: lead magnet, landing page, thank-you page, sales page and follow-up, plus list math.",
+   "assertions": [
+    "Covers all five parts: lead magnet, landing page, thank-you page, sales page, follow-up",
+    "Lead magnet uses a curiosity/pain hook (e.g. 'The # Biggest Mistakes...')",
+    "Includes a thank-you-page offer or self-liquidating offer",
+    "Includes list math (e.g. $1 per name per month) with an estimate",
+    "Includes a follow-up sequence or daily publishing plan"
+   ]
+  },
+  {
+   "id": 2,
+   "name": "adv-economics",
+   "prompt": "My ad costs $2 per lead. I want to break even on day one. Using the Lead Funnels Swipe File, explain self-liquidating offers, break-even day and RFMS, and design the numbers.",
+   "assertions": [
+    "Explains self-liquidating offer",
+    "Explains break-even day",
+    "Explains RFMS scoring (recency, frequency, monetary, source)",
+    "Does concrete math on $2/lead with a conversion rate and price",
+    "Suggests a fast info product to sell (one of the nine fast ways)"
+   ]
+  }
+ ]
+}

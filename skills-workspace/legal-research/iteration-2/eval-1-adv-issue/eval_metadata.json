@@ -1,0 +1,12 @@
+{
+ "eval_id": 1,
+ "eval_name": "adv-issue",
+ "prompt": "A buyer on Facebook Marketplace paid me $200 via a payment app, then filed a chargeback claiming the item never arrived after picking it up in person. I'm in New York. Using Nolo's method, frame the issue and lay out the research path.",
+ "assertions": [
+  "Frames the issue: civil vs criminal, substantive vs procedural, area of law",
+  "Uses the Cartwheel method or keyword brainstorming",
+  "Points to secondary sources first (e.g. practice guides, Am. Jur., form books) then primary law",
+  "Mentions checking that law is still good (Shepardize/KeyCite or updates/pocket parts)",
+  "Mentions small claims court and/or when to hire a lawyer; notes it's not legal advice"
+ ]
+}

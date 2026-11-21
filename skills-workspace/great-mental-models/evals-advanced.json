@@ -1,0 +1,30 @@
+{
+ "skill_name": "great-mental-models",
+ "level": "advanced",
+ "evals": [
+  {
+   "id": 1,
+   "name": "adv-decision",
+   "prompt": "I'm deciding whether to quit my job to flip furniture full-time. Run it through at least five of the nine models in The Great Mental Models, Vol. 1.",
+   "assertions": [
+    "Applies at least five named models",
+    "Uses second-order thinking with concrete consequences",
+    "Uses inversion (e.g. what would guarantee failure)",
+    "Uses circle of competence and/or probabilistic thinking with numbers",
+    "Ends with a decision rule or test, not just a list"
+   ]
+  },
+  {
+   "id": 2,
+   "name": "adv-razors",
+   "prompt": "Explain the difference between Occam's and Hanlon's razors with a scenario where a Marketplace buyer ghosts me, then show first-principles thinking on pricing.",
+   "assertions": [
+    "Defines Occam's razor correctly",
+    "Defines Hanlon's razor correctly",
+    "Applies both to the ghosting scenario",
+    "Uses first principles (breaking down to fundamentals, Socratic questioning or Five Whys) on pricing",
+    "Notes limits of the razors"
+   ]
+  }
+ ]
+}

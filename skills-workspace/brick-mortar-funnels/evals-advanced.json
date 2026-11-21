@@ -1,0 +1,30 @@
+{
+ "skill_name": "brick-mortar-funnels",
+ "level": "advanced",
+ "evals": [
+  {
+   "id": 1,
+   "name": "adv-100days",
+   "prompt": "I run a one-person junk-removal service. Using Brick & Mortar Funnels, build a 100-day plan to get 100 customers, borrowing from the home-services chapter (Joshua Latimer) and at least one other expert.",
+   "assertions": [
+    "Uses Joshua Latimer's home-services ideas (max CAC and/or front-end offer)",
+    "Borrows from at least one other named expert (e.g. David Frey referrals, Tyler Shaule SMS, Hormozi client-financed acquisition)",
+    "Breaks the plan into phases across 100 days",
+    "Includes acquisition-cost math",
+    "Includes reviews/referrals or reactivation"
+   ]
+  },
+  {
+   "id": 2,
+   "name": "adv-event",
+   "prompt": "Adapt Jaime Cross's retail event idea and Chad Woolner's workshop funnel for a small vintage-furniture pop-up.",
+   "assertions": [
+    "Uses Jaime Cross's ticketed-event concept",
+    "Uses Chad Woolner's workshop/event funnel",
+    "Adapts both concretely to a vintage-furniture pop-up",
+    "Includes promotion and follow-up steps",
+    "Includes pricing or attendance targets"
+   ]
+  }
+ ]
+}

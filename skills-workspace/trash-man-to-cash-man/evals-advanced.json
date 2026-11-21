@@ -1,0 +1,30 @@
+{
+ "skill_name": "trash-man-to-cash-man",
+ "level": "advanced",
+ "evals": [
+  {
+   "id": 1,
+   "name": "adv-window",
+   "prompt": "I'm working a job and want to move to owning a system using Myron Golden's Window of Opportunity. Map my path from H.A.J. to O.A.S. starting with $0 and a Facebook Marketplace account.",
+   "assertions": [
+    "Names the four window panes: Have A Job, Own A Job, Sow Money Seeds, Own A System",
+    "Places the user's starting point correctly and maps the steps",
+    "Explains why O.A.S. is best",
+    "Uses the financial house (income, outgo, wealth reducing liabilities, income producing assets)",
+    "Gives concrete Marketplace-based steps"
+   ]
+  },
+  {
+   "id": 2,
+   "name": "adv-cans",
+   "prompt": "I'll make $500 this month from side sales. Split it using Golden's six money cans and explain each can.",
+   "assertions": [
+    "Lists six cans: tithe, finish free, educate, save, have fun, pay bills",
+    "Uses the percentages (10/10/10/10/10/50 or as stated)",
+    "Applies them to $500 with dollar amounts",
+    "Explains purpose of each can",
+    "Mentions a mental trap or 'you are in the marketing business'"
+   ]
+  }
+ ]
+}

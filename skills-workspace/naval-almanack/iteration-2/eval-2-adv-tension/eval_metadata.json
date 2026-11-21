@@ -1,0 +1,12 @@
+{
+ "eval_id": 2,
+ "eval_name": "adv-tension",
+ "prompt": "Naval says desire is a contract to be unhappy, but also that you should seek wealth. How does the Almanack reconcile those?",
+ "assertions": [
+  "Quotes or paraphrases the desire contract idea",
+  "States the seek-wealth idea",
+  "Explains one-desire-at-a-time or choosing desires carefully",
+  "Explains wealth as freedom/means to stop playing games",
+  "Mentions peace/happiness being separate from success"
+ ]
+}

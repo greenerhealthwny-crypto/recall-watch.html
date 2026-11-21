@@ -1,0 +1,12 @@
+{
+ "eval_id": 2,
+ "eval_name": "adv-horizons",
+ "prompt": "Map my life onto GTD's horizons of focus: I want to quit my job in 2 years and run my own business.",
+ "assertions": [
+  "Names the horizons from Ground/runway through Horizon 5 (purpose/principles)",
+  "Places the 2-year goal at the right horizon (vision, ~3-5 years, or goals 1-2 years)",
+  "Gives concrete content at each horizon",
+  "Connects horizons to next actions",
+  "Mentions reviewing higher horizons periodically"
+ ]
+}
