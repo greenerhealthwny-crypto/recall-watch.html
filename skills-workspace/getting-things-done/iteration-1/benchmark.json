@@ -1,0 +1,342 @@
+{
+  "metadata": {
+    "skill_name": "getting-things-done",
+    "skill_path": "<path/to/skill>",
+    "executor_model": "<model-name>",
+    "analyzer_model": "<model-name>",
+    "timestamp": "2026-11-21T21:33:36Z",
+    "evals_run": [
+      1,
+      2,
+      3
+    ],
+    "runs_per_configuration": 1
+  },
+  "runs": [
+    {
+      "eval_id": 1,
+      "eval_name": "gtd-weekly-review",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Groups into Get Clear, Get Current, Get Creative",
+          "passed": true,
+          "evidence": "Three phases named"
+        },
+        {
+          "text": "Get Clear: collect loose papers/materials, get 'in' to zero, empty your head",
+          "passed": true,
+          "evidence": "Loose papers, in to zero, empty head"
+        },
+        {
+          "text": "Get Current: review action lists, previous calendar, upcoming calendar",
+          "passed": true,
+          "evidence": "Action lists, previous and upcoming calendar"
+        },
+        {
+          "text": "Get Current: review Waiting For, project lists, relevant checklists",
+          "passed": true,
+          "evidence": "Waiting For, projects, checklists"
+        },
+        {
+          "text": "Get Creative: review Someday/Maybe and be creative and courageous",
+          "passed": true,
+          "evidence": "Someday/Maybe, creative and courageous"
+        },
+        {
+          "text": "Explains purpose: keeping the system current and trusted (reflect step)",
+          "passed": true,
+          "evidence": "Explains keeping the system trusted"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "gtd-horizons",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Lists Ground (current actions) through Horizon 5 (purpose and principles), including areas of focus (H2), goals (H3), vision (H4)",
+          "passed": true,
+          "evidence": "Ground to Horizon 5 listed"
+        },
+        {
+          "text": "Four-criteria model in order: context, time available, energy available, priority",
+          "passed": true,
+          "evidence": "Four criteria in order"
+        },
+        {
+          "text": "Threefold model: predefined work, work as it shows up, defining your work",
+          "passed": true,
+          "evidence": "Threefold model"
+        },
+        {
+          "text": "Identifies the six-level model as the horizons used for reviewing work",
+          "passed": true,
+          "evidence": "Six-level model named"
+        },
+        {
+          "text": "Defines a project as any outcome achievable within a year requiring more than one action",
+          "passed": true,
+          "evidence": "Project definition given"
+        },
+        {
+          "text": "Connects horizons to weekly review / top-down priorities",
+          "passed": true,
+          "evidence": "Top-down priorities, review rhythm"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 3,
+      "eval_name": "gtd-inbox",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Capture everything first (mind sweep / collection buckets)",
+          "passed": true,
+          "evidence": "Capture and mind sweep"
+        },
+        {
+          "text": "Clarify one item at a time asking What is it? Is it actionable?",
+          "passed": true,
+          "evidence": "What is it? Is it actionable?"
+        },
+        {
+          "text": "Non-actionable: trash, incubate (someday/maybe or tickler), or reference",
+          "passed": true,
+          "evidence": "Trash, incubate, reference"
+        },
+        {
+          "text": "Actionable: decide next action; two-minute rule (do it if under two minutes); otherwise delegate (Waiting For) or defer (calendar or Next Actions)",
+          "passed": true,
+          "evidence": "Two-minute rule; delegate; defer"
+        },
+        {
+          "text": "Organize into the categories (projects, next actions by context, waiting for, calendar, reference, someday/maybe)",
+          "passed": true,
+          "evidence": "Seven list categories"
+        },
+        {
+          "text": "Mentions weekly review / reflect and engage to keep the system trusted",
+          "passed": true,
+          "evidence": "Weekly review, engage"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 1,
+      "eval_name": "gtd-weekly-review",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Groups into Get Clear, Get Current, Get Creative",
+          "passed": true,
+          "evidence": "Three phases named"
+        },
+        {
+          "text": "Get Clear: collect loose papers/materials, get 'in' to zero, empty your head",
+          "passed": true,
+          "evidence": "Loose papers, in to empty, empty head"
+        },
+        {
+          "text": "Get Current: review action lists, previous calendar, upcoming calendar",
+          "passed": true,
+          "evidence": "Next actions, previous and upcoming calendar"
+        },
+        {
+          "text": "Get Current: review Waiting For, project lists, relevant checklists",
+          "passed": true,
+          "evidence": "Waiting For, project lists, checklists"
+        },
+        {
+          "text": "Get Creative: review Someday/Maybe and be creative and courageous",
+          "passed": true,
+          "evidence": "Someday/Maybe, creative and courageous"
+        },
+        {
+          "text": "Explains purpose: keeping the system current and trusted (reflect step)",
+          "passed": true,
+          "evidence": "Explains purpose of each phase (current lists, next actions per project)"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "gtd-horizons",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Lists Ground (current actions) through Horizon 5 (purpose and principles), including areas of focus (H2), goals (H3), vision (H4)",
+          "passed": true,
+          "evidence": "Ground to Horizon 5 listed"
+        },
+        {
+          "text": "Four-criteria model in order: context, time available, energy available, priority",
+          "passed": true,
+          "evidence": "Context, time, energy, priority"
+        },
+        {
+          "text": "Threefold model: predefined work, work as it shows up, defining your work",
+          "passed": true,
+          "evidence": "Predefined / as it shows up / defining"
+        },
+        {
+          "text": "Identifies the six-level model as the horizons used for reviewing work",
+          "passed": true,
+          "evidence": "Six-level model named"
+        },
+        {
+          "text": "Defines a project as any outcome achievable within a year requiring more than one action",
+          "passed": true,
+          "evidence": "Project definition given"
+        },
+        {
+          "text": "Connects horizons to weekly review / top-down priorities",
+          "passed": true,
+          "evidence": "Links horizons to reviews"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 3,
+      "eval_name": "gtd-inbox",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Capture everything first (mind sweep / collection buckets)",
+          "passed": true,
+          "evidence": "Capture and mind sweep"
+        },
+        {
+          "text": "Clarify one item at a time asking What is it? Is it actionable?",
+          "passed": true,
+          "evidence": "Is it actionable"
+        },
+        {
+          "text": "Non-actionable: trash, incubate (someday/maybe or tickler), or reference",
+          "passed": true,
+          "evidence": "Trash, someday, reference"
+        },
+        {
+          "text": "Actionable: decide next action; two-minute rule (do it if under two minutes); otherwise delegate (Waiting For) or defer (calendar or Next Actions)",
+          "passed": true,
+          "evidence": "Less than 2 minutes do it; delegate; defer"
+        },
+        {
+          "text": "Organize into the categories (projects, next actions by context, waiting for, calendar, reference, someday/maybe)",
+          "passed": true,
+          "evidence": "Lists by category"
+        },
+        {
+          "text": "Mentions weekly review / reflect and engage to keep the system trusted",
+          "passed": true,
+          "evidence": "Weekly review"
+        }
+      ],
+      "notes": []
+    }
+  ],
+  "run_summary": {
+    "with_skill": {
+      "pass_rate": {
+        "mean": 1.0,
+        "stddev": 0.0,
+        "min": 1.0,
+        "max": 1.0
+      },
+      "time_seconds": null,
+      "tokens": null
+    },
+    "without_skill": {
+      "pass_rate": {
+        "mean": 1.0,
+        "stddev": 0.0,
+        "min": 1.0,
+        "max": 1.0
+      },
+      "time_seconds": null,
+      "tokens": null
+    },
+    "delta": {
+      "pass_rate": "+0.00",
+      "time_seconds": null,
+      "tokens": null
+    }
+  },
+  "notes": [
+    "Time recorded for 0 of 3 with_skill runs, 0 of 3 without_skill runs, so there is no time delta.",
+    "Token count recorded for 0 of 3 with_skill runs, 0 of 3 without_skill runs, so there is no token count delta."
+  ]
+}

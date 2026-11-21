@@ -1,0 +1,13 @@
+{
+ "eval_id": 2,
+ "eval_name": "gtd-horizons",
+ "prompt": "Explain the GTD horizons of focus and the models Allen gives for choosing what to work on.",
+ "assertions": [
+  "Lists Ground (current actions) through Horizon 5 (purpose and principles), including areas of focus (H2), goals (H3), vision (H4)",
+  "Four-criteria model in order: context, time available, energy available, priority",
+  "Threefold model: predefined work, work as it shows up, defining your work",
+  "Identifies the six-level model as the horizons used for reviewing work",
+  "Defines a project as any outcome achievable within a year requiring more than one action",
+  "Connects horizons to weekly review / top-down priorities"
+ ]
+}

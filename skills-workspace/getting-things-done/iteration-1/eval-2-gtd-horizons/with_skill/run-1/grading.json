@@ -1,0 +1,40 @@
+{
+ "expectations": [
+  {
+   "text": "Lists Ground (current actions) through Horizon 5 (purpose and principles), including areas of focus (H2), goals (H3), vision (H4)",
+   "passed": true,
+   "evidence": "Ground to Horizon 5 listed"
+  },
+  {
+   "text": "Four-criteria model in order: context, time available, energy available, priority",
+   "passed": true,
+   "evidence": "Four criteria in order"
+  },
+  {
+   "text": "Threefold model: predefined work, work as it shows up, defining your work",
+   "passed": true,
+   "evidence": "Threefold model"
+  },
+  {
+   "text": "Identifies the six-level model as the horizons used for reviewing work",
+   "passed": true,
+   "evidence": "Six-level model named"
+  },
+  {
+   "text": "Defines a project as any outcome achievable within a year requiring more than one action",
+   "passed": true,
+   "evidence": "Project definition given"
+  },
+  {
+   "text": "Connects horizons to weekly review / top-down priorities",
+   "passed": true,
+   "evidence": "Top-down priorities, review rhythm"
+  }
+ ],
+ "summary": {
+  "passed": 6,
+  "failed": 0,
+  "total": 6,
+  "pass_rate": 1.0
+ }
+}

@@ -1,0 +1,13 @@
+{
+ "eval_id": 3,
+ "eval_name": "gtd-inbox",
+ "prompt": "My inbox and head are overflowing. Walk me through processing everything the GTD way.",
+ "assertions": [
+  "Capture everything first (mind sweep / collection buckets)",
+  "Clarify one item at a time asking What is it? Is it actionable?",
+  "Non-actionable: trash, incubate (someday/maybe or tickler), or reference",
+  "Actionable: decide next action; two-minute rule (do it if under two minutes); otherwise delegate (Waiting For) or defer (calendar or Next Actions)",
+  "Organize into the categories (projects, next actions by context, waiting for, calendar, reference, someday/maybe)",
+  "Mentions weekly review / reflect and engage to keep the system trusted"
+ ]
+}

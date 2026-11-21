@@ -1,0 +1,40 @@
+{
+ "expectations": [
+  {
+   "text": "Capture everything first (mind sweep / collection buckets)",
+   "passed": true,
+   "evidence": "Capture and mind sweep"
+  },
+  {
+   "text": "Clarify one item at a time asking What is it? Is it actionable?",
+   "passed": true,
+   "evidence": "Is it actionable"
+  },
+  {
+   "text": "Non-actionable: trash, incubate (someday/maybe or tickler), or reference",
+   "passed": true,
+   "evidence": "Trash, someday, reference"
+  },
+  {
+   "text": "Actionable: decide next action; two-minute rule (do it if under two minutes); otherwise delegate (Waiting For) or defer (calendar or Next Actions)",
+   "passed": true,
+   "evidence": "Less than 2 minutes do it; delegate; defer"
+  },
+  {
+   "text": "Organize into the categories (projects, next actions by context, waiting for, calendar, reference, someday/maybe)",
+   "passed": true,
+   "evidence": "Lists by category"
+  },
+  {
+   "text": "Mentions weekly review / reflect and engage to keep the system trusted",
+   "passed": true,
+   "evidence": "Weekly review"
+  }
+ ],
+ "summary": {
+  "passed": 6,
+  "failed": 0,
+  "total": 6,
+  "pass_rate": 1.0
+ }
+}

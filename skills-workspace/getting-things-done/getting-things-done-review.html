@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eval Review</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&family=Lora:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js" integrity="sha384-EnyY0/GSHQGSxSgMwaIPzSESbqoOLSexfnSMN2AP+39Ckmn92stwABZynq1JyzdT" crossorigin="anonymous"></script>
+  <style>
+    :root {
+      --bg: #faf9f5;
+      --surface: #ffffff;
+      --border: #e8e6dc;
+      --text: #141413;
+      --text-muted: #b0aea5;
+      --accent: #d97757;
+      --accent-hover: #c4613f;
+      --green: #788c5d;
+      --green-bg: #eef2e8;
+      --red: #c44;
+      --red-bg: #fceaea;
+      --header-bg: #141413;
+      --header-text: #faf9f5;
+      --radius: 6px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Lora', Georgia, serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ---- Header ---- */
+    .header {
+      background: var(--header-bg);
+      color: var(--header-text);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .header h1 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+    .header .instructions {
+      font-size: 0.8rem;
+      opacity: 0.7;
+      margin-top: 0.25rem;
+    }
+    .header .progress {
+      font-size: 0.875rem;
+      opacity: 0.8;
+      text-align: right;
+    }
+
+    /* ---- Main content ---- */
+    .main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.5rem 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    /* ---- Sections ---- */
+    .section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      flex-shrink: 0;
+    }
+    .section-header {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.75rem 1rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+    }
+    .section-body {
+      padding: 1rem;
+    }
+
+    /* ---- Config badge ---- */
+    .config-badge {
+      display: inline-block;
+      padding: 0.2rem 0.625rem;
+      border-radius: 9999px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      margin-left: 0.75rem;
+      vertical-align: middle;
+    }
+    .config-badge.config-primary {
+      background: rgba(33, 150, 243, 0.12);
+      color: #1976d2;
+    }
+    .config-badge.config-baseline {
+      background: rgba(255, 193, 7, 0.15);
+      color: #f57f17;
+    }
+
+    /* ---- Prompt ---- */
+    .prompt-text {
+      white-space: pre-wrap;
+      font-size: 0.9375rem;
+      line-height: 1.6;
+    }
+
+    /* ---- Outputs ---- */
+    .output-file {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .output-file + .output-file {
+      margin-top: 1rem;
+    }
+    .output-file-header {
+      padding: 0.5rem 0.75rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .output-file-header .dl-btn {
+      font-size: 0.7rem;
+      color: var(--accent);
+      text-decoration: none;
+      cursor: pointer;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-weight: 500;
+      opacity: 0.8;
+    }
+    .output-file-header .dl-btn:hover {
+      opacity: 1;
+      text-decoration: underline;
+    }
+    .output-file-content {
+      padding: 0.75rem;
+      overflow-x: auto;
+    }
+    .output-file-content pre {
+      font-size: 0.8125rem;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+    }
+    .output-file-content img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 4px;
+    }
+    .output-file-content iframe {
+      width: 100%;
+      height: 600px;
+      border: none;
+    }
+    .output-file-content table {
+      border-collapse: collapse;
+      font-size: 0.8125rem;
+      width: 100%;
+    }
+    .output-file-content table td,
+    .output-file-content table th {
+      border: 1px solid var(--border);
+      padding: 0.375rem 0.5rem;
+      text-align: left;
+    }
+    .output-file-content table th {
+      background: var(--bg);
+      font-weight: 600;
+    }
+    .output-file-content .download-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 0.875rem;
+      cursor: pointer;
+    }
+    .output-file-content .download-link:hover {
+      background: var(--border);
+    }
+    .empty-state {
+      color: var(--text-muted);
+      font-style: italic;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    /* ---- Feedback ---- */
+    .prev-feedback {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.625rem 0.75rem;
+      margin-top: 0.75rem;
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+    .prev-feedback-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.25rem;
+      color: var(--text-muted);
+    }
+    .feedback-textarea {
+      width: 100%;
+      min-height: 100px;
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 0.9375rem;
+      line-height: 1.5;
+      resize: vertical;
+      color: var(--text);
+    }
+    .feedback-textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    .feedback-status {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.5rem;
+      min-height: 1.1em;
+    }
+
+    /* ---- Grades (collapsible) ---- */
+    .grades-toggle {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+    }
+    .grades-toggle:hover {
+      color: var(--accent);
+    }
+    .grades-toggle .arrow {
+      margin-right: 0.5rem;
+      transition: transform 0.15s;
+      font-size: 0.75rem;
+    }
+    .grades-toggle .arrow.open {
+      transform: rotate(90deg);
+    }
+    .grades-content {
+      display: none;
+      margin-top: 0.75rem;
+    }
+    .grades-content.open {
+      display: block;
+    }
+    .grades-summary {
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .grade-badge {
+      display: inline-block;
+      padding: 0.125rem 0.5rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .grade-pass { background: var(--green-bg); color: var(--green); }
+    .grade-fail { background: var(--red-bg); color: var(--red); }
+    .assertion-list {
+      list-style: none;
+    }
+    .assertion-item {
+      padding: 0.625rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.8125rem;
+    }
+    .assertion-item:last-child { border-bottom: none; }
+    .assertion-status {
+      font-weight: 600;
+      margin-right: 0.5rem;
+    }
+    .assertion-status.pass { color: var(--green); }
+    .assertion-status.fail { color: var(--red); }
+    .assertion-evidence {
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      margin-top: 0.25rem;
+      padding-left: 1.5rem;
+    }
+
+    /* ---- View tabs ---- */
+    .view-tabs {
+      display: flex;
+      gap: 0;
+      padding: 0 2rem;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .view-tab {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.625rem 1.25rem;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      background: none;
+      color: var(--text-muted);
+      border-bottom: 2px solid transparent;
+      transition: all 0.15s;
+    }
+    .view-tab:hover { color: var(--text); }
+    .view-tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+    .view-panel { display: none; }
+    .view-panel.active { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
+
+    /* ---- Benchmark view ---- */
+    .benchmark-view {
+      padding: 1.5rem 2rem;
+      overflow-y: auto;
+      flex: 1;
+    }
+    .benchmark-table {
+      border-collapse: collapse;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 0.8125rem;
+      width: 100%;
+      margin-bottom: 1.5rem;
+    }
+    .benchmark-table th, .benchmark-table td {
+      padding: 0.625rem 0.75rem;
+      text-align: left;
+      border: 1px solid var(--border);
+    }
+    .benchmark-table th {
+      font-family: 'Poppins', sans-serif;
+      background: var(--header-bg);
+      color: var(--header-text);
+      font-weight: 500;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .benchmark-table tr:hover { background: var(--bg); }
+    .benchmark-table tr.benchmark-row-with { background: rgba(33, 150, 243, 0.06); }
+    .benchmark-table tr.benchmark-row-without { background: rgba(255, 193, 7, 0.06); }
+    .benchmark-table tr.benchmark-row-with:hover { background: rgba(33, 150, 243, 0.12); }
+    .benchmark-table tr.benchmark-row-without:hover { background: rgba(255, 193, 7, 0.12); }
+    .benchmark-table tr.benchmark-row-avg { font-weight: 600; border-top: 2px solid var(--border); }
+    .benchmark-table tr.benchmark-row-avg.benchmark-row-with { background: rgba(33, 150, 243, 0.12); }
+    .benchmark-table tr.benchmark-row-avg.benchmark-row-without { background: rgba(255, 193, 7, 0.12); }
+    .benchmark-delta-positive { color: var(--green); font-weight: 600; }
+    .benchmark-delta-negative { color: var(--red); font-weight: 600; }
+    .benchmark-notes {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem;
+    }
+    .benchmark-notes h3 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+    }
+    .benchmark-notes ul {
+      list-style: disc;
+      padding-left: 1.25rem;
+    }
+    .benchmark-notes li {
+      font-size: 0.8125rem;
+      line-height: 1.6;
+      margin-bottom: 0.375rem;
+    }
+    .benchmark-empty {
+      color: var(--text-muted);
+      font-style: italic;
+      text-align: center;
+      padding: 3rem;
+    }
+
+    /* ---- Navigation ---- */
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+      flex-shrink: 0;
+    }
+    .nav-btn {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.5rem 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text);
+      transition: all 0.15s;
+    }
+    .nav-btn:hover:not(:disabled) {
+      background: var(--bg);
+      border-color: var(--text-muted);
+    }
+    .nav-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    .done-btn {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.5rem 1.5rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: all 0.15s;
+    }
+    .done-btn:hover {
+      background: var(--bg);
+      border-color: var(--text-muted);
+    }
+    .done-btn.ready {
+      border: none;
+      background: var(--accent);
+      color: white;
+      font-weight: 600;
+    }
+    .done-btn.ready:hover {
+      background: var(--accent-hover);
+    }
+    /* ---- Done overlay ---- */
+    .done-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 100;
+      justify-content: center;
+      align-items: center;
+    }
+    .done-overlay.visible {
+      display: flex;
+    }
+    .done-card {
+      background: var(--surface);
+      border-radius: 12px;
+      padding: 2rem 3rem;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      max-width: 500px;
+    }
+    .done-card h2 {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .done-card p {
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
+    }
+    .done-card .btn-row {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+    }
+    .done-card button {
+      padding: 0.5rem 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 0.875rem;
+    }
+    .done-card button:hover {
+      background: var(--bg);
+    }
+    /* ---- Toast ---- */
+    .toast {
+      position: fixed;
+      bottom: 5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--header-bg);
+      color: var(--header-text);
+      padding: 0.625rem 1.25rem;
+      border-radius: var(--radius);
+      font-size: 0.875rem;
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+      z-index: 200;
+    }
+    .toast.visible {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <div id="app" style="height:100vh; display:flex; flex-direction:column;">
+    <div class="header">
+      <div>
+        <h1>Eval Review: <span id="skill-name"></span></h1>
+        <div class="instructions">Review each output and leave feedback below. Navigate with arrow keys or buttons. When done, copy feedback and paste into Claude Code.</div>
+      </div>
+      <div class="progress" id="progress"></div>
+    </div>
+
+    <!-- View tabs (only shown when benchmark data exists) -->
+    <div class="view-tabs" id="view-tabs" style="display:none;">
+      <button class="view-tab active" onclick="switchView('outputs')">Outputs</button>
+      <button class="view-tab" onclick="switchView('benchmark')">Benchmark</button>
+    </div>
+
+    <!-- Outputs panel (qualitative review) -->
+    <div class="view-panel active" id="panel-outputs">
+    <div class="main">
+      <!-- Prompt -->
+      <div class="section">
+        <div class="section-header">Prompt <span class="config-badge" id="config-badge" style="display:none;"></span></div>
+        <div class="section-body">
+          <div class="prompt-text" id="prompt-text"></div>
+        </div>
+      </div>
+
+      <!-- Outputs -->
+      <div class="section">
+        <div class="section-header">Output</div>
+        <div class="section-body" id="outputs-body">
+          <div class="empty-state">No output files found</div>
+        </div>
+      </div>
+
+      <!-- Previous Output (collapsible) -->
+      <div class="section" id="prev-outputs-section" style="display:none;">
+        <div class="section-header">
+          <div class="grades-toggle" onclick="togglePrevOutputs()">
+            <span class="arrow" id="prev-outputs-arrow">&#9654;</span>
+            Previous Output
+          </div>
+        </div>
+        <div class="grades-content" id="prev-outputs-content"></div>
+      </div>
+
+      <!-- Grades (collapsible) -->
+      <div class="section" id="grades-section" style="display:none;">
+        <div class="section-header">
+          <div class="grades-toggle" onclick="toggleGrades()">
+            <span class="arrow" id="grades-arrow">&#9654;</span>
+            Formal Grades
+          </div>
+        </div>
+        <div class="grades-content" id="grades-content"></div>
+      </div>
+
+      <!-- Feedback -->
+      <div class="section">
+        <div class="section-header">Your Feedback</div>
+        <div class="section-body">
+          <textarea
+            class="feedback-textarea"
+            id="feedback"
+            placeholder="What do you think of this output? Any issues, suggestions, or things that look great?"
+          ></textarea>
+          <div class="feedback-status" id="feedback-status"></div>
+          <div class="prev-feedback" id="prev-feedback" style="display:none;">
+            <div class="prev-feedback-label">Previous feedback</div>
+            <div id="prev-feedback-text"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav" id="outputs-nav">
+      <button class="nav-btn" id="prev-btn" onclick="navigate(-1)">&#8592; Previous</button>
+      <button class="done-btn" id="done-btn" onclick="showDoneDialog()">Submit All Reviews</button>
+      <button class="nav-btn" id="next-btn" onclick="navigate(1)">Next &#8594;</button>
+    </div>
+    </div><!-- end panel-outputs -->
+
+    <!-- Benchmark panel (quantitative stats) -->
+    <div class="view-panel" id="panel-benchmark">
+      <div class="benchmark-view" id="benchmark-content">
+        <div class="benchmark-empty">No benchmark data available. Run a benchmark to see quantitative results here.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Done overlay -->
+  <div class="done-overlay" id="done-overlay">
+    <div class="done-card">
+      <h2>Review Complete</h2>
+      <p>Your feedback has been saved. Go back to your Claude Code session and tell Claude you're done reviewing.</p>
+      <div class="btn-row">
+        <button onclick="closeDoneDialog()">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ---- Embedded data (injected by generate_review.py) ----
+    const EMBEDDED_DATA = {"skill_name": "getting-things-done", "runs": [{"id": "eval-1-gtd-weekly-review-with_skill-run-1", "prompt": "What are the exact steps of the GTD Weekly Review in David Allen's revised Getting Things Done?", "eval_id": 1, "outputs": [{"name": "response.md", "type": "text", "content": "# The GTD Weekly Review (David Allen, *Getting Things Done*, revised edition, 2015)\n\nIn the revised edition, the Weekly Review is part of **Reflect**, the fourth of the five steps (capture, clarify, organize, reflect, engage). Allen describes it as the practice that keeps your system trustworthy. It has **three phases and eleven steps**, in this order:\n\n## 1. Get Clear\n1. **Collect loose papers and materials.** Gather every receipt, business card, scrap note and stray document, and put them in your in-tray.\n2. **Get \"in\" to zero.** Process every item in your in-trays, inboxes, notes and voicemail. Clarify each one (What is it? Is it actionable? What's the next action?) and put the result where it belongs: done (if under two minutes), delegated, deferred, filed, incubated or trashed.\n3. **Empty your head.** Do a mind sweep. Write down any new projects, actions, waiting-fors and someday/maybes that haven't been captured yet, then clarify them.\n\n## 2. Get Current\n4. **Review action lists.** Go through your Next Actions lists. Mark off finished actions and look for reminders of further actions to capture.\n5. **Review previous calendar data.** Look at the past couple of weeks for leftover actions, follow-ups and reference information, and move them into the system.\n6. **Review upcoming calendar.** Look at the weeks ahead and capture actions about arrangements and preparation for upcoming events.\n7. **Review Waiting For list.** Record follow-up actions that are needed and check off anything you've received.\n8. **Review project (and larger outcome) lists.** Check the status of each project, goal and outcome one at a time. Make sure each active project has at least one current next action on your lists. Look through project plans and support material for new actions, deadlines, waiting-fors and so on.\n9. **Review any relevant checklists.** Use them as triggers for anything you haven't done but should.\n\n## 3. Get Creative\n10. **Review Someday/Maybe list.** Move any projects that have become active onto your Projects list, and delete items that no longer interest you.\n11. **Be creative and courageous.** Add any new, wonderful, harebrained, creative, thought-provoking or risk-taking ideas to your system.\n\n## Practical notes\n- **Timing:** block out the same time each week, often about an hour or two. Many people choose Friday afternoon so they can close the week and leave it behind. (The hour-or-two figure is a common guideline, not a fixed rule.)\n- **Why it matters:** the review is what keeps your lists complete and current. When it happens regularly, you can trust your lists and keep a \"mind like water\" instead of using your head to track open loops.\n- **Higher horizons:** the Weekly Review mainly covers the Ground (actions) and Horizon 1 (projects). Allen suggests reviewing Horizons 2\u20135 (areas of focus, goals, vision, purpose) less often, for example monthly, quarterly or yearly.\n\n*Source: the phase and step names (Get Clear, Get Current, Get Creative, and the eleven items under them) follow the revised edition's Weekly Review checklist. The short descriptions for each step paraphrase the book's guidance and are not word-for-word quotes.*\n"}], "grading": {"expectations": [{"text": "Groups into Get Clear, Get Current, Get Creative", "passed": true, "evidence": "Three phases named"}, {"text": "Get Clear: collect loose papers/materials, get 'in' to zero, empty your head", "passed": true, "evidence": "Loose papers, in to zero, empty head"}, {"text": "Get Current: review action lists, previous calendar, upcoming calendar", "passed": true, "evidence": "Action lists, previous and upcoming calendar"}, {"text": "Get Current: review Waiting For, project lists, relevant checklists", "passed": true, "evidence": "Waiting For, projects, checklists"}, {"text": "Get Creative: review Someday/Maybe and be creative and courageous", "passed": true, "evidence": "Someday/Maybe, creative and courageous"}, {"text": "Explains purpose: keeping the system current and trusted (reflect step)", "passed": true, "evidence": "Explains keeping the system trusted"}], "summary": {"passed": 6, "failed": 0, "total": 6, "pass_rate": 1.0}}}, {"id": "eval-1-gtd-weekly-review-without_skill-run-1", "prompt": "What are the exact steps of the GTD Weekly Review in David Allen's revised Getting Things Done?", "eval_id": 1, "outputs": [{"name": "response.md", "type": "text", "content": "# The GTD Weekly Review (revised edition, 2015)\n\nIn the revised *Getting Things Done: The Art of Stress-Free Productivity* (2015), David Allen splits the Weekly Review into three phases: **Get Clear, Get Current, Get Creative**. It has 11 steps in all.\n\n## 1. Get Clear\n\n1. **Collect loose papers and materials.** Gather every receipt, business card, scrap of paper and other physical item that has piled up, and put it all in your in-tray.\n2. **Get \"In\" to empty.** Process everything you collected and all your inboxes: notes, email, voicemail, meeting notes and so on. Decide what each item is and what the next action is, then put the results in your system. Do not leave anything in the inbox.\n3. **Empty your head.** Write down any new projects, actions, waiting-fors, someday/maybes and other open loops that you have not captured yet, and process them too.\n\n## 2. Get Current\n\n4. **Review Next Actions lists.** Mark off completed actions. Look for reminders of further actions you need to capture.\n5. **Review previous calendar data.** Look back over the past two or three weeks of your calendar for leftover action items, reference information and other loose ends. Move anything still relevant into your active system.\n6. **Review upcoming calendar.** Look at the coming weeks for events you need to prepare for, and capture the actions they need, such as arrangements or preparation.\n7. **Review Waiting For list.** Record any follow-up actions you need to take. Check off items you have received.\n8. **Review Project (and larger outcome) lists.** Go through each project, goal and outcome one at a time. Make sure each one has at least one current next action in your system. Look through any project plans and support materials for new actions, completions and waiting-fors.\n9. **Review any relevant checklists.** Check whether there is anything you have not done that you should be doing, for example in your areas of responsibility or your routine checklists.\n\n## 3. Get Creative\n\n10. **Review Someday/Maybe list.** Move projects that have become active onto your Projects list. Delete anything that no longer interests you.\n11. **Be creative and courageous.** Add any new, wonderful, harebrained, creative, thought-provoking or risk-taking ideas to your system.\n\n---\n\n**Note:** The original 2001 edition had a slightly different and longer list. It included a separate step to review \"Pending\" and support files, and it put the steps in a different order. The three-phase structure above comes from the revised edition and from the David Allen Company's published Weekly Review checklist. Allen recommends doing the review once a week and setting aside about one to two hours for it. He often suggests Friday afternoon.\n"}], "grading": {"expectations": [{"text": "Groups into Get Clear, Get Current, Get Creative", "passed": true, "evidence": "Three phases named"}, {"text": "Get Clear: collect loose papers/materials, get 'in' to zero, empty your head", "passed": true, "evidence": "Loose papers, in to empty, empty head"}, {"text": "Get Current: review action lists, previous calendar, upcoming calendar", "passed": true, "evidence": "Next actions, previous and upcoming calendar"}, {"text": "Get Current: review Waiting For, project lists, relevant checklists", "passed": true, "evidence": "Waiting For, project lists, checklists"}, {"text": "Get Creative: review Someday/Maybe and be creative and courageous", "passed": true, "evidence": "Someday/Maybe, creative and courageous"}, {"text": "Explains purpose: keeping the system current and trusted (reflect step)", "passed": true, "evidence": "Explains purpose of each phase (current lists, next actions per project)"}], "summary": {"passed": 6, "failed": 0, "total": 6, "pass_rate": 1.0}}}, {"id": "eval-2-gtd-horizons-with_skill-run-1", "prompt": "Explain the GTD horizons of focus and the models Allen gives for choosing what to work on.", "eval_id": 2, "outputs": [{"name": "response.md", "type": "text", "content": "# GTD: The Horizons of Focus and Allen's Models for Choosing What to Do\n\n*Based on David Allen, **Getting Things Done**, revised edition (Penguin, 2015). Items marked **(book)** were checked against the text. Items marked **(general)** are common GTD explanation, not checked line by line.*\n\n## The short version\n\nAllen does not give you a formula for \"what's most important.\" He gives you **three models** that work at different levels:\n\n1. **The four-criteria model**: how to choose an action *right now*.\n2. **The threefold model**: how to think about the kinds of work that fill your day.\n3. **The six-level model**: how to review your work from top to bottom. These six levels are the **horizons of focus**. **(book)**\n\nThe horizons tell you *why* and *where*. The four criteria tell you *what's next, this minute*.\n\n---\n\n## 1. The horizons of focus (the six-level model for reviewing your work) **(book)**\n\nAllen calls this the six-level model. Think of it as six heights from which you can look at your life. Each level gives meaning and priority to the levels below it.\n\n| Horizon | Name | The question it answers | Typical review frequency **(general)** |\n|---|---|---|---|\n| **Horizon 5** | Purpose and principles | Why do I (or my organization) exist? What do I stand for? | Yearly, or when your life changes |\n| **Horizon 4** | Vision | What would wild success look like in about 3\u20135 years? | Yearly |\n| **Horizon 3** | Goals | What do I want to achieve in the next 1\u20132 years? | Quarterly |\n| **Horizon 2** | Areas of focus and accountabilities | Which roles and standards do I have to keep up? | Monthly, or every few months |\n| **Horizon 1** | Current projects | What outcomes am I committed to finishing? | Weekly |\n| **Ground** | Current actions | What physical, visible next actions are on my lists? | Daily |\n\n### What each level holds\n\n- **Ground: Current actions.** Every next action on your lists: calls, emails, errands, things to do at the computer. This level holds the most items. For most people it is what overwhelms them. **(book: level name)**\n- **Horizon 1: Current projects.** Allen defines a project as *\"any desired result that can be accomplished within a year that requires more than one action step\"* **(book)**. Your Projects list sits here. Every project should have at least one next action at Ground level.\n- **Horizon 2: Areas of focus and accountabilities.** These are ongoing, not things you finish: health, family, finances, home, career growth, and the parts of your job you are responsible for. Projects grow out of these areas. A review here shows you an area you are neglecting. **(general detail)**\n- **Horizon 3: Goals.** These are results you want in the next year or two. They often create new projects or change which areas matter most. **(general detail)**\n- **Horizon 4: Vision.** This is a longer-term picture of success, a few years out. **(general detail)**\n- **Horizon 5: Purpose and principles.** This is the deepest \"why\" and the values that set the limits on everything else. It is the final test for any commitment. **(general detail)**\n\n### How to use the horizons\n\n- **Priorities come from the top down.** Your purpose shapes your vision. Your vision shapes your goals. Your goals and areas of responsibility create projects. Projects create next actions. To know whether an action matters, trace it up the levels.\n- **Control comes from the bottom up.** Allen's practical advice is to get the Ground and Horizon 1 under control first. Capture everything, clarify it, and keep a full Projects list. When your head is full of open loops, thinking about vision is hard. **(general)**\n- **Each level needs its own review.** The **Weekly Review** covers Ground and Horizon 1. It reviews action lists, your calendar, Waiting For, and your projects \"and larger outcome\" lists **(book)**. The higher horizons need less frequent and more reflective reviews.\n- **The horizons supply the direction GTD lacks.** GTD is a workflow method, not a way to rank priorities. You pair it with the horizons to set direction. **(book)**\n\n---\n\n## 2. The four-criteria model for choosing actions in the moment **(book)**\n\nWhen you look at your Next Actions lists and ask \"what should I do now?\", Allen says to apply four criteria **in this order**:\n\n1. **Context.** What can you do where you are, with the tools you have? You cannot make a call without a phone or run an errand from your desk. This is why next actions are sorted into context lists such as @calls, @computer, @errands and @home. **(context examples: general)**\n2. **Time available.** How long do you have before your next commitment? Ten minutes before a meeting means choosing a ten-minute action.\n3. **Energy available.** How much mental and physical energy do you have? Late in the day you might do routine tasks rather than creative ones.\n4. **Priority.** Of the actions that pass the first three filters, which has the most value? This is where the horizons come in. The more clearly you know your projects, areas, goals and purpose, the easier this choice is.\n\n**Why the order matters:** each filter narrows the choices for the next one. Context and time remove most options at once. Priority is judged last, among actions you can actually do now. **(general explanation of the book's ordering)**\n\n---\n\n## 3. The threefold model for describing daily work **(book)**\n\nAt any moment during your workday you are doing one of three kinds of activity:\n\n1. **Doing predefined work.** You work from your lists: next actions you already defined, and calendar items.\n2. **Doing work as it shows up.** You deal with interruptions and surprises as they come: a colleague stops by, an urgent email arrives, a problem comes up. You decide on the spot that this matters more than your list.\n3. **Defining your work.** You process your in-tray, email and notes. You clarify what each item means and decide its next action. (This is the Clarify and Organize steps.)\n\n**What this model teaches** **(general)**:\n- Doing work as it shows up is often right. But it is a trade-off you make on purpose. It is only safe when you know what you are *not* doing, which a current list tells you.\n- If you never spend time **defining** your work, your lists become stale. You then live in \"work as it shows up\" mode by default, which leads to fighting fires.\n- A good balance is to set aside regular time to define work, so you can trust your predefined work the rest of the time.\n\n---\n\n## How the three models fit together\n\n| Model | Time scale | Main use |\n|---|---|---|\n| Four criteria | This moment | Choose the next action to do now |\n| Threefold | Your day | Balance planned work, surprises, and processing |\n| Six levels (horizons) | Day \u2192 lifetime | Review your commitments so priority has meaning |\n\nA practical rhythm **(general, drawing on the book's practices)**:\n- **Many times a day:** check your context lists and use context \u2192 time \u2192 energy \u2192 priority.\n- **Every day:** set aside time to *define* work. Get your inboxes to zero so your lists stay complete.\n- **Weekly:** do the Weekly Review (get clear, get current, get creative) **(book)** to keep Ground and Horizon 1 current.\n- **Monthly or quarterly:** review Horizon 2 (areas) and Horizon 3 (goals). Ask whether your projects match them.\n- **Yearly:** review Horizons 4 and 5 (vision and purpose), and let any change flow down into goals, projects and actions.\n\n## One caveat\n\nAllen's horizons give a structure, not answers. Your own purpose, vision and goals are what fill each level. GTD stays tool-agnostic. Paper, an app or a mix of both works, as long as you trust it and review it. **(book)**\n"}], "grading": {"expectations": [{"text": "Lists Ground (current actions) through Horizon 5 (purpose and principles), including areas of focus (H2), goals (H3), vision (H4)", "passed": true, "evidence": "Ground to Horizon 5 listed"}, {"text": "Four-criteria model in order: context, time available, energy available, priority", "passed": true, "evidence": "Four criteria in order"}, {"text": "Threefold model: predefined work, work as it shows up, defining your work", "passed": true, "evidence": "Threefold model"}, {"text": "Identifies the six-level model as the horizons used for reviewing work", "passed": true, "evidence": "Six-level model named"}, {"text": "Defines a project as any outcome achievable within a year requiring more than one action", "passed": true, "evidence": "Project definition given"}, {"text": "Connects horizons to weekly review / top-down priorities", "passed": true, "evidence": "Top-down priorities, review rhythm"}], "summary": {"passed": 6, "failed": 0, "total": 6, "pass_rate": 1.0}}}, {"id": "eval-2-gtd-horizons-without_skill-run-1", "prompt": "Explain the GTD horizons of focus and the models Allen gives for choosing what to work on.", "eval_id": 2, "outputs": [{"name": "response.md", "type": "text", "content": "# GTD: The Horizons of Focus and Allen's Models for Choosing What to Do\n\nDavid Allen's *Getting Things Done* (GTD) works at two levels. One is a bottom-up system for capturing and clarifying everything that has your attention. The other is a way to judge, moment by moment, whether you're doing the right thing. The **Horizons of Focus** give you the long view. The **three models for choosing actions** cover the moment of decision.\n\n---\n\n## Part 1: The Six Horizons of Focus\n\nAllen first described these as altitudes, using an airplane metaphor: \"Runway\" up to \"50,000+ feet.\" Each horizon is a different level of commitment. Your priorities really come from the higher levels, but Allen recommends getting the lower levels under control first. You can't think clearly about your life's purpose while unprocessed stuff is shouting at you.\n\n| Horizon | Old altitude name | What it covers | Typical time frame | How often to review |\n|---|---|---|---|---|\n| **Ground** | Runway | **Calendar and next actions**: every concrete, physical, visible action you need to take (calls, emails, errands) | Now / today | Daily, constantly |\n| **Horizon 1** | 10,000 ft | **Projects**: any outcome you've committed to that takes more than one action step and can be finished within about a year | Weeks to months | Weekly Review |\n| **Horizon 2** | 20,000 ft | **Areas of focus and accountability**: the roles you play and the standards you keep (health, finances, family, career, a job function like \"staff development\") | Ongoing, no end date | Monthly or so |\n| **Horizon 3** | 30,000 ft | **Goals and objectives**: what you want to achieve in the next 1-2 years | 1-2 years | Quarterly |\n| **Horizon 4** | 40,000 ft | **Vision**: what long-term success looks like, the ideal picture of your work and life | 3-5 years | Yearly |\n| **Horizon 5** | 50,000+ ft | **Purpose and principles**: why you exist or why the organization exists, and the core values that guide behavior | Lifetime | Yearly or as needed |\n\n### Key ideas about the horizons\n\n- **Each level drives the one below it.** Purpose shapes vision. Vision suggests goals. Goals and areas of responsibility create projects. Projects create next actions. When an action is hard to choose or hard to make yourself do, it often means a higher horizon isn't clear.\n- **Each level checks the one above it.** Areas of focus work as a checklist for spotting missing projects. For example, \"Health\" with no active project in it may mean something is being neglected.\n- **Work bottom-up to get control, top-down to get perspective.** Allen admits he is pragmatic here. Most people get the most immediate relief by gaining control of the runway and projects first. After that they are free to think about the higher horizons.\n- **Everything can be reviewed.** The **Weekly Review** keeps Ground and Horizon 1 current. The higher horizons need less frequent but deliberate reviews, such as offsite thinking, annual planning, or a long walk with a notepad.\n- **Control and perspective.** The later book *Making It All Work* frames this as a self-management matrix. Control comes from the five-stage workflow: capture, clarify, organize, reflect, engage. Perspective comes from the horizons. You need both. Control without perspective makes you a \"micromanager\" of the wrong things. Perspective without control makes you a \"visionary\" who is drowning.\n\n---\n\n## Part 2: Allen's Three Models for Choosing What to Work On\n\nGTD deliberately avoids assigning fixed priority codes like A/B/C to actions. Allen argues that priorities change constantly, and that you should trust your intuition at the moment of choice. That only works if your system is complete and current. To support that intuition, he offers three complementary models.\n\n### Model 1: The Four-Criteria Model for choosing actions in the moment\n\nWhen you look at your next-action lists, filter your options in this order:\n\n1. **Context.** What can you do where you are, with the tools you have? Without a phone you can't make @Calls. Away from the office you can't do @Office tasks. This is why GTD organizes action lists by context.\n2. **Time available.** How much time do you have before your next commitment? A 10-minute gap calls for a quick action, not a two-hour project.\n3. **Energy available.** How much mental and physical energy do you have? Late in the day, low-energy tasks like filing, simple calls, or reading may be the best fit.\n4. **Priority.** Of the actions that fit your context, time, and energy, which one has the highest payoff? This is where the Horizons of Focus come in. Priority is judged against your projects, areas, goals, vision, and purpose.\n\nThe order matters. Each criterion narrows the field for the next one, so priority is the final judgment on a short list that is actually possible.\n\n### Model 2: The Threefold Model for evaluating daily work\n\nDuring the day, any work you do falls into one of three activities:\n\n1. **Doing predefined work.** You work from your next-action lists and calendar: things you already captured, clarified, and decided to do.\n2. **Doing work as it shows up.** You handle unplanned demands as they arrive, such as a colleague stopping by, an urgent call, or a sudden problem. You decide it matters more than your predefined work and do it right away.\n3. **Defining your work.** You process inboxes, clarify meeting notes, and break new projects into next actions. This is what makes predefined work possible.\n\nAllen's point is that all three are legitimate. Choosing to handle surprise work is fine, as long as it's a **conscious trade-off** against your lists. Trouble starts when people spend their whole day in mode 2 and never make time for mode 3. Their lists then go stale and stop being trustworthy. Allen describes many professionals as living in \"latest and loudest\" mode for this reason.\n\n### Model 3: The Six-Level Model for reviewing your own work\n\nThis is the Horizons of Focus used as a prioritization tool. When the first two models leave you unsure what matters most, you look at your work from successively higher altitudes. Real priority comes from the top down: an action is important because of the project it moves forward, and the project matters because of the area, goal, vision, and purpose behind it.\n\nAllen describes this model in the six-level airplane terms (Runway, 10,000 ft, 20,000 ft, 30,000 ft, 40,000 ft, 50,000+ ft). Those are the same horizons covered in Part 1.\n\n---\n\n## How the pieces fit together\n\n- **The Four-Criteria Model** answers: *\"What should I do right now?\"* It filters by context, then time, then energy, then priority.\n- **The Threefold Model** answers: *\"How should I balance planned work, surprises, and processing time?\"*\n- **The Six-Level Model / Horizons of Focus** answers: *\"What actually matters, and why?\"* It supplies the \"priority\" judgment the other two models depend on.\n\nUnderneath all three is a basic GTD rule: **you can only trust your intuitive choices when your system is complete and current.** That's why the capture habit, regular clarifying, and the Weekly Review aren't optional. Without them, none of the decision models has good information to work with.\n"}], "grading": {"expectations": [{"text": "Lists Ground (current actions) through Horizon 5 (purpose and principles), including areas of focus (H2), goals (H3), vision (H4)", "passed": true, "evidence": "Ground to Horizon 5 listed"}, {"text": "Four-criteria model in order: context, time available, energy available, priority", "passed": true, "evidence": "Context, time, energy, priority"}, {"text": "Threefold model: predefined work, work as it shows up, defining your work", "passed": true, "evidence": "Predefined / as it shows up / defining"}, {"text": "Identifies the six-level model as the horizons used for reviewing work", "passed": true, "evidence": "Six-level model named"}, {"text": "Defines a project as any outcome achievable within a year requiring more than one action", "passed": true, "evidence": "Project definition given"}, {"text": "Connects horizons to weekly review / top-down priorities", "passed": true, "evidence": "Links horizons to reviews"}], "summary": {"passed": 6, "failed": 0, "total": 6, "pass_rate": 1.0}}}, {"id": "eval-3-gtd-inbox-with_skill-run-1", "prompt": "My inbox and head are overflowing. Walk me through processing everything the GTD way.", "eval_id": 3, "outputs": [{"name": "response.md", "type": "text", "content": "# Processing Everything the GTD Way\n\nThis walkthrough follows David Allen's *Getting Things Done* (revised edition, 2015). The idea behind it is simple. **Your mind is for having ideas, not holding them.** The overwhelm doesn't come from how much you have to do. It comes from \"open loops\": commitments you haven't captured, decided on, or parked somewhere you trust. We'll get every loop out of your head, decide what each one means, and put it in the right place. The goal is what Allen calls **\"mind like water\"**: you respond to each thing in proportion to what it is, without over- or under-reacting.\n\nYou'll follow the five steps of mastering workflow: **Capture \u2192 Clarify \u2192 Organize \u2192 Reflect \u2192 Engage.**\n\nSet aside a real block of time for the first pass, half a day or more if the backlog is big *(practical estimate, not from the book)*. You only do this full reset once. After that, short daily processing and the Weekly Review keep things clear.\n\n---\n\n## Step 0: Set up your buckets (10 minutes)\n\nBefore you start, have these ready in whatever tool you trust (paper, a notes app, a task app; GTD works with any of them):\n\n- **An in-tray / inbox**: one physical tray for paper, plus your email inbox and one \"capture\" list for notes\n- **Projects** list\n- **Next Actions** lists, split by context, e.g. `@calls`, `@computer`, `@errands`, `@home`, `@office`\n- **Waiting For** list\n- **Calendar**\n- **Someday/Maybe** list\n- **Reference** filing (a simple A\u2013Z paper file and/or a digital folder)\n- **Project support** material (folders for the documents that go with each project)\n- A **trash can** and a recycling bin, nearby. You'll use them a lot.\n\nThose are Allen's **seven primary list types**, plus the in-tray and the trash. Keep **hard edges** between them. A Next Action list holds only next actions, not reference notes or someday ideas.\n\n---\n\n## Step 1: CAPTURE: get it all out of your head and into \"in\"\n\n### 1a. Gather the physical stuff\nGo around your desk, bag, wallet, car and home. Put **anything that isn't where it belongs, or that has your attention**, into the in-tray: notes, receipts, mail, business cards, things to fix, sticky notes. If something is too big to move, write a note about it (\"fix garage shelf\") and put the note in.\n\n### 1b. Do a mind sweep\nNow empty your head. Write **one item per line or note**. Don't judge, sort or prioritize yet. Just get it all down. Prompts to work through:\n\n- **Work:** projects started or not started, commitments to your boss, team or clients, calls and emails to return, meetings to prepare for, reports, budgets, hiring, admin, things you're waiting on\n- **Personal:** home repairs, errands, family, birthdays and events, health appointments, finances and bills, taxes, car, travel, hobbies, things to buy, \"I should really...\" ideas\n- **Vague worries:** write them down too (\"think about career move\", \"worried about Mom's health\")\n\nKeep going until your mind goes quiet. It's normal to end up with 100+ items.\n\n### 1c. Corral your digital inboxes\nYour email inbox, voicemail, text threads, Slack saves, downloads folder and notes apps are all \"in\" too. If the email backlog is huge, a common move is to put everything older than a couple of weeks into a \"Backlog\" folder and process it later *(common practitioner tactic, not from the book)*. Then work the recent inbox down to zero.\n\n---\n\n## Step 2: CLARIFY: process each item, one at a time, top down\n\nThis is the core of the method. Pick up **the top item**. Don't skim and don't choose the fun ones. Run it through these questions:\n\n### Question 1: \"What is it?\"\nName it plainly. \"Letter from insurance company about policy renewal.\" Not just \"insurance stuff.\"\n\n### Question 2: \"Is it actionable?\"\n\n**NO, it's not actionable.** It goes one of three ways:\n- **Trash**: you don't need it. Toss it without guilt.\n- **Incubate**: maybe later. Put it on **Someday/Maybe** (\"learn Spanish\", \"kitchen remodel\") or, if it matters on a specific future date, in the **tickler** or on the calendar (\"revisit this in March\").\n- **Reference**: useful information you may need, with no action. **File it** (A\u2013Z or digital folders) so you can find it in under a minute.\n\n**YES, it's actionable.** Ask two more things:\n\n1. **What's the desired outcome?** If getting there takes **more than one action step**, it's a **project**. Allen defines a project as *\"any desired result that can be accomplished within a year that requires more than one action step.\"* Write it on the **Projects** list as an outcome: \"Car insurance renewed at a good rate,\" \"Q1 offsite planned.\"\n2. **What's the next action?** The very next **physical, visible** thing you'd do to move it forward. Not \"insurance\" but \"Call agent Dana to ask about renewal options.\" Not \"mom's birthday\" but \"Browse online for gift ideas for Mom.\"\n\n### Then decide: Do it, Delegate it, or Defer it\n\n- **The Two-Minute Rule: DO IT.** *\"If an action will take less than two minutes, it should be done at the moment it's defined.\"* Reply to the quick email, sign the form, put the date on the calendar. Doing it now takes less time than tracking it.\n- **DELEGATE IT** if someone else should do it. Send it to them, then log it on **Waiting For** with the date: \"Waiting For: Sam, budget numbers (sent 11/21).\"\n- **DEFER IT** if it takes more than two minutes and it's yours:\n  - **Calendar** if it must happen **on a specific day or time** (\"Dentist Tue 3pm\", \"Submit grant by Fri\"). The calendar is only for things that are truly tied to a date. Don't put \"would be nice today\" items there.\n  - Otherwise, the right **Next Actions** context list: `@calls: Call Dana re: insurance renewal`.\n\n### Processing rules that keep you moving\n- **One item at a time, top down.** Never put something back into \"in.\" Once you pick it up, decide.\n- **Handle each item once.** If you're tempted to set it aside \"to think about,\" the decision is the action. That might be \"Draft pros/cons for job offer\" on `@computer`.\n- **Emergencies are the exception, not the rule.** If you find something that's on fire, deal with it, then keep going.\n- **Email works the same way.** Open, decide, act or move, archive. Get the inbox to empty.\n\n### A quick worked batch\n\n| Item in \"in\" | Actionable? | Result |\n|---|---|---|\n| Expired pizza coupon | No | **Trash** |\n| Article on retirement accounts | No | **Reference** (file under \"Finance\"), or Someday/Maybe if you want to read it |\n| \"Learn to sail\" | Not now | **Someday/Maybe** |\n| Email: \"Can you confirm Thursday works?\" | Yes, \u003c 2 min | **Do it now**: reply |\n| Broken porch light | Yes, one step | Next action `@errands: Buy porch bulb` |\n| \"Plan Mom's 70th\" | Yes, many steps | **Project**: \"Mom's 70th party held.\" Next action `@calls: Call sister to pick a date` |\n| Team member owes you a draft | Yes, someone else | **Waiting For**: \"Priya, draft deck (asked 11/18)\" |\n| Tax documents due to accountant Jan 31 | Yes, date-specific | **Calendar** deadline, plus project \"2026 taxes filed\" with a next action |\n\n---\n\n## Step 3: ORGANIZE: put results where they belong\n\nBy the end of clarifying, each item should be in exactly one place:\n\n1. **Projects list**: every outcome that needs more than one step. Each project needs **at least one next action** on a context list.\n2. **Project support material**: plans, notes and files for each project, kept out of the action lists.\n3. **Calendar**: only date- or time-specific actions, plus day-specific information.\n4. **Next Actions**, grouped by context (`@calls`, `@computer`, `@errands`, `@home`, `@office`, `@agenda-[person]`)\n5. **Waiting For**: what you've delegated or are expecting, with dates\n6. **Reference**: filed and easy to find\n7. **Someday/Maybe**: ideas you aren't committing to yet\n\nFor date-based reminders, a physical **tickler file** uses **43 folders**: 31 daily folders and 12 monthly folders. You drop items into the day or month you want them to come back. A digital tool with dated reminders does the same job.\n\n**Check before moving on:** your in-tray, email inbox and capture list are **empty**. Every project has a next action. Nothing important is left only in your head.\n\n---\n\n## Step 4: REFLECT: keep the system trustworthy\n\nThe system only works if you **trust** it, and you trust it only if you review it. Look at your calendar and Next Actions lists daily. Then lock in the **Weekly Review**: the same time each week, about an hour or two *(timing is a practical estimate)*. Friday afternoon works well for many people.\n\n**Get clear**\n- Collect loose papers and materials\n- Get \"in\" to zero (process everything with the Step 2 questions)\n- Empty your head (a short mind sweep)\n\n**Get current**\n- Review your Next Actions lists (cross off what's done, add what's missing)\n- Review the past calendar (anything left over?)\n- Review the upcoming calendar (what do you need to prepare?)\n- Review Waiting For (who needs a nudge?)\n- Review your Projects list (does each one have a next action?), plus your larger outcomes\n- Review any relevant checklists\n\n**Get creative**\n- Review Someday/Maybe (move anything that's now active onto Projects)\n- Be creative and courageous: add any new ideas or projects\n\n---\n\n## Step 5: ENGAGE: choose what to do with confidence\n\nWhen it's time to work, use the **four-criteria model** in this order:\n1. **Context**: what can you do where you are, with the tools you have? (At your desk, look at `@computer`.)\n2. **Time available**: 15 minutes before a meeting means short actions.\n3. **Energy available**: tired? Do easy calls or filing.\n4. **Priority**: of what's left, what matters most?\n\nOver the course of a day you'll switch between three kinds of work (the **threefold model**): **doing work you defined ahead of time** (your lists), **doing work as it shows up** (interruptions), and **defining your work** (processing \"in\"). All three are valid. The point is to choose on purpose.\n\nFor direction about *what* matters, review from the top now and then, using the **horizons of focus**: purpose and principles (H5) \u2192 vision (H4) \u2192 goals (H3) \u2192 areas of focus (H2) \u2192 current projects (H1) \u2192 current actions (ground). GTD is a workflow method, not a prioritization formula. The horizons give your lists direction.\n\n---\n\n## If you're overwhelmed right now, start here\n1. **Capture first.** Do the mind sweep tonight, even if you process nothing. Just getting it out of your head brings relief.\n2. **Use the two-minute rule hard** on your first processing pass. Clearing the small stuff builds momentum fast.\n3. **Turn every big worry into one next action.** \"Sort out finances\" becomes \"@computer: download last 3 bank statements.\" The physical next step is what removes the stress.\n4. **Get to inbox zero once,** then put a recurring Weekly Review on your calendar so it stays that way.\n\nYou don't need to do it perfectly. You need **one** trusted place for everything and the habit of reviewing it.\n"}], "grading": {"expectations": [{"text": "Capture everything first (mind sweep / collection buckets)", "passed": true, "evidence": "Capture and mind sweep"}, {"text": "Clarify one item at a time asking What is it? Is it actionable?", "passed": true, "evidence": "What is it? Is it actionable?"}, {"text": "Non-actionable: trash, incubate (someday/maybe or tickler), or reference", "passed": true, "evidence": "Trash, incubate, reference"}, {"text": "Actionable: decide next action; two-minute rule (do it if under two minutes); otherwise delegate (Waiting For) or defer (calendar or Next Actions)", "passed": true, "evidence": "Two-minute rule; delegate; defer"}, {"text": "Organize into the categories (projects, next actions by context, waiting for, calendar, reference, someday/maybe)", "passed": true, "evidence": "Seven list categories"}, {"text": "Mentions weekly review / reflect and engage to keep the system trusted", "passed": true, "evidence": "Weekly review, engage"}], "summary": {"passed": 6, "failed": 0, "total": 6, "pass_rate": 1.0}}}, {"id": "eval-3-gtd-inbox-without_skill-run-1", "prompt": "My inbox and head are overflowing. Walk me through processing everything the GTD way.", "eval_id": 3, "outputs": [{"name": "response.md", "type": "text", "content": "# Processing Everything the GTD Way\n\nWhen your inbox and your head are both overflowing, the fix in David Allen's *Getting Things Done* is the same either way. Get everything out of your head and into one trusted place. Then decide, one item at a time, what each thing means and what you'll do about it. Below is a step-by-step session. Set aside 2 to 4 hours for the first full pass. Later passes go much faster.\n\n---\n\n## Before you start: set up the minimum\n\nYou need:\n\n- **One physical in-tray**, or a box or a spot on your desk, for paper.\n- **One digital capture list**, such as a note or a task app's inbox.\n- **A place for these lists** (paper, app, anything works):\n  - Next Actions (sorted by context)\n  - Projects\n  - Waiting For\n  - Someday/Maybe\n  - Calendar\n- **Reference storage**: a simple A\u2013Z filing system and/or a digital folder or notes system.\n- **A trash can or recycling bin** within reach.\n\nDon't over-engineer the tools. You can refine them later.\n\n---\n\n## Step 1: Capture (empty your head and gather everything)\n\n### 1a. Physical sweep\nWalk around your desk, office, bag, car and home. Put anything that holds an \"open loop\" into the in-tray: notes, bills, receipts, business cards, things to fix, papers to read. If something won't fit, write a note that stands in for it (\"Broken lamp in hall\").\n\n### 1b. Mind sweep\nTake a pad of paper and write down **everything** on your mind. Put one item per line, or one per sheet if you're using paper. Don't judge or organize yet. Just keep writing until your mind runs dry. Use these prompts to jog your memory:\n\n- **Work:** projects started or not started, commitments to your boss, team or clients, calls to return, emails to send, meetings to prepare for, reports, budgets, hiring, performance reviews, pending decisions, things you're waiting on, professional development.\n- **Personal:** family commitments, birthdays and gifts, home repairs, errands, finances (bills, taxes, insurance), health appointments, car, travel, hobbies, things to buy, things to learn, friends to contact, community or volunteer commitments.\n- **Vague stuff:** \"I should really\u2026\", \"Someday I want to\u2026\", lingering worries.\n\nExpect 50\u2013150+ items. That's normal, and getting them out of your head is a relief in itself.\n\n### 1c. Digital sweep\nNote every digital inbox you have: email accounts, Slack/Teams DMs, voicemail, text messages, notes apps, downloads folder, desktop files, browser tabs. These all count as inboxes. You'll process each one the same way.\n\n**Goal:** every open loop now sits in a small number of collection buckets and none is left in your head.\n\n---\n\n## Step 2: Clarify (process each item)\n\nThis is where the real work happens. Take **one item at a time, from the top**. Rules:\n\n- Handle one item at a time.\n- Never put anything **back** into the inbox.\n- Don't skip the hard ones or cherry-pick the easy ones.\n\nFor each item, ask these questions in order:\n\n### Q1. \"What is it?\"\nBe clear about what it actually is. Is it a bill, a request, an idea, or a reminder?\n\n### Q2. \"Is it actionable?\"\n\n**If NO**, it goes to one of three places:\n1. **Trash.** You don't need it.\n2. **Someday/Maybe.** You might want to do it later, but not now (\"Learn Italian,\" \"Kitchen remodel\"). You can also use a tickler file or calendar reminder to bring it back at a specific time.\n3. **Reference.** It's useful information but needs no action (a manual, meeting notes, a contract). File it where you can find it.\n\n**If YES**, continue:\n\n### Q3. \"What's the desired outcome?\"\nIf getting there takes **more than one action**, it's a **Project**. Write it on your Projects list as an outcome (\"Q1 budget finalized,\" \"New car purchased\").\n\n### Q4. \"What's the very next physical, visible action?\"\nThis is the core of GTD. Make it concrete, something you could actually go do:\n- Vague: \"Mom's birthday\"\n- Concrete: \"Call Sarah to ask what Mom wants for her birthday\"\n- Vague: \"Taxes\"\n- Concrete: \"Gather 2026 1099 forms from email into Taxes folder\"\n\nOnce you know the next action, do one of three things with it:\n\n| Option | When | What to do |\n|---|---|---|\n| **Do it** | It takes **less than 2 minutes** | Do it right now. Tracking it would take longer than doing it. |\n| **Delegate it** | Someone else is the right person to do it | Hand it off, then add it to your **Waiting For** list with the person's name and the date. |\n| **Defer it** | It's yours and takes more than 2 minutes | Put it on your **Calendar** if it must happen on a specific day or time. Otherwise put it on your **Next Actions** list. |\n\n### The whole flow in one view\n\n```\nItem \u2192 What is it?\n        \u2502\n        \u251c\u2500 Not actionable \u2192 Trash / Someday-Maybe / Reference\n        \u2502\n        \u2514\u2500 Actionable \u2192 Multi-step? \u2192 add to Projects list\n                       \u2502\n                       \u2514\u2500 Next action?\n                            \u251c\u2500 \u003c 2 min  \u2192 DO IT NOW\n                            \u251c\u2500 Not mine \u2192 DELEGATE \u2192 Waiting For\n                            \u2514\u2500 Mine, > 2 min \u2192 DEFER \u2192 Calendar or Next Actions\n```\n\n---\n\n## Step 3: Organize (put things where they belong)\n\nEach list holds one kind of thing:\n\n- **Projects list:** every outcome that takes more than one step to finish. Each active project should have at least one next action on a Next Actions list.\n- **Next Actions, grouped by context**, so you can see what's possible where you are:\n  - `@Computer`\n  - `@Calls`\n  - `@Errands`\n  - `@Office` / `@Home`\n  - `@Agendas`: one list per person or meeting, for things to discuss\n  - Use whatever contexts fit your life. Some people sort by energy or time available instead.\n- **Waiting For:** delegated items and things you're expecting from others, with dates.\n- **Calendar:** only the \"hard landscape\": appointments, things due on a specific day, and time-specific actions. Don't use it as a wish list.\n- **Someday/Maybe:** ideas and possibilities you aren't committed to yet.\n- **Reference:** a simple A\u2013Z file, digital or physical. Keep it easy to add to, or you'll stop using it.\n- **Project support material:** notes or files that belong to a specific project, kept separate from your action lists.\n\n---\n\n## Processing email specifically\n\n1. **Turn off notifications** for the processing session.\n2. Start at the top, or the oldest message, and apply the same questions to each email:\n   - Delete or archive it if it needs no action.\n   - Reply right away if the reply takes less than 2 minutes.\n   - Forward it if someone else should handle it. Track it in Waiting For, for example with a \"@Waiting\" folder or label.\n   - If you need to act and it takes longer, move it to an \"@Action\" folder **and** add the next action to your list (or rely on the folder as the list itself).\n   - Move reference emails into an archive or reference folder. Search usually beats complex folder trees.\n3. **Huge backlog?** Declare \"email bankruptcy\" with care. Move everything older than about 2 weeks into a folder called \"Old Inbox \u2013 to review.\" Process the recent mail properly, then skim the old folder quickly for anything critical.\n4. Aim for **inbox zero**: an empty inbox, because you've decided what every message means, not because you've done everything in it.\n\n---\n\n## Step 4: Reflect (keep the system trustworthy)\n\nYour system only works if you trust it. That trust comes from reviewing it.\n\n- **Daily:** check your calendar first, then your Next Actions lists. Capture new inputs as they come in.\n- **Weekly Review**, the step that matters most for keeping the system alive. Block 1\u20132 hours, for example on Friday afternoon:\n  1. **Get clear:** gather loose papers, process every inbox to zero, and do a new mind sweep.\n  2. **Get current:** review Next Actions and cross off what's done. Look at the past two weeks of your calendar for leftovers and the next few weeks for things to prepare. Review Waiting For and send follow-ups. Review the Projects list and make sure each project has a next action.\n  3. **Get creative:** scan Someday/Maybe, promote items to active or delete them, and capture new ideas.\n\n---\n\n## Step 5: Engage (decide what to do right now)\n\nWhen it's time to work, choose from your Next Actions lists using four filters, in this order:\n\n1. **Context:** what can you do where you are, with the tools you have?\n2. **Time available:** how long until your next commitment?\n3. **Energy:** how much focus do you have right now?\n4. **Priority:** of what's left, what matters most given your goals?\n\nYou aren't relying on memory any more. You're choosing from a complete menu.\n\n---\n\n## Practical tips for your first big session\n\n- **Do it in one go if possible.** Momentum matters, and a half-processed system feels worse than none.\n- **The 2-minute rule is not a time limit on the whole session.** If you have dozens of quick items, doing them all can eat your time. If you're in a rush, defer some.\n- **When you're stuck on an item,** ask \"What's the next action?\" again. Being stuck usually means the item is a project with no defined next step, or you haven't decided whether you're committed to it at all.\n- **It's fine to renegotiate commitments.** Moving something to Someday/Maybe or telling someone \"I can't do this\" are legitimate outcomes.\n- **Expect the mental relief right away.** The anxiety mostly comes from open loops held in memory, not from the amount of work.\n- **Keep the tools simple.** Paper lists or one basic app beat a complicated setup you'll abandon.\n\n---\n\n## Quick-start checklist\n\n- [ ] Set up an in-tray and the lists: Projects, Next Actions (by context), Waiting For, Someday/Maybe, Calendar, Reference\n- [ ] Physical sweep: everything goes into the in-tray\n- [ ] Mind sweep: write down every open loop\n- [ ] List every digital inbox\n- [ ] Process top to bottom: trash, someday, reference, do (\u003c2 min), delegate, or defer\n- [ ] Define a next action for every project\n- [ ] Get email to zero, or move the backlog into an \"Old Inbox\" folder\n- [ ] Schedule a recurring Weekly Review\n- [ ] Work from your context lists from now on\n\nStart with the mind sweep right now. Grab a pad of paper and give it 20 minutes. Then come back and process the list one item at a time.\n"}], "grading": {"expectations": [{"text": "Capture everything first (mind sweep / collection buckets)", "passed": true, "evidence": "Capture and mind sweep"}, {"text": "Clarify one item at a time asking What is it? Is it actionable?", "passed": true, "evidence": "Is it actionable"}, {"text": "Non-actionable: trash, incubate (someday/maybe or tickler), or reference", "passed": true, "evidence": "Trash, someday, reference"}, {"text": "Actionable: decide next action; two-minute rule (do it if under two minutes); otherwise delegate (Waiting For) or defer (calendar or Next Actions)", "passed": true, "evidence": "Less than 2 minutes do it; delegate; defer"}, {"text": "Organize into the categories (projects, next actions by context, waiting for, calendar, reference, someday/maybe)", "passed": true, "evidence": "Lists by category"}, {"text": "Mentions weekly review / reflect and engage to keep the system trusted", "passed": true, "evidence": "Weekly review"}], "summary": {"passed": 6, "failed": 0, "total": 6, "pass_rate": 1.0}}}], "previous_feedback": {}, "previous_outputs": {}, "benchmark": {"metadata": {"skill_name": "getting-things-done", "skill_path": "\u003cpath/to/skill>", "executor_model": "\u003cmodel-name>", "analyzer_model": "\u003cmodel-name>", "timestamp": "2026-11-21T21:33:36Z", "evals_run": [1, 2, 3], "runs_per_configuration": 1}, "runs": [{"eval_id": 1, "eval_name": "gtd-weekly-review", "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 6, "failed": 0, "total": 6, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Groups into Get Clear, Get Current, Get Creative", "passed": true, "evidence": "Three phases named"}, {"text": "Get Clear: collect loose papers/materials, get 'in' to zero, empty your head", "passed": true, "evidence": "Loose papers, in to zero, empty head"}, {"text": "Get Current: review action lists, previous calendar, upcoming calendar", "passed": true, "evidence": "Action lists, previous and upcoming calendar"}, {"text": "Get Current: review Waiting For, project lists, relevant checklists", "passed": true, "evidence": "Waiting For, projects, checklists"}, {"text": "Get Creative: review Someday/Maybe and be creative and courageous", "passed": true, "evidence": "Someday/Maybe, creative and courageous"}, {"text": "Explains purpose: keeping the system current and trusted (reflect step)", "passed": true, "evidence": "Explains keeping the system trusted"}], "notes": []}, {"eval_id": 2, "eval_name": "gtd-horizons", "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 6, "failed": 0, "total": 6, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Lists Ground (current actions) through Horizon 5 (purpose and principles), including areas of focus (H2), goals (H3), vision (H4)", "passed": true, "evidence": "Ground to Horizon 5 listed"}, {"text": "Four-criteria model in order: context, time available, energy available, priority", "passed": true, "evidence": "Four criteria in order"}, {"text": "Threefold model: predefined work, work as it shows up, defining your work", "passed": true, "evidence": "Threefold model"}, {"text": "Identifies the six-level model as the horizons used for reviewing work", "passed": true, "evidence": "Six-level model named"}, {"text": "Defines a project as any outcome achievable within a year requiring more than one action", "passed": true, "evidence": "Project definition given"}, {"text": "Connects horizons to weekly review / top-down priorities", "passed": true, "evidence": "Top-down priorities, review rhythm"}], "notes": []}, {"eval_id": 3, "eval_name": "gtd-inbox", "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 6, "failed": 0, "total": 6, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Capture everything first (mind sweep / collection buckets)", "passed": true, "evidence": "Capture and mind sweep"}, {"text": "Clarify one item at a time asking What is it? Is it actionable?", "passed": true, "evidence": "What is it? Is it actionable?"}, {"text": "Non-actionable: trash, incubate (someday/maybe or tickler), or reference", "passed": true, "evidence": "Trash, incubate, reference"}, {"text": "Actionable: decide next action; two-minute rule (do it if under two minutes); otherwise delegate (Waiting For) or defer (calendar or Next Actions)", "passed": true, "evidence": "Two-minute rule; delegate; defer"}, {"text": "Organize into the categories (projects, next actions by context, waiting for, calendar, reference, someday/maybe)", "passed": true, "evidence": "Seven list categories"}, {"text": "Mentions weekly review / reflect and engage to keep the system trusted", "passed": true, "evidence": "Weekly review, engage"}], "notes": []}, {"eval_id": 1, "eval_name": "gtd-weekly-review", "configuration": "without_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 6, "failed": 0, "total": 6, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Groups into Get Clear, Get Current, Get Creative", "passed": true, "evidence": "Three phases named"}, {"text": "Get Clear: collect loose papers/materials, get 'in' to zero, empty your head", "passed": true, "evidence": "Loose papers, in to empty, empty head"}, {"text": "Get Current: review action lists, previous calendar, upcoming calendar", "passed": true, "evidence": "Next actions, previous and upcoming calendar"}, {"text": "Get Current: review Waiting For, project lists, relevant checklists", "passed": true, "evidence": "Waiting For, project lists, checklists"}, {"text": "Get Creative: review Someday/Maybe and be creative and courageous", "passed": true, "evidence": "Someday/Maybe, creative and courageous"}, {"text": "Explains purpose: keeping the system current and trusted (reflect step)", "passed": true, "evidence": "Explains purpose of each phase (current lists, next actions per project)"}], "notes": []}, {"eval_id": 2, "eval_name": "gtd-horizons", "configuration": "without_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 6, "failed": 0, "total": 6, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Lists Ground (current actions) through Horizon 5 (purpose and principles), including areas of focus (H2), goals (H3), vision (H4)", "passed": true, "evidence": "Ground to Horizon 5 listed"}, {"text": "Four-criteria model in order: context, time available, energy available, priority", "passed": true, "evidence": "Context, time, energy, priority"}, {"text": "Threefold model: predefined work, work as it shows up, defining your work", "passed": true, "evidence": "Predefined / as it shows up / defining"}, {"text": "Identifies the six-level model as the horizons used for reviewing work", "passed": true, "evidence": "Six-level model named"}, {"text": "Defines a project as any outcome achievable within a year requiring more than one action", "passed": true, "evidence": "Project definition given"}, {"text": "Connects horizons to weekly review / top-down priorities", "passed": true, "evidence": "Links horizons to reviews"}], "notes": []}, {"eval_id": 3, "eval_name": "gtd-inbox", "configuration": "without_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 6, "failed": 0, "total": 6, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Capture everything first (mind sweep / collection buckets)", "passed": true, "evidence": "Capture and mind sweep"}, {"text": "Clarify one item at a time asking What is it? Is it actionable?", "passed": true, "evidence": "Is it actionable"}, {"text": "Non-actionable: trash, incubate (someday/maybe or tickler), or reference", "passed": true, "evidence": "Trash, someday, reference"}, {"text": "Actionable: decide next action; two-minute rule (do it if under two minutes); otherwise delegate (Waiting For) or defer (calendar or Next Actions)", "passed": true, "evidence": "Less than 2 minutes do it; delegate; defer"}, {"text": "Organize into the categories (projects, next actions by context, waiting for, calendar, reference, someday/maybe)", "passed": true, "evidence": "Lists by category"}, {"text": "Mentions weekly review / reflect and engage to keep the system trusted", "passed": true, "evidence": "Weekly review"}], "notes": []}], "run_summary": {"with_skill": {"pass_rate": {"mean": 1.0, "stddev": 0.0, "min": 1.0, "max": 1.0}, "time_seconds": null, "tokens": null}, "without_skill": {"pass_rate": {"mean": 1.0, "stddev": 0.0, "min": 1.0, "max": 1.0}, "time_seconds": null, "tokens": null}, "delta": {"pass_rate": "+0.00", "time_seconds": null, "tokens": null}}, "notes": ["Time recorded for 0 of 3 with_skill runs, 0 of 3 without_skill runs, so there is no time delta.", "Token count recorded for 0 of 3 with_skill runs, 0 of 3 without_skill runs, so there is no token count delta."]}};
+
+    // ---- State ----
+    let feedbackMap = {};  // run_id -> feedback text
+    let currentIndex = 0;
+    let visitedRuns = new Set();
+
+    // ---- Init ----
+    async function init() {
+      // Load saved feedback from server — but only if this isn't a fresh
+      // iteration (indicated by previous_feedback being present). When
+      // previous feedback exists, the feedback.json on disk is stale from
+      // the prior iteration and should not pre-fill the textareas.
+      const hasPrevious = Object.keys(EMBEDDED_DATA.previous_feedback || {}).length > 0
+        || Object.keys(EMBEDDED_DATA.previous_outputs || {}).length > 0;
+      if (!hasPrevious) {
+        try {
+          const resp = await fetch("/api/feedback");
+          const data = await resp.json();
+          if (data.reviews) {
+            for (const r of data.reviews) feedbackMap[r.run_id] = r.feedback;
+          }
+        } catch { /* first run, no feedback yet */ }
+      }
+
+      document.getElementById("skill-name").textContent = EMBEDDED_DATA.skill_name;
+      showRun(0);
+
+      // Wire up feedback auto-save
+      const textarea = document.getElementById("feedback");
+      let saveTimeout = null;
+      textarea.addEventListener("input", () => {
+        clearTimeout(saveTimeout);
+        document.getElementById("feedback-status").textContent = "";
+        saveTimeout = setTimeout(() => saveCurrentFeedback(), 800);
+      });
+    }
+
+    // ---- Navigation ----
+    function navigate(delta) {
+      const newIndex = currentIndex + delta;
+      if (newIndex >= 0 && newIndex < EMBEDDED_DATA.runs.length) {
+        saveCurrentFeedback();
+        showRun(newIndex);
+      }
+    }
+
+    function updateNavButtons() {
+      document.getElementById("prev-btn").disabled = currentIndex === 0;
+      document.getElementById("next-btn").disabled =
+        currentIndex === EMBEDDED_DATA.runs.length - 1;
+    }
+
+    // ---- Show a run ----
+    function showRun(index) {
+      currentIndex = index;
+      const run = EMBEDDED_DATA.runs[index];
+
+      // Progress
+      document.getElementById("progress").textContent =
+        `${index + 1} of ${EMBEDDED_DATA.runs.length}`;
+
+      // Prompt
+      document.getElementById("prompt-text").textContent = run.prompt;
+
+      // Config badge
+      const badge = document.getElementById("config-badge");
+      const configMatch = run.id.match(/(with_skill|without_skill|new_skill|old_skill)/);
+      if (configMatch) {
+        const config = configMatch[1];
+        const isBaseline = config === "without_skill" || config === "old_skill";
+        badge.textContent = config.replace(/_/g, " ");
+        badge.className = "config-badge " + (isBaseline ? "config-baseline" : "config-primary");
+        badge.style.display = "inline-block";
+      } else {
+        badge.style.display = "none";
+      }
+
+      // Outputs
+      renderOutputs(run);
+
+      // Previous outputs
+      renderPrevOutputs(run);
+
+      // Grades
+      renderGrades(run);
+
+      // Previous feedback
+      const prevFb = (EMBEDDED_DATA.previous_feedback || {})[run.id];
+      const prevEl = document.getElementById("prev-feedback");
+      if (prevFb) {
+        document.getElementById("prev-feedback-text").textContent = prevFb;
+        prevEl.style.display = "block";
+      } else {
+        prevEl.style.display = "none";
+      }
+
+      // Feedback
+      document.getElementById("feedback").value = feedbackMap[run.id] || "";
+      document.getElementById("feedback-status").textContent = "";
+
+      updateNavButtons();
+
+      // Track visited runs and promote done button when all visited
+      visitedRuns.add(index);
+      const doneBtn = document.getElementById("done-btn");
+      if (visitedRuns.size >= EMBEDDED_DATA.runs.length) {
+        doneBtn.classList.add("ready");
+      }
+
+      // Scroll main content to top
+      document.querySelector(".main").scrollTop = 0;
+    }
+
+    // ---- Render outputs ----
+    function renderOutputs(run) {
+      const container = document.getElementById("outputs-body");
+      container.innerHTML = "";
+
+      const outputs = run.outputs || [];
+      if (outputs.length === 0) {
+        container.innerHTML = '<div class="empty-state">No output files</div>';
+        return;
+      }
+
+      for (const file of outputs) {
+        const fileDiv = document.createElement("div");
+        fileDiv.className = "output-file";
+
+        // Always show file header with download link
+        const header = document.createElement("div");
+        header.className = "output-file-header";
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = file.name;
+        header.appendChild(nameSpan);
+        const dlBtn = document.createElement("a");
+        dlBtn.className = "dl-btn";
+        dlBtn.textContent = "Download";
+        dlBtn.download = file.name;
+        dlBtn.href = getDownloadUri(file);
+        header.appendChild(dlBtn);
+        fileDiv.appendChild(header);
+
+        const content = document.createElement("div");
+        content.className = "output-file-content";
+
+        if (file.type === "text") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          content.appendChild(pre);
+        } else if (file.type === "image") {
+          const img = document.createElement("img");
+          img.src = file.data_uri;
+          img.alt = file.name;
+          content.appendChild(img);
+        } else if (file.type === "pdf") {
+          const iframe = document.createElement("iframe");
+          iframe.src = file.data_uri;
+          content.appendChild(iframe);
+        } else if (file.type === "xlsx") {
+          renderXlsx(content, file.data_b64);
+        } else if (file.type === "binary") {
+          const a = document.createElement("a");
+          a.className = "download-link";
+          a.href = file.data_uri;
+          a.download = file.name;
+          a.textContent = "Download " + file.name;
+          content.appendChild(a);
+        } else if (file.type === "error") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          pre.style.color = "var(--red)";
+          content.appendChild(pre);
+        }
+
+        fileDiv.appendChild(content);
+        container.appendChild(fileDiv);
+      }
+    }
+
+    // ---- XLSX rendering via SheetJS ----
+    function renderXlsx(container, b64Data) {
+      try {
+        const raw = Uint8Array.from(atob(b64Data), c => c.charCodeAt(0));
+        const wb = XLSX.read(raw, { type: "array" });
+
+        for (let i = 0; i < wb.SheetNames.length; i++) {
+          const sheetName = wb.SheetNames[i];
+          const ws = wb.Sheets[sheetName];
+
+          if (wb.SheetNames.length > 1) {
+            const sheetLabel = document.createElement("div");
+            sheetLabel.style.cssText =
+              "font-weight:600; font-size:0.8rem; color:#b0aea5; margin-top:0.5rem; margin-bottom:0.25rem;";
+            sheetLabel.textContent = "Sheet: " + sheetName;
+            container.appendChild(sheetLabel);
+          }
+
+          const htmlStr = XLSX.utils.sheet_to_html(ws, { editable: false });
+          const wrapper = document.createElement("div");
+          wrapper.innerHTML = htmlStr;
+          container.appendChild(wrapper);
+        }
+      } catch (err) {
+        container.textContent = "Error rendering spreadsheet: " + err.message;
+      }
+    }
+
+    // ---- Grades ----
+    function renderGrades(run) {
+      const section = document.getElementById("grades-section");
+      const content = document.getElementById("grades-content");
+
+      if (!run.grading) {
+        section.style.display = "none";
+        return;
+      }
+
+      const grading = run.grading;
+      section.style.display = "block";
+      // Reset to collapsed
+      content.classList.remove("open");
+      document.getElementById("grades-arrow").classList.remove("open");
+
+      const summary = grading.summary || {};
+      const expectations = grading.expectations || [];
+
+      let html = '<div style="padding: 1rem;">';
+
+      // Summary line
+      const passRate = summary.pass_rate != null
+        ? Math.round(summary.pass_rate * 100) + "%"
+        : "?";
+      const badgeClass = summary.pass_rate >= 0.8 ? "grade-pass" : summary.pass_rate >= 0.5 ? "" : "grade-fail";
+      html += '<div class="grades-summary">';
+      html += '<span class="grade-badge ' + badgeClass + '">' + passRate + '</span>';
+      html += '<span>' + escapeHtml(summary.passed || 0) + ' passed, ' + escapeHtml(summary.failed || 0) + ' failed of ' + escapeHtml(summary.total || 0) + '</span>';
+      html += '</div>';
+
+      // Assertions list
+      html += '<ul class="assertion-list">';
+      for (const exp of expectations) {
+        const statusClass = exp.passed ? "pass" : "fail";
+        const statusIcon = exp.passed ? "\u2713" : "\u2717";
+        html += '<li class="assertion-item">';
+        html += '<span class="assertion-status ' + statusClass + '">' + statusIcon + '</span>';
+        html += '<span>' + escapeHtml(exp.text) + '</span>';
+        if (exp.evidence) {
+          html += '<div class="assertion-evidence">' + escapeHtml(exp.evidence) + '</div>';
+        }
+        html += '</li>';
+      }
+      html += '</ul>';
+
+      html += '</div>';
+      content.innerHTML = html;
+    }
+
+    function toggleGrades() {
+      const content = document.getElementById("grades-content");
+      const arrow = document.getElementById("grades-arrow");
+      content.classList.toggle("open");
+      arrow.classList.toggle("open");
+    }
+
+    // ---- Previous outputs (collapsible) ----
+    function renderPrevOutputs(run) {
+      const section = document.getElementById("prev-outputs-section");
+      const content = document.getElementById("prev-outputs-content");
+      const prevOutputs = (EMBEDDED_DATA.previous_outputs || {})[run.id];
+
+      if (!prevOutputs || prevOutputs.length === 0) {
+        section.style.display = "none";
+        return;
+      }
+
+      section.style.display = "block";
+      // Reset to collapsed
+      content.classList.remove("open");
+      document.getElementById("prev-outputs-arrow").classList.remove("open");
+
+      // Render the files into the content area
+      content.innerHTML = "";
+      const wrapper = document.createElement("div");
+      wrapper.style.padding = "1rem";
+
+      for (const file of prevOutputs) {
+        const fileDiv = document.createElement("div");
+        fileDiv.className = "output-file";
+
+        const header = document.createElement("div");
+        header.className = "output-file-header";
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = file.name;
+        header.appendChild(nameSpan);
+        const dlBtn = document.createElement("a");
+        dlBtn.className = "dl-btn";
+        dlBtn.textContent = "Download";
+        dlBtn.download = file.name;
+        dlBtn.href = getDownloadUri(file);
+        header.appendChild(dlBtn);
+        fileDiv.appendChild(header);
+
+        const fc = document.createElement("div");
+        fc.className = "output-file-content";
+
+        if (file.type === "text") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          fc.appendChild(pre);
+        } else if (file.type === "image") {
+          const img = document.createElement("img");
+          img.src = file.data_uri;
+          img.alt = file.name;
+          fc.appendChild(img);
+        } else if (file.type === "pdf") {
+          const iframe = document.createElement("iframe");
+          iframe.src = file.data_uri;
+          fc.appendChild(iframe);
+        } else if (file.type === "xlsx") {
+          renderXlsx(fc, file.data_b64);
+        } else if (file.type === "binary") {
+          const a = document.createElement("a");
+          a.className = "download-link";
+          a.href = file.data_uri;
+          a.download = file.name;
+          a.textContent = "Download " + file.name;
+          fc.appendChild(a);
+        }
+
+        fileDiv.appendChild(fc);
+        wrapper.appendChild(fileDiv);
+      }
+
+      content.appendChild(wrapper);
+    }
+
+    function togglePrevOutputs() {
+      const content = document.getElementById("prev-outputs-content");
+      const arrow = document.getElementById("prev-outputs-arrow");
+      content.classList.toggle("open");
+      arrow.classList.toggle("open");
+    }
+
+    // ---- Feedback (saved to server -> feedback.json) ----
+    function saveCurrentFeedback() {
+      const run = EMBEDDED_DATA.runs[currentIndex];
+      const text = document.getElementById("feedback").value;
+
+      if (text.trim() === "") {
+        delete feedbackMap[run.id];
+      } else {
+        feedbackMap[run.id] = text;
+      }
+
+      // Build reviews array from map
+      const reviews = [];
+      for (const [run_id, feedback] of Object.entries(feedbackMap)) {
+        if (feedback.trim()) {
+          reviews.push({ run_id, feedback, timestamp: new Date().toISOString() });
+        }
+      }
+
+      fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reviews, status: "in_progress" }),
+      }).then(() => {
+        document.getElementById("feedback-status").textContent = "Saved";
+      }).catch(() => {
+        // Static mode or server unavailable — no-op on auto-save,
+        // feedback will be downloaded on final submit
+        document.getElementById("feedback-status").textContent = "Will download on submit";
+      });
+    }
+
+    // ---- Done ----
+    function showDoneDialog() {
+      // Save current textarea to feedbackMap (but don't POST yet)
+      const run = EMBEDDED_DATA.runs[currentIndex];
+      const text = document.getElementById("feedback").value;
+      if (text.trim() === "") {
+        delete feedbackMap[run.id];
+      } else {
+        feedbackMap[run.id] = text;
+      }
+
+      // POST once with status: complete — include ALL runs so the model
+      // can distinguish "no feedback" (looks good) from "not reviewed"
+      const reviews = [];
+      const ts = new Date().toISOString();
+      for (const r of EMBEDDED_DATA.runs) {
+        reviews.push({ run_id: r.id, feedback: feedbackMap[r.id] || "", timestamp: ts });
+      }
+      const payload = JSON.stringify({ reviews, status: "complete" }, null, 2);
+      fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: payload,
+      }).then(() => {
+        document.getElementById("done-overlay").classList.add("visible");
+      }).catch(() => {
+        // Server not available (static mode) — download as file
+        const blob = new Blob([payload], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "feedback.json";
+        a.click();
+        URL.revokeObjectURL(url);
+        document.getElementById("done-overlay").classList.add("visible");
+      });
+    }
+
+    function closeDoneDialog() {
+      // Reset status back to in_progress
+      saveCurrentFeedback();
+      document.getElementById("done-overlay").classList.remove("visible");
+    }
+
+    // ---- Toast ----
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("visible");
+      setTimeout(() => toast.classList.remove("visible"), 2000);
+    }
+
+    // ---- Keyboard nav ----
+    document.addEventListener("keydown", (e) => {
+      // Don't capture when typing in textarea
+      if (e.target.tagName === "TEXTAREA") return;
+
+      if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+        e.preventDefault();
+        navigate(-1);
+      } else if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+        e.preventDefault();
+        navigate(1);
+      }
+    });
+
+    // ---- Util ----
+    function getDownloadUri(file) {
+      if (file.data_uri) return file.data_uri;
+      if (file.data_b64) return "data:application/octet-stream;base64," + file.data_b64;
+      if (file.type === "text") return "data:text/plain;charset=utf-8," + encodeURIComponent(file.content);
+      return "#";
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement("div");
+      div.textContent = text;
+      return div.innerHTML.replace(/"/g, "&quot;");
+    }
+
+    // ---- View switching ----
+    function switchView(view) {
+      document.querySelectorAll(".view-tab").forEach(t => t.classList.remove("active"));
+      document.querySelectorAll(".view-panel").forEach(p => p.classList.remove("active"));
+      document.querySelector(`[onclick="switchView('${view}')"]`).classList.add("active");
+      document.getElementById("panel-" + view).classList.add("active");
+    }
+
+    // ---- Benchmark rendering ----
+    function renderBenchmark() {
+      const data = EMBEDDED_DATA.benchmark;
+      if (!data) return;
+
+      // Show the tabs
+      document.getElementById("view-tabs").style.display = "flex";
+
+      const container = document.getElementById("benchmark-content");
+      const summary = data.run_summary || {};
+      const metadata = data.metadata || {};
+      const notes = data.notes || [];
+
+      let html = "";
+
+      // Header
+      html += "<h2 style='font-family: Poppins, sans-serif; margin-bottom: 0.5rem;'>Benchmark Results</h2>";
+      html += "<p style='color: var(--text-muted); font-size: 0.875rem; margin-bottom: 1.25rem;'>";
+      if (metadata.skill_name) html += "<strong>" + escapeHtml(metadata.skill_name) + "</strong> &mdash; ";
+      if (metadata.timestamp) html += escapeHtml(metadata.timestamp) + " &mdash; ";
+      if (metadata.evals_run) html += "Evals: " + escapeHtml(metadata.evals_run.join(", ")) + " &mdash; ";
+      html += escapeHtml(metadata.runs_per_configuration || "?") + (metadata.runs_per_configuration === 1 ? " run" : " runs") + " per configuration";
+      html += "</p>";
+
+      // Summary table
+      html += '<table class="benchmark-table">';
+
+      function fmtStat(stat, pct) {
+        if (!stat) return "—";
+        const suffix = pct ? "%" : "";
+        const m = pct ? (stat.mean * 100).toFixed(0) : stat.mean.toFixed(1);
+        const s = pct ? (stat.stddev * 100).toFixed(0) : stat.stddev.toFixed(1);
+        return m + suffix + " ± " + s + suffix;
+      }
+
+      function deltaClass(val) {
+        if (!val) return "";
+        const n = parseFloat(val);
+        if (n > 0) return "benchmark-delta-positive";
+        if (n < 0) return "benchmark-delta-negative";
+        return "";
+      }
+
+      // Discover config names dynamically (everything except "delta")
+      const configs = Object.keys(summary).filter(k => k !== "delta");
+      const configA = configs[0] || "config_a";
+      const configB = configs[1] || "config_b";
+      const labelA = configA.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      const labelB = configB.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      const a = summary[configA] || {};
+      const b = summary[configB] || {};
+      const delta = summary.delta || {};
+      // With a single configuration there is nothing to compare: only its column is shown
+      const compare = cells => configs.length >= 2 ? cells : "";
+
+      html += "<thead><tr><th>Metric</th><th>" + escapeHtml(labelA) + "</th>" + compare("<th>" + escapeHtml(labelB) + "</th><th>Delta</th>") + "</tr></thead>";
+      html += "<tbody>";
+
+      html += "<tr><td><strong>Pass Rate</strong></td>";
+      html += "<td>" + fmtStat(a.pass_rate, true) + "</td>";
+      html += compare("<td>" + fmtStat(b.pass_rate, true) + "</td>");
+      html += compare('<td class="' + deltaClass(delta.pass_rate) + '">' + escapeHtml(delta.pass_rate || "—") + "</td>") + "</tr>";
+
+      // Time (only show row if data exists)
+      if (a.time_seconds || b.time_seconds) {
+        html += "<tr><td><strong>Time (s)</strong></td>";
+        html += "<td>" + fmtStat(a.time_seconds, false) + "</td>";
+        html += compare("<td>" + fmtStat(b.time_seconds, false) + "</td>");
+        html += compare('<td class="' + deltaClass(delta.time_seconds) + '">' + escapeHtml(delta.time_seconds ? delta.time_seconds + "s" : "—") + "</td>") + "</tr>";
+      }
+
+      // Tokens (only show row if data exists)
+      if (a.tokens || b.tokens) {
+        html += "<tr><td><strong>Tokens</strong></td>";
+        html += "<td>" + fmtStat(a.tokens, false) + "</td>";
+        html += compare("<td>" + fmtStat(b.tokens, false) + "</td>");
+        html += compare('<td class="' + deltaClass(delta.tokens) + '">' + escapeHtml(delta.tokens || "—") + "</td>") + "</tr>";
+      }
+
+      html += "</tbody></table>";
+
+      // Per-eval breakdown (if runs data available)
+      const runs = data.runs || [];
+      if (runs.length > 0) {
+        // Numeric ids first, then ids that are names
+        const rank = id => typeof id === "number" ? 0 : 1;
+        const evalIds = [...new Set(runs.map(r => r.eval_id))].sort((a, b) =>
+          rank(a) - rank(b) || (rank(a) ? String(a).localeCompare(String(b)) : a - b));
+
+        html += "<h3 style='font-family: Poppins, sans-serif; margin-bottom: 0.75rem;'>Per-Eval Breakdown</h3>";
+
+        const hasTime = runs.some(r => r.result && r.result.time_seconds != null);
+        const hasErrors = runs.some(r => r.result && r.result.errors > 0);
+
+        for (const evalId of evalIds) {
+          const evalRuns = runs.filter(r => r.eval_id === evalId);
+          const evalName = evalRuns[0] && evalRuns[0].eval_name ? evalRuns[0].eval_name : "Eval " + evalId;
+
+          html += "<h4 style='font-family: Poppins, sans-serif; margin: 1rem 0 0.5rem; color: var(--text);'>" + escapeHtml(evalName) + "</h4>";
+          html += '<table class="benchmark-table">';
+          html += "<thead><tr><th>Config</th><th>Run</th><th>Pass Rate</th>";
+          if (hasTime) html += "<th>Time (s)</th>";
+          if (hasErrors) html += "<th>Crashes During Execution</th>";
+          html += "</tr></thead>";
+          html += "<tbody>";
+
+          // Group by config and render with average rows
+          const configGroups = [...new Set(evalRuns.map(r => r.configuration))];
+          for (let ci = 0; ci < configGroups.length; ci++) {
+            const config = configGroups[ci];
+            const configRuns = evalRuns.filter(r => r.configuration === config);
+            if (configRuns.length === 0) continue;
+
+            const rowClass = ci === 0 ? "benchmark-row-with" : "benchmark-row-without";
+            const configLabel = escapeHtml(config.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase()));
+
+            for (const run of configRuns) {
+              const r = run.result || {};
+              const prClass = r.pass_rate >= 0.8 ? "benchmark-delta-positive" : r.pass_rate < 0.5 ? "benchmark-delta-negative" : "";
+              html += '<tr class="' + rowClass + '">';
+              html += "<td>" + configLabel + "</td>";
+              html += "<td>" + escapeHtml(run.run_number) + "</td>";
+              html += '<td class="' + prClass + '">' + ((r.pass_rate || 0) * 100).toFixed(0) + "% (" + escapeHtml(r.passed || 0) + "/" + escapeHtml(r.total || 0) + ")</td>";
+              if (hasTime) html += "<td>" + (r.time_seconds != null ? r.time_seconds.toFixed(1) : "—") + "</td>";
+              if (hasErrors) html += "<td>" + escapeHtml(r.errors || 0) + "</td>";
+              html += "</tr>";
+            }
+
+            // Average row
+            const rates = configRuns.map(r => (r.result || {}).pass_rate || 0);
+            const avgRate = rates.reduce((a, b) => a + b, 0) / rates.length;
+            const avgPrClass = avgRate >= 0.8 ? "benchmark-delta-positive" : avgRate < 0.5 ? "benchmark-delta-negative" : "";
+            html += '<tr class="benchmark-row-avg ' + rowClass + '">';
+            html += "<td>" + configLabel + "</td>";
+            html += "<td>Avg</td>";
+            html += '<td class="' + avgPrClass + '">' + (avgRate * 100).toFixed(0) + "%</td>";
+            if (hasTime) {
+              const times = configRuns.map(r => (r.result || {}).time_seconds).filter(t => t != null);
+              html += "<td>" + (times.length ? (times.reduce((a, b) => a + b, 0) / times.length).toFixed(1) : "—") + "</td>";
+            }
+            if (hasErrors) html += "<td></td>";
+            html += "</tr>";
+          }
+          html += "</tbody></table>";
+
+          // Per-assertion detail for this eval
+          const runsWithExpectations = {};
+          for (const config of configGroups) {
+            runsWithExpectations[config] = evalRuns.filter(r => r.configuration === config && r.expectations && r.expectations.length > 0);
+          }
+          const hasAnyExpectations = Object.values(runsWithExpectations).some(runs => runs.length > 0);
+          if (hasAnyExpectations) {
+            // Collect all unique assertion texts across all configs
+            const allAssertions = [];
+            const seen = new Set();
+            for (const config of configGroups) {
+              for (const run of runsWithExpectations[config]) {
+                for (const exp of (run.expectations || [])) {
+                  if (!seen.has(exp.text)) {
+                    seen.add(exp.text);
+                    allAssertions.push(exp.text);
+                  }
+                }
+              }
+            }
+
+            html += '<table class="benchmark-table" style="margin-top: 0.5rem;">';
+            html += "<thead><tr><th>Assertion</th>";
+            for (const config of configGroups) {
+              const label = config.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+              html += "<th>" + escapeHtml(label) + "</th>";
+            }
+            html += "</tr></thead><tbody>";
+
+            for (const assertionText of allAssertions) {
+              html += "<tr><td>" + escapeHtml(assertionText) + "</td>";
+
+              for (const config of configGroups) {
+                html += "<td>";
+                for (const run of runsWithExpectations[config]) {
+                  const exp = (run.expectations || []).find(e => e.text === assertionText);
+                  if (exp) {
+                    const cls = exp.passed ? "benchmark-delta-positive" : "benchmark-delta-negative";
+                    const icon = exp.passed ? "\u2713" : "\u2717";
+                    html += '<span class="' + cls + '" title="Run ' + escapeHtml(run.run_number) + ': ' + escapeHtml(exp.evidence || "") + '">' + icon + "</span> ";
+                  } else {
+                    html += "— ";
+                  }
+                }
+                html += "</td>";
+              }
+              html += "</tr>";
+            }
+            html += "</tbody></table>";
+          }
+        }
+      }
+
+      // Notes
+      if (notes.length > 0) {
+        html += '<div class="benchmark-notes">';
+        html += "<h3>Analysis Notes</h3>";
+        html += "<ul>";
+        for (const note of notes) {
+          html += "<li>" + escapeHtml(note) + "</li>";
+        }
+        html += "</ul></div>";
+      }
+
+      container.innerHTML = html;
+    }
+
+    // ---- Start ----
+    init();
+    renderBenchmark();
+  </script>
+</body>
+</html>

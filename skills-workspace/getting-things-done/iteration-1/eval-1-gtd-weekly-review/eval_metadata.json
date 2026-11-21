@@ -1,0 +1,13 @@
+{
+ "eval_id": 1,
+ "eval_name": "gtd-weekly-review",
+ "prompt": "What are the exact steps of the GTD Weekly Review in David Allen's revised Getting Things Done?",
+ "assertions": [
+  "Groups into Get Clear, Get Current, Get Creative",
+  "Get Clear: collect loose papers/materials, get 'in' to zero, empty your head",
+  "Get Current: review action lists, previous calendar, upcoming calendar",
+  "Get Current: review Waiting For, project lists, relevant checklists",
+  "Get Creative: review Someday/Maybe and be creative and courageous",
+  "Explains purpose: keeping the system current and trusted (reflect step)"
+ ]
+}

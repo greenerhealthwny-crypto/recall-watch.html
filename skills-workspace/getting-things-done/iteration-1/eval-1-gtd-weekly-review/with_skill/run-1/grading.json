@@ -1,0 +1,40 @@
+{
+ "expectations": [
+  {
+   "text": "Groups into Get Clear, Get Current, Get Creative",
+   "passed": true,
+   "evidence": "Three phases named"
+  },
+  {
+   "text": "Get Clear: collect loose papers/materials, get 'in' to zero, empty your head",
+   "passed": true,
+   "evidence": "Loose papers, in to zero, empty head"
+  },
+  {
+   "text": "Get Current: review action lists, previous calendar, upcoming calendar",
+   "passed": true,
+   "evidence": "Action lists, previous and upcoming calendar"
+  },
+  {
+   "text": "Get Current: review Waiting For, project lists, relevant checklists",
+   "passed": true,
+   "evidence": "Waiting For, projects, checklists"
+  },
+  {
+   "text": "Get Creative: review Someday/Maybe and be creative and courageous",
+   "passed": true,
+   "evidence": "Someday/Maybe, creative and courageous"
+  },
+  {
+   "text": "Explains purpose: keeping the system current and trusted (reflect step)",
+   "passed": true,
+   "evidence": "Explains keeping the system trusted"
+  }
+ ],
+ "summary": {
+  "passed": 6,
+  "failed": 0,
+  "total": 6,
+  "pass_rate": 1.0
+ }
+}
