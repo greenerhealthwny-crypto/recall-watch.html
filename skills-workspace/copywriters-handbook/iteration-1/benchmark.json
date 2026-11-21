@@ -1,0 +1,342 @@
+{
+  "metadata": {
+    "skill_name": "copywriters-handbook",
+    "skill_path": "<path/to/skill>",
+    "executor_model": "<model-name>",
+    "analyzer_model": "<model-name>",
+    "timestamp": "2026-11-21T21:27:31Z",
+    "evals_run": [
+      1,
+      2,
+      3
+    ],
+    "runs_per_configuration": 1
+  },
+  "runs": [
+    {
+      "eval_id": 1,
+      "eval_name": "ch-headline",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Uses the four functions of a headline (attention, select audience, complete message, draw into body)",
+          "passed": true,
+          "evidence": "Four functions check"
+        },
+        {
+          "text": "Applies the 4 U's (urgent, unique, ultra-specific, useful) with a 1-4 rating",
+          "passed": true,
+          "evidence": "4 U's scored 5/16"
+        },
+        {
+          "text": "Uses Bly's three questions (who is the customer, important features, why will they buy) or key selling proposition",
+          "passed": true,
+          "evidence": "Bly's three questions"
+        },
+        {
+          "text": "Rewrites with a specific benefit (not a blind headline or pun) and offers multiple versions drawn from headline types/techniques",
+          "passed": true,
+          "evidence": "15 rewrites by type/technique"
+        },
+        {
+          "text": "Avoids negatives / jargon and is specific with numbers",
+          "passed": true,
+          "evidence": "Specific, avoids jargon"
+        },
+        {
+          "text": "Mentions testing or writing several headlines / swipe file",
+          "passed": true,
+          "evidence": "Test / write several"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "ch-sequence",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Lists the five steps: get attention, show a need, satisfy the need/position product, prove it, ask for action",
+          "passed": true,
+          "evidence": "Five steps"
+        },
+        {
+          "text": "Contrasts with AIDA (attention, interest, desire, action)",
+          "passed": true,
+          "evidence": "AIDA table"
+        },
+        {
+          "text": "Says the headline should lead with the strongest benefit, not puns or a windup",
+          "passed": true,
+          "evidence": "Strongest benefit, no puns"
+        },
+        {
+          "text": "Gives Rosser Reeves' three USP requirements (proposition/benefit; competition can't or doesn't offer; strong enough to move the mass millions)",
+          "passed": true,
+          "evidence": "Reeves three requirements"
+        },
+        {
+          "text": "Suggests stressing an under-publicized benefit when there is no unique feature (e.g., steam-washed beer bottles)",
+          "passed": true,
+          "evidence": "Steam-washed bottles example"
+        },
+        {
+          "text": "Explains translating features into customer benefits",
+          "passed": true,
+          "evidence": "Features to benefits"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 3,
+      "eval_name": "ch-email",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Covers FROM and SUBJECT lines (FROM identifies sender; caution with 'free' and spam filters)",
+          "passed": true,
+          "evidence": "FROM/SUBJECT, free caution"
+        },
+        {
+          "text": "Lead with a strong headline/benefit up front",
+          "passed": true,
+          "evidence": "Benefit up front"
+        },
+        {
+          "text": "First paragraph is a mini-version of the whole message with offer and response link",
+          "passed": true,
+          "evidence": "First paragraph mini-version"
+        },
+        {
+          "text": "Expanded copy follows with features, benefits, proof; repeat offer and response mechanism at close (multiple links)",
+          "passed": true,
+          "evidence": "Expanded copy, repeat offer"
+        },
+        {
+          "text": "Formatting/tone tips: wide margins, sparing all caps, short is generally better, helpful not hard-sell",
+          "passed": true,
+          "evidence": "Margins, caps, short, helpful tone"
+        },
+        {
+          "text": "Includes opt-out statement and/or deliverability notes; flags the 2005 edition may be dated",
+          "passed": true,
+          "evidence": "Opt-out, 2005 flag"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 1,
+      "eval_name": "ch-headline",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.6666666666666666,
+        "passed": 4,
+        "failed": 2,
+        "total": 6,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Uses the four functions of a headline (attention, select audience, complete message, draw into body)",
+          "passed": true,
+          "evidence": "Four jobs listed"
+        },
+        {
+          "text": "Applies the 4 U's (urgent, unique, ultra-specific, useful) with a 1-4 rating",
+          "passed": false,
+          "evidence": "No 4 U's"
+        },
+        {
+          "text": "Uses Bly's three questions (who is the customer, important features, why will they buy) or key selling proposition",
+          "passed": false,
+          "evidence": "No three-question method"
+        },
+        {
+          "text": "Rewrites with a specific benefit (not a blind headline or pun) and offers multiple versions drawn from headline types/techniques",
+          "passed": true,
+          "evidence": "Multiple rewrites"
+        },
+        {
+          "text": "Avoids negatives / jargon and is specific with numbers",
+          "passed": true,
+          "evidence": "Specificity, no jargon"
+        },
+        {
+          "text": "Mentions testing or writing several headlines / swipe file",
+          "passed": true,
+          "evidence": "Testing advice"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "ch-sequence",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.6666666666666666,
+        "passed": 4,
+        "failed": 2,
+        "total": 6,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Lists the five steps: get attention, show a need, satisfy the need/position product, prove it, ask for action",
+          "passed": true,
+          "evidence": "Five steps"
+        },
+        {
+          "text": "Contrasts with AIDA (attention, interest, desire, action)",
+          "passed": true,
+          "evidence": "AIDA contrast"
+        },
+        {
+          "text": "Says the headline should lead with the strongest benefit, not puns or a windup",
+          "passed": false,
+          "evidence": "No strongest-benefit/no-puns rule"
+        },
+        {
+          "text": "Gives Rosser Reeves' three USP requirements (proposition/benefit; competition can't or doesn't offer; strong enough to move the mass millions)",
+          "passed": false,
+          "evidence": "Reeves requirements not stated"
+        },
+        {
+          "text": "Suggests stressing an under-publicized benefit when there is no unique feature (e.g., steam-washed beer bottles)",
+          "passed": true,
+          "evidence": "Uniqueness from claims (pre-emptive)"
+        },
+        {
+          "text": "Explains translating features into customer benefits",
+          "passed": true,
+          "evidence": "Features to benefits"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 3,
+      "eval_name": "ch-email",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.8333333333333334,
+        "passed": 5,
+        "failed": 1,
+        "total": 6,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Covers FROM and SUBJECT lines (FROM identifies sender; caution with 'free' and spam filters)",
+          "passed": true,
+          "evidence": "Sender and subject, avoid FREE!!!"
+        },
+        {
+          "text": "Lead with a strong headline/benefit up front",
+          "passed": true,
+          "evidence": "Punchy lead"
+        },
+        {
+          "text": "First paragraph is a mini-version of the whole message with offer and response link",
+          "passed": false,
+          "evidence": "Link high, but no mini-version of whole message"
+        },
+        {
+          "text": "Expanded copy follows with features, benefits, proof; repeat offer and response mechanism at close (multiple links)",
+          "passed": true,
+          "evidence": "Body, repeat link"
+        },
+        {
+          "text": "Formatting/tone tips: wide margins, sparing all caps, short is generally better, helpful not hard-sell",
+          "passed": true,
+          "evidence": "Short, scannable, caps caution"
+        },
+        {
+          "text": "Includes opt-out statement and/or deliverability notes; flags the 2005 edition may be dated",
+          "passed": true,
+          "evidence": "Opt-out, memory/2005 note"
+        }
+      ],
+      "notes": []
+    }
+  ],
+  "run_summary": {
+    "with_skill": {
+      "pass_rate": {
+        "mean": 1.0,
+        "stddev": 0.0,
+        "min": 1.0,
+        "max": 1.0
+      },
+      "time_seconds": null,
+      "tokens": null
+    },
+    "without_skill": {
+      "pass_rate": {
+        "mean": 0.7222,
+        "stddev": 0.0962,
+        "min": 0.6667,
+        "max": 0.8333
+      },
+      "time_seconds": null,
+      "tokens": null
+    },
+    "delta": {
+      "pass_rate": "+0.28",
+      "time_seconds": null,
+      "tokens": null
+    }
+  },
+  "notes": [
+    "Time recorded for 0 of 3 with_skill runs, 0 of 3 without_skill runs, so there is no time delta.",
+    "Token count recorded for 0 of 3 with_skill runs, 0 of 3 without_skill runs, so there is no token count delta."
+  ]
+}

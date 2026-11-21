@@ -1,0 +1,13 @@
+{
+ "eval_id": 1,
+ "eval_name": "ch-headline",
+ "prompt": "Using Bob Bly's Copywriter's Handbook, critique and rewrite this headline for a bookkeeping service: 'Quality Bookkeeping Solutions For Your Business'. Explain the method.",
+ "assertions": [
+  "Uses the four functions of a headline (attention, select audience, complete message, draw into body)",
+  "Applies the 4 U's (urgent, unique, ultra-specific, useful) with a 1-4 rating",
+  "Uses Bly's three questions (who is the customer, important features, why will they buy) or key selling proposition",
+  "Rewrites with a specific benefit (not a blind headline or pun) and offers multiple versions drawn from headline types/techniques",
+  "Avoids negatives / jargon and is specific with numbers",
+  "Mentions testing or writing several headlines / swipe file"
+ ]
+}

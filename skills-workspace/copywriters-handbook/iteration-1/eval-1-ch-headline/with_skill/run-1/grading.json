@@ -1,0 +1,40 @@
+{
+ "expectations": [
+  {
+   "text": "Uses the four functions of a headline (attention, select audience, complete message, draw into body)",
+   "passed": true,
+   "evidence": "Four functions check"
+  },
+  {
+   "text": "Applies the 4 U's (urgent, unique, ultra-specific, useful) with a 1-4 rating",
+   "passed": true,
+   "evidence": "4 U's scored 5/16"
+  },
+  {
+   "text": "Uses Bly's three questions (who is the customer, important features, why will they buy) or key selling proposition",
+   "passed": true,
+   "evidence": "Bly's three questions"
+  },
+  {
+   "text": "Rewrites with a specific benefit (not a blind headline or pun) and offers multiple versions drawn from headline types/techniques",
+   "passed": true,
+   "evidence": "15 rewrites by type/technique"
+  },
+  {
+   "text": "Avoids negatives / jargon and is specific with numbers",
+   "passed": true,
+   "evidence": "Specific, avoids jargon"
+  },
+  {
+   "text": "Mentions testing or writing several headlines / swipe file",
+   "passed": true,
+   "evidence": "Test / write several"
+  }
+ ],
+ "summary": {
+  "passed": 6,
+  "failed": 0,
+  "total": 6,
+  "pass_rate": 1.0
+ }
+}

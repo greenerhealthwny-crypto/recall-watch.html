@@ -1,0 +1,13 @@
+{
+ "eval_id": 3,
+ "eval_name": "ch-email",
+ "prompt": "Per The Copywriter's Handbook (3rd edition), how should I structure a promotional e-mail?",
+ "assertions": [
+  "Covers FROM and SUBJECT lines (FROM identifies sender; caution with 'free' and spam filters)",
+  "Lead with a strong headline/benefit up front",
+  "First paragraph is a mini-version of the whole message with offer and response link",
+  "Expanded copy follows with features, benefits, proof; repeat offer and response mechanism at close (multiple links)",
+  "Formatting/tone tips: wide margins, sparing all caps, short is generally better, helpful not hard-sell",
+  "Includes opt-out statement and/or deliverability notes; flags the 2005 edition may be dated"
+ ]
+}

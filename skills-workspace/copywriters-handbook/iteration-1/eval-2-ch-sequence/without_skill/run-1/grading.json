@@ -1,0 +1,40 @@
+{
+ "expectations": [
+  {
+   "text": "Lists the five steps: get attention, show a need, satisfy the need/position product, prove it, ask for action",
+   "passed": true,
+   "evidence": "Five steps"
+  },
+  {
+   "text": "Contrasts with AIDA (attention, interest, desire, action)",
+   "passed": true,
+   "evidence": "AIDA contrast"
+  },
+  {
+   "text": "Says the headline should lead with the strongest benefit, not puns or a windup",
+   "passed": false,
+   "evidence": "No strongest-benefit/no-puns rule"
+  },
+  {
+   "text": "Gives Rosser Reeves' three USP requirements (proposition/benefit; competition can't or doesn't offer; strong enough to move the mass millions)",
+   "passed": false,
+   "evidence": "Reeves requirements not stated"
+  },
+  {
+   "text": "Suggests stressing an under-publicized benefit when there is no unique feature (e.g., steam-washed beer bottles)",
+   "passed": true,
+   "evidence": "Uniqueness from claims (pre-emptive)"
+  },
+  {
+   "text": "Explains translating features into customer benefits",
+   "passed": true,
+   "evidence": "Features to benefits"
+  }
+ ],
+ "summary": {
+  "passed": 4,
+  "failed": 2,
+  "total": 6,
+  "pass_rate": 0.6666666666666666
+ }
+}

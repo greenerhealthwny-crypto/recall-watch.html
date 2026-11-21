@@ -1,0 +1,40 @@
+{
+ "expectations": [
+  {
+   "text": "Covers FROM and SUBJECT lines (FROM identifies sender; caution with 'free' and spam filters)",
+   "passed": true,
+   "evidence": "FROM/SUBJECT, free caution"
+  },
+  {
+   "text": "Lead with a strong headline/benefit up front",
+   "passed": true,
+   "evidence": "Benefit up front"
+  },
+  {
+   "text": "First paragraph is a mini-version of the whole message with offer and response link",
+   "passed": true,
+   "evidence": "First paragraph mini-version"
+  },
+  {
+   "text": "Expanded copy follows with features, benefits, proof; repeat offer and response mechanism at close (multiple links)",
+   "passed": true,
+   "evidence": "Expanded copy, repeat offer"
+  },
+  {
+   "text": "Formatting/tone tips: wide margins, sparing all caps, short is generally better, helpful not hard-sell",
+   "passed": true,
+   "evidence": "Margins, caps, short, helpful tone"
+  },
+  {
+   "text": "Includes opt-out statement and/or deliverability notes; flags the 2005 edition may be dated",
+   "passed": true,
+   "evidence": "Opt-out, 2005 flag"
+  }
+ ],
+ "summary": {
+  "passed": 6,
+  "failed": 0,
+  "total": 6,
+  "pass_rate": 1.0
+ }
+}

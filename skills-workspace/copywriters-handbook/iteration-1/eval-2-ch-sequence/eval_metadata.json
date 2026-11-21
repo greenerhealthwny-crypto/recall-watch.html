@@ -1,0 +1,13 @@
+{
+ "eval_id": 2,
+ "eval_name": "ch-sequence",
+ "prompt": "What is Bly's 'motivating sequence' for sales copy and how does it differ from AIDA? Also explain his take on USP and features vs benefits.",
+ "assertions": [
+  "Lists the five steps: get attention, show a need, satisfy the need/position product, prove it, ask for action",
+  "Contrasts with AIDA (attention, interest, desire, action)",
+  "Says the headline should lead with the strongest benefit, not puns or a windup",
+  "Gives Rosser Reeves' three USP requirements (proposition/benefit; competition can't or doesn't offer; strong enough to move the mass millions)",
+  "Suggests stressing an under-publicized benefit when there is no unique feature (e.g., steam-washed beer bottles)",
+  "Explains translating features into customer benefits"
+ ]
+}
