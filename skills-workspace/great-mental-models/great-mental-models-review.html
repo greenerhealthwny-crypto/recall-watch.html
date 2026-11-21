@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eval Review</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&family=Lora:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js" integrity="sha384-EnyY0/GSHQGSxSgMwaIPzSESbqoOLSexfnSMN2AP+39Ckmn92stwABZynq1JyzdT" crossorigin="anonymous"></script>
+  <style>
+    :root {
+      --bg: #faf9f5;
+      --surface: #ffffff;
+      --border: #e8e6dc;
+      --text: #141413;
+      --text-muted: #b0aea5;
+      --accent: #d97757;
+      --accent-hover: #c4613f;
+      --green: #788c5d;
+      --green-bg: #eef2e8;
+      --red: #c44;
+      --red-bg: #fceaea;
+      --header-bg: #141413;
+      --header-text: #faf9f5;
+      --radius: 6px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Lora', Georgia, serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ---- Header ---- */
+    .header {
+      background: var(--header-bg);
+      color: var(--header-text);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .header h1 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+    .header .instructions {
+      font-size: 0.8rem;
+      opacity: 0.7;
+      margin-top: 0.25rem;
+    }
+    .header .progress {
+      font-size: 0.875rem;
+      opacity: 0.8;
+      text-align: right;
+    }
+
+    /* ---- Main content ---- */
+    .main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.5rem 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    /* ---- Sections ---- */
+    .section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      flex-shrink: 0;
+    }
+    .section-header {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.75rem 1rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+    }
+    .section-body {
+      padding: 1rem;
+    }
+
+    /* ---- Config badge ---- */
+    .config-badge {
+      display: inline-block;
+      padding: 0.2rem 0.625rem;
+      border-radius: 9999px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      margin-left: 0.75rem;
+      vertical-align: middle;
+    }
+    .config-badge.config-primary {
+      background: rgba(33, 150, 243, 0.12);
+      color: #1976d2;
+    }
+    .config-badge.config-baseline {
+      background: rgba(255, 193, 7, 0.15);
+      color: #f57f17;
+    }
+
+    /* ---- Prompt ---- */
+    .prompt-text {
+      white-space: pre-wrap;
+      font-size: 0.9375rem;
+      line-height: 1.6;
+    }
+
+    /* ---- Outputs ---- */
+    .output-file {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .output-file + .output-file {
+      margin-top: 1rem;
+    }
+    .output-file-header {
+      padding: 0.5rem 0.75rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .output-file-header .dl-btn {
+      font-size: 0.7rem;
+      color: var(--accent);
+      text-decoration: none;
+      cursor: pointer;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-weight: 500;
+      opacity: 0.8;
+    }
+    .output-file-header .dl-btn:hover {
+      opacity: 1;
+      text-decoration: underline;
+    }
+    .output-file-content {
+      padding: 0.75rem;
+      overflow-x: auto;
+    }
+    .output-file-content pre {
+      font-size: 0.8125rem;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+    }
+    .output-file-content img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 4px;
+    }
+    .output-file-content iframe {
+      width: 100%;
+      height: 600px;
+      border: none;
+    }
+    .output-file-content table {
+      border-collapse: collapse;
+      font-size: 0.8125rem;
+      width: 100%;
+    }
+    .output-file-content table td,
+    .output-file-content table th {
+      border: 1px solid var(--border);
+      padding: 0.375rem 0.5rem;
+      text-align: left;
+    }
+    .output-file-content table th {
+      background: var(--bg);
+      font-weight: 600;
+    }
+    .output-file-content .download-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 0.875rem;
+      cursor: pointer;
+    }
+    .output-file-content .download-link:hover {
+      background: var(--border);
+    }
+    .empty-state {
+      color: var(--text-muted);
+      font-style: italic;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    /* ---- Feedback ---- */
+    .prev-feedback {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.625rem 0.75rem;
+      margin-top: 0.75rem;
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+    .prev-feedback-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.25rem;
+      color: var(--text-muted);
+    }
+    .feedback-textarea {
+      width: 100%;
+      min-height: 100px;
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 0.9375rem;
+      line-height: 1.5;
+      resize: vertical;
+      color: var(--text);
+    }
+    .feedback-textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    .feedback-status {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.5rem;
+      min-height: 1.1em;
+    }
+
+    /* ---- Grades (collapsible) ---- */
+    .grades-toggle {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+    }
+    .grades-toggle:hover {
+      color: var(--accent);
+    }
+    .grades-toggle .arrow {
+      margin-right: 0.5rem;
+      transition: transform 0.15s;
+      font-size: 0.75rem;
+    }
+    .grades-toggle .arrow.open {
+      transform: rotate(90deg);
+    }
+    .grades-content {
+      display: none;
+      margin-top: 0.75rem;
+    }
+    .grades-content.open {
+      display: block;
+    }
+    .grades-summary {
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .grade-badge {
+      display: inline-block;
+      padding: 0.125rem 0.5rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .grade-pass { background: var(--green-bg); color: var(--green); }
+    .grade-fail { background: var(--red-bg); color: var(--red); }
+    .assertion-list {
+      list-style: none;
+    }
+    .assertion-item {
+      padding: 0.625rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.8125rem;
+    }
+    .assertion-item:last-child { border-bottom: none; }
+    .assertion-status {
+      font-weight: 600;
+      margin-right: 0.5rem;
+    }
+    .assertion-status.pass { color: var(--green); }
+    .assertion-status.fail { color: var(--red); }
+    .assertion-evidence {
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      margin-top: 0.25rem;
+      padding-left: 1.5rem;
+    }
+
+    /* ---- View tabs ---- */
+    .view-tabs {
+      display: flex;
+      gap: 0;
+      padding: 0 2rem;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .view-tab {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.625rem 1.25rem;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      background: none;
+      color: var(--text-muted);
+      border-bottom: 2px solid transparent;
+      transition: all 0.15s;
+    }
+    .view-tab:hover { color: var(--text); }
+    .view-tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+    .view-panel { display: none; }
+    .view-panel.active { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
+
+    /* ---- Benchmark view ---- */
+    .benchmark-view {
+      padding: 1.5rem 2rem;
+      overflow-y: auto;
+      flex: 1;
+    }
+    .benchmark-table {
+      border-collapse: collapse;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 0.8125rem;
+      width: 100%;
+      margin-bottom: 1.5rem;
+    }
+    .benchmark-table th, .benchmark-table td {
+      padding: 0.625rem 0.75rem;
+      text-align: left;
+      border: 1px solid var(--border);
+    }
+    .benchmark-table th {
+      font-family: 'Poppins', sans-serif;
+      background: var(--header-bg);
+      color: var(--header-text);
+      font-weight: 500;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .benchmark-table tr:hover { background: var(--bg); }
+    .benchmark-table tr.benchmark-row-with { background: rgba(33, 150, 243, 0.06); }
+    .benchmark-table tr.benchmark-row-without { background: rgba(255, 193, 7, 0.06); }
+    .benchmark-table tr.benchmark-row-with:hover { background: rgba(33, 150, 243, 0.12); }
+    .benchmark-table tr.benchmark-row-without:hover { background: rgba(255, 193, 7, 0.12); }
+    .benchmark-table tr.benchmark-row-avg { font-weight: 600; border-top: 2px solid var(--border); }
+    .benchmark-table tr.benchmark-row-avg.benchmark-row-with { background: rgba(33, 150, 243, 0.12); }
+    .benchmark-table tr.benchmark-row-avg.benchmark-row-without { background: rgba(255, 193, 7, 0.12); }
+    .benchmark-delta-positive { color: var(--green); font-weight: 600; }
+    .benchmark-delta-negative { color: var(--red); font-weight: 600; }
+    .benchmark-notes {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem;
+    }
+    .benchmark-notes h3 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+    }
+    .benchmark-notes ul {
+      list-style: disc;
+      padding-left: 1.25rem;
+    }
+    .benchmark-notes li {
+      font-size: 0.8125rem;
+      line-height: 1.6;
+      margin-bottom: 0.375rem;
+    }
+    .benchmark-empty {
+      color: var(--text-muted);
+      font-style: italic;
+      text-align: center;
+      padding: 3rem;
+    }
+
+    /* ---- Navigation ---- */
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+      flex-shrink: 0;
+    }
+    .nav-btn {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.5rem 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text);
+      transition: all 0.15s;
+    }
+    .nav-btn:hover:not(:disabled) {
+      background: var(--bg);
+      border-color: var(--text-muted);
+    }
+    .nav-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    .done-btn {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.5rem 1.5rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: all 0.15s;
+    }
+    .done-btn:hover {
+      background: var(--bg);
+      border-color: var(--text-muted);
+    }
+    .done-btn.ready {
+      border: none;
+      background: var(--accent);
+      color: white;
+      font-weight: 600;
+    }
+    .done-btn.ready:hover {
+      background: var(--accent-hover);
+    }
+    /* ---- Done overlay ---- */
+    .done-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 100;
+      justify-content: center;
+      align-items: center;
+    }
+    .done-overlay.visible {
+      display: flex;
+    }
+    .done-card {
+      background: var(--surface);
+      border-radius: 12px;
+      padding: 2rem 3rem;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      max-width: 500px;
+    }
+    .done-card h2 {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .done-card p {
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
+    }
+    .done-card .btn-row {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+    }
+    .done-card button {
+      padding: 0.5rem 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 0.875rem;
+    }
+    .done-card button:hover {
+      background: var(--bg);
+    }
+    /* ---- Toast ---- */
+    .toast {
+      position: fixed;
+      bottom: 5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--header-bg);
+      color: var(--header-text);
+      padding: 0.625rem 1.25rem;
+      border-radius: var(--radius);
+      font-size: 0.875rem;
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+      z-index: 200;
+    }
+    .toast.visible {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <div id="app" style="height:100vh; display:flex; flex-direction:column;">
+    <div class="header">
+      <div>
+        <h1>Eval Review: <span id="skill-name"></span></h1>
+        <div class="instructions">Review each output and leave feedback below. Navigate with arrow keys or buttons. When done, copy feedback and paste into Claude Code.</div>
+      </div>
+      <div class="progress" id="progress"></div>
+    </div>
+
+    <!-- View tabs (only shown when benchmark data exists) -->
+    <div class="view-tabs" id="view-tabs" style="display:none;">
+      <button class="view-tab active" onclick="switchView('outputs')">Outputs</button>
+      <button class="view-tab" onclick="switchView('benchmark')">Benchmark</button>
+    </div>
+
+    <!-- Outputs panel (qualitative review) -->
+    <div class="view-panel active" id="panel-outputs">
+    <div class="main">
+      <!-- Prompt -->
+      <div class="section">
+        <div class="section-header">Prompt <span class="config-badge" id="config-badge" style="display:none;"></span></div>
+        <div class="section-body">
+          <div class="prompt-text" id="prompt-text"></div>
+        </div>
+      </div>
+
+      <!-- Outputs -->
+      <div class="section">
+        <div class="section-header">Output</div>
+        <div class="section-body" id="outputs-body">
+          <div class="empty-state">No output files found</div>
+        </div>
+      </div>
+
+      <!-- Previous Output (collapsible) -->
+      <div class="section" id="prev-outputs-section" style="display:none;">
+        <div class="section-header">
+          <div class="grades-toggle" onclick="togglePrevOutputs()">
+            <span class="arrow" id="prev-outputs-arrow">&#9654;</span>
+            Previous Output
+          </div>
+        </div>
+        <div class="grades-content" id="prev-outputs-content"></div>
+      </div>
+
+      <!-- Grades (collapsible) -->
+      <div class="section" id="grades-section" style="display:none;">
+        <div class="section-header">
+          <div class="grades-toggle" onclick="toggleGrades()">
+            <span class="arrow" id="grades-arrow">&#9654;</span>
+            Formal Grades
+          </div>
+        </div>
+        <div class="grades-content" id="grades-content"></div>
+      </div>
+
+      <!-- Feedback -->
+      <div class="section">
+        <div class="section-header">Your Feedback</div>
+        <div class="section-body">
+          <textarea
+            class="feedback-textarea"
+            id="feedback"
+            placeholder="What do you think of this output? Any issues, suggestions, or things that look great?"
+          ></textarea>
+          <div class="feedback-status" id="feedback-status"></div>
+          <div class="prev-feedback" id="prev-feedback" style="display:none;">
+            <div class="prev-feedback-label">Previous feedback</div>
+            <div id="prev-feedback-text"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav" id="outputs-nav">
+      <button class="nav-btn" id="prev-btn" onclick="navigate(-1)">&#8592; Previous</button>
+      <button class="done-btn" id="done-btn" onclick="showDoneDialog()">Submit All Reviews</button>
+      <button class="nav-btn" id="next-btn" onclick="navigate(1)">Next &#8594;</button>
+    </div>
+    </div><!-- end panel-outputs -->
+
+    <!-- Benchmark panel (quantitative stats) -->
+    <div class="view-panel" id="panel-benchmark">
+      <div class="benchmark-view" id="benchmark-content">
+        <div class="benchmark-empty">No benchmark data available. Run a benchmark to see quantitative results here.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Done overlay -->
+  <div class="done-overlay" id="done-overlay">
+    <div class="done-card">
+      <h2>Review Complete</h2>
+      <p>Your feedback has been saved. Go back to your Claude Code session and tell Claude you're done reviewing.</p>
+      <div class="btn-row">
+        <button onclick="closeDoneDialog()">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ---- Embedded data (injected by generate_review.py) ----
+    const EMBEDDED_DATA = {"skill_name": "great-mental-models", "runs": [{"id": "eval-1-gmm-map-circle-with_skill-run-1", "prompt": "According to The Great Mental Models Vol 1, what are the key lessons of 'the map is not the territory' and 'circle of competence'? How do I operate outside my circle?", "eval_id": 1, "outputs": [{"name": "response.md", "type": "text", "content": "# The Map Is Not the Territory and the Circle of Competence (The Great Mental Models, Vol. 1)\n\nThese are the first two of the nine general thinking models in *The Great Mental Models, Volume 1* by Shane Parrish and Rhiannon Beaubien (Farnam Street). The book's larger point is that good thinking depends on having a **variety** of models in your head, not just more of the ones you already use. These two models work as a pair. The first warns that every model you hold is incomplete. The second asks which models you have actually earned the right to rely on.\n\n---\n\n## 1. The map is not the territory\n\n**Core idea:** A map, model, or abstraction is a *reduction* of reality. It is useful because it leaves things out, but that also makes it imperfect, and it can go out of date. The phrase comes from Alfred Korzybski (1931). A map of a city, a financial statement, a scientific theory and a company org chart are all maps. None of them is the thing it describes.\n\n### Key lessons from the book\n\n1. **Reality is the ultimate update.**\n   Maps are snapshots, and the territory keeps changing. When your experience contradicts your model, believe the territory and update the map. A model you never revise becomes a liability.\n\n2. **Consider the cartographer.**\n   Every map shows its maker's values, priorities, viewpoint and limits: what they chose to measure, what they left out, and why. Before you trust a model, ask who made it, for what purpose, and what they could not see.\n\n3. **Maps can influence territories.**\n   A map does not only describe reality. Once people act on it, it can reshape reality. The book's example is Jane Jacobs' critique of city planners who forced real, organic neighbourhoods to fit their tidy planning models, which damaged the living cities they meant to improve. When you impose a model on a complex system, you can break what made it work.\n\nThe chapter also includes a sidebar on the **Tragedy of the Commons**, itself a model. It is useful, but it is still a simplification of how shared resources are really managed.\n\n### Practical takeaways\n- Use maps, because you cannot navigate without them, but hold them loosely.\n- Ask regularly: *Is this map still current? Who drew it? What does it leave out?*\n- Watch for the moment the map starts to drive decisions that the territory does not support.\n\n---\n\n## 2. Circle of competence\n\n**Core idea:** Know the boundary between what you *really* know and what you only *think* you know. Inside your circle you can decide quickly and accurately. Outside it, you are exposed, often without realising it.\n\n### The Lifer vs. the Stranger\nThe book contrasts two people:\n- **The Lifer** has lived in a place (or worked in a field) for years. They know its details, its history, its hidden risks and what usually goes wrong. Their knowledge is deep and tested.\n- **The Stranger** has just arrived. They may have read about the place and *feel* informed, but they don't know what they don't know.\n\nMost of us are Strangers in more areas than we would like to admit.\n\n### Ego creates blind spots\nThe main danger is not ignorance but **ego**. People overestimate their competence, especially in areas next to the ones they really know. Success in one field gives false confidence in another. A circle of competence takes honesty about its edges.\n\n### How to build and maintain your circle (the book's three tools)\n1. **Curiosity and a desire to learn.** A circle is built over years through deliberate study and experience. It is never finished, and the world changes under it.\n2. **Monitoring.** Keep an honest record of your track record: your decisions, your predictions and how they turned out. A written record gets around the way memory flatters us.\n3. **Feedback.** Seek outside feedback, because you are a poor judge of your own boundaries. Others can see your blind spots more easily than you can.\n\n---\n\n## 3. How to operate outside your circle\n\nYou cannot stay inside your circle all the time. Life forces decisions in unfamiliar areas: medical choices, legal issues, a new job, a new market. The book gives three strategies:\n\n1. **Learn at least the basics of the area.**\n   You won't become an expert, but knowing the fundamentals and the vocabulary helps you ask good questions and spot obvious nonsense. Accept the limits of what you have learned, because a little knowledge can feel like a lot.\n\n2. **Talk to someone whose circle of competence covers that area.**\n   Find a real \"Lifer.\" Don't just ask for the answer. Ask how they think about it, which questions they would ask, and what they would check. Watch for incentives: the expert's interests may not match yours (this is the map lesson again: *consider the cartographer*).\n\n3. **Use broad mental models.**\n   General thinking tools work in any area. They give you a structure for reasoning even when you lack specialist knowledge. From Volume 1 these include:\n   - **First principles thinking:** separate the underlying facts from assumptions and claims.\n   - **Second-order thinking:** ask \"and then what?\"\n   - **Probabilistic thinking:** consider base rates and the chance that your own estimates are wrong.\n   - **Inversion:** ask what would guarantee a bad outcome, then avoid it.\n   - **Occam's and Hanlon's razors:** prefer simple explanations and don't assume malice.\n\n### A short checklist when you're outside your circle\n- **Name it:** \"This is outside my circle.\" Saying it out loud slows overconfidence.\n- **Check the map:** Whose model am I relying on? Is it current? What are the cartographer's incentives?\n- **Learn the basics** well enough to ask good questions.\n- **Consult a Lifer** and ask how they reason, not only what they conclude.\n- **Apply general models**, especially inversion and second-order thinking.\n- **Size the bet to your ignorance:** prefer choices that are small, reversible, or limited on the downside. Most of the damage outside your circle comes from large bets you can't undo. *(This is an application of the book's asymmetry and inversion ideas rather than a quote from it.)*\n- **Track the result** (monitoring) so that this decision either widens your circle or shows you where its edge is.\n\n---\n\n## How the two models connect\n- Your circle of competence is the set of maps you have **tested against the territory** many times. That is why the Lifer's map is reliable and the Stranger's is not.\n- Outside your circle you rely on other people's maps, so \"consider the cartographer\" matters most there.\n- Inside your circle, \"reality is the ultimate update\" keeps you from going stale. Expertise based on an old map is how competent people get blindsided.\n\n**Caveat (also from the book):** models are aids, not answers. Both of these chapters are reminders to stay humble about the models you hold.\n"}], "grading": {"expectations": [{"text": "Map: reality is the ultimate update", "passed": true, "evidence": "Reality is the ultimate update"}, {"text": "Map: consider the cartographer", "passed": true, "evidence": "Consider the cartographer"}, {"text": "Map: maps can influence territories (e.g., Jane Jacobs / city planners)", "passed": true, "evidence": "Jane Jacobs / maps influence territories"}, {"text": "Circle: built/maintained with curiosity (desire to learn), monitoring track record, and feedback", "passed": true, "evidence": "Curiosity, monitoring, feedback"}, {"text": "Outside circle: learn the basics, talk to someone with strong competence, use broad mental models", "passed": true, "evidence": "Learn basics, ask expert, broad models"}, {"text": "Uses the Lifer vs Stranger illustration or mentions Korzybski", "passed": true, "evidence": "Lifer vs Stranger, Korzybski"}], "summary": {"passed": 6, "failed": 0, "total": 6, "pass_rate": 1.0}}}, {"id": "eval-1-gmm-map-circle-without_skill-run-1", "prompt": "According to The Great Mental Models Vol 1, what are the key lessons of 'the map is not the territory' and 'circle of competence'? How do I operate outside my circle?", "eval_id": 1, "outputs": [{"name": "response.md", "type": "text", "content": "# The Map Is Not the Territory and the Circle of Competence (*The Great Mental Models, Vol. 1*)\n\n*Answered from memory of Shane Parrish and Rhiannon Beaubien's book (Farnam Street). The ideas below follow the book, but the wording is paraphrased, not quoted.*\n\n---\n\n## 1. The Map Is Not the Territory\n\n**Core idea:** Every model, theory, statistic, plan, org chart or financial statement is a *map*: a simplified picture of something more complex. Simplifying is what makes a map useful. It is also what makes it dangerous when we forget that it leaves things out. The phrase comes from Alfred Korzybski.\n\n### Key lessons\n\n1. **A map is a reduction.** A map that showed everything would be as big as the territory and of no use. A map shows only what its maker thought mattered. So you should always ask what it leaves out.\n2. **Reality is the final judge.** If the map and the territory disagree, trust the territory. Results that go against your model are information, not noise.\n3. **Maps go out of date.** Territories change and maps stay fixed. A model that worked yesterday may not fit today. Update it from fresh, first-hand observation. *(The book's example: maps and charts that kept showing features that no longer existed, or had never existed.)*\n4. **The mapmaker shapes the map.** Every map carries its maker's goals, values, blind spots and incentives. Ask who made it, why, and what they wanted it to show.\n5. **The map can change the territory.** People and systems change their behaviour to fit the measure. This is Goodhart's law: when a measure becomes a target, it stops being a good measure. The book also discusses Elinor Ostrom's work, which showed that the simple \"tragedy of the commons\" model does not describe how real communities often manage shared resources.\n6. **Use maps, but hold them loosely.** You cannot work without models, so the answer is not to throw them away. Use them knowing their limits. Pair a map with direct experience of the ground (\"go and see\") and with people who know the local detail.\n\n**Practical questions to ask of any map:** What does it leave out? When was it last checked against reality? Who made it, and why? Is my behaviour, or other people's, changing what it measures?\n\n---\n\n## 2. Circle of Competence\n\n**Core idea:** Each of us has areas where we really understand how things work. That is the circle of competence. Inside it we can make good decisions fast. Outside it we are amateurs, and the danger is that we often *don't know we're amateurs*. The idea is closely linked to Warren Buffett and Charlie Munger.\n\n### Key lessons\n\n1. **Knowing the edge of the circle matters more than its size.** A small circle with a clear edge beats a large one with a fuzzy edge. Buffett and Munger put it this way: you don't need to be an expert in everything, only to know where your expertise ends.\n2. **Real competence vs. the feeling of it.** Inside your circle you know what you don't know. You can predict how things will go, explain why they went that way, and spot problems early. Outside it, you may *feel* sure without having the knowledge to back it up. That is overconfidence, and it is linked to the Dunning-Kruger effect.\n3. **The lifelong resident vs. the tourist.** The book contrasts someone who has lived in a place for decades with someone who has visited briefly. The resident knows the history, the quirks and the dangers. The tourist knows the headlines. Expertise means being a resident.\n4. **You build a circle over years, and you have to maintain it.** A circle comes from years of experience, mistakes and feedback. It also shrinks if you neglect it, because the world keeps changing and knowledge goes stale. Keeping it up means:\n   - **Curiosity and continuous learning.**\n   - **Monitoring.** Keep an honest record of your decisions and results, for example a decision journal, so that memory doesn't flatter you.\n   - **Feedback.** Ask trusted people for honest, outside views, because you can't see your own blind spots.\n5. **Stay inside it when the stakes are high.** Most serious mistakes happen when people act outside their circle and don't realise it. A famous example is a top expert in one field who loses heavily in another field they took to be \"similar\".\n\n---\n\n## 3. How to Operate Outside Your Circle\n\nYou can't always stay inside your circle: life forces decisions on unfamiliar ground. The book suggests ways to act wisely when you are outside it:\n\n1. **Learn the basics of the area, and admit that's all you have.** Learn enough to know the main variables and the right questions to ask. Don't mistake that for mastery.\n2. **Talk to people whose circle covers this area.** Find real experts and ask them more than \"what should I do?\". Ask *how* they think about it, *what they would look for*, and *what usually goes wrong*.\n3. **Check the expert's incentives.** Advice is a map too. Ask what the advisor gains from your choice. Look at their track record, not only their credentials.\n4. **Use broad mental models to fill the gaps.** First principles, second-order thinking, inversion and probabilistic thinking work in any field. They help you reason about a field you don't know.\n5. **Leave a margin of safety.** Assume your map is incomplete. Make smaller and reversible bets, build in buffers, and avoid choices where one mistake would ruin you.\n6. **Invert: decide what to avoid.** When you don't know what works, it is often easier to find and avoid the obvious ways to fail.\n7. **Watch your confidence.** If you feel very sure in an area where you have little experience, treat that feeling as a warning sign.\n8. **Over time, grow the circle on purpose.** If you will keep working in this area, treat each decision as a chance to learn. Record what you expected and what happened, and ask for feedback.\n\n---\n\n## How the two models connect\n\nYour circle of competence is the area where your *maps are accurate*: you know the territory well enough to see where your models fail. Outside the circle you depend on other people's maps, which you can't check yourself. That is why you need humility, expert input, an eye on incentives, and a margin of safety there.\n\n> **Short version:** Treat every model as a simplification and keep checking it against reality. Know clearly where your real understanding ends. When you step past that edge, slow down, borrow expertise carefully, use general principles, and protect yourself against being wrong.\n"}], "grading": {"expectations": [{"text": "Map: reality is the ultimate update", "passed": false, "evidence": "Not mentioned"}, {"text": "Map: consider the cartographer", "passed": false, "evidence": "Not mentioned"}, {"text": "Map: maps can influence territories (e.g., Jane Jacobs / city planners)", "passed": false, "evidence": "Not mentioned"}, {"text": "Circle: built/maintained with curiosity (desire to learn), monitoring track record, and feedback", "passed": true, "evidence": "Curiosity, monitoring, feedback"}, {"text": "Outside circle: learn the basics, talk to someone with strong competence, use broad mental models", "passed": false, "evidence": "No clear three-step outside-circle advice"}, {"text": "Uses the Lifer vs Stranger illustration or mentions Korzybski", "passed": true, "evidence": "Resident vs tourist / Korzybski"}], "summary": {"passed": 2, "failed": 4, "total": 6, "pass_rate": 0.3333333333333333}}}, {"id": "eval-2-gmm-probability-inversion-with_skill-run-1", "prompt": "Explain probabilistic thinking and inversion as presented in The Great Mental Models Vol 1, with the book's examples.", "eval_id": 2, "outputs": [{"name": "response.md", "type": "text", "content": "# Probabilistic Thinking and Inversion in *The Great Mental Models, Vol. 1*\n\n*The Great Mental Models, Volume 1: General Thinking Concepts* by Shane Parrish and Rhiannon Beaubien (Farnam Street) covers nine general thinking models. Probabilistic thinking is model 6 and inversion is model 7. The book's main argument is that good thinking needs a **range** of models, not just more use of the ones you already know. These two pair well: one helps you estimate what is likely to happen, and the other helps you avoid the outcomes you most want to avoid.\n\n> Labels: **(book)** means the point was checked against the book. **(std)** means it is a common framing or my own addition, not something verified in the text.\n\n---\n\n## 1. Probabilistic Thinking\n\n### Core idea (book)\nThe future is uncertain, so we can't know exactly what will happen. Probabilistic thinking uses **math and logic to estimate how likely each outcome is**. You stop asking \"what will happen?\" and ask \"how likely is each outcome, and how sure am I of that estimate?\"\n\nThe book gives three main tools.\n\n### Tool 1: Bayesian thinking (book)\n**Idea:** start from a **prior**, meaning what you already know (base rates and earlier evidence). When new information comes in, **update** that prior instead of dropping it.\n\n- New data doesn't replace what you knew. You weigh it against the prior.\n- A single dramatic data point should move your belief only in proportion to how strong the evidence is compared with everything you already knew.\n- **Book-style illustration** (my recollection of the book's example, not verified in this pass): a headline says violent crime has risen sharply this year. A Bayesian thinker puts that next to the long-run trend before concluding that the world has become more dangerous. The rise is real information, but it updates the prior rather than overturning it.\n\n**Sidebar: conditional probability (book).** The probability of an event often depends on what came before it. Ask whether events are independent or linked, because using the wrong one leads to wrong estimates.\n\n### Tool 2: Fat-tailed curves (book)\n**Idea:** not every distribution is a bell curve. In a **fat-tailed** distribution, extreme outcomes are far more likely and far larger than a normal curve predicts.\n\n- **The book's example: height vs. wealth.**\n  - **Height** follows a bell curve. Even the tallest person alive is only a few times taller than the average person, and nobody is 10x average height.\n  - **Wealth** is fat-tailed. The richest person can be millions of times richer than the average person.\n- **The lesson:** first work out which kind of world your problem is in. In fat-tailed domains such as markets, pandemics, wars and disasters, \"it's never happened\" is weak comfort. Don't try to predict the extreme event. Position yourself so it can't wipe you out, and ideally so you gain from it.\n\n**Sidebar: antifragility (book).** This is Nassim Taleb's idea, and the book ties it to fat tails. Beyond surviving volatility, some systems get stronger from shocks. Build in slack and redundancy, and prepare instead of predicting.\n\n**Sidebar: orders of magnitude (book).** Know the scale of the numbers you're dealing with. Mixing up a 1-in-100 risk with a 1-in-10,000 risk is a far bigger error than getting the decimal place wrong.\n\n### Tool 3: Asymmetries (book)\n**Idea:** this is **metaprobability**, the probability that *your probability estimates are themselves any good*. Our estimation errors are not random. They lean in one direction, usually toward optimism.\n\n- **The book's example: investors.** Investors often forecast annual returns of 20 to 40 percent. Those returns are rarely achieved. The forecasts miss in a predictable direction, and almost never on the pessimistic side.\n- **The lesson:** after you estimate, ask which way you're likely to be wrong, and adjust for it.\n\n### Putting it together (std)\n1. Find the base rate (prior).\n2. Update it with each new piece of evidence, weighted by how strong that evidence is (Bayes).\n3. Ask whether the domain is thin-tailed or fat-tailed. If it's fat-tailed, guard against ruin.\n4. Check your own bias. Which way do my errors usually lean (asymmetry)?\n\n---\n\n## 2. Inversion\n\n### Core idea (book)\nApproach a problem **from the opposite end**. Instead of only asking \"how do I succeed?\", also ask \"what would make me fail?\" The mathematician **Carl Jacobi** put it as **\"invert, always invert.\"** The book also stresses that **avoiding stupidity is easier than seeking brilliance.**\n\n### The two approaches (book)\n1. **Assume what you want to prove is true (or false), then work out what else would have to be true.** Reason backwards from the assumption and check whether its consequences hold.\n2. **Think about what you want to avoid.** Map out the paths to failure, then stay off them. This is often easier than mapping the one path to success.\n\n### The book's examples (book)\n\n**Hippasus and the square root of 2 (approach 1).**\nHippasus, a follower of Pythagoras, is linked to proving that \u221a2 is irrational. The classic method is inversion. *Assume the opposite*: \u221a2 is rational, so it equals a fraction a/b in lowest terms. Then follow the consequences. Both a and b turn out to be even, which contradicts \"lowest terms.\" The assumption fails, so \u221a2 is irrational. (The proof steps are the standard proof by contradiction **(std)**. The book uses the story to illustrate this kind of inversion.)\n\n**Edward Bernays and Lucky Strike (approach 1, applied to persuasion).**\nThe tobacco company wanted to sell more cigarettes to women. Bernays didn't ask \"how do I advertise cigarettes to women?\" He inverted the question: *what would the world have to look like for women to want to smoke this brand?* He then worked to change the surrounding conditions, the social norms and cultural associations, so the desired behaviour followed. **(The details of his campaigns are from my memory of the book, not re-verified here.)** The lesson is to imagine the end state and then ask what would have to be true for it to happen.\n\n**Marie Van Brittan Brown and CCTV (approach 2, avoiding the bad outcome).**\nBrown felt unsafe at home, and the police were slow to respond in her neighbourhood. She didn't try to make the police better. She worked backwards from the danger itself: what would stop an intruder from getting in unseen? Her answer was a camera-and-monitor setup that let her see and talk to whoever was at the door. It is recognised as a forerunner of modern **closed-circuit television (CCTV)** home security.\n\n### Tool: Kurt Lewin's force field analysis (book)\nThis is inversion turned into a process. The key step is listing the forces *against* your goal, not only the ones for it.\n\n1. **Identify the problem.**\n2. **Define your objective.**\n3. **Identify the forces that support change** toward the objective.\n4. **Identify the forces that impede change** toward the objective. This is the inversion step.\n5. **Strategize:** strengthen the forces from step 3, and reduce or remove the forces from step 4.\n\nThe insight is that removing a barrier often works better than pushing harder on the drivers, and you only see the barriers if you go looking for them.\n\n---\n\n## 3. How the two models work together\n\n| | Probabilistic thinking | Inversion |\n|---|---|---|\n| Question | How likely is each outcome, and how good is my estimate? | What would guarantee failure, or what must be true for success? |\n| Main danger it guards against | Overconfidence, ignoring base rates, being blindsided by fat tails | Tunnel vision on success, blind spots about obstacles |\n| Key tools (book) | Bayesian updating, fat-tailed curves, asymmetries; sidebars on conditional probability, orders of magnitude, antifragility | Two approaches (assume and test; avoid), Jacobi's maxim, force field analysis |\n| Book examples | Height vs. wealth; investors forecasting 20 to 40 percent returns | Hippasus and \u221a2; Bernays and Lucky Strike; Van Brittan Brown and CCTV |\n\n**A combined routine for a decision (follows the skill's workflow):**\n1. **Probabilities:** estimate base rates, update them with evidence, check for fat tails, and correct for asymmetric (usually optimistic) errors.\n2. **Invert:** ask what would guarantee failure here, and list it. Then run a force field analysis and remove or weaken the impeding forces first.\n3. Return to the probabilities. Removing the failure modes changes the odds.\n\n---\n\n## Caveats\n- These are aids to judgment, not formulas. The book itself warns that every model is a map, and the map is not the territory **(book)**.\n- Volume 1 covers only general thinking concepts. Later volumes cover physics, chemistry, biology, systems, economics and art **(std)**.\n- The probabilistic-thinking chapter has more historical stories than this summary includes. Where a detail above is marked as unverified, check the chapter before quoting it.\n"}], "grading": {"expectations": [{"text": "Probabilistic thinking has three parts: Bayesian thinking, fat-tailed curves, asymmetries", "passed": true, "evidence": "Three parts"}, {"text": "Explains asymmetries as metaprobability / estimates being over-optimistic (e.g., investors' 20-40% forecasts)", "passed": true, "evidence": "Metaprobability, 20-40% investors"}, {"text": "Inversion: two approaches (assume true/false and see what else must be true; think about what to avoid)", "passed": true, "evidence": "Two approaches"}, {"text": "Mentions Jacobi 'invert, always invert'", "passed": true, "evidence": "Jacobi"}, {"text": "Gives a book example of inversion (Hippasus sqrt 2, Bernays/Lucky Strike, or Marie Van Brittan Brown CCTV)", "passed": true, "evidence": "Hippasus, Bernays, Van Brittan Brown"}, {"text": "Includes Kurt Lewin's force field analysis steps", "passed": true, "evidence": "Force field analysis"}], "summary": {"passed": 6, "failed": 0, "total": 6, "pass_rate": 1.0}}}, {"id": "eval-2-gmm-probability-inversion-without_skill-run-1", "prompt": "Explain probabilistic thinking and inversion as presented in The Great Mental Models Vol 1, with the book's examples.", "eval_id": 2, "outputs": [{"name": "response.md", "type": "text", "content": "# Probabilistic Thinking and Inversion in *The Great Mental Models, Vol. 1*\n\n*The Great Mental Models, Volume 1: General Thinking Concepts* (Shane Parrish and Rhiannon Beaubien, Farnam Street, 2019) covers nine general-purpose models:\n\n1. The Map Is Not the Territory\n2. Circle of Competence\n3. First Principles Thinking\n4. Thought Experiment\n5. Second-Order Thinking\n6. **Probabilistic Thinking**\n7. **Inversion**\n8. Occam's Razor\n9. Hanlon's Razor\n\nProbabilistic thinking and inversion are next to each other in the book, and they fit together. Probabilistic thinking helps you judge how likely different futures are. Inversion helps you see the futures you would rather avoid, and what leads to them.\n\n> Note: This answer comes from memory of the book, not from the text itself. I'm confident about the core ideas and the main stories. Some smaller details, such as the exact sidebars and the exact wording of examples, may not be quite right, and I flag those below.\n\n---\n\n## 1. Probabilistic Thinking\n\n### The core idea\n\nThe book defines probabilistic thinking as using math and logic to estimate how likely any given outcome is. The world is uncertain. We almost never know exactly what will happen, so our decisions are bets. Good thinkers don't ask \"What will happen?\" They ask \"What could happen, and how likely is each outcome?\" Then they act on the best estimates they have and update them as new information arrives.\n\nThe book's argument is that people who think this way make better decisions over time. They don't always get the result they wanted, but they weigh the odds correctly and don't panic over vivid stories. Parrish notes that our brains evolved for a simpler world. We tend to overweight recent, dramatic or emotional information and to underweight base rates.\n\nThe book splits probabilistic thinking into three main tools.\n\n### a) Bayesian thinking\n\nNamed after Thomas Bayes, this means **using what you already know (your priors) and updating it in light of new information**, instead of judging each new piece of information on its own.\n\n**The book's example: crime headlines.** Suppose you read a headline saying violent crime is rising, or that some crime rate has doubled. You could conclude that the world is getting more dangerous. A Bayesian thinker first asks what the background data shows. Over several decades, violent crime in places like the US has fallen a great deal. A single alarming headline, perhaps about a short-term rise from a low base, should change your view a little. It should not throw out everything you know. The new data is weighed against the prior.\n\nThe book adds a caution. Priors are themselves probability estimates and can be wrong. You have to stay willing to revise them when enough contrary evidence builds up. Bayesian thinking does not mean clinging to old beliefs. It means moving them in proportion to the weight of the evidence.\n\n*(I believe a sidebar on **conditional probability** goes with this section. Its point is that you should ask how likely an event is given the conditions that already hold, instead of treating events as independent.)*\n\n### b) Fat-tailed curves\n\nMany people picture outcomes as a **bell curve (normal distribution)**, where extremes are rare and bounded. Some areas of life follow **fat-tailed distributions**, where extreme outcomes are far more likely and far larger than a bell curve would predict.\n\n**The book's example: height and weight versus wealth.** Human height and weight follow roughly normal curves. However many people you put in a room, no one will be 10 times taller than average. Wealth is fat-tailed. Put one billionaire in a room of ordinary people and that one person can make up almost all of the room's total wealth. In a fat-tailed area, one extreme event can outweigh everything else.\n\nThe practical lesson is to **work out which kind of distribution you're dealing with**. In a fat-tailed area, such as financial markets, pandemics, wars, natural disasters or business success, you can't treat extremes as negligible. You have to position yourself to survive the extremes, and if possible to benefit from them, instead of trying to predict them precisely. Here the book draws on Nassim Nicholas Taleb's ideas about \"black swans\" and about preparing instead of predicting.\n\n### c) Asymmetries\n\nThe third tool is **estimating how accurate your own estimates are**, sometimes called *metaprobability*. Our probability estimates are not unbiased. They tend to be wrong in one direction, usually toward overconfidence.\n\n**The book's examples:**\n- **Investors and expected returns.** Investors and fund managers often expect returns of 20 to 40% a year. Very few reach them, and many fall short of much more modest targets. The errors are lopsided. People overestimate far more often than they underestimate.\n- **Travel time and arriving on time.** When you estimate how long a trip will take, you are rarely early by much, but you are often late by a lot. Traffic, delays and missed connections all push the same way. The book calls this an asymmetry. Unexpected events tend to make things worse, not better.\n\nThe lesson is to expect your estimates to be optimistic and to build in margins of safety.\n\n### Anchor story: Vera Atkins and the SOE\n\nThe chapter's main historical example is **Vera Atkins**, an intelligence officer in Britain's **Special Operations Executive (SOE)** during World War II. The SOE recruited agents, trained them and sent them into Nazi-occupied France to support resistance and sabotage. Atkins had to make life-or-death decisions with very poor information. She had to decide whom to recruit, whom to trust, which signals from the field were real and which were compromised, and when to send agents in.\n\nShe could not get certainty, so she had to think in probabilities. She weighed incomplete and contradictory evidence and accepted that some decisions would turn out badly. The SOE's French networks suffered serious losses, some of them because warning signs were missed or misjudged. After the war, Atkins personally tracked down what had happened to missing agents, many of whom had been captured and killed. The story shows both how necessary probabilistic judgment is and how costly it is when you get it wrong.\n\n### Related sidebars (as I recall them)\n\n- **Orders of magnitude / thinking about the unknown.** This draws on Taleb. Some risks can't be estimated precisely. What matters is roughly how big a possible outcome is and whether you can survive it.\n- **Causation vs. correlation.** Two things moving together doesn't mean one causes the other. The book discusses **regression to the mean**: an unusually extreme result is usually followed by a more average one. People often wrongly credit whatever action happened in between, such as a punishment, a reward or a treatment, for the return to normal.\n- **Antifragility.** Again from Taleb. Instead of only shielding yourself from uncertainty, you can set things up so that volatility and shocks make you stronger. For example, you can seek out situations with limited downside and large potential upside.\n\n### Takeaway\n\nProbabilistic thinking does not mean calculating exact odds for everything. It is a habit with four parts:\n1. Start from base rates (priors).\n2. Update in proportion to the evidence.\n3. Work out whether extremes can dominate (fat tails).\n4. Assume your own estimates are biased toward optimism (asymmetries).\n\n---\n\n## 2. Inversion\n\n### The core idea\n\nInversion means **approaching a problem from the opposite end**. Instead of thinking only forward from where you are to where you want to be, you think backward from the goal, or about the opposite of the goal. The book credits the German mathematician **Carl Jacobi** with the maxim *\"man muss immer umkehren\"*, meaning \"invert, always invert.\" Jacobi solved hard problems by restating them in inverse form. The book also leans heavily on **Charlie Munger**, who made the idea popular in business and life decisions. Munger's well-known line: *\"All I want to know is where I'm going to die, so I'll never go there.\"*\n\nThe book describes **two main ways to invert**:\n\n1. **Assume the thing you're trying to prove is true (or false), and work out what else would have to be true.** If you want an outcome, ask what conditions would have to exist for it to happen, and then create those conditions.\n2. **Instead of aiming directly for what you want, think about what you want to avoid.** Instead of asking \"How do I succeed?\", ask \"What would guarantee failure?\" and then avoid those things.\n\nThe underlying point is that **avoiding stupidity is often easier and more reliable than seeking brilliance.** Removing obvious mistakes often improves results more than chasing clever strategies.\n\n### Example 1: Edward Bernays and getting women to smoke\n\nThe chapter's best-known example is **Edward Bernays**, often called the father of public relations. In the late 1920s the American Tobacco Company, maker of **Lucky Strike**, hired him to sell more cigarettes to women. At the time it was socially unacceptable for women to smoke in public.\n\nBernays didn't just advertise cigarettes to women. He **inverted the problem**. He asked what the world would have to look like for women to smoke freely, and then set about creating that world:\n\n- He tied smoking to women's freedom and equality. Most famously, he arranged for young women to smoke **\"torches of freedom\"** during the 1929 New York Easter Parade, which created a news event instead of an advertisement.\n- When women said the Lucky Strike pack's **green** clashed with their outfits, he didn't change the package. He set out to make green fashionable. He organized events such as a \"green ball\" and encouraged designers and society figures to promote green, so the product fitted the culture he had shaped.\n\nThe book presents this as a powerful example of the first kind of inversion: working out what conditions would make the goal happen and then producing those conditions. It also notes the darker side. The same method was used to sell a harmful product, so the model is a tool whose ethics depend on how it is used.\n\n### Example 2: John Bogle and the index fund\n\nAnother example is **John (Jack) Bogle**, founder of Vanguard and creator of the first index fund for ordinary investors. Most of the investment industry asked \"How do we beat the market?\" Bogle inverted the question to something like \"How do we avoid the things that make investors lose to the market?\" The answer was high fees, frequent trading and the underperformance of active managers. Instead of trying to be brilliant at picking stocks, he removed the known causes of poor results. He offered low-cost funds that simply matched the market, and over time they beat most actively managed funds after costs. This is the second kind of inversion, avoiding failure.\n\n### Example 3: Kurt Lewin's force field analysis\n\nThe book describes psychologist **Kurt Lewin's force field analysis** as a structured form of inversion for getting change to happen:\n\n1. Identify the problem.\n2. Define your objective.\n3. List the forces that support change toward the objective.\n4. List the forces that impede change toward the objective.\n5. Make a strategy.\n\nThe inversion is in step 4. Most people only push harder on the supporting forces. Lewin's point is that it often works better to **remove or weaken the forces that block change**. You ask \"What's stopping this?\" and not only \"How do I push this forward?\"\n\n### Other illustrations (less certain details)\n\n- **Munger's approach to life.** Munger has described giving a talk on how to guarantee a miserable life, which means listing reliable routes to misery such as envy, resentment, unreliability and drug use. He used it as a way to learn how to live well: avoid those things.\n- **Negative visualization / premortems.** The Stoic practice of imagining what could go wrong (*premeditatio malorum*, associated with Seneca) fits naturally here, as does the modern \"premortem,\" where you imagine a project has failed and ask why. I'm less sure exactly which of these the chapter covers explicitly, but they fit its logic.\n- **Medicine and \"first, do no harm.\"** The idea of improving outcomes mainly by avoiding harmful mistakes fits the chapter's theme of avoiding stupidity instead of seeking brilliance. I'm not certain this is one of the chapter's named examples.\n\n### Takeaway\n\nInversion is a way to break out of one-directional thinking. When you're stuck, flip the question:\n\n- What would have to be true for this outcome to happen? Go make those things true.\n- What would guarantee failure? Don't do those things.\n\nIt is especially useful because it shows hidden assumptions and obstacles that forward thinking misses.\n\n---\n\n## 3. How the two models work together\n\n- **Probabilistic thinking** tells you how likely different outcomes are, including rare but catastrophic ones in fat-tailed areas.\n- **Inversion** pushes you to look straight at the bad outcomes and their causes, so you can avoid them instead of hoping they won't happen.\n\nUsed together, they lead to a robust approach. Estimate the odds honestly, assume you're overconfident, find the ways things could go badly wrong, and remove those failure paths first. Then pursue upside where the downside is limited.\n"}], "grading": {"expectations": [{"text": "Probabilistic thinking has three parts: Bayesian thinking, fat-tailed curves, asymmetries", "passed": true, "evidence": "Bayes, fat tails, asymmetries"}, {"text": "Explains asymmetries as metaprobability / estimates being over-optimistic (e.g., investors' 20-40% forecasts)", "passed": true, "evidence": "Metaprobability, 20-40%"}, {"text": "Inversion: two approaches (assume true/false and see what else must be true; think about what to avoid)", "passed": true, "evidence": "Two ways to invert"}, {"text": "Mentions Jacobi 'invert, always invert'", "passed": true, "evidence": "Jacobi"}, {"text": "Gives a book example of inversion (Hippasus sqrt 2, Bernays/Lucky Strike, or Marie Van Brittan Brown CCTV)", "passed": true, "evidence": "Bernays/Lucky Strike"}, {"text": "Includes Kurt Lewin's force field analysis steps", "passed": true, "evidence": "Lewin force field"}], "summary": {"passed": 6, "failed": 0, "total": 6, "pass_rate": 1.0}}}, {"id": "eval-3-gmm-decision-with_skill-run-1", "prompt": "I'm deciding whether to quit my job to start a bakery. Walk me through it using the nine models in The Great Mental Models Vol 1.", "eval_id": 3, "outputs": [{"name": "response.md", "type": "text", "content": "# Should you quit your job to start a bakery? The nine models from *The Great Mental Models, Vol. 1*\n\nShane Parrish and Rhiannon Beaubien argue that how well you think depends on the models you carry, and that you need **several different ones**, not more of your favourite. So the models below are not nine separate verdicts. Each is a different lens on one decision. I don't know your finances, your skills or your market yet, so I've written each section as questions to answer and tests to run. The answers will make the decision for you.\n\n---\n\n## 1. The map is not the territory\n\n**The idea:** A model is a simplified version of reality. It is useful, but it leaves things out and it can go out of date (Alfred Korzybski, 1931). The book gives three tools: **reality is the ultimate update**, **consider the cartographer**, and **maps can influence territories**. For that last one, it uses Jane Jacobs's account of city planners who forced cities to fit their models.\n\n**Applied to you:** Right now your \"bakery\" is a map. It is probably a warm picture of mornings, flour, regulars and the smell of bread. The territory is 3 a.m. starts, food-safety inspections, rent, equipment repairs, staff who don't show up, thin margins and a lot of standing.\n\n- **Consider the cartographer.** Where did your picture come from? Instagram, baking shows and friends saying \"you should open a shop!\" all make maps, and each maker has their own bias and blind spots. Bakery owners who are struggling don't usually post about it.\n- **Reality is the ultimate update.** Look for direct contact with the territory before you decide. Work weekend shifts at a real bakery. Sell at a farmers' market. Take catering or wholesale orders from a caf\u00e9. Every week of real experience should redraw your map.\n- **Is your map of your job out of date too?** You may be comparing an idealised bakery with the worst version of your current job. Map both sides honestly.\n\n## 2. Circle of competence\n\n**The idea:** The book contrasts the \"Lifer\", who really knows the terrain, with the \"Stranger\", who only thinks they do. Ego hides where your circle ends. You build and keep a circle through **curiosity and a desire to learn**, **monitoring** your own track record, and **feedback**. When you have to act outside your circle, the book says to (1) learn at least the basics, (2) talk to someone with a strong circle in that area, and (3) use broad mental models.\n\n**Applied to you:** A bakery is at least three businesses in one:\n\n| Skill area | Inside your circle? |\n|---|---|\n| Baking well, consistently and at volume | ? |\n| Running a business: costing, pricing, cash flow, permits, leases, hiring | ? |\n| Selling and marketing: location, foot traffic, social media, repeat customers | ? |\n\nMany people who are excellent home bakers are Strangers in the second and third rows. To work outside your circle: learn the basics (food-cost percentages, break-even, local health codes), **talk to two or three Lifers** (current or former bakery owners, ideally including one whose bakery closed), and lean on the broad models in this list. **Monitoring** means tracking real numbers from your trial sales, not how you feel about them.\n\n## 3. First principles thinking\n\n**The idea:** Separate the underlying facts from the assumptions you've stacked on top of them, then rebuild from what can't be broken down any further. The book offers **Socratic questioning** (clarify, challenge assumptions, look for evidence, consider alternatives, examine consequences, question the original question) and the **Five Whys**.\n\n**Applied to you:** Start by asking why you want this, and keep asking.\n\n- *Why a bakery?* \"I love baking and I hate my job.\"\n- *Why do you hate your job?* \"No autonomy, and I feel like I'm not making anything real.\"\n- *Why does that matter?* \"I want to build something that's mine and to work with my hands.\"\n- \u2026and keep going until you reach the core.\n\nThen **question the original question**. \"Quit my job vs. start a bakery\" is an either/or built on assumptions. Challenge each one:\n\n- *Do I have to quit first?* You could start on weekends, at markets, from a cottage-food licence or a shared commercial kitchen.\n- *Does a bakery have to mean a storefront?* Wholesale to caf\u00e9s, a subscription bread box, a market stall and a pop-up are all much cheaper versions.\n- *Is the real problem my job rather than my career?* A different job might solve the autonomy problem with far less risk.\n\nIf the Five Whys end at \"I need to make things with my hands and answer to myself\", there may be several ways to get that. A full-time storefront bakery is only one of them, and it's the most expensive.\n\n## 4. Thought experiment\n\n**The idea:** \"Devices of the imagination used to investigate the nature of things.\" The book's steps are: ask a question, do background research, form a hypothesis, test it with thought experiments, analyze and conclude, then compare and adjust. Its example is that you can't settle \"LeBron James vs. Woody Allen at basketball\" or \"LeBron James vs. Kevin Durant\" by playing them, but you can reason your way through them.\n\n**Applied to you:**\n\n1. **Question:** Can a bakery give me a life I prefer to my current one, at an acceptable risk?\n2. **Background research:** local rents, equipment costs, competitors, prices per loaf or pastry, permit requirements, how many units you'd need to sell each day to break even.\n3. **Hypothesis:** for example, \"If I sell X items a day at an average of $Y, I cover costs plus a modest salary within 18 months.\"\n4. **Test it in your head with specific scenarios:**\n   - *It's a February Tuesday, it's raining, and you've sold 40% of what you baked. What do you do with the rest, and how does the month's cash look?*\n   - *Your oven dies the week before the holidays. Can you survive that?*\n   - *It's two years in and the bakery is \"successful\", which means a 70-hour week. Is that the life you wanted?*\n   - *A chain caf\u00e9 opens two doors down. Why would people still come to you?*\n5. **Analyze and conclude.** Which scenarios break the plan?\n6. **Compare and adjust.** Change the plan (lower rent, wholesale income, a part-time job) until the scenarios are survivable.\n\n## 5. Second-order thinking\n\n**The idea:** Think about the effects of the effects. The book's example is the British bounty on cobras in Delhi: people started breeding cobras to collect it. The book uses second-order thinking for two things: **putting long-term interests ahead of immediate gains**, and **building effective arguments**.\n\n**Applied to you:** For each option, keep asking \"and then what?\"\n\n- **Quit now.** First order: freedom and relief. Second order: no salary, possibly no health insurance, savings draining every month. Third order: money pressure leads to rushed decisions (a bad lease, cutting quality) and strain on your relationships. A helpful way to frame it, not from the book, is to ask how this looks in 10 minutes, 10 months and 10 years.\n- **Stay and test on the side.** First order: you're tired, with less free time. Second order: you collect real demand data and a customer list, and you keep your income. Third order: if you do launch, you launch with customers and evidence instead of hope.\n- **Turning a hobby into a living.** First order: you get paid for what you love. Second order: baking becomes the thing you *have* to do at 4 a.m. Will you still love it?\n- **The people around you.** A partner, children or dependants will feel the second-order effects too.\n\n**For building arguments:** If you'll need buy-in from a partner, a lender or a landlord, second-order thinking makes your case stronger. \"Here's what happens if it goes slowly, and here's my plan for that\" persuades people far better than \"it'll be great.\"\n\n## 6. Probabilistic thinking\n\n**The idea:** The future is uncertain, so estimate likelihoods with maths and logic. The book's tools are **Bayesian thinking** (update what you believed before with new evidence), **fat-tailed curves** (the extremes are far bigger than a bell curve suggests) and **asymmetries**, or \"metaprobability\". That last one asks how likely it is that your estimates are any good. The book notes that investors routinely forecast returns of 20\u201340% that they rarely achieve.\n\n**Applied to you:**\n\n- **Start with a base rate (your prior).** Independent food and restaurant businesses have a high failure rate in their first few years. Look up figures for your area. Assume you're average until you have evidence that you aren't.\n- **Update the way Bayes would.** Evidence that should raise your odds: repeat customers at your market stall, wholesale accounts that reorder, a business plan an experienced owner has checked, low fixed costs, a year of living expenses saved. Evidence that should lower them: sales that come only from friends, sellouts that only happen when you underprice, rent that eats more than a modest share of projected revenue.\n- **Fat tails.** The outcomes aren't neatly spread around an average. The downside tail includes a personally guaranteed lease and equipment loans that outlast the business, which could mean years of debt. Ask what the worst realistic case is, not the average one, and whether you can survive it.\n- **Asymmetries.** Your forecasts are probably too rosy, just like the investors' 20\u201340%. People usually overestimate sales and underestimate costs and time. **Make your plan work with revenue cut by a third and costs and timeline raised by half.** If it only works in your optimistic case, it doesn't work.\n- **Keep the downside small and capped.** Choose versions of the bakery where the worst outcome is \"I lost some savings and learned a lot\", not \"I'm in debt for a decade.\"\n\n## 7. Inversion\n\n**The idea:** Come at the problem from the other end. \"Invert, always invert\" (Carl Jacobi). Avoiding stupidity is easier than seeking brilliance. The book gives two approaches: (1) assume what you want to prove is true or false and work out what else would have to be true, and (2) think about what you want to avoid. It also teaches **Kurt Lewin's force field analysis**.\n\n**Applied to you:**\n\n**How would I make this bakery fail for sure?**\n- Quit with less than six months of expenses saved.\n- Sign a long lease, with a personal guarantee, in a spot with little foot traffic.\n- Never test whether strangers (not friends) will pay my prices.\n- Price by gut feel instead of by ingredient, labour and overhead cost.\n- Do every job myself until I burn out.\n- Ignore permits and food-safety rules.\n\nNow avoid each of those. That list is already most of a business plan.\n\n**What would have to be true for this to work?** There is steady demand at a price that covers costs. You can produce consistently at volume. You can carry 12\u201324 months of runway. You'll still enjoy it when it's a job. Test each of those separately.\n\n**Force field analysis:**\n1. **Problem:** I'm unhappy in my job and want to bake for a living.\n2. **Objective:** for example, a bakery that covers my costs plus a living wage within a set time, without risking ruin.\n3. **Forces pushing toward it:** passion, skill, a customer base you're building, savings, support from people around you, local demand.\n4. **Forces holding it back:** gaps in skills, little capital, high rent, competition, risk to your family's finances, physical strain.\n5. **Strategize:** strengthen the forces in step 3 (build a market following, save more, take a business course) and weaken the ones in step 4 (find a partner with business skills, use a shared kitchen to avoid a lease, start with wholesale).\n\n## 8. Occam's razor\n\n**The idea:** The simpler explanation is more likely to be true. Prefer the one with the fewest moving parts. The book adds a caveat: some things really aren't simple.\n\n**Applied to you:**\n- **On your motive:** Is \"I need to open a bakery to fulfil my calling\" the right explanation? A simpler one might be \"I'm burnt out at work and baking is where I feel good.\" If the simpler one fits, the simplest fix (a new job, a sabbatical, a regular weekend market stall) may solve most of the problem.\n- **On your plan:** Fewer moving parts means less that can go wrong. \"Rent a storefront, renovate, hire three people, run a caf\u00e9 as well\" has many parts. \"Bake 100 loaves for Saturday's market\" has very few. Start with the version that has the fewest assumptions that must all hold.\n- **The caveat:** Sometimes the honest answer *is* \"I really want this, I've tested it, and the numbers work.\" Don't use the razor to talk yourself out of something real. Use it to cut out stories you don't need.\n\n## 9. Hanlon's razor\n\n**The idea:** Don't attribute to malice what is more easily explained by stupidity. The most likely explanation is usually the one with the least intent behind it. The book uses a road-rage example and warns against \"the Devil Fallacy\".\n\n**Applied to you:** This model matters in two places.\n- **Your decision now:** If part of why you want to leave is that your boss or company seems out to get you, check that. Is it malice, or carelessness, poor systems and overload? If it's the latter, the problem might be fixable, or at least less personal than it feels, and you shouldn't make a life decision out of resentment.\n- **Running the bakery later:** Suppliers will be late, inspectors will be picky, landlords will be slow and customers will leave odd reviews. Assuming incompetence or distraction rather than an enemy will keep you calmer and your relationships workable. That matters a lot in a small local business.\n\n---\n\n## A useful check: necessary vs. sufficient\n\nThe book's supporting ideas include **necessity and sufficiency**. Loving baking and being good at it are probably **necessary** for a successful bakery. They are nowhere near **sufficient**. You also need demand, pricing that works, cash flow, a location (or a channel to customers) and enough endurance. Don't treat passion as if it covers the whole list.\n\nThe book also warns about **causation vs. correlation**. \"My friend opened a bakery and quit her job and is happy\" doesn't mean the bakery *caused* the happiness, or that it would do the same for you.\n\n---\n\n## Putting it together: a sequence for deciding\n\n1. **Map check:** Get into the territory. Work in a real bakery and sell to strangers for 2\u20133 months.\n2. **Circle check:** Name your skill gaps. Talk to 2\u20133 bakery owners, including one whose business failed.\n3. **First principles:** Use the Five Whys to find what you really want, then list every way of getting it, not only a storefront.\n4. **Thought experiment:** Run the rainy-Tuesday, broken-oven and \"successful but 70 hours a week\" scenarios.\n5. **Second order:** Play each option forward to 10 months and 10 years, including the effects on the people close to you.\n6. **Probabilities:** Start from the local base rate. Cut your revenue forecast by a third and raise costs by half. Make sure the worst case is survivable and capped.\n7. **Invert:** Write the \"how to fail for sure\" list and design your plan to avoid every item. Run the force field analysis.\n8. **Razors:** Look for the simplest explanation of your motive and the simplest version of the plan. Don't decide out of resentment.\n\n**One likely conclusion from these models:** The choice usually isn't \"quit and open a bakery\" or \"stay miserable.\" Often the strongest path is a **staged test**. Keep your income, or cut back to part-time if you can. Sell through low-fixed-cost channels until the evidence (repeat customers, real margins, saved runway) earns you the right to quit. Set your **quit criteria** in advance, for example \"N months of sales at $X per week, Y months of expenses saved, and a plan checked by an experienced owner.\" Then reality, not mood, tells you when to jump.\n\n**The models are aids, not answers.** As the book warns, every map is imperfect. If you tell me your savings runway, your baking and business experience, your local market and who depends on your income, I can go through the riskiest of these models with your actual numbers.\n"}], "grading": {"expectations": [{"text": "Names the book's nine models (map/territory, circle of competence, first principles, thought experiment, second-order, probabilistic, inversion, Occam's razor, Hanlon's razor)", "passed": true, "evidence": "All nine models"}, {"text": "Applies first principles with Socratic questioning and/or Five Whys", "passed": true, "evidence": "Socratic / Five Whys"}, {"text": "Applies second-order thinking (consequences of consequences) to the decision", "passed": true, "evidence": "Second-order"}, {"text": "Applies inversion (what would make it fail / what to avoid)", "passed": true, "evidence": "Inversion with force field"}, {"text": "Applies probabilistic thinking with base rates/Bayesian updating", "passed": true, "evidence": "Base rates / Bayes"}, {"text": "Applies circle of competence with the operate-outside advice (learn basics, consult experts)", "passed": true, "evidence": "Circle with learn basics / experts"}], "summary": {"passed": 6, "failed": 0, "total": 6, "pass_rate": 1.0}}}, {"id": "eval-3-gmm-decision-without_skill-run-1", "prompt": "I'm deciding whether to quit my job to start a bakery. Walk me through it using the nine models in The Great Mental Models Vol 1.", "eval_id": 3, "outputs": [{"name": "response.md", "type": "text", "content": "# Should You Quit Your Job to Start a Bakery? Using the Nine Models from *The Great Mental Models, Vol. 1*\n\nShane Parrish's first volume covers nine general thinking tools:\n\n1. The Map Is Not the Territory\n2. Circle of Competence\n3. First Principles Thinking\n4. Thought Experiment\n5. Second-Order Thinking\n6. Probabilistic Thinking\n7. Inversion\n8. Occam's Razor\n9. Hanlon's Razor\n\nThe models aren't meant to give you an answer. They give you different angles on the decision so you can see it more fully. Below, each one is applied to the bakery decision, with questions to answer and things to do. A short synthesis at the end pulls them together.\n\n---\n\n## 1. The Map Is Not the Territory\n\n**The idea:** Every model, plan, or picture of reality is a simplification. It's useful, but it isn't the thing itself, and it leaves out detail.\n\n**Applied to your bakery:**\nYour mental picture of \"owning a bakery\" is a map. It probably shows the smell of fresh bread, regulars who know your name, and creative freedom. The real territory includes alarms at 3:30 a.m., a broken oven on a Saturday, health inspections, staff who don't show up, flour price swings, rent increases, and evenings spent on payroll and bookkeeping.\n\nA business plan or spreadsheet is a map too. Revenue projections are guesses written down as numbers.\n\n**Questions to ask:**\n- Where does my picture of bakery life come from: media, Instagram, visits as a customer, or actual work behind the counter?\n- Which of my spreadsheet assumptions (foot traffic, average ticket, margins) have I checked against real data?\n\n**Action:** Go and look at the territory. Work shifts at a local bakery, even unpaid on weekends. Talk to three to five bakery owners, including at least one whose bakery closed. Ask them what surprised them most.\n\n---\n\n## 2. Circle of Competence\n\n**The idea:** Know what you know, and know where that knowledge ends. Inside your circle you have a real edge. Outside it you're more likely to fool yourself.\n\n**Applied to your bakery:**\nA successful bakery needs several separate skills:\n- **Baking at scale:** consistent product, in volume, on a schedule (not the same as baking well at home)\n- **Operations:** sourcing, inventory, waste control, food-safety compliance, equipment\n- **Finance:** pricing, cash flow, margins, taxes, loans\n- **Marketing and sales:** location choice, branding, social media, wholesale accounts\n- **People management:** hiring, training, scheduling, keeping staff\n\n**Questions to ask:**\n- Which of these am I actually competent in, with evidence, and which do I only think I'd be fine at?\n- Does my current job give me skills that transfer? Someone in accounting, operations, or hospitality starts with a real advantage.\n\n**Action:** List every skill and rate each one honestly: Inside, Edge, or Outside. For anything Outside you can learn it before you quit (a course, a part-time job, a mentor), partner with someone who has it, or hire for it. Building your circle of competence while you still have a paycheck is far cheaper than doing it afterward.\n\n---\n\n## 3. First Principles Thinking\n\n**The idea:** Break a problem down to its basic truths and reason up from there, instead of copying what others do or reasoning by analogy.\n\n**Applied to your bakery:**\nDon't start from \"a bakery is a retail storefront with a lease and display cases.\" Start from the fundamentals:\n- What do I actually want? Possibilities include creative work, autonomy, community, leaving a job I dislike, or building something of my own. Each points to a different solution.\n- What is a bakery, at its core? It turns cheap inputs (flour, butter, sugar, labour) into higher-value products sold to people who want them, at a price that covers costs plus a profit.\n- What has to be true for it to work? Enough customers \u00d7 enough margin \u00d7 enough volume, before you run out of money.\n\nReasoning from those basics opens up other formats:\n- Cottage-food or home bakery, where local law allows it\n- Farmers' markets and pop-ups\n- Wholesale to caf\u00e9s and restaurants\n- Subscription or pre-order bread boxes\n- Shared commercial kitchen rental instead of your own lease\n- A stall inside an existing business\n\n**Action:** Write down your core goal in one sentence. Then ask whether a full retail storefront is the only way, or even the best way, to reach it. Often the answer is a smaller, cheaper first step.\n\n---\n\n## 4. Thought Experiment\n\n**The idea:** Imagine scenarios in detail and follow them through to see what happens, especially when real experiments are costly or impossible.\n\n**Applied to your bakery:**\nRun a few in your head, or better, on paper:\n\n- **The ordinary Tuesday:** It's 18 months in. Walk through a full day hour by hour. Does it energize you or wear you down?\n- **The bad month:** Sales come in 40% below forecast for three months straight. What do you do? How long can you last?\n- **The success case:** It's working, and you're busy six days a week. Is that what you wanted, or do you miss having weekends?\n- **The regret test (Bezos's regret-minimization framework):** You're 80 and looking back. Which would you regret more, trying and failing or never trying?\n- **The \"veil\" test:** If a friend described your exact situation (savings, skills, family, market), what would you advise them?\n\n**Action:** Write out each scenario in detail. Pay attention to how you feel at each one, because your reactions are data.\n\n---\n\n## 5. Second-Order Thinking\n\n**The idea:** Look past the immediate result and ask, \"And then what?\" Most people stop at first-order effects.\n\n**Applied to your bakery:**\n\n| Decision | First-order effect | Second-order effects |\n|---|---|---|\n| Quit your job | Freedom and time to build | Lost income, health insurance, retirement contributions; strain on relationships; a r\u00e9sum\u00e9 gap if you return |\n| Sign a 5-year lease | You have a location | Fixed cost whether sales come or not; often a personal guarantee, so personal liability |\n| Price low to win customers | Faster traffic | Thin margins, customers anchored to low prices, burnout from volume |\n| Work 80-hour weeks | The business gets off the ground | Health, family, and passion erode; the thing you loved becomes a chore |\n| Take on a loan | Capital to start | Monthly obligations that remove flexibility and raise the stakes of failure |\n\nThere are positive second-order effects too: new skills, a network, credibility as a founder, a life that fits your values, and options that wouldn't exist if you'd stayed.\n\n**Action:** For each big decision in your plan (quitting, lease, loan, hiring), write at least two \"and then what?\" consequences. Watch for decisions that are hard to undo. Leases and personal guarantees are the main ones.\n\n---\n\n## 6. Probabilistic Thinking\n\n**The idea:** The future is uncertain, so think in likelihoods and ranges rather than certainties. Weight outcomes by how probable they are and how big their consequences would be.\n\n**Applied to your bakery:**\n- **Base rates:** Restaurants and food businesses fail at well-known, high rates. A large share of new food-service businesses close within the first few years. Start from that outside view, then adjust for your specific advantages (experience, location, capital, demand already proven) rather than assuming you're the exception.\n- **Range of outcomes:** Instead of a single forecast, build three:\n  - *Pessimistic:* slow ramp, unexpected costs, 50\u201360% of projected revenue\n  - *Base:* something realistic\n  - *Optimistic:* strong word of mouth\n- **Fat tails:** A single event can matter enormously: a pandemic, construction blocking your street, a key-equipment failure, a health problem. Ask what protects you from ruin, not just what's most likely.\n- **Asymmetry:** What's the worst realistic downside, and can you survive it? A good bet doesn't need to be likely to succeed, but failure must be survivable.\n\n**Action:** Calculate your runway. How many months could you cover your personal and business expenses with zero profit? A common rule of thumb is 12\u201318 months of personal living expenses saved, separate from startup capital. Then ask: if the pessimistic case happens, would I be okay?\n\n---\n\n## 7. Inversion\n\n**The idea:** Approach a problem backward. Instead of asking \"How do I succeed?\", ask \"What would guarantee failure?\" and then avoid those things. (Jacobi: \"Invert, always invert.\")\n\n**Applied to your bakery:**\nHow to make sure your bakery fails:\n- Quit with no savings, so every slow week becomes a crisis\n- Sign a long, expensive lease in a low-traffic spot before testing demand\n- Never test whether people will pay your prices\n- Underprice and ignore the cost of your own labour\n- Do everything yourself until you burn out\n- Ignore cash flow until the account runs dry\n- Skip permits, insurance, and food-safety compliance\n- Make products you love that customers don't want\n\nNow flip each one into a rule:\n- Build a cash cushion before you quit.\n- Prove demand cheaply (markets, pre-orders, pop-ups) before committing to fixed costs.\n- Price from real costs, including your own wage.\n- Plan for help and rest from the start.\n- Track cash weekly.\n- Get licensing and insurance in order first.\n- Let customer feedback shape the menu.\n\nYou can also invert the decision itself: \"What would make staying in my job the clearly right choice?\" If you can't answer that, it tells you something. If you can, it shows what you'd be giving up.\n\n**Action:** Run a pre-mortem. Imagine it's two years from now and the bakery has closed. Write the story of why. The most likely causes become your top risks to reduce.\n\n---\n\n## 8. Occam's Razor\n\n**The idea:** Among competing explanations, the simplest one, with the fewest assumptions, is usually the best place to start.\n\n**Applied to your bakery:**\n1. **Count your assumptions.** If your plan only works when the lease negotiation, a wholesale deal, a social-media hit, and a quick staff hire all go right, it rests on a lot of assumptions. The simpler plan with fewer things that must go right is usually the sturdier one.\n2. **Find the simplest explanation for your desire.** Is it really about baking? Or is the simplest explanation that you're unhappy in your current job? If it's the job, a new job, a change of role, or a sabbatical might fix it with much less risk. If baking keeps pulling at you even in a good job, that's a stronger signal.\n3. **Use the simplest test.** Before any big plan, the simplest experiment is to sell something. Ten loaves at a market this weekend tells you more than a 40-page business plan.\n\n**Action:** Write the simplest version of your plan that could work and the fewest conditions that must be true. Then go test the single riskiest one.\n\n---\n\n## 9. Hanlon's Razor\n\n**The idea:** Never attribute to malice what can be adequately explained by stupidity, or more kindly, by ignorance, carelessness, or people having their own priorities.\n\n**Applied to your bakery:**\nThis model is more about the people around the decision and the journey than the go/no-go call itself:\n- **Skeptical friends and family:** When people question your plan, they probably aren't trying to crush your dream. More likely they're worried, don't know the details, or are projecting their own risk tolerance. Treat their doubts as free stress-tests, not attacks.\n- **Your employer:** If you negotiate a part-time arrangement or a leave of absence and the answer is a clumsy \"no,\" it's likely policy or inertia, not personal. Don't burn bridges. That job may be your safety net.\n- **Once you're running:** Suppliers who deliver late, landlords who are slow, customers who leave a harsh review, and inspectors who are strict are usually overwhelmed or following rules, not out to get you. Assuming good faith keeps you calm and keeps relationships workable, and relationships are the lifeblood of a small local business.\n- **Yourself:** When early mistakes happen, and they will, they're the result of inexperience, not proof that you're a fraud. Be as charitable with yourself as with others.\n\n**Action:** Take the hardest criticism you've heard about your plan and assume it was meant kindly and contains some truth. What would you change because of it?\n\n---\n\n## Putting It All Together\n\nThe models point in a consistent direction. Usually, the question isn't \"quit or don't quit.\" It's \"how do I turn this into a series of smaller, reversible bets?\"\n\n**A staged approach the models support:**\n\n1. **Explore (0\u20133 months, keep your job):** Work shifts in a real bakery (Map/Territory). Map your skill gaps (Circle of Competence). Clarify your core goal (First Principles).\n2. **Test (3\u20139 months, keep your job):** Sell at markets, take pre-orders, or rent a shared kitchen on weekends. Track real costs, prices, and demand (Occam's Razor: the simplest test). Run your pre-mortem (Inversion).\n3. **Prepare:** Build 12\u201318 months of personal runway plus startup capital. Model pessimistic, base, and optimistic cases (Probabilistic Thinking). Map the second-order effects of the lease, loan, and lost benefits (Second-Order Thinking).\n4. **Decide with evidence:** Quit when the tests show real demand, the numbers work in the pessimistic case, and your thought experiments still leave you excited (Thought Experiment). Then reduce reversibility risks: shorter leases, avoiding personal guarantees where possible, and leaving your employer on good terms (Hanlon's Razor).\n\n**A simple decision checklist:**\n\n- [ ] I've worked in a real bakery and still want this. *(Map/Territory)*\n- [ ] I've covered my skill gaps by learning, partnering, or hiring. *(Circle of Competence)*\n- [ ] I know my core goal, and a bakery is the best way to reach it. *(First Principles)*\n- [ ] I've pictured the ordinary Tuesday and the bad month, and I'm still in. *(Thought Experiment)*\n- [ ] I've mapped the downstream consequences of quitting, the lease, and any loans. *(Second-Order)*\n- [ ] I can survive the pessimistic scenario financially. *(Probabilistic)*\n- [ ] I've run a pre-mortem and have a plan for the top failure causes. *(Inversion)*\n- [ ] My plan relies on as few assumptions as possible, and I've tested the riskiest one. *(Occam's Razor)*\n- [ ] I've taken criticism seriously and kept my relationships and bridges intact. *(Hanlon's Razor)*\n\nIf you can tick most of these boxes, quitting looks like a calculated leap rather than a gamble. If you can't, the models aren't saying \"never.\" They're telling you what to do next, while your paycheck still covers the cost of learning.\n\n*If you'd like, share your specifics (savings, current job, baking experience, local market, and what draws you to this), and I can help you work through each model with your real numbers.*\n"}], "grading": {"expectations": [{"text": "Names the book's nine models (map/territory, circle of competence, first principles, thought experiment, second-order, probabilistic, inversion, Occam's razor, Hanlon's razor)", "passed": true, "evidence": "Nine models named"}, {"text": "Applies first principles with Socratic questioning and/or Five Whys", "passed": false, "evidence": "First principles without Socratic/Five Whys"}, {"text": "Applies second-order thinking (consequences of consequences) to the decision", "passed": true, "evidence": "Second-order"}, {"text": "Applies inversion (what would make it fail / what to avoid)", "passed": true, "evidence": "Inversion"}, {"text": "Applies probabilistic thinking with base rates/Bayesian updating", "passed": true, "evidence": "Base rates"}, {"text": "Applies circle of competence with the operate-outside advice (learn basics, consult experts)", "passed": true, "evidence": "Circle of competence, expert advice"}], "summary": {"passed": 5, "failed": 1, "total": 6, "pass_rate": 0.8333333333333334}}}], "previous_feedback": {}, "previous_outputs": {}, "benchmark": {"metadata": {"skill_name": "great-mental-models", "skill_path": "\u003cpath/to/skill>", "executor_model": "\u003cmodel-name>", "analyzer_model": "\u003cmodel-name>", "timestamp": "2026-11-21T21:31:04Z", "evals_run": [1, 2, 3], "runs_per_configuration": 1}, "runs": [{"eval_id": 1, "eval_name": "gmm-map-circle", "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 6, "failed": 0, "total": 6, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Map: reality is the ultimate update", "passed": true, "evidence": "Reality is the ultimate update"}, {"text": "Map: consider the cartographer", "passed": true, "evidence": "Consider the cartographer"}, {"text": "Map: maps can influence territories (e.g., Jane Jacobs / city planners)", "passed": true, "evidence": "Jane Jacobs / maps influence territories"}, {"text": "Circle: built/maintained with curiosity (desire to learn), monitoring track record, and feedback", "passed": true, "evidence": "Curiosity, monitoring, feedback"}, {"text": "Outside circle: learn the basics, talk to someone with strong competence, use broad mental models", "passed": true, "evidence": "Learn basics, ask expert, broad models"}, {"text": "Uses the Lifer vs Stranger illustration or mentions Korzybski", "passed": true, "evidence": "Lifer vs Stranger, Korzybski"}], "notes": []}, {"eval_id": 2, "eval_name": "gmm-probability-inversion", "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 6, "failed": 0, "total": 6, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Probabilistic thinking has three parts: Bayesian thinking, fat-tailed curves, asymmetries", "passed": true, "evidence": "Three parts"}, {"text": "Explains asymmetries as metaprobability / estimates being over-optimistic (e.g., investors' 20-40% forecasts)", "passed": true, "evidence": "Metaprobability, 20-40% investors"}, {"text": "Inversion: two approaches (assume true/false and see what else must be true; think about what to avoid)", "passed": true, "evidence": "Two approaches"}, {"text": "Mentions Jacobi 'invert, always invert'", "passed": true, "evidence": "Jacobi"}, {"text": "Gives a book example of inversion (Hippasus sqrt 2, Bernays/Lucky Strike, or Marie Van Brittan Brown CCTV)", "passed": true, "evidence": "Hippasus, Bernays, Van Brittan Brown"}, {"text": "Includes Kurt Lewin's force field analysis steps", "passed": true, "evidence": "Force field analysis"}], "notes": []}, {"eval_id": 3, "eval_name": "gmm-decision", "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 6, "failed": 0, "total": 6, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Names the book's nine models (map/territory, circle of competence, first principles, thought experiment, second-order, probabilistic, inversion, Occam's razor, Hanlon's razor)", "passed": true, "evidence": "All nine models"}, {"text": "Applies first principles with Socratic questioning and/or Five Whys", "passed": true, "evidence": "Socratic / Five Whys"}, {"text": "Applies second-order thinking (consequences of consequences) to the decision", "passed": true, "evidence": "Second-order"}, {"text": "Applies inversion (what would make it fail / what to avoid)", "passed": true, "evidence": "Inversion with force field"}, {"text": "Applies probabilistic thinking with base rates/Bayesian updating", "passed": true, "evidence": "Base rates / Bayes"}, {"text": "Applies circle of competence with the operate-outside advice (learn basics, consult experts)", "passed": true, "evidence": "Circle with learn basics / experts"}], "notes": []}, {"eval_id": 1, "eval_name": "gmm-map-circle", "configuration": "without_skill", "run_number": 1, "result": {"pass_rate": 0.3333333333333333, "passed": 2, "failed": 4, "total": 6, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Map: reality is the ultimate update", "passed": false, "evidence": "Not mentioned"}, {"text": "Map: consider the cartographer", "passed": false, "evidence": "Not mentioned"}, {"text": "Map: maps can influence territories (e.g., Jane Jacobs / city planners)", "passed": false, "evidence": "Not mentioned"}, {"text": "Circle: built/maintained with curiosity (desire to learn), monitoring track record, and feedback", "passed": true, "evidence": "Curiosity, monitoring, feedback"}, {"text": "Outside circle: learn the basics, talk to someone with strong competence, use broad mental models", "passed": false, "evidence": "No clear three-step outside-circle advice"}, {"text": "Uses the Lifer vs Stranger illustration or mentions Korzybski", "passed": true, "evidence": "Resident vs tourist / Korzybski"}], "notes": []}, {"eval_id": 2, "eval_name": "gmm-probability-inversion", "configuration": "without_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 6, "failed": 0, "total": 6, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Probabilistic thinking has three parts: Bayesian thinking, fat-tailed curves, asymmetries", "passed": true, "evidence": "Bayes, fat tails, asymmetries"}, {"text": "Explains asymmetries as metaprobability / estimates being over-optimistic (e.g., investors' 20-40% forecasts)", "passed": true, "evidence": "Metaprobability, 20-40%"}, {"text": "Inversion: two approaches (assume true/false and see what else must be true; think about what to avoid)", "passed": true, "evidence": "Two ways to invert"}, {"text": "Mentions Jacobi 'invert, always invert'", "passed": true, "evidence": "Jacobi"}, {"text": "Gives a book example of inversion (Hippasus sqrt 2, Bernays/Lucky Strike, or Marie Van Brittan Brown CCTV)", "passed": true, "evidence": "Bernays/Lucky Strike"}, {"text": "Includes Kurt Lewin's force field analysis steps", "passed": true, "evidence": "Lewin force field"}], "notes": []}, {"eval_id": 3, "eval_name": "gmm-decision", "configuration": "without_skill", "run_number": 1, "result": {"pass_rate": 0.8333333333333334, "passed": 5, "failed": 1, "total": 6, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Names the book's nine models (map/territory, circle of competence, first principles, thought experiment, second-order, probabilistic, inversion, Occam's razor, Hanlon's razor)", "passed": true, "evidence": "Nine models named"}, {"text": "Applies first principles with Socratic questioning and/or Five Whys", "passed": false, "evidence": "First principles without Socratic/Five Whys"}, {"text": "Applies second-order thinking (consequences of consequences) to the decision", "passed": true, "evidence": "Second-order"}, {"text": "Applies inversion (what would make it fail / what to avoid)", "passed": true, "evidence": "Inversion"}, {"text": "Applies probabilistic thinking with base rates/Bayesian updating", "passed": true, "evidence": "Base rates"}, {"text": "Applies circle of competence with the operate-outside advice (learn basics, consult experts)", "passed": true, "evidence": "Circle of competence, expert advice"}], "notes": []}], "run_summary": {"with_skill": {"pass_rate": {"mean": 1.0, "stddev": 0.0, "min": 1.0, "max": 1.0}, "time_seconds": null, "tokens": null}, "without_skill": {"pass_rate": {"mean": 0.7222, "stddev": 0.3469, "min": 0.3333, "max": 1.0}, "time_seconds": null, "tokens": null}, "delta": {"pass_rate": "+0.28", "time_seconds": null, "tokens": null}}, "notes": ["Time recorded for 0 of 3 with_skill runs, 0 of 3 without_skill runs, so there is no time delta.", "Token count recorded for 0 of 3 with_skill runs, 0 of 3 without_skill runs, so there is no token count delta."]}};
+
+    // ---- State ----
+    let feedbackMap = {};  // run_id -> feedback text
+    let currentIndex = 0;
+    let visitedRuns = new Set();
+
+    // ---- Init ----
+    async function init() {
+      // Load saved feedback from server — but only if this isn't a fresh
+      // iteration (indicated by previous_feedback being present). When
+      // previous feedback exists, the feedback.json on disk is stale from
+      // the prior iteration and should not pre-fill the textareas.
+      const hasPrevious = Object.keys(EMBEDDED_DATA.previous_feedback || {}).length > 0
+        || Object.keys(EMBEDDED_DATA.previous_outputs || {}).length > 0;
+      if (!hasPrevious) {
+        try {
+          const resp = await fetch("/api/feedback");
+          const data = await resp.json();
+          if (data.reviews) {
+            for (const r of data.reviews) feedbackMap[r.run_id] = r.feedback;
+          }
+        } catch { /* first run, no feedback yet */ }
+      }
+
+      document.getElementById("skill-name").textContent = EMBEDDED_DATA.skill_name;
+      showRun(0);
+
+      // Wire up feedback auto-save
+      const textarea = document.getElementById("feedback");
+      let saveTimeout = null;
+      textarea.addEventListener("input", () => {
+        clearTimeout(saveTimeout);
+        document.getElementById("feedback-status").textContent = "";
+        saveTimeout = setTimeout(() => saveCurrentFeedback(), 800);
+      });
+    }
+
+    // ---- Navigation ----
+    function navigate(delta) {
+      const newIndex = currentIndex + delta;
+      if (newIndex >= 0 && newIndex < EMBEDDED_DATA.runs.length) {
+        saveCurrentFeedback();
+        showRun(newIndex);
+      }
+    }
+
+    function updateNavButtons() {
+      document.getElementById("prev-btn").disabled = currentIndex === 0;
+      document.getElementById("next-btn").disabled =
+        currentIndex === EMBEDDED_DATA.runs.length - 1;
+    }
+
+    // ---- Show a run ----
+    function showRun(index) {
+      currentIndex = index;
+      const run = EMBEDDED_DATA.runs[index];
+
+      // Progress
+      document.getElementById("progress").textContent =
+        `${index + 1} of ${EMBEDDED_DATA.runs.length}`;
+
+      // Prompt
+      document.getElementById("prompt-text").textContent = run.prompt;
+
+      // Config badge
+      const badge = document.getElementById("config-badge");
+      const configMatch = run.id.match(/(with_skill|without_skill|new_skill|old_skill)/);
+      if (configMatch) {
+        const config = configMatch[1];
+        const isBaseline = config === "without_skill" || config === "old_skill";
+        badge.textContent = config.replace(/_/g, " ");
+        badge.className = "config-badge " + (isBaseline ? "config-baseline" : "config-primary");
+        badge.style.display = "inline-block";
+      } else {
+        badge.style.display = "none";
+      }
+
+      // Outputs
+      renderOutputs(run);
+
+      // Previous outputs
+      renderPrevOutputs(run);
+
+      // Grades
+      renderGrades(run);
+
+      // Previous feedback
+      const prevFb = (EMBEDDED_DATA.previous_feedback || {})[run.id];
+      const prevEl = document.getElementById("prev-feedback");
+      if (prevFb) {
+        document.getElementById("prev-feedback-text").textContent = prevFb;
+        prevEl.style.display = "block";
+      } else {
+        prevEl.style.display = "none";
+      }
+
+      // Feedback
+      document.getElementById("feedback").value = feedbackMap[run.id] || "";
+      document.getElementById("feedback-status").textContent = "";
+
+      updateNavButtons();
+
+      // Track visited runs and promote done button when all visited
+      visitedRuns.add(index);
+      const doneBtn = document.getElementById("done-btn");
+      if (visitedRuns.size >= EMBEDDED_DATA.runs.length) {
+        doneBtn.classList.add("ready");
+      }
+
+      // Scroll main content to top
+      document.querySelector(".main").scrollTop = 0;
+    }
+
+    // ---- Render outputs ----
+    function renderOutputs(run) {
+      const container = document.getElementById("outputs-body");
+      container.innerHTML = "";
+
+      const outputs = run.outputs || [];
+      if (outputs.length === 0) {
+        container.innerHTML = '<div class="empty-state">No output files</div>';
+        return;
+      }
+
+      for (const file of outputs) {
+        const fileDiv = document.createElement("div");
+        fileDiv.className = "output-file";
+
+        // Always show file header with download link
+        const header = document.createElement("div");
+        header.className = "output-file-header";
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = file.name;
+        header.appendChild(nameSpan);
+        const dlBtn = document.createElement("a");
+        dlBtn.className = "dl-btn";
+        dlBtn.textContent = "Download";
+        dlBtn.download = file.name;
+        dlBtn.href = getDownloadUri(file);
+        header.appendChild(dlBtn);
+        fileDiv.appendChild(header);
+
+        const content = document.createElement("div");
+        content.className = "output-file-content";
+
+        if (file.type === "text") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          content.appendChild(pre);
+        } else if (file.type === "image") {
+          const img = document.createElement("img");
+          img.src = file.data_uri;
+          img.alt = file.name;
+          content.appendChild(img);
+        } else if (file.type === "pdf") {
+          const iframe = document.createElement("iframe");
+          iframe.src = file.data_uri;
+          content.appendChild(iframe);
+        } else if (file.type === "xlsx") {
+          renderXlsx(content, file.data_b64);
+        } else if (file.type === "binary") {
+          const a = document.createElement("a");
+          a.className = "download-link";
+          a.href = file.data_uri;
+          a.download = file.name;
+          a.textContent = "Download " + file.name;
+          content.appendChild(a);
+        } else if (file.type === "error") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          pre.style.color = "var(--red)";
+          content.appendChild(pre);
+        }
+
+        fileDiv.appendChild(content);
+        container.appendChild(fileDiv);
+      }
+    }
+
+    // ---- XLSX rendering via SheetJS ----
+    function renderXlsx(container, b64Data) {
+      try {
+        const raw = Uint8Array.from(atob(b64Data), c => c.charCodeAt(0));
+        const wb = XLSX.read(raw, { type: "array" });
+
+        for (let i = 0; i < wb.SheetNames.length; i++) {
+          const sheetName = wb.SheetNames[i];
+          const ws = wb.Sheets[sheetName];
+
+          if (wb.SheetNames.length > 1) {
+            const sheetLabel = document.createElement("div");
+            sheetLabel.style.cssText =
+              "font-weight:600; font-size:0.8rem; color:#b0aea5; margin-top:0.5rem; margin-bottom:0.25rem;";
+            sheetLabel.textContent = "Sheet: " + sheetName;
+            container.appendChild(sheetLabel);
+          }
+
+          const htmlStr = XLSX.utils.sheet_to_html(ws, { editable: false });
+          const wrapper = document.createElement("div");
+          wrapper.innerHTML = htmlStr;
+          container.appendChild(wrapper);
+        }
+      } catch (err) {
+        container.textContent = "Error rendering spreadsheet: " + err.message;
+      }
+    }
+
+    // ---- Grades ----
+    function renderGrades(run) {
+      const section = document.getElementById("grades-section");
+      const content = document.getElementById("grades-content");
+
+      if (!run.grading) {
+        section.style.display = "none";
+        return;
+      }
+
+      const grading = run.grading;
+      section.style.display = "block";
+      // Reset to collapsed
+      content.classList.remove("open");
+      document.getElementById("grades-arrow").classList.remove("open");
+
+      const summary = grading.summary || {};
+      const expectations = grading.expectations || [];
+
+      let html = '<div style="padding: 1rem;">';
+
+      // Summary line
+      const passRate = summary.pass_rate != null
+        ? Math.round(summary.pass_rate * 100) + "%"
+        : "?";
+      const badgeClass = summary.pass_rate >= 0.8 ? "grade-pass" : summary.pass_rate >= 0.5 ? "" : "grade-fail";
+      html += '<div class="grades-summary">';
+      html += '<span class="grade-badge ' + badgeClass + '">' + passRate + '</span>';
+      html += '<span>' + escapeHtml(summary.passed || 0) + ' passed, ' + escapeHtml(summary.failed || 0) + ' failed of ' + escapeHtml(summary.total || 0) + '</span>';
+      html += '</div>';
+
+      // Assertions list
+      html += '<ul class="assertion-list">';
+      for (const exp of expectations) {
+        const statusClass = exp.passed ? "pass" : "fail";
+        const statusIcon = exp.passed ? "\u2713" : "\u2717";
+        html += '<li class="assertion-item">';
+        html += '<span class="assertion-status ' + statusClass + '">' + statusIcon + '</span>';
+        html += '<span>' + escapeHtml(exp.text) + '</span>';
+        if (exp.evidence) {
+          html += '<div class="assertion-evidence">' + escapeHtml(exp.evidence) + '</div>';
+        }
+        html += '</li>';
+      }
+      html += '</ul>';
+
+      html += '</div>';
+      content.innerHTML = html;
+    }
+
+    function toggleGrades() {
+      const content = document.getElementById("grades-content");
+      const arrow = document.getElementById("grades-arrow");
+      content.classList.toggle("open");
+      arrow.classList.toggle("open");
+    }
+
+    // ---- Previous outputs (collapsible) ----
+    function renderPrevOutputs(run) {
+      const section = document.getElementById("prev-outputs-section");
+      const content = document.getElementById("prev-outputs-content");
+      const prevOutputs = (EMBEDDED_DATA.previous_outputs || {})[run.id];
+
+      if (!prevOutputs || prevOutputs.length === 0) {
+        section.style.display = "none";
+        return;
+      }
+
+      section.style.display = "block";
+      // Reset to collapsed
+      content.classList.remove("open");
+      document.getElementById("prev-outputs-arrow").classList.remove("open");
+
+      // Render the files into the content area
+      content.innerHTML = "";
+      const wrapper = document.createElement("div");
+      wrapper.style.padding = "1rem";
+
+      for (const file of prevOutputs) {
+        const fileDiv = document.createElement("div");
+        fileDiv.className = "output-file";
+
+        const header = document.createElement("div");
+        header.className = "output-file-header";
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = file.name;
+        header.appendChild(nameSpan);
+        const dlBtn = document.createElement("a");
+        dlBtn.className = "dl-btn";
+        dlBtn.textContent = "Download";
+        dlBtn.download = file.name;
+        dlBtn.href = getDownloadUri(file);
+        header.appendChild(dlBtn);
+        fileDiv.appendChild(header);
+
+        const fc = document.createElement("div");
+        fc.className = "output-file-content";
+
+        if (file.type === "text") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          fc.appendChild(pre);
+        } else if (file.type === "image") {
+          const img = document.createElement("img");
+          img.src = file.data_uri;
+          img.alt = file.name;
+          fc.appendChild(img);
+        } else if (file.type === "pdf") {
+          const iframe = document.createElement("iframe");
+          iframe.src = file.data_uri;
+          fc.appendChild(iframe);
+        } else if (file.type === "xlsx") {
+          renderXlsx(fc, file.data_b64);
+        } else if (file.type === "binary") {
+          const a = document.createElement("a");
+          a.className = "download-link";
+          a.href = file.data_uri;
+          a.download = file.name;
+          a.textContent = "Download " + file.name;
+          fc.appendChild(a);
+        }
+
+        fileDiv.appendChild(fc);
+        wrapper.appendChild(fileDiv);
+      }
+
+      content.appendChild(wrapper);
+    }
+
+    function togglePrevOutputs() {
+      const content = document.getElementById("prev-outputs-content");
+      const arrow = document.getElementById("prev-outputs-arrow");
+      content.classList.toggle("open");
+      arrow.classList.toggle("open");
+    }
+
+    // ---- Feedback (saved to server -> feedback.json) ----
+    function saveCurrentFeedback() {
+      const run = EMBEDDED_DATA.runs[currentIndex];
+      const text = document.getElementById("feedback").value;
+
+      if (text.trim() === "") {
+        delete feedbackMap[run.id];
+      } else {
+        feedbackMap[run.id] = text;
+      }
+
+      // Build reviews array from map
+      const reviews = [];
+      for (const [run_id, feedback] of Object.entries(feedbackMap)) {
+        if (feedback.trim()) {
+          reviews.push({ run_id, feedback, timestamp: new Date().toISOString() });
+        }
+      }
+
+      fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reviews, status: "in_progress" }),
+      }).then(() => {
+        document.getElementById("feedback-status").textContent = "Saved";
+      }).catch(() => {
+        // Static mode or server unavailable — no-op on auto-save,
+        // feedback will be downloaded on final submit
+        document.getElementById("feedback-status").textContent = "Will download on submit";
+      });
+    }
+
+    // ---- Done ----
+    function showDoneDialog() {
+      // Save current textarea to feedbackMap (but don't POST yet)
+      const run = EMBEDDED_DATA.runs[currentIndex];
+      const text = document.getElementById("feedback").value;
+      if (text.trim() === "") {
+        delete feedbackMap[run.id];
+      } else {
+        feedbackMap[run.id] = text;
+      }
+
+      // POST once with status: complete — include ALL runs so the model
+      // can distinguish "no feedback" (looks good) from "not reviewed"
+      const reviews = [];
+      const ts = new Date().toISOString();
+      for (const r of EMBEDDED_DATA.runs) {
+        reviews.push({ run_id: r.id, feedback: feedbackMap[r.id] || "", timestamp: ts });
+      }
+      const payload = JSON.stringify({ reviews, status: "complete" }, null, 2);
+      fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: payload,
+      }).then(() => {
+        document.getElementById("done-overlay").classList.add("visible");
+      }).catch(() => {
+        // Server not available (static mode) — download as file
+        const blob = new Blob([payload], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "feedback.json";
+        a.click();
+        URL.revokeObjectURL(url);
+        document.getElementById("done-overlay").classList.add("visible");
+      });
+    }
+
+    function closeDoneDialog() {
+      // Reset status back to in_progress
+      saveCurrentFeedback();
+      document.getElementById("done-overlay").classList.remove("visible");
+    }
+
+    // ---- Toast ----
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("visible");
+      setTimeout(() => toast.classList.remove("visible"), 2000);
+    }
+
+    // ---- Keyboard nav ----
+    document.addEventListener("keydown", (e) => {
+      // Don't capture when typing in textarea
+      if (e.target.tagName === "TEXTAREA") return;
+
+      if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+        e.preventDefault();
+        navigate(-1);
+      } else if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+        e.preventDefault();
+        navigate(1);
+      }
+    });
+
+    // ---- Util ----
+    function getDownloadUri(file) {
+      if (file.data_uri) return file.data_uri;
+      if (file.data_b64) return "data:application/octet-stream;base64," + file.data_b64;
+      if (file.type === "text") return "data:text/plain;charset=utf-8," + encodeURIComponent(file.content);
+      return "#";
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement("div");
+      div.textContent = text;
+      return div.innerHTML.replace(/"/g, "&quot;");
+    }
+
+    // ---- View switching ----
+    function switchView(view) {
+      document.querySelectorAll(".view-tab").forEach(t => t.classList.remove("active"));
+      document.querySelectorAll(".view-panel").forEach(p => p.classList.remove("active"));
+      document.querySelector(`[onclick="switchView('${view}')"]`).classList.add("active");
+      document.getElementById("panel-" + view).classList.add("active");
+    }
+
+    // ---- Benchmark rendering ----
+    function renderBenchmark() {
+      const data = EMBEDDED_DATA.benchmark;
+      if (!data) return;
+
+      // Show the tabs
+      document.getElementById("view-tabs").style.display = "flex";
+
+      const container = document.getElementById("benchmark-content");
+      const summary = data.run_summary || {};
+      const metadata = data.metadata || {};
+      const notes = data.notes || [];
+
+      let html = "";
+
+      // Header
+      html += "<h2 style='font-family: Poppins, sans-serif; margin-bottom: 0.5rem;'>Benchmark Results</h2>";
+      html += "<p style='color: var(--text-muted); font-size: 0.875rem; margin-bottom: 1.25rem;'>";
+      if (metadata.skill_name) html += "<strong>" + escapeHtml(metadata.skill_name) + "</strong> &mdash; ";
+      if (metadata.timestamp) html += escapeHtml(metadata.timestamp) + " &mdash; ";
+      if (metadata.evals_run) html += "Evals: " + escapeHtml(metadata.evals_run.join(", ")) + " &mdash; ";
+      html += escapeHtml(metadata.runs_per_configuration || "?") + (metadata.runs_per_configuration === 1 ? " run" : " runs") + " per configuration";
+      html += "</p>";
+
+      // Summary table
+      html += '<table class="benchmark-table">';
+
+      function fmtStat(stat, pct) {
+        if (!stat) return "—";
+        const suffix = pct ? "%" : "";
+        const m = pct ? (stat.mean * 100).toFixed(0) : stat.mean.toFixed(1);
+        const s = pct ? (stat.stddev * 100).toFixed(0) : stat.stddev.toFixed(1);
+        return m + suffix + " ± " + s + suffix;
+      }
+
+      function deltaClass(val) {
+        if (!val) return "";
+        const n = parseFloat(val);
+        if (n > 0) return "benchmark-delta-positive";
+        if (n < 0) return "benchmark-delta-negative";
+        return "";
+      }
+
+      // Discover config names dynamically (everything except "delta")
+      const configs = Object.keys(summary).filter(k => k !== "delta");
+      const configA = configs[0] || "config_a";
+      const configB = configs[1] || "config_b";
+      const labelA = configA.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      const labelB = configB.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      const a = summary[configA] || {};
+      const b = summary[configB] || {};
+      const delta = summary.delta || {};
+      // With a single configuration there is nothing to compare: only its column is shown
+      const compare = cells => configs.length >= 2 ? cells : "";
+
+      html += "<thead><tr><th>Metric</th><th>" + escapeHtml(labelA) + "</th>" + compare("<th>" + escapeHtml(labelB) + "</th><th>Delta</th>") + "</tr></thead>";
+      html += "<tbody>";
+
+      html += "<tr><td><strong>Pass Rate</strong></td>";
+      html += "<td>" + fmtStat(a.pass_rate, true) + "</td>";
+      html += compare("<td>" + fmtStat(b.pass_rate, true) + "</td>");
+      html += compare('<td class="' + deltaClass(delta.pass_rate) + '">' + escapeHtml(delta.pass_rate || "—") + "</td>") + "</tr>";
+
+      // Time (only show row if data exists)
+      if (a.time_seconds || b.time_seconds) {
+        html += "<tr><td><strong>Time (s)</strong></td>";
+        html += "<td>" + fmtStat(a.time_seconds, false) + "</td>";
+        html += compare("<td>" + fmtStat(b.time_seconds, false) + "</td>");
+        html += compare('<td class="' + deltaClass(delta.time_seconds) + '">' + escapeHtml(delta.time_seconds ? delta.time_seconds + "s" : "—") + "</td>") + "</tr>";
+      }
+
+      // Tokens (only show row if data exists)
+      if (a.tokens || b.tokens) {
+        html += "<tr><td><strong>Tokens</strong></td>";
+        html += "<td>" + fmtStat(a.tokens, false) + "</td>";
+        html += compare("<td>" + fmtStat(b.tokens, false) + "</td>");
+        html += compare('<td class="' + deltaClass(delta.tokens) + '">' + escapeHtml(delta.tokens || "—") + "</td>") + "</tr>";
+      }
+
+      html += "</tbody></table>";
+
+      // Per-eval breakdown (if runs data available)
+      const runs = data.runs || [];
+      if (runs.length > 0) {
+        // Numeric ids first, then ids that are names
+        const rank = id => typeof id === "number" ? 0 : 1;
+        const evalIds = [...new Set(runs.map(r => r.eval_id))].sort((a, b) =>
+          rank(a) - rank(b) || (rank(a) ? String(a).localeCompare(String(b)) : a - b));
+
+        html += "<h3 style='font-family: Poppins, sans-serif; margin-bottom: 0.75rem;'>Per-Eval Breakdown</h3>";
+
+        const hasTime = runs.some(r => r.result && r.result.time_seconds != null);
+        const hasErrors = runs.some(r => r.result && r.result.errors > 0);
+
+        for (const evalId of evalIds) {
+          const evalRuns = runs.filter(r => r.eval_id === evalId);
+          const evalName = evalRuns[0] && evalRuns[0].eval_name ? evalRuns[0].eval_name : "Eval " + evalId;
+
+          html += "<h4 style='font-family: Poppins, sans-serif; margin: 1rem 0 0.5rem; color: var(--text);'>" + escapeHtml(evalName) + "</h4>";
+          html += '<table class="benchmark-table">';
+          html += "<thead><tr><th>Config</th><th>Run</th><th>Pass Rate</th>";
+          if (hasTime) html += "<th>Time (s)</th>";
+          if (hasErrors) html += "<th>Crashes During Execution</th>";
+          html += "</tr></thead>";
+          html += "<tbody>";
+
+          // Group by config and render with average rows
+          const configGroups = [...new Set(evalRuns.map(r => r.configuration))];
+          for (let ci = 0; ci < configGroups.length; ci++) {
+            const config = configGroups[ci];
+            const configRuns = evalRuns.filter(r => r.configuration === config);
+            if (configRuns.length === 0) continue;
+
+            const rowClass = ci === 0 ? "benchmark-row-with" : "benchmark-row-without";
+            const configLabel = escapeHtml(config.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase()));
+
+            for (const run of configRuns) {
+              const r = run.result || {};
+              const prClass = r.pass_rate >= 0.8 ? "benchmark-delta-positive" : r.pass_rate < 0.5 ? "benchmark-delta-negative" : "";
+              html += '<tr class="' + rowClass + '">';
+              html += "<td>" + configLabel + "</td>";
+              html += "<td>" + escapeHtml(run.run_number) + "</td>";
+              html += '<td class="' + prClass + '">' + ((r.pass_rate || 0) * 100).toFixed(0) + "% (" + escapeHtml(r.passed || 0) + "/" + escapeHtml(r.total || 0) + ")</td>";
+              if (hasTime) html += "<td>" + (r.time_seconds != null ? r.time_seconds.toFixed(1) : "—") + "</td>";
+              if (hasErrors) html += "<td>" + escapeHtml(r.errors || 0) + "</td>";
+              html += "</tr>";
+            }
+
+            // Average row
+            const rates = configRuns.map(r => (r.result || {}).pass_rate || 0);
+            const avgRate = rates.reduce((a, b) => a + b, 0) / rates.length;
+            const avgPrClass = avgRate >= 0.8 ? "benchmark-delta-positive" : avgRate < 0.5 ? "benchmark-delta-negative" : "";
+            html += '<tr class="benchmark-row-avg ' + rowClass + '">';
+            html += "<td>" + configLabel + "</td>";
+            html += "<td>Avg</td>";
+            html += '<td class="' + avgPrClass + '">' + (avgRate * 100).toFixed(0) + "%</td>";
+            if (hasTime) {
+              const times = configRuns.map(r => (r.result || {}).time_seconds).filter(t => t != null);
+              html += "<td>" + (times.length ? (times.reduce((a, b) => a + b, 0) / times.length).toFixed(1) : "—") + "</td>";
+            }
+            if (hasErrors) html += "<td></td>";
+            html += "</tr>";
+          }
+          html += "</tbody></table>";
+
+          // Per-assertion detail for this eval
+          const runsWithExpectations = {};
+          for (const config of configGroups) {
+            runsWithExpectations[config] = evalRuns.filter(r => r.configuration === config && r.expectations && r.expectations.length > 0);
+          }
+          const hasAnyExpectations = Object.values(runsWithExpectations).some(runs => runs.length > 0);
+          if (hasAnyExpectations) {
+            // Collect all unique assertion texts across all configs
+            const allAssertions = [];
+            const seen = new Set();
+            for (const config of configGroups) {
+              for (const run of runsWithExpectations[config]) {
+                for (const exp of (run.expectations || [])) {
+                  if (!seen.has(exp.text)) {
+                    seen.add(exp.text);
+                    allAssertions.push(exp.text);
+                  }
+                }
+              }
+            }
+
+            html += '<table class="benchmark-table" style="margin-top: 0.5rem;">';
+            html += "<thead><tr><th>Assertion</th>";
+            for (const config of configGroups) {
+              const label = config.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+              html += "<th>" + escapeHtml(label) + "</th>";
+            }
+            html += "</tr></thead><tbody>";
+
+            for (const assertionText of allAssertions) {
+              html += "<tr><td>" + escapeHtml(assertionText) + "</td>";
+
+              for (const config of configGroups) {
+                html += "<td>";
+                for (const run of runsWithExpectations[config]) {
+                  const exp = (run.expectations || []).find(e => e.text === assertionText);
+                  if (exp) {
+                    const cls = exp.passed ? "benchmark-delta-positive" : "benchmark-delta-negative";
+                    const icon = exp.passed ? "\u2713" : "\u2717";
+                    html += '<span class="' + cls + '" title="Run ' + escapeHtml(run.run_number) + ': ' + escapeHtml(exp.evidence || "") + '">' + icon + "</span> ";
+                  } else {
+                    html += "— ";
+                  }
+                }
+                html += "</td>";
+              }
+              html += "</tr>";
+            }
+            html += "</tbody></table>";
+          }
+        }
+      }
+
+      // Notes
+      if (notes.length > 0) {
+        html += '<div class="benchmark-notes">';
+        html += "<h3>Analysis Notes</h3>";
+        html += "<ul>";
+        for (const note of notes) {
+          html += "<li>" + escapeHtml(note) + "</li>";
+        }
+        html += "</ul></div>";
+      }
+
+      container.innerHTML = html;
+    }
+
+    // ---- Start ----
+    init();
+    renderBenchmark();
+  </script>
+</body>
+</html>

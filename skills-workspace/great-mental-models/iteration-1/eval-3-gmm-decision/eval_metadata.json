@@ -1,0 +1,13 @@
+{
+ "eval_id": 3,
+ "eval_name": "gmm-decision",
+ "prompt": "I'm deciding whether to quit my job to start a bakery. Walk me through it using the nine models in The Great Mental Models Vol 1.",
+ "assertions": [
+  "Names the book's nine models (map/territory, circle of competence, first principles, thought experiment, second-order, probabilistic, inversion, Occam's razor, Hanlon's razor)",
+  "Applies first principles with Socratic questioning and/or Five Whys",
+  "Applies second-order thinking (consequences of consequences) to the decision",
+  "Applies inversion (what would make it fail / what to avoid)",
+  "Applies probabilistic thinking with base rates/Bayesian updating",
+  "Applies circle of competence with the operate-outside advice (learn basics, consult experts)"
+ ]
+}

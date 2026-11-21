@@ -1,0 +1,13 @@
+{
+ "eval_id": 2,
+ "eval_name": "gmm-probability-inversion",
+ "prompt": "Explain probabilistic thinking and inversion as presented in The Great Mental Models Vol 1, with the book's examples.",
+ "assertions": [
+  "Probabilistic thinking has three parts: Bayesian thinking, fat-tailed curves, asymmetries",
+  "Explains asymmetries as metaprobability / estimates being over-optimistic (e.g., investors' 20-40% forecasts)",
+  "Inversion: two approaches (assume true/false and see what else must be true; think about what to avoid)",
+  "Mentions Jacobi 'invert, always invert'",
+  "Gives a book example of inversion (Hippasus sqrt 2, Bernays/Lucky Strike, or Marie Van Brittan Brown CCTV)",
+  "Includes Kurt Lewin's force field analysis steps"
+ ]
+}

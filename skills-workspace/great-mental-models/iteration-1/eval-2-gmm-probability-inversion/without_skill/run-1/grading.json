@@ -1,0 +1,40 @@
+{
+ "expectations": [
+  {
+   "text": "Probabilistic thinking has three parts: Bayesian thinking, fat-tailed curves, asymmetries",
+   "passed": true,
+   "evidence": "Bayes, fat tails, asymmetries"
+  },
+  {
+   "text": "Explains asymmetries as metaprobability / estimates being over-optimistic (e.g., investors' 20-40% forecasts)",
+   "passed": true,
+   "evidence": "Metaprobability, 20-40%"
+  },
+  {
+   "text": "Inversion: two approaches (assume true/false and see what else must be true; think about what to avoid)",
+   "passed": true,
+   "evidence": "Two ways to invert"
+  },
+  {
+   "text": "Mentions Jacobi 'invert, always invert'",
+   "passed": true,
+   "evidence": "Jacobi"
+  },
+  {
+   "text": "Gives a book example of inversion (Hippasus sqrt 2, Bernays/Lucky Strike, or Marie Van Brittan Brown CCTV)",
+   "passed": true,
+   "evidence": "Bernays/Lucky Strike"
+  },
+  {
+   "text": "Includes Kurt Lewin's force field analysis steps",
+   "passed": true,
+   "evidence": "Lewin force field"
+  }
+ ],
+ "summary": {
+  "passed": 6,
+  "failed": 0,
+  "total": 6,
+  "pass_rate": 1.0
+ }
+}

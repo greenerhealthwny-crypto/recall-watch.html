@@ -1,0 +1,13 @@
+{
+ "eval_id": 1,
+ "eval_name": "gmm-map-circle",
+ "prompt": "According to The Great Mental Models Vol 1, what are the key lessons of 'the map is not the territory' and 'circle of competence'? How do I operate outside my circle?",
+ "assertions": [
+  "Map: reality is the ultimate update",
+  "Map: consider the cartographer",
+  "Map: maps can influence territories (e.g., Jane Jacobs / city planners)",
+  "Circle: built/maintained with curiosity (desire to learn), monitoring track record, and feedback",
+  "Outside circle: learn the basics, talk to someone with strong competence, use broad mental models",
+  "Uses the Lifer vs Stranger illustration or mentions Korzybski"
+ ]
+}

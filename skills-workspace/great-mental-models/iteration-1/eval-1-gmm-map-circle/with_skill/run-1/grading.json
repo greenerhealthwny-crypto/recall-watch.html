@@ -1,0 +1,40 @@
+{
+ "expectations": [
+  {
+   "text": "Map: reality is the ultimate update",
+   "passed": true,
+   "evidence": "Reality is the ultimate update"
+  },
+  {
+   "text": "Map: consider the cartographer",
+   "passed": true,
+   "evidence": "Consider the cartographer"
+  },
+  {
+   "text": "Map: maps can influence territories (e.g., Jane Jacobs / city planners)",
+   "passed": true,
+   "evidence": "Jane Jacobs / maps influence territories"
+  },
+  {
+   "text": "Circle: built/maintained with curiosity (desire to learn), monitoring track record, and feedback",
+   "passed": true,
+   "evidence": "Curiosity, monitoring, feedback"
+  },
+  {
+   "text": "Outside circle: learn the basics, talk to someone with strong competence, use broad mental models",
+   "passed": true,
+   "evidence": "Learn basics, ask expert, broad models"
+  },
+  {
+   "text": "Uses the Lifer vs Stranger illustration or mentions Korzybski",
+   "passed": true,
+   "evidence": "Lifer vs Stranger, Korzybski"
+  }
+ ],
+ "summary": {
+  "passed": 6,
+  "failed": 0,
+  "total": 6,
+  "pass_rate": 1.0
+ }
+}

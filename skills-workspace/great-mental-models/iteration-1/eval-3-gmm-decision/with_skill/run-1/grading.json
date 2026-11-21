@@ -1,0 +1,40 @@
+{
+ "expectations": [
+  {
+   "text": "Names the book's nine models (map/territory, circle of competence, first principles, thought experiment, second-order, probabilistic, inversion, Occam's razor, Hanlon's razor)",
+   "passed": true,
+   "evidence": "All nine models"
+  },
+  {
+   "text": "Applies first principles with Socratic questioning and/or Five Whys",
+   "passed": true,
+   "evidence": "Socratic / Five Whys"
+  },
+  {
+   "text": "Applies second-order thinking (consequences of consequences) to the decision",
+   "passed": true,
+   "evidence": "Second-order"
+  },
+  {
+   "text": "Applies inversion (what would make it fail / what to avoid)",
+   "passed": true,
+   "evidence": "Inversion with force field"
+  },
+  {
+   "text": "Applies probabilistic thinking with base rates/Bayesian updating",
+   "passed": true,
+   "evidence": "Base rates / Bayes"
+  },
+  {
+   "text": "Applies circle of competence with the operate-outside advice (learn basics, consult experts)",
+   "passed": true,
+   "evidence": "Circle with learn basics / experts"
+  }
+ ],
+ "summary": {
+  "passed": 6,
+  "failed": 0,
+  "total": 6,
+  "pass_rate": 1.0
+ }
+}
