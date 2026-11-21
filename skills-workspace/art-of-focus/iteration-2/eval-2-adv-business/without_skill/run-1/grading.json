@@ -1,0 +1,35 @@
+{
+ "expectations": [
+  {
+   "text": "'You are the niche' idea",
+   "passed": true,
+   "evidence": "Opening: 'Dan Koe's core idea is that you are the niche. You don't need to pick a narrow market and fake interest in it. You build a business around what you already do...'; 'talking to the version of yourself from two or three years ago' - consistent with SKILL.md."
+  },
+  {
+   "text": "Skill stack: message, medium, results-oriented skills",
+   "passed": false,
+   "evidence": "The message / medium / results-oriented skills stack is never named or described. Section 2 'Content Engine' is generic content advice (hub piece, repurposing) and does not present Koe's skill stack or 'specialized generalism'."
+  },
+  {
+   "text": "Project to product progression",
+   "passed": false,
+   "evidence": "No 'project to product' idea (taking personal projects public). Instead it presents an invented 'Learn / Do / Teach' three-layer model as 'His model', not in SKILL.md, plus a generic pricing product ladder."
+  },
+  {
+   "text": "Fill, empty, use content/learning loop",
+   "passed": false,
+   "evidence": "Fill / empty / use is absent. The only routine mentioned, 'Koe's routine is about two hours of focused creation each morning', is not in SKILL.md."
+  },
+  {
+   "text": "Concrete plan for the furniture interest",
+   "passed": true,
+   "evidence": "Concrete furniture plan: content ideas ('$15 Facebook Marketplace dresser -> $400 sale'), product table ('The Thrift Flip Playbook' $20-$50), and a Days 1-30 / 31-60 / 61-90 plan."
+  }
+ ],
+ "summary": {
+  "passed": 2,
+  "failed": 3,
+  "total": 5,
+  "pass_rate": 0.4
+ }
+}

@@ -1,0 +1,35 @@
+{
+ "expectations": [
+  {
+   "text": "Uses the book's four-step budgeting approach",
+   "passed": false,
+   "evidence": "States it lacks the book and uses 'the standard four-step budgeting method that guides of that era taught: (1) find out what comes in, (2) track what goes out, (3) set goals and priorities, (4) build the spending plan and check it each month'. This does not match the book's steps in SKILL.md (cash-flow analysis, set goals, allocate resources, year-end review); it has no year-end review and invents an income step."
+  },
+  {
+   "text": "Prioritizes an emergency fund and high-interest debt with numbers",
+   "passed": true,
+   "evidence": "'Starter emergency fund: about $600 to $1,000', 'Pay off the $3,100 card balance. At 24% APR this costs you about $62 a month in interest', then 3 months of expenses (~$4,500-$5,500)."
+  },
+  {
+   "text": "Gives a month-by-month or phased 12-month plan",
+   "passed": true,
+   "evidence": "Phased plan (Months 1-3, 4-10, 11-12) plus a month-by-month projection table ending with card $0 in month 11 and ~$1,296 savings at month 12."
+  },
+  {
+   "text": "Flags at least one dated 1989 figure or rule (e.g. tax or IRA limits) as changed",
+   "passed": true,
+   "evidence": "Flags 'Credit-card interest deductibility. The Tax Reform Act of 1986 phased out the deduction for consumer interest' and 'Retirement accounts ... predates the Roth IRA ... Contribution limits from 1989 are far too low'; consistent with SKILL.md, though framed generically ('any personal-finance guide from 1989')."
+  },
+  {
+   "text": "Mentions protecting the credit rating/report",
+   "passed": true,
+   "evidence": "'Pay the card on time every month (autopay at least the minimum)' and flag 3: 'Today you can get free reports from all three bureaus at AnnualCreditReport.com'. Mentioned, though only as a dated-item note rather than a planned action."
+  }
+ ],
+ "summary": {
+  "passed": 4,
+  "failed": 1,
+  "total": 5,
+  "pass_rate": 0.8
+ }
+}

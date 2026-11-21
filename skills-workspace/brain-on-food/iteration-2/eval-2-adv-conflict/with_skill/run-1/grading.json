@@ -1,0 +1,35 @@
+{
+ "expectations": [
+  {
+   "text": "States Naidoo's nuanced position on gluten (sensitivity varies, not universal ban)",
+   "passed": true,
+   "evidence": "Section 1 says gluten is on six cheat sheets, always conditioned on 'if you have celiac disease or non-celiac gluten sensitivity', and that whole grains are on her embrace lists (MIND diet, whole-wheat bread for myoinositol, whole-grain bread for depression). All of this matches cheat-sheets.md."
+  },
+  {
+   "text": "States her position on MSG/glutamates",
+   "passed": true,
+   "evidence": "Section 2 says MSG/glutamates appear only on the PTSD (p.98) and OCD (p.157-158) sheets. It lists the broad glutamate foods accurately and quotes her caveat that some of these foods help other conditions, so a 'personalized plan' is needed. This matches the skill files exactly."
+  },
+  {
+   "text": "Gives her caffeine guidance as a limit rather than a ban",
+   "passed": true,
+   "evidence": "Section 3: 'She never says to cut out all caffeine... keep it under 400 mg a day'. Its table covers anxiety, ADHD ('can help'), memory, insomnia ('You don't have to eliminate it completely', none after 3 p.m.), bipolar and libido, all matching the cheat sheets."
+  },
+  {
+   "text": "Raises orthorexia as a risk of over-restriction",
+   "passed": true,
+   "evidence": "Section 4 raises orthorexia nervosa from the OCD chapter. It mentions her admitted irony, the muscle-dysmorphia bodybuilder near kidney failure, and her advice to avoid radical diet changes. It adds self-check questions, labelled as general knowledge. Accurate to science-by-chapter.md Ch 7."
+  },
+  {
+   "text": "Recommends a measured approach (e.g. elimination trial, professional input)",
+   "passed": true,
+   "evidence": "Section 6 advises getting a celiac test before cutting gluten, setting a caffeine cap and tapering, 'Change one thing at a time and track how you feel over several weeks', and seeing a doctor, therapist or dietitian."
+  }
+ ],
+ "summary": {
+  "passed": 5,
+  "failed": 0,
+  "total": 5,
+  "pass_rate": 1.0
+ }
+}

@@ -1,0 +1,35 @@
+{
+ "expectations": [
+  {
+   "text": "Lists or references the ten scrolls accurately",
+   "passed": true,
+   "evidence": "Recap lists all ten with correct principles: habits (I), love (II), persistence (III), self-worth (IV), living each day as your last (V), mastering emotions (VI), laughter (VII), hundredfold goals (VIII), acting now (IX), prayer for guidance (X) - matches SKILL.md table."
+  },
+  {
+   "text": "Connects Scroll I's habit-formation idea to modern habit science",
+   "passed": true,
+   "evidence": "Agreement table: 'Habits decide outcomes (Scroll I...)' vs automaticity research; 'Repetition makes behavior automatic (\"easy, then a pleasure, then a habit\")'; 'Only a habit can subdue another habit' vs habit substitution; fixed cues vs implementation intentions/habit stacking. Book quotes match scrolls.md."
+  },
+  {
+   "text": "Notes something unusual (e.g. reading aloud 3x/day, 30 days per scroll, prayer scroll)",
+   "passed": true,
+   "evidence": "Section 3 covers reading (not the target behavior) as the habit, 'other mind' theory, 30 days vs Lally median ~66 days, 'never skip a day', reading aloud before bed, hundredfold goals, and the Scroll X prayer ('ability equal to your opportunities')."
+  },
+  {
+   "text": "Covers emotional control and/or act now",
+   "passed": true,
+   "evidence": "Scroll VI counter-actions quoted ('If I feel depressed I will sing... If I feel fear I will plunge ahead') linked to opposite action/behavioral activation; Scroll IX act now linked to procrastination research; Scroll VII 'This too shall pass' to reappraisal."
+  },
+  {
+   "text": "Distinguishes what the book says from the comparison",
+   "passed": true,
+   "evidence": "Explicit sourcing note: 'points about the book come from the text. Points about research are general summaries... (std)'; research columns marked (std); summary table has separate 'Mandino' and 'Modern habit science (std)' columns."
+  }
+ ],
+ "summary": {
+  "passed": 5,
+  "failed": 0,
+  "total": 5,
+  "pass_rate": 1.0
+ }
+}

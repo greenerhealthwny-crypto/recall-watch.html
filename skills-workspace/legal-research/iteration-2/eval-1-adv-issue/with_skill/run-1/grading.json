@@ -1,0 +1,35 @@
+{
+ "expectations": [
+  {
+   "text": "Frames the issue: civil vs criminal, substantive vs procedural, area of law",
+   "passed": true,
+   "evidence": "Section 1 'Frame the issue (Nolo's four steps, Ch. 3)': 'Civil, mainly' plus 'A possible criminal side'; separate 'Substantive issues' and 'Procedural issues' bullets; state vs federal; Step 2 'Area(s) of law' (contracts/commercial, consumer, tort/criminal, civil procedure). Matches SKILL.md's four-step framing."
+  },
+  {
+   "text": "Uses the Cartwheel method or keyword brainstorming",
+   "passed": true,
+   "evidence": "Section 2 'Search terms (Cartwheel)' table uses exactly the skill's nine categories (major words, broader, narrower, synonyms, antonyms, closely related, procedural, agencies, long shots) plus Boolean queries; the 'runs out of patience at the index' quote matches the skill."
+  },
+  {
+   "text": "Points to secondary sources first (e.g. practice guides, Am. Jur., form books) then primary law",
+   "passed": true,
+   "evidence": "Section 3 'Start with secondary sources (Ch. 2 and 4)' before Section 4 'Primary law': Nolo.com/Everybody's Guide to Small Claims Court, NY practice guide or encyclopedia (NY Jurisprudence), UCC treatise; 'state-specific source is almost always best' matches the skill's state-encyclopedia note. Then NY UCC, federal regs, small claims acts, cases."
+  },
+  {
+   "text": "Mentions checking that law is still good (Shepardize/KeyCite or updates/pocket parts)",
+   "passed": true,
+   "evidence": "Section 5 'Validate everything (Ch. 8)': 'check the pocket part, or the online update', 'Shepardize or KeyCite statutes', 'run any case... through Shepard's or KeyCite', free at county/law school library. Consistent with skill Ch 8."
+  },
+  {
+   "text": "Mentions small claims court and/or when to hire a lawyer; notes it's not legal advice",
+   "passed": true,
+   "evidence": "Header: 'This is legal information, not legal advice.' Sections 4C, 6 cover NY small claims court; Section 8 'When to involve a lawyer' (pattern of scams, legal aid, limited-scope help)."
+  }
+ ],
+ "summary": {
+  "passed": 5,
+  "failed": 0,
+  "total": 5,
+  "pass_rate": 1.0
+ }
+}

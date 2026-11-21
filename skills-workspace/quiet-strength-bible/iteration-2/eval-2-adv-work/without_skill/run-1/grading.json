@@ -1,0 +1,35 @@
+{
+ "expectations": [
+  {
+   "text": "Provides a 7-day structure",
+   "passed": true,
+   "evidence": "Seven headed days, 'Day 1: Commit the Work to God' through 'Day 7: Generosity and a Lasting Legacy', each with readings, Reflection, Reflect questions, Business Step and Prayer."
+  },
+  {
+   "text": "Uses Proverbs passages on work or wealth",
+   "passed": true,
+   "evidence": "Proverbs 16:3, 10:4, 21:5, 6:6-11, 11:1, 10:9, 11:3, 30:8-9, 23:4-5, 3:5-10, 15:22, 27:23-24, 22:7, 11:24-25, 22:1 - all on work, wealth or integrity. No book-specific claims made, so nothing to contradict the skill files."
+  },
+  {
+   "text": "Uses NT passages on money/integrity",
+   "passed": true,
+   "evidence": "Luke 16:10, 1 Timothy 6:6-10,17-19, Matthew 6:19-21,24-34, 2 Thessalonians 3:10-13, Colossians 3:23-24, 2 Corinthians 9:6-8 on money/integrity/work."
+  },
+  {
+   "text": "Each day includes an application or reflection question",
+   "passed": true,
+   "evidence": "Each day has a 'Reflect' section with questions (e.g., Day 3 'Where might I be tempted to shade the truth...?', Day 4 'What number would feel like \"enough\"?') plus a 'Business Step'."
+  },
+  {
+   "text": "Stays faithful to scripture rather than prosperity-gospel promises",
+   "passed": true,
+   "evidence": "Day 4: 'Scripture doesn't call money evil. It calls the love of money a root of evil... a tool or a master'; Day 5: 'Trust isn't the same as being careless'; Day 7 reads 2 Cor 9:8 as blessing 'so that you can abound in good work... through you, not just to you'. Proverbs 3:9-10 and 11:24-25 are quoted but not turned into wealth guarantees."
+  }
+ ],
+ "summary": {
+  "passed": 5,
+  "failed": 0,
+  "total": 5,
+  "pass_rate": 1.0
+ }
+}

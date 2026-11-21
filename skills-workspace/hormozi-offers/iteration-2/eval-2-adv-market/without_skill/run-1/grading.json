@@ -1,0 +1,35 @@
+{
+ "expectations": [
+  {
+   "text": "Uses the four criteria: massive pain, purchasing power, easy to target, growing",
+   "passed": true,
+   "evidence": "Lists 'Massive pain', 'Purchasing power', 'Easy to target' ('associations, publications, groups, lists') and 'Growing' ('a tailwind'). These match offer-framework.md \u00a71."
+  },
+  {
+   "text": "Scores each market on the criteria",
+   "passed": false,
+   "evidence": "It does score each market (8/10/10/7, 8/6/7/7, 3/2/6/4). But it attributes the method to the book: 'He suggests scoring each 1-10' and 'a zero on any one\u2026 can sink the market'. Neither is in SKILL.md or the references, so it is an invented framework misattributed to Hormozi, which fails under the grading rules."
+  },
+  {
+   "text": "Ranks dentists high on purchasing power and targetability and teens low on purchasing power",
+   "passed": true,
+   "evidence": "Dentists: 'Purchasing power (10)', 'Easy to target (10)'. Teens: 'Purchasing power (2): Teens have little money of their own; parents pay'."
+  },
+  {
+   "text": "Notes market matters more than offer or persuasion (order of importance)",
+   "passed": true,
+   "evidence": "'Hormozi says the market matters more than the offer or the persuasion skill. A great offer to the wrong market fails; a decent offer to a starving crowd wins.' This is consistent with the order of importance in SKILL.md."
+  },
+  {
+   "text": "Gives a clear final ranking with reasoning",
+   "passed": true,
+   "evidence": "A clear 'Ranking: 1. Dentists 2. Busy moms 3. Teenagers' with per-criterion reasoning and verdicts. Note: it includes the unsupported claim 'Hormozi himself points to selling business-growth services to businesses with clear ROI as the easiest route', which is not in the skill files. The ranking and the reasoning built on the criteria still hold."
+  }
+ ],
+ "summary": {
+  "passed": 4,
+  "failed": 1,
+  "total": 5,
+  "pass_rate": 0.8
+ }
+}

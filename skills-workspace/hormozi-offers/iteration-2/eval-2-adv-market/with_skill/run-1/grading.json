@@ -1,0 +1,35 @@
+{
+ "expectations": [
+  {
+   "text": "Uses the four criteria: massive pain, purchasing power, easy to target, growing",
+   "passed": true,
+   "evidence": "Lists 'four indicators': Massive pain ('The pain is the pitch'), Purchasing power (the resume-service-for-the-unemployed example), Easy to target, and Growing (newspapers had three of four). All match the offer-framework.md \u00a71 table."
+  },
+  {
+   "text": "Scores each market on the criteria",
+   "passed": true,
+   "evidence": "The scorecard table scores all three markets 1\u20135 on each indicator, with reasons. Totals: dentists 18, moms 14, teens 6. The scoring is presented as a judgment call ('The scores are judgment calls\u2026 not market data') and is not attributed to Hormozi."
+  },
+  {
+   "text": "Ranks dentists high on purchasing power and targetability and teens low on purchasing power",
+   "passed": true,
+   "evidence": "Dentists get 'Purchasing power 5' and 'Easy to target 5'; teens get 'Purchasing power 1: teens have little money. Parents are the real buyers'. This is tied to the resume-service trap."
+  },
+  {
+   "text": "Notes market matters more than offer or persuasion (order of importance)",
+   "passed": true,
+   "evidence": "Opens with 'Starving Crowd (market) > Offer Strength > Persuasion Skills. A great market can save a weak offer, and a bad market sinks even a brilliant one', matching SKILL.md item 3. It closes with 'persuasion can't fix a bad market'."
+  },
+  {
+   "text": "Gives a clear final ranking with reasoning",
+   "passed": true,
+   "evidence": "'Rank: (b) Dentists > (a) Busy moms > (c) Teen guitarists', with a reasoned section per market. Minor: 'Rich doctors are easy to find' is the book's easy-to-target example, cited here under purchasing power, but it is not a factual error."
+  }
+ ],
+ "summary": {
+  "passed": 5,
+  "failed": 0,
+  "total": 5,
+  "pass_rate": 1.0
+ }
+}

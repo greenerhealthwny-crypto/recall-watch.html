@@ -1,0 +1,35 @@
+{
+ "expectations": [
+  {
+   "text": "Follows the five-step build: dream outcome, problems, solutions, delivery vehicles, trim and stack",
+   "passed": true,
+   "evidence": "Has sections '1. Dream Outcome', '2. Problems' (before/during/after), '3. Solutions (turn each problem into a \"how to\")', '4. Delivery Vehicles' (DFY/DWY/DIY, one-on-one or group, medium, speed tiers) and '5. Trim and Stack'. Minor deviation: its trim rule is only 'high value, low cost = keep; low value, high cost = cut', and it cuts 'Epoxy floor | High | High' to an upsell, whereas the book keeps high-cost/high-value items. That one row does not undo the overall five-step build."
+  },
+  {
+   "text": "Uses the Value Equation (dream outcome, likelihood, time delay, effort)",
+   "passed": true,
+   "evidence": "States 'Value = (Dream Outcome x Perceived Likelihood of Achievement) / (Time Delay x Effort and Sacrifice)', which matches SKILL.md. It also includes a lever table comparing competitors with the user on all four drivers."
+  },
+  {
+   "text": "Recommends premium pricing rather than undercutting $300",
+   "passed": true,
+   "evidence": "'Do not compete with the $300 load\u2026 Charge a premium and use that margin to deliver more.' Tiers are $795 / $1,295 / $2,495, priced against a value anchor of '$1,300-$1,850'."
+  },
+  {
+   "text": "Includes a specific guarantee and scarcity/urgency and bonuses",
+   "passed": false,
+   "evidence": "There is a specific guarantee ('Garage done in one day, or it's free') and there are bonuses (a 6-month 'Reset Visit' and a checklist). But no scarcity or urgency appears anywhere: no capacity limits, deadlines, cohorts or expiring bonuses. A 'rush fee' is a price add-on, not urgency. The guarantee is also mislabelled 'conditional, unconditional feel', which does not match the book's four types. The scarcity/urgency part of the assertion fails."
+  },
+  {
+   "text": "Gives a name using M-A-G-I-C",
+   "passed": true,
+   "evidence": "'MAGIC = Magnetic reason why, Avatar (who it's for), Goal (dream outcome), Interval (time frame), Container word', which matches enhancers.md \u00a75. Several names are annotated by component, for example 'Pre-Sale Garage Blitz for Home Sellers: Show-Ready in 24 Hours' (Avatar + Goal + Interval + Container)."
+  }
+ ],
+ "summary": {
+  "passed": 4,
+  "failed": 1,
+  "total": 5,
+  "pass_rate": 0.8
+ }
+}

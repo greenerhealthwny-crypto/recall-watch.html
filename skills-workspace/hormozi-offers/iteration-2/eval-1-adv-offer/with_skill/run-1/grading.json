@@ -1,0 +1,35 @@
+{
+ "expectations": [
+  {
+   "text": "Follows the five-step build: dream outcome, problems, solutions, delivery vehicles, trim and stack",
+   "passed": true,
+   "evidence": "Explicit sections 'Step 1: The dream outcome', 'Step 2: Every problem in the way (before, during and after)', 'Step 3: Solutions (reverse each problem with \"how to\u2026\", then name it)', 'Step 4: Delivery vehicles (the \"cheat codes\")' covering one-to-one/group, DIY/DWY/DFY, medium, response speed and the 10x/one-tenth test, and 'Step 5: Trim and stack' keeping 'low cost / high value and high cost / high value'. All match offer-framework.md \u00a74, including 'Create flow. Monetize flow. Then add friction.'"
+  },
+  {
+   "text": "Uses the Value Equation (dream outcome, likelihood, time delay, effort)",
+   "passed": true,
+   "evidence": "Each problem is scored on 'O = isn't worth it (outcome), L = won't work for me (likelihood), T = takes too long (time delay), E = too hard (effort and sacrifice)', which matches the four drivers and their buyer objections in offer-framework.md \u00a74 Step 2. The launch section also cites 'perceived likelihood, the Value Equation driver'."
+  },
+  {
+   "text": "Recommends premium pricing rather than undercutting $300",
+   "passed": true,
+   "evidence": "'Core \"Listing-Ready Garage Reset\": $1,497', with tiers at $2,997 and 'from $4,500'. It quotes '99 percent of businesses need to raise their prices to grow', 'virtuous cycle of price' and 'Profit is oxygen', all matching SKILL.md. The $300 load is kept only as a downsell: 'Never lead with it.'"
+  },
+  {
+   "text": "Includes a specific guarantee and scarcity/urgency and bonuses",
+   "passed": true,
+   "evidence": "Uses the guarantee formula 'If you do not get X result in Y time period, we will Z' with a specific Listing-Date Guarantee: 'not empty, clean and photo-ready by the date we lock in\u2026 you don't pay\u2026 and we'll pay $250'. Its conditions are tied to key actions, consistent with enhancers.md \u00a74. The 23% refund math is correct. Named and priced bonuses each answer a doubt, and the partner-bonus idea matches \u00a73. Real capacity scarcity ('[N] Listing-Ready Resets per week') plus rolling and seasonal urgency are given, with the ethics caveat."
+  },
+  {
+   "text": "Gives a name using M-A-G-I-C",
+   "passed": true,
+   "evidence": "The M-A-G-I-C breakdown is correct: Magnetic reason why, Announce the avatar, Give a goal, Indicate a time interval, Container word (matches enhancers.md \u00a75). The name 'The Home Seller's 1-Day Listing-Ready Garage Reset' is annotated with A, I, G and C."
+  }
+ ],
+ "summary": {
+  "passed": 5,
+  "failed": 0,
+  "total": 5,
+  "pass_rate": 1.0
+ }
+}

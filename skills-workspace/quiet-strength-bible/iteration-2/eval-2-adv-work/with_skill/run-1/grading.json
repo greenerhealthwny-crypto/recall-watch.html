@@ -1,0 +1,35 @@
+{
+ "expectations": [
+  {
+   "text": "Provides a 7-day structure",
+   "passed": true,
+   "evidence": "Seven headed days: 'Day 1. Who is the real boss?' through 'Day 7. A good name and the long view', each with readings, Observe/Interpret/Apply, and prayer."
+  },
+  {
+   "text": "Uses Proverbs passages on work or wealth",
+   "passed": true,
+   "evidence": "Proverbs 16:3, 10:9, 11:1, 30:8-9, 3:5-6, 21:5, 13:11, 14:23, 15:22, 22:1, 2:6-8. Book-specific claims check out: Proverbs p.301, Agur listed as a Proverbs author, Proverbs 10:9 and 2:6-7 correctly marked (VF) under Integrity, Proverbs as 'practical wisdom for every area of life'."
+  },
+  {
+   "text": "Uses NT passages on money/integrity",
+   "passed": true,
+   "evidence": "Matthew 6:19-21,24; Luke 12:21; Matthew 6:33; Hebrews 13:5; 1 Timothy 6:6-10,17-19; Luke 16:10; Titus 2:7; Ephesians 6:5-7. VF principle statements quoted accurately ('Wealth must be used wisely', 'Integrity must be protected', 'Work must be done with God in mind... God is ultimately your true boss', 'Responsibility must be accepted', 'Simplicity must be sought'); minor range extensions (Matt 6:19-21 vs VF 6:19; Matt 25:21,23 vs VF 25:23) are not errors of substance."
+  },
+  {
+   "text": "Each day includes an application or reflection question",
+   "passed": true,
+   "evidence": "Every day has an 'Apply' section with concrete actions (e.g., Day 2 'honest scales' checklist; Day 3 define 'enough' and a generosity plan; Day 5 90-day plan; Day 7 'Business Playbook'), several with reflection questions ('if God were my client, what would I change?')."
+  },
+  {
+   "text": "Stays faithful to scripture rather than prosperity-gospel promises",
+   "passed": true,
+   "evidence": "Day 4: 'Jesus' answer to money worry is not \"you'll get rich\"... Philippians 4:13 ... isn't a promise of business success.' Day 5: Proverbs 'shows what is generally true, not guaranteed formulas.' Day 3: money as tool, not master."
+  }
+ ],
+ "summary": {
+  "passed": 5,
+  "failed": 0,
+  "total": 5,
+  "pass_rate": 1.0
+ }
+}

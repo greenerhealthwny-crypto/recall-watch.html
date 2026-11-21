@@ -1,0 +1,35 @@
+{
+ "expectations": [
+  {
+   "text": "States Naidoo's nuanced position on gluten (sensitivity varies, not universal ban)",
+   "passed": true,
+   "evidence": "'Gluten is clearly a problem for people with coeliac disease... non-coeliac gluten sensitivity... She does not say everyone should go gluten-free.' This matches the book's conditional position, though it is hedged 'as I recall the book'."
+  },
+  {
+   "text": "States her position on MSG/glutamates",
+   "passed": false,
+   "evidence": "It is factually wrong against the book: 'MSG is not a major theme of her book' and 'MSG barely features in her advice.' In fact, MSG, glutamates and glutamic acid are on the PTSD (p.98) and OCD (p.157-158) avoid lists, with a long food list. It gives general research on MSG instead of her position."
+  },
+  {
+   "text": "Gives her caffeine guidance as a limit rather than a ban",
+   "passed": false,
+   "evidence": "It does say she 'doesn't require everyone to cut it out entirely', but it never gives her actual guidance (under 400 mg a day, none after 3 p.m.). Instead it offers a non-book target ('about 1-2 cups... before noon'). It also misstates her ADHD position ('mixed, modest effect. It isn't a treatment') when the ADHD cheat sheet says caffeine 'can help'."
+  },
+  {
+   "text": "Raises orthorexia as a risk of over-restriction",
+   "passed": true,
+   "evidence": "Section 4 defines orthorexia nervosa, lists warning signs, and says 'cutting three things at once... is a common way into this pattern.' It does not note that Naidoo herself covers orthorexia (Ch 7), but the assertion only requires raising the risk."
+  },
+  {
+   "text": "Recommends a measured approach (e.g. elimination trial, professional input)",
+   "passed": true,
+   "evidence": "Section 5 says to add before you subtract, change one thing at a time for 2-4 weeks and track it, test for coeliac disease before a structured gluten trial, and get help from a registered dietitian or therapist."
+  }
+ ],
+ "summary": {
+  "passed": 3,
+  "failed": 2,
+  "total": 5,
+  "pass_rate": 0.6
+ }
+}

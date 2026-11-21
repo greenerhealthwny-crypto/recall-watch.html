@@ -1,0 +1,35 @@
+{
+ "expectations": [
+  {
+   "text": "References the Entrepreneurial Quotient quiz/self-assessment",
+   "passed": true,
+   "evidence": "Opens with the E.Q. quiz 'prepared by Northwestern Mutual Life' and scores the user's traits against actual items (cautious youngster minus, enjoyed group activities -1, willing to spend savings +2, top student -4, childhood enterprises +2/-2) and score bands ('might make a go of it if you work extra hard', 'talents probably lie elsewhere'). All match capital-and-protection.md \u00a74."
+  },
+  {
+   "text": "Addresses obsessive drive as a requirement",
+   "passed": true,
+   "evidence": "The 'Obsessive drive' section quotes 'It should be obsessive', 'a will to shine, not merely survive' and 'no such thing as a nine-to-five entrepreneur', cites Imperatore, and notes the user has named no obsession. Matches SKILL.md and case-studies.md."
+  },
+  {
+   "text": "Explains the X factor and/or happenstance in founders' stories",
+   "passed": true,
+   "evidence": "Defines the X factor as 'the single, totally unexpected situation that no research can uncover' (matches SKILL.md). Gives happenstance via the 550-acre rezoning and the Fifth Avenue building ('No brains, just happenstance'), plus the 1937 crash cutting Levitt's savings from $10,000 to $1,000. All match principles.md."
+  },
+  {
+   "text": "Gives advice consistent with keeping risk low (starting small, protecting capital) tied to the user's situation",
+   "passed": true,
+   "evidence": "Keep the job, spend a few hundred dollars at most, no leases or loans, $2,000 is for testing and not opening, 'an inclination to gamble' as a failure cause, the Raveis part-time lesson (matches case-studies.md), and a preset risk rule."
+  },
+  {
+   "text": "Is honest that the quiz is self-assessment, not a verdict",
+   "passed": true,
+   "evidence": "Says Levitt was 'not suggesting that you take this test too seriously', that it 'can't predict your success', to treat it as 'a conversation starter... not a verdict', and that a full numeric score isn't possible from what the user gave."
+  }
+ ],
+ "summary": {
+  "passed": 5,
+  "failed": 0,
+  "total": 5,
+  "pass_rate": 1.0
+ }
+}

@@ -1,0 +1,35 @@
+{
+ "expectations": [
+  {
+   "text": "Starts with the anti-vision",
+   "passed": true,
+   "evidence": "'Step 1: Anti-vision' asks for 'the life you refuse to live: how you don't want to look, feel and act, the money that would be too little, the places you'd hate... until you feel uncomfortable. Then use that discomfort as fuel' - matches SKILL.md formula step 1."
+  },
+  {
+   "text": "Moves to vision derived from it",
+   "passed": true,
+   "evidence": "'Step 2: Vision... Using the anti-vision as raw material, write the future you do want... big, not limited by your current beliefs, and emotionally compelling'; prompt 1 'Inverse of the anti-vision'; quotes 'Dance between the two' - all match SKILL.md."
+  },
+  {
+   "text": "Purpose / path of mastery",
+   "passed": true,
+   "evidence": "'Step 3: Purpose and the path of mastery' turns vision into a purpose statement and 'a big goal', plus skills to master - matches SKILL.md step 3 (purpose -> big goal)."
+  },
+  {
+   "text": "Breaks goals from yearly to monthly, weekly and daily",
+   "passed": true,
+   "evidence": "Step 4 table: Big goal -> Yearly -> Monthly -> Weekly -> Daily, and says each level 'frames your attention, and repels distractions' - matches SKILL.md wording."
+  },
+  {
+   "text": "Gives prompts/questions the user can answer",
+   "passed": true,
+   "evidence": "Numbered prompts in every step (e.g. 'What income feels insultingly small to me...', 'Finish this line: I am becoming someone who ___ so that ___') plus a fill-in table; clearly labels prompts as its own working version rather than the book's."
+  }
+ ],
+ "summary": {
+  "passed": 5,
+  "failed": 0,
+  "total": 5,
+  "pass_rate": 1.0
+ }
+}

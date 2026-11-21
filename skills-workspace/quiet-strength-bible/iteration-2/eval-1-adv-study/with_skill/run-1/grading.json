@@ -1,0 +1,35 @@
+{
+ "expectations": [
+  {
+   "text": "Uses the three-step method: observation, interpretation, application",
+   "passed": true,
+   "evidence": "Line 3 names the edition's 'A Life of Quiet Strength' method 'Observation, Interpretation, Application'; sections 'Step 1: Observation', 'Step 2: Interpretation', 'Step 3: Application' match SKILL.md (restate in own words/underline; ask why written, use Overview/commentary; 'So what?' with 2 Timothy 3:16)."
+  },
+  {
+   "text": "Applies each step to Philippians 4:6-7 specifically",
+   "passed": true,
+   "evidence": "Observation table breaks down 4:6-7 (Stop/Start/With/Promise/guard/'in Christ Jesus') with underline words; Interpretation uses the edition's Philippians overview (Paul, around AD 61, letter, 'mind-set, attitude and outlook... joy of the Lord in a troubled world' - matches book-overviews.md, p.169 correct); Application turns 4:6-7 into worry->request->thanks steps."
+  },
+  {
+   "text": "Gives related verses on fear/anxiety or prayer",
+   "passed": true,
+   "evidence": "'Related verses from the Quiet Strength Verse Finder' lists Courage/Fear 1 John 4:18, Psalm 27:1; Assurance Romans 8:38-39, John 6:37-40, 10:27-29, Romans 5:1-5, Eph 3:12, 2 Tim 1:12; Protection 2 Thess 3:3; Psalm 46:1-3; Prayer practice (Matt 7:7-8, Heb 4:16, James 5:16). All match verse-finder.md; non-VF verses (Matt 6:25-34, 1 Pet 5:7) are clearly labeled 'not from the Verse Finder'."
+  },
+  {
+   "text": "Connects to Dungy's 'God's playbook' framing or the Principles/Practices/Priorities structure",
+   "passed": true,
+   "evidence": "Line 3: 'Tony Dungy calls the Bible \"God's playbook\". His advice is to study it before the game, not after you've fallen behind'; closing tip on the head coach answering questions about plays; Dungy's 'read daily and pray daily' rhythm - all match SKILL.md. Also uses VF practice wording ('Thankfulness must be cultivated', 'Prayer must be sincere and persistent')."
+  },
+  {
+   "text": "Gives a concrete personal application",
+   "passed": true,
+   "evidence": "Step 3 gives concrete steps (name the worry, convert 'What if I can't pay this bill?' into a request, attach thanks, re-aim thinking per 4:8, do the next faithful thing) plus a 7-day practice table and memory phrase."
+  }
+ ],
+ "summary": {
+  "passed": 5,
+  "failed": 0,
+  "total": 5,
+  "pass_rate": 1.0
+ }
+}

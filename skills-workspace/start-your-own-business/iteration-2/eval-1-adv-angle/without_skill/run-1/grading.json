@@ -1,0 +1,35 @@
+{
+ "expectations": [
+  {
+   "text": "Poses Levitt's core question: why should customers come to me instead of where they go now",
+   "passed": true,
+   "evidence": "Section 1 poses '\"Why would a customer buy from me instead of from the competition?\"' and says demand already being met is not an answer. This paraphrase, shown in quotation marks, is not Levitt's wording ('...instead of continuing to go where they have been going'), but the substance matches."
+  },
+  {
+   "text": "Applies 'giving more without charging more' with concrete furniture-shop examples",
+   "passed": true,
+   "evidence": "Section 2 table gives concrete extras: free delivery over $150, a 'cleaned, sanitized and inspected' tag, a 7-day exchange, measurements on tags, a hold service, a want list, free seller pickup. It has no Levitt mechanism, but the assertion only asks for concrete furniture examples."
+  },
+  {
+   "text": "Walks through the complete package elements (presentation, service, product, finance, timing, execution) and flags the riskiest",
+   "passed": false,
+   "evidence": "It describes Levitt's package as '(product, price, location, service, store, people)', which is not the book's list (presentation, service, product, finance, timing, execution per SKILL.md). Its ranked list (supply, location, price, logistics, presentation, service, marketing) leaves out timing and execution."
+  },
+  {
+   "text": "Draws a lesson from Levitt's own failures (e.g. advertising that did not pay, weak name, no second-in-command)",
+   "passed": false,
+   "evidence": "It draws no lesson from Levitt's own failures. There is no mention of the advertising that did not pay, the name, the window ad, succession or staff turnover."
+  },
+  {
+   "text": "Ends with a concrete go/no-go test or next steps rather than generic encouragement",
+   "passed": true,
+   "evidence": "Section 4 gives a concrete test: run online/pop-up for 3-6 months, track cost per piece, days to sell and margin, and open only if pieces sell in under 30 days; also '40-60 good pieces in 60 days... If you can't, stop here.'"
+  }
+ ],
+ "summary": {
+  "passed": 3,
+  "failed": 2,
+  "total": 5,
+  "pass_rate": 0.6
+ }
+}

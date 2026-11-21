@@ -1,0 +1,35 @@
+{
+ "expectations": [
+  {
+   "text": "Explains the 30-day reading method: silently on waking, after the midday meal, aloud before bed",
+   "passed": true,
+   "evidence": "Section 3 table: 'When you wake up | Read Scroll III silently', 'After lunch | Read it silently again', 'Just before bed | Read it aloud'; plus 'Do not skip a day' and '30 days on one scroll' and the 'other mind' - all match SKILL.md method."
+  },
+  {
+   "text": "Notes Scroll I (habits) is the first scroll / scrolls are read in order",
+   "passed": true,
+   "evidence": "'An honest note on the book's order': 'He tells you to read them in order, starting with Scroll I (form good habits)... A strict reading of the book puts Scroll III in your third month.' Correct per SKILL.md, though it recommends starting on III (option A) while giving option B by the book."
+  },
+  {
+   "text": "Explains persistence and the law of averages (each no brings a yes closer)",
+   "passed": true,
+   "evidence": "Section 2: 'each \"nay\" brings him \"closer to the sound of yea\"', 'I must fail often to succeed only once', blow of the blade against an oak, 'make one more attempt' - all match references/scrolls.md Scroll III."
+  },
+  {
+   "text": "Uses mood mastery or 'This too shall pass' for rejection",
+   "passed": true,
+   "evidence": "Section 4: 'Bad mood after a harsh rejection -> Scroll VI... \"If I feel depressed I will sing... If I feel fear I will plunge ahead\"' and 'A deal falls through -> Scroll VII. Say the four words, \"This too shall pass\"' - correct scroll attributions per scrolls.md."
+  },
+  {
+   "text": "Gives a concrete daily routine",
+   "passed": true,
+   "evidence": "Daily reading table with times, daily behaviors (daily minimum, 'one more' call, tally of noes, ban defeat words), week-by-week plan and a copyable tracking sheet."
+  }
+ ],
+ "summary": {
+  "passed": 5,
+  "failed": 0,
+  "total": 5,
+  "pass_rate": 1.0
+ }
+}

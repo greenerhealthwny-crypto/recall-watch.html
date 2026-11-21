@@ -1,0 +1,35 @@
+{
+ "expectations": [
+  {
+   "text": "Frames the issue: civil vs criminal, substantive vs procedural, area of law",
+   "passed": true,
+   "evidence": "Section 2 'Classify the issue': 'Civil, not criminal' (with larceny note), 'State law, not federal', 'Substantive area: sale of goods... UCC Article 2', 'Procedural area: small claims court practice'."
+  },
+  {
+   "text": "Uses the Cartwheel method or keyword brainstorming",
+   "passed": false,
+   "evidence": "No Cartwheel and no keyword brainstorming step (broader/narrower/synonyms/related terms). Section 5 only lists a few ready-made Boolean case search strings ('\"chargeback\" AND (\"small claims\" OR \"action for the price\")' etc.), which is a query list, not the brainstorming method the assertion requires."
+  },
+  {
+   "text": "Points to secondary sources first (e.g. practice guides, Am. Jur., form books) then primary law",
+   "passed": true,
+   "evidence": "Section 3 'Background reading (Nolo step: secondary sources before primary law)': Nolo's Everybody's Guide to Small Claims Court, nycourts.gov, CourtHelp, New York Jurisprudence 2d, Carmody-Wait 2d, CFPB; then Sections 4-5 primary statutes and cases."
+  },
+  {
+   "text": "Mentions checking that law is still good (Shepardize/KeyCite or updates/pocket parts)",
+   "passed": true,
+   "evidence": "Section 6 'Update and verify': current official/annotated source, 'Run each case... through a citator (Shepard's or KeyCite at a law library...)'."
+  },
+  {
+   "text": "Mentions small claims court and/or when to hire a lawyer; notes it's not legal advice",
+   "passed": true,
+   "evidence": "Opening note: 'This is legal research guidance, not legal advice.' Small claims court discussed throughout (Section 4 small claims acts, Section 7 'file in small claims'). No lawyer guidance, but the assertion is and/or."
+  }
+ ],
+ "summary": {
+  "passed": 4,
+  "failed": 1,
+  "total": 5,
+  "pass_rate": 0.8
+ }
+}

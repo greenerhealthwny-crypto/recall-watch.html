@@ -1,0 +1,35 @@
+{
+ "expectations": [
+  {
+   "text": "Gives rules for reading statutes (e.g. read definitions, every word matters, cross-references)",
+   "passed": true,
+   "evidence": "Part 2 'Nolo's seven rules for reading a statute' lists all seven in the book's order and wording (read three times then again; 'and'/'or'; every word and punctuation has meaning; consistent with related statutes incl. definitions section; criminal statutes strictly; further purpose; make sense, with the correct California '$100 a day' -> 'up to $100' example), plus 'Follow every cross-reference' and 'court interpretations are part of the statute'. All match SKILL references."
+  },
+  {
+   "text": "Explains holding vs dicta in cases",
+   "passed": true,
+   "evidence": "Part 3 'Holding versus dicta: the holding is the ruling needed to decide the case. Dicta are side comments... aren't binding (except... US Supreme Court)'; also headnotes not law, majority/plurality only. Matches skill Ch 7."
+  },
+  {
+   "text": "Explains binding vs persuasive precedent",
+   "passed": true,
+   "evidence": "Part 3 'Is it binding on your small claims court?': trial-level decisions don't create binding precedent; state appellate courts bind; 'Out-of-state cases are only persuasive'; analysis step 3 'binding or only persuasive'."
+  },
+  {
+   "text": "Outlines IRAC: Issue, Rule, Analysis/Application, Conclusion",
+   "passed": true,
+   "evidence": "Part 5 memo outline with Discussion 'one IRAC block per issue': 'I - Issue', 'R - Rule', 'A - Analysis', 'C - Conclusion'; memo parts (facts, question presented, brief answer, discussion) and 'memo is not a brief' match skill Ch 9."
+  },
+  {
+   "text": "Includes citation practice or verifying currency of the law",
+   "passed": true,
+   "evidence": "Part 4 'Shepardize or KeyCite every case and statute', pocket part, official code site; Part 3 citation reading (name, volume, reporter, page, court and year); tips 'Citations are \"the roadmap\" for the reader' (book quote)."
+  }
+ ],
+ "summary": {
+  "passed": 5,
+  "failed": 0,
+  "total": 5,
+  "pass_rate": 1.0
+ }
+}

@@ -1,0 +1,35 @@
+{
+ "expectations": [
+  {
+   "text": "Starts with the anti-vision",
+   "passed": true,
+   "evidence": "'Step 1: Anti-Vision (the stakes)' with prompts about an average Tuesday in five/ten years, body, bank account; consistent with SKILL.md step 1."
+  },
+  {
+   "text": "Moves to vision derived from it",
+   "passed": true,
+   "evidence": "'Step 2: Vision... The vision is the opposite pole... Keep it next to your anti-vision... one pushes you, one pulls you' - vision explicitly framed against the anti-vision, consistent with 'dance between the two'."
+  },
+  {
+   "text": "Purpose / path of mastery",
+   "passed": false,
+   "evidence": "'Step 3: Purpose' never mentions the path of mastery or turning purpose into a big goal (it jumps to a '1-Year Goal'). Its attributions ('Koe treats purpose as something you build through action, not something you discover') are not supported by SKILL.md. The response also inserts an invented 5th step, 'Constraints', and a 'win condition/lose condition/rules' game model as part of the book's formula, which SKILL.md does not contain (its formula is anti-vision, vision, purpose/path of mastery)."
+  },
+  {
+   "text": "Breaks goals from yearly to monthly, weekly and daily",
+   "passed": true,
+   "evidence": "Sections 4a '1-Year Goal', 4b '1-Month Goal', 4c 'Weekly Goal', 4d 'Daily Priorities' - the yearly->monthly->weekly->daily cascade matches SKILL.md."
+  },
+  {
+   "text": "Gives prompts/questions the user can answer",
+   "passed": true,
+   "evidence": "Every step has numbered prompts (e.g. 'Finish this sentence five times: \"I refuse to become someone who...\"', 'What one task, if I finish it today, makes today a win?') plus a one-page table."
+  }
+ ],
+ "summary": {
+  "passed": 4,
+  "failed": 1,
+  "total": 5,
+  "pass_rate": 0.8
+ }
+}

@@ -1,0 +1,35 @@
+{
+ "expectations": [
+  {
+   "text": "Poses Levitt's core question: why should customers come to me instead of where they go now",
+   "passed": true,
+   "evidence": "Section 1 quotes 'the one important question' verbatim: 'Why should customers come to me for their goods/service/whatever, instead of continuing to go where they have been going?' and notes most fail for lack of a 'substantive answer' - matches SKILL.md framework #1. Applies it to buyers and suppliers."
+  },
+  {
+   "text": "Applies 'giving more without charging more' with concrete furniture-shop examples",
+   "passed": true,
+   "evidence": "Section 2 quotes the credo exactly as in SKILL.md and maps Levitt's mechanisms (mill-direct 40% saving, three-shirt minimum, cash and carry, 31-operation assembly line, deposits - all match principles.md \u00a73) to furniture: free pickup for consignment, standard intake routine, batched delivery runs, room-set bundle price, markdown schedule."
+  },
+  {
+   "text": "Walks through the complete package elements (presentation, service, product, finance, timing, execution) and flags the riskiest",
+   "passed": true,
+   "evidence": "Section 3 table covers all six elements (product, finance, execution, presentation, service, timing) and flags Product as 'Highest' and Finance 'Very high', citing undercapitalization as the most common cause - matches SKILL.md."
+  },
+  {
+   "text": "Draws a lesson from Levitt's own failures (e.g. advertising that did not pay, weak name, no second-in-command)",
+   "passed": true,
+   "evidence": "Cites $84 per new customer from a NYT ad on a $200 sale with $20 profit, the catalogue fix ($100,000 to $700,000), the impersonal 'The Custom Shop' name, and the 18-year failure to develop a second-in-command - all match principles.md \u00a74."
+  },
+  {
+   "text": "Ends with a concrete go/no-go test or next steps rather than generic encouragement",
+   "passed": true,
+   "evidence": "Section 5 'Before signing a lease' gives six concrete steps: one-sentence answers, a 4-6 week supply test (15-20 good pieces/week), costing every 'more', visiting competitors as seller, a cash cushion, a second person; plus a candid verdict that the idea does not yet answer the question."
+  }
+ ],
+ "summary": {
+  "passed": 5,
+  "failed": 0,
+  "total": 5,
+  "pass_rate": 1.0
+ }
+}

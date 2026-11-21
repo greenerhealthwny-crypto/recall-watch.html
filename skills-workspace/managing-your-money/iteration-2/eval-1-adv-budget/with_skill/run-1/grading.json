@@ -1,0 +1,35 @@
+{
+ "expectations": [
+  {
+   "text": "Uses the book's four-step budgeting approach",
+   "passed": true,
+   "evidence": "Lists and structures the answer on '1. Cash-flow analysis ... 2. Set budget goals. 3. Allocate resources ... 4. Year-end review' with sections 'Step 1: Cash-flow analysis' through 'Step 4: Year-end review'; matches SKILL.md principle 1 exactly, including the supporting habits (budget for the unexpected, keep records, make the budget work)."
+  },
+  {
+   "text": "Prioritizes an emergency fund and high-interest debt with numbers",
+   "passed": true,
+   "evidence": "Goals table: '$600' starter emergency fund by month 2, 'Pay off the $3,100 card (24% APR)' by month 12, then 3-6 months of essential expenses; $400/month split $300 savings/$100 card then $340 card/$60 savings. Book's emergency-fund 'personal matter' / $10,000-$15,000 quote and the 15%-of-gross ($360) debt ceiling match SKILL.md."
+  },
+  {
+   "text": "Gives a month-by-month or phased 12-month plan",
+   "passed": true,
+   "evidence": "Month-by-month table for months 1-12 with payment, interest, balance and emergency fund (card $0 and fund ~$1,238 at month 12), plus milestones at months 1, 2, 3, 6, 9, 12."
+  },
+  {
+   "text": "Flags at least one dated 1989 figure or rule (e.g. tax or IRA limits) as changed",
+   "passed": true,
+   "evidence": "'What in the 1989 book no longer applies' table flags consumer-interest deduction phase-out (10% in 1990, then zero), FDIC/FSLIC $100,000 -> $250,000, IRA $2,000/no Roth, 2005 BAPCPA; all consistent with SKILL.md and references."
+  },
+  {
+   "text": "Mentions protecting the credit rating/report",
+   "passed": true,
+   "evidence": "Goal 5 'Check your credit report for errors, free' in month 1; flags table row on free reports at annualcreditreport.com, FCRA disputes, freezes, and the book's skepticism of paid 'credit credential' services, matching banking-credit.md \u00a72."
+  }
+ ],
+ "summary": {
+  "passed": 5,
+  "failed": 0,
+  "total": 5,
+  "pass_rate": 1.0
+ }
+}

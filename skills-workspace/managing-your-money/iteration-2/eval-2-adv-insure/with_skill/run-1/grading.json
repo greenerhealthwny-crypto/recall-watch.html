@@ -1,0 +1,35 @@
+{
+ "expectations": [
+  {
+   "text": "Covers medical/health insurance as a priority for a freelancer",
+   "passed": true,
+   "evidence": "'1. Health insurance (top priority)', quotes the book's 'protecting your most valuable asset' and 80/20 coinsurance with out-of-pocket ceiling (matches insurance-taxes.md \u00a71), then ACA marketplace/HSA for freelancers marked (std, verify)."
+  },
+  {
+   "text": "Addresses life insurance need for a single person with no dependents (likely low)",
+   "passed": true,
+   "evidence": "Waste table: life insurance needed by those with 'dependents who rely on their income' and runs the book's three-step method ('the gap is small or zero'), with term exception; matches insurance-taxes.md \u00a72."
+  },
+  {
+   "text": "Addresses renter's/property coverage",
+   "passed": true,
+   "evidence": "'3. Renter's insurance': separate renter policies, liability (book's dog-bite example), replacement-cost contents at '20-40% more' for renters, household inventory Close-Up; all match insurance-taxes.md \u00a73. Adds business-property exclusion warning."
+  },
+  {
+   "text": "Addresses auto coverage decisions for a low-value car (e.g. dropping collision)",
+   "passed": true,
+   "evidence": "'Probably drop: collision, and maybe comprehensive' with $5,000 - $1,000 = $4,000 max payout and 10%-of-value rule (labelled std), keep liability/UM, shop around and packaged-policy Close-Up (book). Minor mislabel: 'book heuristic: raise deductibles to cut premiums' is marked (std) heuristic in insurance-taxes.md \u00a74, not book, but this does not affect the auto-decision content."
+  },
+  {
+   "text": "Flags disability or other coverage and notes dated details",
+   "passed": true,
+   "evidence": "'2. Disability income insurance' uses the book's method of tallying existing benefits (group plan, SS disability, workers' comp) per \u00a75; dated details noted: umbrella 'cost about $100 a year in 1989' vs today, replacement-cost surcharge 'in the book's era', Keogh/SEP vs today's SEP-IRA/Solo 401(k), and the header caution that 1989 prices and product rules have changed."
+  }
+ ],
+ "summary": {
+  "passed": 5,
+  "failed": 0,
+  "total": 5,
+  "pass_rate": 1.0
+ }
+}

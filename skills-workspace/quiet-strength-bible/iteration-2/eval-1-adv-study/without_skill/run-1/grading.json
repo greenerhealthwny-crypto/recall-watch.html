@@ -1,0 +1,35 @@
+{
+ "expectations": [
+  {
+   "text": "Uses the three-step method: observation, interpretation, application",
+   "passed": false,
+   "evidence": "Line 3 disclaims not having the edition's study-method pages and substitutes a generic five-step 'Read -> Observe -> Interpret -> Apply -> Pray' pattern. Observe/Interpret/Apply appear, but not as the book's three-step method of 'A Life of Quiet Strength' (no own-words restatement step, no use of the Overview, no 'So what?' framing)."
+  },
+  {
+   "text": "Applies each step to Philippians 4:6-7 specifically",
+   "passed": true,
+   "evidence": "Observe table and key-word list (merimnao, phroureo, 'hearts and minds'), Interpret bullets ('promise is peace, not a guaranteed outcome'), and Apply questions/Worry-to-Prayer Swap are all specific to Philippians 4:6-7."
+  },
+  {
+   "text": "Gives related verses on fear/anxiety or prayer",
+   "passed": true,
+   "evidence": "Long list of anxiety/fear/peace verses (1 Peter 5:7, Matthew 6:25-34, John 14:27, Psalm 46:1-2, Isaiah 26:3, etc.). None are presented as confirmed Verse Finder entries (hedged as 'Verse Finder-style indexes usually'), and most are not in the VF per verse-finder.md, but the assertion only requires related verses."
+  },
+  {
+   "text": "Connects to Dungy's 'God's playbook' framing or the Principles/Practices/Priorities structure",
+   "passed": false,
+   "evidence": "No mention of Tony Dungy, 'God's playbook', or the Principles/Practices/Priorities structure anywhere in the response."
+  },
+  {
+   "text": "Gives a concrete personal application",
+   "passed": true,
+   "evidence": "'A Practical Exercise: The Worry-to-Prayer Swap' (write worries down, convert 'What if I lose my job?' into a request, add thanks, release, repeat) plus memorization and journaling questions."
+  }
+ ],
+ "summary": {
+  "passed": 3,
+  "failed": 2,
+  "total": 5,
+  "pass_rate": 0.6
+ }
+}

@@ -1,0 +1,35 @@
+{
+ "expectations": [
+  {
+   "text": "Gives rules for reading statutes (e.g. read definitions, every word matters, cross-references)",
+   "passed": true,
+   "evidence": "Part 1 'How to read a statute': read the 'definitions section', neighboring sections, 'Watch the small words' (shall/may, and/or, unless/except), break into elements, 'See how courts have read it' via annotated code. Generic but correct; no book misattribution."
+  },
+  {
+   "text": "Explains holding vs dicta in cases",
+   "passed": true,
+   "evidence": "Part 2 brief: 'Holding: the court's answer to that question. This is the binding part.' and 'Dicta: side comments that were not needed for the result. These can persuade a judge but do not bind one.'"
+  },
+  {
+   "text": "Explains binding vs persuasive precedent",
+   "passed": true,
+   "evidence": "Part 2 step 1: highest court binds every lower court; intermediate appellate decision binds trial courts under it; 'A decision from another state, or a trial-level decision, is only persuasive'; verification log has 'Binding or persuasive' column."
+  },
+  {
+   "text": "Outlines IRAC: Issue, Rule, Analysis/Application, Conclusion",
+   "passed": true,
+   "evidence": "Part 3 'Discussion (IRAC for each issue)': I (Issue), R (Rule), A (Application), C (Conclusion) for each issue."
+  },
+  {
+   "text": "Includes citation practice or verifying currency of the law",
+   "passed": true,
+   "evidence": "Part 2 'Use Shepard's or KeyCite at a law library'; Part 1 'Get the official, current text... Check the \"current through\" date'; 'Sources and verification log' table; pinpoint page cites."
+  }
+ ],
+ "summary": {
+  "passed": 5,
+  "failed": 0,
+  "total": 5,
+  "pass_rate": 1.0
+ }
+}

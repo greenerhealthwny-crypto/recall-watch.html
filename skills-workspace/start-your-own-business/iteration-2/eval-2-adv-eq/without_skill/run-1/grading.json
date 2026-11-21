@@ -1,0 +1,35 @@
+{
+ "expectations": [
+  {
+   "text": "References the Entrepreneurial Quotient quiz/self-assessment",
+   "passed": false,
+   "evidence": "It names an 'Entrepreneurial Quotient' but invents its content: 'a self-check built on traits like obsessive drive, the X factor, and happenstance', with made-up 4/10, 6/10 and 2/10 sub-scores. Per capital-and-protection.md \u00a74 it is a Northwestern Mutual Life quiz of background and habit items. That is an invented framework, so it fails."
+  },
+  {
+   "text": "Addresses obsessive drive as a requirement",
+   "passed": true,
+   "evidence": "'Obsessive drive... For Levitt, this is the trait that matters most' and asks whether the user would give up evenings and weekends. This is consistent with SKILL.md #4."
+  },
+  {
+   "text": "Explains the X factor and/or happenstance in founders' stories",
+   "passed": false,
+   "evidence": "It defines the X factor as 'the hard-to-name quality some people have: judgment, instinct...', which is wrong; SKILL.md defines it as an unexpected external situation no research can uncover. Its happenstance section is generic and gives no founders' stories."
+  },
+  {
+   "text": "Gives advice consistent with keeping risk low (starting small, protecting capital) tied to the user's situation",
+   "passed": true,
+   "evidence": "Keep the job ('your salary is your investor'), pick a low-capital people idea with no lease or stock, run a 90-day test, set a milestone and build savings. All of it is tied to the $2,000 and the job."
+  },
+  {
+   "text": "Is honest that the quiz is self-assessment, not a verdict",
+   "passed": true,
+   "evidence": "Says 'Treat the scores below as an honest reading of what you told me, not a precise test' and calls the result a 'Rough EQ' that is 'provisional'. The scores themselves are invented, but the response does not present them as a verdict."
+  }
+ ],
+ "summary": {
+  "passed": 3,
+  "failed": 2,
+  "total": 5,
+  "pass_rate": 0.6
+ }
+}

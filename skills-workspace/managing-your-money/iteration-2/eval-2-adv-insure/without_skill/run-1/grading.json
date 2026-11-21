@@ -1,0 +1,35 @@
+{
+ "expectations": [
+  {
+   "text": "Covers medical/health insurance as a priority for a freelancer",
+   "passed": true,
+   "evidence": "'1. Health insurance (top priority) As a freelancer, nobody gives this to you' with ACA marketplace, HDHP+HSA, deductible premiums."
+  },
+  {
+   "text": "Addresses life insurance need for a single person with no dependents (likely low)",
+   "passed": true,
+   "evidence": "'Life insurance (probably not needed yet) ... Single, no kids, and no one relying on your income means there's usually no one to protect', with cosigner/parent exception and term over whole life."
+  },
+  {
+   "text": "Addresses renter's/property coverage",
+   "passed": true,
+   "evidence": "'4. Renter's insurance (cheap and worth it)': belongings, personal liability, replacement cost vs actual cash value, business-property limits."
+  },
+  {
+   "text": "Addresses auto coverage decisions for a low-value car (e.g. dropping collision)",
+   "passed": true,
+   "evidence": "'Collision and comprehensive on a 2012 car worth $5,000 (probably drop it, or raise the deductible)', max payout ~$4,000, 10%-of-value rule, lender exception."
+  },
+  {
+   "text": "Flags disability or other coverage and notes dated details",
+   "passed": false,
+   "evidence": "Disability is covered ('2. Disability insurance'), but no dated details are noted: the only reference is a generic hedge ('Where your guide's numbers differ, especially if it's an older edition, trust current law and current prices over the book'). It never identifies any specific 1989 figure, product or rule that has changed."
+  }
+ ],
+ "summary": {
+  "passed": 4,
+  "failed": 1,
+  "total": 5,
+  "pass_rate": 0.8
+ }
+}

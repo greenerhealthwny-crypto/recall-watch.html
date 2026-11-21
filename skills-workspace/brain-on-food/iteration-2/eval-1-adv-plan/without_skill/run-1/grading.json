@@ -1,0 +1,35 @@
+{
+ "expectations": [
+  {
+   "text": "Gives a concrete 3-day dinner plan",
+   "passed": true,
+   "evidence": "Three dinners given: Day 1 salmon with quinoa and spinach, Day 2 chickpea-sweet potato-cauliflower curry with brown rice and kimchi, Day 3 turkey/lentil bowls with roasted vegetables, each with a nutrient table."
+  },
+  {
+   "text": "Ties anxiety foods to Naidoo's guidance (e.g. fermented foods/probiotics, omega-3s, fiber, avoiding refined sugar or excess caffeine/alcohol)",
+   "passed": true,
+   "evidence": "Anxiety ties line up with the book: probiotics/fermented foods 'are a core of her anxiety advice via the gut-brain axis', prebiotic fiber, turmeric with black pepper, chamomile, and avoiding excess caffeine, alcohol, sugar, fried and processed foods. Minor overreach: omega-3s for anxiety are attributed to her, but they are not on the anxiety cheat sheet."
+  },
+  {
+   "text": "Ties ADHD foods to her guidance (e.g. protein, omega-3s, limiting sugar/additives, low glycemic load)",
+   "passed": false,
+   "evidence": "The ADHD ties are mostly generic or contradict the book. It puts caffeine under 'Limit' for ADHD ('Caffeine can be erratic'), but the ADHD cheat sheet says caffeine 'can help' under 400 mg. It frames omega-3s as the lead ADHD nutrient, which is not on her ADHD list. It omits her A1-casein avoid item and even serves cow's-milk yoghurt/kefir and Greek yoghurt to the ADHD partner. It also omits polyphenols as an ADHD item. The only clearly correct tie is dyes and additives."
+  },
+  {
+   "text": "Explains the gut-brain mechanism (microbiome, inflammation, vagus nerve or HPA axis)",
+   "passed": false,
+   "evidence": "Only passing mentions: 'Supports the gut-brain axis and dopamine-related signalling', 'Gut-brain axis; fermented foods...', 'Feeds gut bacteria'. There is no explanation of the vagus nerve, the HPA axis, inflammation pathways or microbial neurotransmitters."
+  },
+  {
+   "text": "Includes a caveat that diet complements, not replaces, treatment",
+   "passed": true,
+   "evidence": "Line 3: 'Food can support ADHD and anxiety, but it doesn't replace medication, therapy or a clinician's care.'"
+  }
+ ],
+ "summary": {
+  "passed": 3,
+  "failed": 2,
+  "total": 5,
+  "pass_rate": 0.6
+ }
+}

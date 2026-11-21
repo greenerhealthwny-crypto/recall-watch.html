@@ -1,0 +1,35 @@
+{
+ "expectations": [
+  {
+   "text": "Gives a concrete 3-day dinner plan",
+   "passed": true,
+   "evidence": "Section 2 gives three full dinners: Day 1 turmeric-black-pepper salmon/quinoa/broccoli/kimchi, Day 2 turkey-chickpea stew over brown rice or barley, Day 3 miso-glazed tempeh stir-fry, each with sides, dessert and a per-person benefit table."
+  },
+  {
+   "text": "Ties anxiety foods to Naidoo's guidance (e.g. fermented foods/probiotics, omega-3s, fiber, avoiding refined sugar or excess caffeine/alcohol)",
+   "passed": true,
+   "evidence": "Anxiety column matches the p.79-80 cheat sheet in cheat-sheets.md: high-fiber foods; aged, fermented and cultured foods; tryptophan with carbohydrates; avoid Western diet, caffeine over 400 mg, alcohol over the limits (correct 7/1 and 14/2 figures), aspartame. Explains the 'tryptophan myth' correctly (p.79). Correctly notes omega-3s are not on the anxiety sheet itself."
+  },
+  {
+   "text": "Ties ADHD foods to her guidance (e.g. protein, omega-3s, limiting sugar/additives, low glycemic load)",
+   "passed": true,
+   "evidence": "ADHD column matches p.112-113: Mediterranean pattern, polyphenols (berries, cherries, eggplant, onions, kale, coffee, green tea), vitamins C and B12, zinc/iron/potassium/magnesium, caffeine can help under 400 mg; avoid A1 milk caseins, sugar ('unfairly vilified' but still limit), food colorings and additives, Feingold/few-foods diet. Swaps to goat/sheep/A2 dairy as the book says."
+  },
+  {
+   "text": "Explains the gut-brain mechanism (microbiome, inflammation, vagus nerve or HPA axis)",
+   "passed": false,
+   "evidence": "Only labels the mechanism: 'Prebiotic fiber feeds gut bacteria (the gut-brain connection)', 'fermented food that supports the microbiome', omega-3s 'anti-inflammatory'. It never explains how gut bacteria affect the brain. The vagus nerve, HPA axis, serotonin receptors in the gut and bacterial neurotransmitters (Ch 1 in science-by-chapter.md) are all absent, so a strict 'explains' bar is not met."
+  },
+  {
+   "text": "Includes a caveat that diet complements, not replaces, treatment",
+   "passed": true,
+   "evidence": "Line 4: 'Food is meant to work alongside treatment. Naidoo says diet can work \"alongside your other treatments\". Don't change any ADHD or anxiety medication because of this plan.' Repeated in Safety notes: 'Naidoo presents diet as an add-on.'"
+  }
+ ],
+ "summary": {
+  "passed": 4,
+  "failed": 1,
+  "total": 5,
+  "pass_rate": 0.8
+ }
+}

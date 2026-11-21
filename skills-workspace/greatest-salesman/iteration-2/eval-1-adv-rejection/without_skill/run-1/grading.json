@@ -1,0 +1,35 @@
+{
+ "expectations": [
+  {
+   "text": "Explains the 30-day reading method: silently on waking, after the midday meal, aloud before bed",
+   "passed": true,
+   "evidence": "'silently, when you wake up / silently again, after your midday meal / out loud, just before you go to bed', one scroll for 30 days, about ten months - matches SKILL.md. (Minor unsupported addition: 'Mandino says this reading matters most' is not in the skill files, but the method itself is correct.)"
+  },
+  {
+   "text": "Notes Scroll I (habits) is the first scroll / scrolls are read in order",
+   "passed": true,
+   "evidence": "'Go in order. The first scroll explains how to use all the others.' and 'The book's answer is Scroll I: \"Today I begin a new life.\"' with full I-X sequence listed - correct."
+  },
+  {
+   "text": "Explains persistence and the law of averages (each no brings a yes closer)",
+   "passed": true,
+   "evidence": "'In Scroll III, Mandino says that every failure to sell moves you closer to the next success. Every \"nay\" brings you nearer to a \"yea\"' plus oak-tree image - matches scrolls.md."
+  },
+  {
+   "text": "Uses mood mastery or 'This too shall pass' for rejection",
+   "passed": false,
+   "evidence": "No use of Scroll VI mood mastery or 'This too shall pass' as a tool for rejection; Scroll VI and VII appear only as titles in the reference sequence list. Rejection is handled via habits, logging and Scroll III only."
+  },
+  {
+   "text": "Gives a concrete daily routine",
+   "passed": true,
+   "evidence": "Daily table (three readings, call block with quota, end-of-day log) and week-by-week tasks (e.g. 'After every no, I write one line about what happened and dial the next number within 60 seconds')."
+  }
+ ],
+ "summary": {
+  "passed": 4,
+  "failed": 1,
+  "total": 5,
+  "pass_rate": 0.8
+ }
+}

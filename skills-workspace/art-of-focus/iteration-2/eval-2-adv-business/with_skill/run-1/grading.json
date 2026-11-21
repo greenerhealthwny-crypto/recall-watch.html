@@ -1,0 +1,35 @@
+{
+ "expectations": [
+  {
+   "text": "'You are the niche' idea",
+   "passed": true,
+   "evidence": "Section 1: '\"The most profitable niche is you\": the overlap of your skills, interests and experience'; 'Koe warns against \"niching down\" into work you'd hate... solve problems you've already solved for yourself' - matches SKILL.md."
+  },
+  {
+   "text": "Skill stack: message, medium, results-oriented skills",
+   "passed": true,
+   "evidence": "Section 3 covers 'The message' (relatable, understandable or actionable), 'The medium' ('In business, distribution equals freedom'), 'Results-oriented skills' (writing, speaking, marketing, selling; message and medium evergreen) and creative problem-solving - all match SKILL.md."
+  },
+  {
+   "text": "Project to product progression",
+   "passed": true,
+   "evidence": "Section 2 '(\"project to product\")' quotes 'Everyone is an entrepreneur; some just choose to get paid for the problems they solve in their personal life' and 'you become an entrepreneur when you take your projects public' - matches SKILL.md."
+  },
+  {
+   "text": "Fill, empty, use content/learning loop",
+   "passed": true,
+   "evidence": "Section 6: 'Fill: study styles, prices... Empty: walks, reflection... Use: do your most focused work... in your highest-energy hours'; 'Treat the whole thing as an experiment' - matches SKILL.md lifestyle design."
+  },
+  {
+   "text": "Concrete plan for the furniture interest",
+   "passed": true,
+   "evidence": "Furniture-specific product ladder (flips -> audience -> sourcing checklist/pricing guide -> course/coaching -> brand partnerships) and a week-by-week 30-day plan (e.g. 'Post 3 flips in a before, process, after format'), labelled as its own application."
+  }
+ ],
+ "summary": {
+  "passed": 5,
+  "failed": 0,
+  "total": 5,
+  "pass_rate": 1.0
+ }
+}

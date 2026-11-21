@@ -1,0 +1,35 @@
+{
+ "expectations": [
+  {
+   "text": "Lists or references the ten scrolls accurately",
+   "passed": true,
+   "evidence": "'The scrolls are: (I) habits / a new life; (II) greet the day with love; (III) persist until I succeed; (IV) I am nature's greatest miracle; (V) live this day as if it is my last; (VI) master my emotions; (VII) laugh at the world; (VIII) multiply my value a hundredfold; (IX) act now; (X) a prayer for guidance.' - all ten correct per SKILL.md."
+  },
+  {
+   "text": "Connects Scroll I's habit-formation idea to modern habit science",
+   "passed": true,
+   "evidence": "Agreement 1-3: habit centrality vs Wood's ~40-45% habitual actions; fixed anchors (waking, midday meal, bedtime) vs cue-based repetition/habit stacking; 'Scroll I says the only way to break a bad habit is to replace it with a good one' vs competing-response approach. Consistent with scrolls.md."
+  },
+  {
+   "text": "Notes something unusual (e.g. reading aloud 3x/day, 30 days per scroll, prayer scroll)",
+   "passed": true,
+   "evidence": "Unusual section: reading rather than doing, fixed 30-day period vs Lally median ~66 days, no-skip rule, bedtime reading aloud, sequenced curriculum, prayer in Scroll X."
+  },
+  {
+   "text": "Covers emotional control and/or act now",
+   "passed": true,
+   "evidence": "Agreement 7 covers Scroll IX 'I will act now' vs implementation intentions; Agreement 8 covers Scroll VI emotions and Scroll VII 'this too shall pass' vs reappraisal."
+  },
+  {
+   "text": "Distinguishes what the book says from the comparison",
+   "passed": true,
+   "evidence": "Structured separation: 'Quick reminder: Mandino's method' section describing the book, then research claims attributed to named studies, and a summary table with separate 'Mandino' and 'Habit science' columns; also flags non-book origin ('comes from 20th-century self-help (Napoleon Hill..., Coue), not from evidence'). Less explicit than a sourcing note, but the distinction is clear. (One quoted line, 'small attempts, repeated, will complete any undertaking', is not in the skill files but does not affect these assertions.)"
+  }
+ ],
+ "summary": {
+  "passed": 5,
+  "failed": 0,
+  "total": 5,
+  "pass_rate": 1.0
+ }
+}
