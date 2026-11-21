@@ -1,0 +1,32 @@
+{
+  "skill_name": "lead-funnels",
+  "evals": [
+    {"id": 1, "name": "lf-chiropractor",
+     "prompt": "I'm a chiropractor and want to build an email list with ClickFunnels-style lead funnels. Based on the Lead Funnels Swipe File book, what are the parts of a lead funnel and what lead magnet and hook should I create?",
+     "assertions": [
+      "Names the five parts: lead magnet, landing page, thank you page, sales page, follow-up funnel",
+      "Recommends a curiosity 'hook' and a pain-focused lead magnet (e.g., 'The # Biggest Mistakes...' formula / Myron Golden tip)",
+      "Says landing pages need a headline, image of the lead magnet, and opt-in form, kept simple",
+      "Says the thank you page should deliver the lead magnet and offer one next step (product, webinar, or podcast/blog), with no bait-and-switch",
+      "Mentions 'the money is in the list' and/or building a relationship via follow-up and daily publishing",
+      "Gives concrete chiropractor-specific hook/magnet examples"]},
+    {"id": 2, "name": "lf-ad-math",
+     "prompt": "Per the ClickFunnels Lead Funnels Swipe File, how does the math work for paying for leads with ads? I'd pay about $2 per lead. Explain self-liquidating offers and break-even.",
+     "assertions": [
+      "Explains a self-liquidating offer: thank-you/sales page product that recoups ad cost (e.g., $100 ads, 100 leads, 10% buy $10 = break even)",
+      "Explains break-even day using follow-up (e.g., 5% buy initially, another 5% by day 3)",
+      "Cites the $1 per name per month list-value estimate and/or break-even month logic (e.g., $3 lead at $1/month = month 3)",
+      "Mentions typical lead cost of $1-$3 in Brunson's market",
+      "Applies the math to the user's $2 per lead",
+      "Notes numbers are estimates and/or that follow-up/relationship increases value per name"]},
+    {"id": 3, "name": "lf-info-products",
+     "prompt": "I don't have time to write a book. What fast ways to create a lead magnet or info product does the Lead Funnels Swipe File suggest?",
+     "assertions": [
+      "Lists the nine methods grouped as text, audio, video",
+      "Includes crowd-sourced books (Chicken Soup for the Soul / 30 Days example)",
+      "Includes example/compilation books and public domain books",
+      "Includes interview recordings and/or hard-to-find audio compilations and audiobooks",
+      "Includes screen captures, iPhone how-tos, and workshops",
+      "Suggests giving away the best piece/first chapter as the lead magnet and selling the full product, or flags public-domain date caution"]}
+  ]
+}

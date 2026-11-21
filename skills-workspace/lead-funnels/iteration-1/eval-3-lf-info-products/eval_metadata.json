@@ -1,0 +1,13 @@
+{
+  "eval_id": 3,
+  "eval_name": "lf-info-products",
+  "prompt": "I don't have time to write a book. What fast ways to create a lead magnet or info product does the Lead Funnels Swipe File suggest?",
+  "assertions": [
+    "Lists the nine methods grouped as text, audio, video",
+    "Includes crowd-sourced books (Chicken Soup for the Soul / 30 Days example)",
+    "Includes example/compilation books and public domain books",
+    "Includes interview recordings and/or hard-to-find audio compilations and audiobooks",
+    "Includes screen captures, iPhone how-tos, and workshops",
+    "Suggests giving away the best piece/first chapter as the lead magnet and selling the full product, or flags public-domain date caution"
+  ]
+}

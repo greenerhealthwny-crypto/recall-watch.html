@@ -1,0 +1,40 @@
+{
+ "expectations": [
+  {
+   "text": "Lists the nine methods grouped as text, audio, video",
+   "passed": true,
+   "evidence": "Nine methods under Text/Audio/Video"
+  },
+  {
+   "text": "Includes crowd-sourced books (Chicken Soup for the Soul / 30 Days example)",
+   "passed": true,
+   "evidence": "Chicken Soup and 30 Days"
+  },
+  {
+   "text": "Includes example/compilation books and public domain books",
+   "passed": true,
+   "evidence": "Example books and public-domain books"
+  },
+  {
+   "text": "Includes interview recordings and/or hard-to-find audio compilations and audiobooks",
+   "passed": true,
+   "evidence": "Audiobooks, interviews, audio compilations"
+  },
+  {
+   "text": "Includes screen captures, iPhone how-tos, and workshops",
+   "passed": true,
+   "evidence": "Screen captures, iPhone how-tos, workshops"
+  },
+  {
+   "text": "Suggests giving away the best piece/first chapter as the lead magnet and selling the full product, or flags public-domain date caution",
+   "passed": true,
+   "evidence": "Give away best piece; public-domain date caution"
+  }
+ ],
+ "summary": {
+  "passed": 6,
+  "failed": 0,
+  "total": 6,
+  "pass_rate": 1.0
+ }
+}

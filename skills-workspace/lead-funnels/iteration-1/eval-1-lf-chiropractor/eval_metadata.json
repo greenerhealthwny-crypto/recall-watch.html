@@ -1,0 +1,13 @@
+{
+  "eval_id": 1,
+  "eval_name": "lf-chiropractor",
+  "prompt": "I'm a chiropractor and want to build an email list with ClickFunnels-style lead funnels. Based on the Lead Funnels Swipe File book, what are the parts of a lead funnel and what lead magnet and hook should I create?",
+  "assertions": [
+    "Names the five parts: lead magnet, landing page, thank you page, sales page, follow-up funnel",
+    "Recommends a curiosity 'hook' and a pain-focused lead magnet (e.g., 'The # Biggest Mistakes...' formula / Myron Golden tip)",
+    "Says landing pages need a headline, image of the lead magnet, and opt-in form, kept simple",
+    "Says the thank you page should deliver the lead magnet and offer one next step (product, webinar, or podcast/blog), with no bait-and-switch",
+    "Mentions 'the money is in the list' and/or building a relationship via follow-up and daily publishing",
+    "Gives concrete chiropractor-specific hook/magnet examples"
+  ]
+}

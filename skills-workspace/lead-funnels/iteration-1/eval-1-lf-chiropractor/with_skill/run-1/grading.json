@@ -1,0 +1,40 @@
+{
+ "expectations": [
+  {
+   "text": "Names the five parts: lead magnet, landing page, thank you page, sales page, follow-up funnel",
+   "passed": true,
+   "evidence": "Table lists all five parts"
+  },
+  {
+   "text": "Recommends a curiosity 'hook' and a pain-focused lead magnet (e.g., 'The # Biggest Mistakes...' formula / Myron Golden tip)",
+   "passed": true,
+   "evidence": "7 Biggest Mistakes formula, Myron Golden pain tip"
+  },
+  {
+   "text": "Says landing pages need a headline, image of the lead magnet, and opt-in form, kept simple",
+   "passed": true,
+   "evidence": "Headline, magnet image, opt-in form; 5-10 min build"
+  },
+  {
+   "text": "Says the thank you page should deliver the lead magnet and offer one next step (product, webinar, or podcast/blog), with no bait-and-switch",
+   "passed": true,
+   "evidence": "Download on page, one next step, no bait-and-switch"
+  },
+  {
+   "text": "Mentions 'the money is in the list' and/or building a relationship via follow-up and daily publishing",
+   "passed": true,
+   "evidence": "Money is in the list; follow-up sequence; publish daily"
+  },
+  {
+   "text": "Gives concrete chiropractor-specific hook/magnet examples",
+   "passed": true,
+   "evidence": "Desk worker, sciatica, golfer magnets and hooks"
+  }
+ ],
+ "summary": {
+  "passed": 6,
+  "failed": 0,
+  "total": 6,
+  "pass_rate": 1.0
+ }
+}

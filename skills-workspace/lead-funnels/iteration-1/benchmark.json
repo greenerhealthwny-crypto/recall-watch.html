@@ -1,0 +1,342 @@
+{
+  "metadata": {
+    "skill_name": "lead-funnels",
+    "skill_path": "<path/to/skill>",
+    "executor_model": "<model-name>",
+    "analyzer_model": "<model-name>",
+    "timestamp": "2026-11-21T02:59:05Z",
+    "evals_run": [
+      1,
+      2,
+      3
+    ],
+    "runs_per_configuration": 1
+  },
+  "runs": [
+    {
+      "eval_id": 1,
+      "eval_name": "lf-chiropractor",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Names the five parts: lead magnet, landing page, thank you page, sales page, follow-up funnel",
+          "passed": true,
+          "evidence": "Table lists all five parts"
+        },
+        {
+          "text": "Recommends a curiosity 'hook' and a pain-focused lead magnet (e.g., 'The # Biggest Mistakes...' formula / Myron Golden tip)",
+          "passed": true,
+          "evidence": "7 Biggest Mistakes formula, Myron Golden pain tip"
+        },
+        {
+          "text": "Says landing pages need a headline, image of the lead magnet, and opt-in form, kept simple",
+          "passed": true,
+          "evidence": "Headline, magnet image, opt-in form; 5-10 min build"
+        },
+        {
+          "text": "Says the thank you page should deliver the lead magnet and offer one next step (product, webinar, or podcast/blog), with no bait-and-switch",
+          "passed": true,
+          "evidence": "Download on page, one next step, no bait-and-switch"
+        },
+        {
+          "text": "Mentions 'the money is in the list' and/or building a relationship via follow-up and daily publishing",
+          "passed": true,
+          "evidence": "Money is in the list; follow-up sequence; publish daily"
+        },
+        {
+          "text": "Gives concrete chiropractor-specific hook/magnet examples",
+          "passed": true,
+          "evidence": "Desk worker, sciatica, golfer magnets and hooks"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "lf-ad-math",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Explains a self-liquidating offer: thank-you/sales page product that recoups ad cost (e.g., $100 ads, 100 leads, 10% buy $10 = break even)",
+          "passed": true,
+          "evidence": "$100 ads, 100 leads, 10% x $10 example"
+        },
+        {
+          "text": "Explains break-even day using follow-up (e.g., 5% buy initially, another 5% by day 3)",
+          "passed": true,
+          "evidence": "5% then 5% by day 3 break-even day"
+        },
+        {
+          "text": "Cites the $1 per name per month list-value estimate and/or break-even month logic (e.g., $3 lead at $1/month = month 3)",
+          "passed": true,
+          "evidence": "$1/name/month; $3 lead = month 3"
+        },
+        {
+          "text": "Mentions typical lead cost of $1-$3 in Brunson's market",
+          "passed": true,
+          "evidence": "Leads $1-$3 in Brunson's market"
+        },
+        {
+          "text": "Applies the math to the user's $2 per lead",
+          "passed": true,
+          "evidence": "Table of required conversion at $2/lead"
+        },
+        {
+          "text": "Notes numbers are estimates and/or that follow-up/relationship increases value per name",
+          "passed": true,
+          "evidence": "Illustrative 2019 numbers; follow-up moves break-even earlier"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 3,
+      "eval_name": "lf-info-products",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Lists the nine methods grouped as text, audio, video",
+          "passed": true,
+          "evidence": "Nine methods under Text/Audio/Video"
+        },
+        {
+          "text": "Includes crowd-sourced books (Chicken Soup for the Soul / 30 Days example)",
+          "passed": true,
+          "evidence": "Chicken Soup and 30 Days"
+        },
+        {
+          "text": "Includes example/compilation books and public domain books",
+          "passed": true,
+          "evidence": "Example books and public-domain books"
+        },
+        {
+          "text": "Includes interview recordings and/or hard-to-find audio compilations and audiobooks",
+          "passed": true,
+          "evidence": "Audiobooks, interviews, audio compilations"
+        },
+        {
+          "text": "Includes screen captures, iPhone how-tos, and workshops",
+          "passed": true,
+          "evidence": "Screen captures, iPhone how-tos, workshops"
+        },
+        {
+          "text": "Suggests giving away the best piece/first chapter as the lead magnet and selling the full product, or flags public-domain date caution",
+          "passed": true,
+          "evidence": "Give away best piece; public-domain date caution"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 1,
+      "eval_name": "lf-chiropractor",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.6666666666666666,
+        "passed": 4,
+        "failed": 2,
+        "total": 6,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Names the five parts: lead magnet, landing page, thank you page, sales page, follow-up funnel",
+          "passed": false,
+          "evidence": "Lists traffic/hook/squeeze/magnet/thank-you/email; no sales page part"
+        },
+        {
+          "text": "Recommends a curiosity 'hook' and a pain-focused lead magnet (e.g., 'The # Biggest Mistakes...' formula / Myron Golden tip)",
+          "passed": true,
+          "evidence": "Mistake hook and curiosity hooks given"
+        },
+        {
+          "text": "Says landing pages need a headline, image of the lead magnet, and opt-in form, kept simple",
+          "passed": true,
+          "evidence": "Squeeze page: headline, image, email form, no distractions"
+        },
+        {
+          "text": "Says the thank you page should deliver the lead magnet and offer one next step (product, webinar, or podcast/blog), with no bait-and-switch",
+          "passed": false,
+          "evidence": "Delivery plus next offer but no 'one step'/no bait-and-switch rule"
+        },
+        {
+          "text": "Mentions 'the money is in the list' and/or building a relationship via follow-up and daily publishing",
+          "passed": true,
+          "evidence": "Email follow-up builds relationship"
+        },
+        {
+          "text": "Gives concrete chiropractor-specific hook/magnet examples",
+          "passed": true,
+          "evidence": "Chiropractor-specific magnets and hooks"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "lf-ad-math",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.5,
+        "passed": 3,
+        "failed": 3,
+        "total": 6,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Explains a self-liquidating offer: thank-you/sales page product that recoups ad cost (e.g., $100 ads, 100 leads, 10% buy $10 = break even)",
+          "passed": true,
+          "evidence": "Explains SLO recouping ad spend"
+        },
+        {
+          "text": "Explains break-even day using follow-up (e.g., 5% buy initially, another 5% by day 3)",
+          "passed": false,
+          "evidence": "No break-even day via follow-up"
+        },
+        {
+          "text": "Cites the $1 per name per month list-value estimate and/or break-even month logic (e.g., $3 lead at $1/month = month 3)",
+          "passed": false,
+          "evidence": "No $1/name/month estimate"
+        },
+        {
+          "text": "Mentions typical lead cost of $1-$3 in Brunson's market",
+          "passed": false,
+          "evidence": "No $1-$3 typical lead cost"
+        },
+        {
+          "text": "Applies the math to the user's $2 per lead",
+          "passed": true,
+          "evidence": "$1,000 at $2 = 500 leads scenarios"
+        },
+        {
+          "text": "Notes numbers are estimates and/or that follow-up/relationship increases value per name",
+          "passed": true,
+          "evidence": "Says numbers are worked examples, back-end follow-up"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 3,
+      "eval_name": "lf-info-products",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.3333333333333333,
+        "passed": 2,
+        "failed": 4,
+        "total": 6,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Lists the nine methods grouped as text, audio, video",
+          "passed": false,
+          "evidence": "Generic list, not the book's nine grouped methods"
+        },
+        {
+          "text": "Includes crowd-sourced books (Chicken Soup for the Soul / 30 Days example)",
+          "passed": false,
+          "evidence": "No crowd-sourced books"
+        },
+        {
+          "text": "Includes example/compilation books and public domain books",
+          "passed": false,
+          "evidence": "Swipe files mentioned but no example books/public domain"
+        },
+        {
+          "text": "Includes interview recordings and/or hard-to-find audio compilations and audiobooks",
+          "passed": true,
+          "evidence": "Interview an expert"
+        },
+        {
+          "text": "Includes screen captures, iPhone how-tos, and workshops",
+          "passed": true,
+          "evidence": "Screen-share, phone recording, workshop mentioned"
+        },
+        {
+          "text": "Suggests giving away the best piece/first chapter as the lead magnet and selling the full product, or flags public-domain date caution",
+          "passed": false,
+          "evidence": "Neither tip present"
+        }
+      ],
+      "notes": []
+    }
+  ],
+  "run_summary": {
+    "with_skill": {
+      "pass_rate": {
+        "mean": 1.0,
+        "stddev": 0.0,
+        "min": 1.0,
+        "max": 1.0
+      },
+      "time_seconds": null,
+      "tokens": null
+    },
+    "without_skill": {
+      "pass_rate": {
+        "mean": 0.5,
+        "stddev": 0.1667,
+        "min": 0.3333,
+        "max": 0.6667
+      },
+      "time_seconds": null,
+      "tokens": null
+    },
+    "delta": {
+      "pass_rate": "+0.50",
+      "time_seconds": null,
+      "tokens": null
+    }
+  },
+  "notes": [
+    "Time recorded for 0 of 3 with_skill runs, 0 of 3 without_skill runs, so there is no time delta.",
+    "Token count recorded for 0 of 3 with_skill runs, 0 of 3 without_skill runs, so there is no token count delta."
+  ]
+}
