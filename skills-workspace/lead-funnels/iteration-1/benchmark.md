@@ -1,7 +1,7 @@
 # Skill Benchmark: lead-funnels
 
 **Model**: <model-name>
-**Date**: 2026-11-21T02:59:05Z
+**Date**: 2026-11-21T13:34:45Z
 **Evals**: 1, 2, 3 (1 run each per configuration)
 
 ## Summary

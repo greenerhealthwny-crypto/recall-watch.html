@@ -1,7 +1,7 @@
 # Skill Benchmark: legal-research
 
 **Model**: <model-name>
-**Date**: 2026-11-21T03:08:43Z
+**Date**: 2026-11-21T13:34:46Z
 **Evals**: 1, 2, 3 (1 run each per configuration)
 
 ## Summary
