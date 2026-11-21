@@ -1,0 +1,40 @@
+{
+  "expectations": [
+    {
+      "text": "Explains the commodity problem and selling in a 'category of one' (value-driven, not price-driven)",
+      "passed": true,
+      "evidence": "commodity / category of one"
+    },
+    {
+      "text": "Applies the Value Equation: dream outcome x perceived likelihood divided by time delay x effort/sacrifice",
+      "passed": true,
+      "evidence": "dream outcome, likelihood, time delay, effort"
+    },
+    {
+      "text": "Walks through the five steps: dream outcome, list problems, solutions, delivery vehicles, trim and stack",
+      "passed": true,
+      "evidence": "dream outcome, problems, delivery, trim and stack"
+    },
+    {
+      "text": "Uses delivery 'cheat codes' such as one-on-one vs group vs one-to-many, DIY/DWY/DFY, or the 10x / 1/10th test",
+      "passed": true,
+      "evidence": "DIY/DWY/DFY, 10x"
+    },
+    {
+      "text": "Recommends charging a premium (virtuous cycle of price) and/or niching to a specific avatar",
+      "passed": true,
+      "evidence": "virtuous cycle, niche"
+    },
+    {
+      "text": "Adds enhancers (bonuses, guarantee, scarcity/urgency, or naming) to the offer",
+      "passed": true,
+      "evidence": "guarantees, scarcity, urgency, naming"
+    }
+  ],
+  "summary": {
+    "passed": 6,
+    "failed": 0,
+    "total": 6,
+    "pass_rate": 1.0
+  }
+}

@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eval Review</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&family=Lora:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js" integrity="sha384-EnyY0/GSHQGSxSgMwaIPzSESbqoOLSexfnSMN2AP+39Ckmn92stwABZynq1JyzdT" crossorigin="anonymous"></script>
+  <style>
+    :root {
+      --bg: #faf9f5;
+      --surface: #ffffff;
+      --border: #e8e6dc;
+      --text: #141413;
+      --text-muted: #b0aea5;
+      --accent: #d97757;
+      --accent-hover: #c4613f;
+      --green: #788c5d;
+      --green-bg: #eef2e8;
+      --red: #c44;
+      --red-bg: #fceaea;
+      --header-bg: #141413;
+      --header-text: #faf9f5;
+      --radius: 6px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Lora', Georgia, serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ---- Header ---- */
+    .header {
+      background: var(--header-bg);
+      color: var(--header-text);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .header h1 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+    .header .instructions {
+      font-size: 0.8rem;
+      opacity: 0.7;
+      margin-top: 0.25rem;
+    }
+    .header .progress {
+      font-size: 0.875rem;
+      opacity: 0.8;
+      text-align: right;
+    }
+
+    /* ---- Main content ---- */
+    .main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.5rem 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    /* ---- Sections ---- */
+    .section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      flex-shrink: 0;
+    }
+    .section-header {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.75rem 1rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+    }
+    .section-body {
+      padding: 1rem;
+    }
+
+    /* ---- Config badge ---- */
+    .config-badge {
+      display: inline-block;
+      padding: 0.2rem 0.625rem;
+      border-radius: 9999px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      margin-left: 0.75rem;
+      vertical-align: middle;
+    }
+    .config-badge.config-primary {
+      background: rgba(33, 150, 243, 0.12);
+      color: #1976d2;
+    }
+    .config-badge.config-baseline {
+      background: rgba(255, 193, 7, 0.15);
+      color: #f57f17;
+    }
+
+    /* ---- Prompt ---- */
+    .prompt-text {
+      white-space: pre-wrap;
+      font-size: 0.9375rem;
+      line-height: 1.6;
+    }
+
+    /* ---- Outputs ---- */
+    .output-file {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .output-file + .output-file {
+      margin-top: 1rem;
+    }
+    .output-file-header {
+      padding: 0.5rem 0.75rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .output-file-header .dl-btn {
+      font-size: 0.7rem;
+      color: var(--accent);
+      text-decoration: none;
+      cursor: pointer;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-weight: 500;
+      opacity: 0.8;
+    }
+    .output-file-header .dl-btn:hover {
+      opacity: 1;
+      text-decoration: underline;
+    }
+    .output-file-content {
+      padding: 0.75rem;
+      overflow-x: auto;
+    }
+    .output-file-content pre {
+      font-size: 0.8125rem;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+    }
+    .output-file-content img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 4px;
+    }
+    .output-file-content iframe {
+      width: 100%;
+      height: 600px;
+      border: none;
+    }
+    .output-file-content table {
+      border-collapse: collapse;
+      font-size: 0.8125rem;
+      width: 100%;
+    }
+    .output-file-content table td,
+    .output-file-content table th {
+      border: 1px solid var(--border);
+      padding: 0.375rem 0.5rem;
+      text-align: left;
+    }
+    .output-file-content table th {
+      background: var(--bg);
+      font-weight: 600;
+    }
+    .output-file-content .download-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 0.875rem;
+      cursor: pointer;
+    }
+    .output-file-content .download-link:hover {
+      background: var(--border);
+    }
+    .empty-state {
+      color: var(--text-muted);
+      font-style: italic;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    /* ---- Feedback ---- */
+    .prev-feedback {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.625rem 0.75rem;
+      margin-top: 0.75rem;
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+    .prev-feedback-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.25rem;
+      color: var(--text-muted);
+    }
+    .feedback-textarea {
+      width: 100%;
+      min-height: 100px;
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 0.9375rem;
+      line-height: 1.5;
+      resize: vertical;
+      color: var(--text);
+    }
+    .feedback-textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    .feedback-status {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.5rem;
+      min-height: 1.1em;
+    }
+
+    /* ---- Grades (collapsible) ---- */
+    .grades-toggle {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+    }
+    .grades-toggle:hover {
+      color: var(--accent);
+    }
+    .grades-toggle .arrow {
+      margin-right: 0.5rem;
+      transition: transform 0.15s;
+      font-size: 0.75rem;
+    }
+    .grades-toggle .arrow.open {
+      transform: rotate(90deg);
+    }
+    .grades-content {
+      display: none;
+      margin-top: 0.75rem;
+    }
+    .grades-content.open {
+      display: block;
+    }
+    .grades-summary {
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .grade-badge {
+      display: inline-block;
+      padding: 0.125rem 0.5rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .grade-pass { background: var(--green-bg); color: var(--green); }
+    .grade-fail { background: var(--red-bg); color: var(--red); }
+    .assertion-list {
+      list-style: none;
+    }
+    .assertion-item {
+      padding: 0.625rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.8125rem;
+    }
+    .assertion-item:last-child { border-bottom: none; }
+    .assertion-status {
+      font-weight: 600;
+      margin-right: 0.5rem;
+    }
+    .assertion-status.pass { color: var(--green); }
+    .assertion-status.fail { color: var(--red); }
+    .assertion-evidence {
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      margin-top: 0.25rem;
+      padding-left: 1.5rem;
+    }
+
+    /* ---- View tabs ---- */
+    .view-tabs {
+      display: flex;
+      gap: 0;
+      padding: 0 2rem;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .view-tab {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.625rem 1.25rem;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      background: none;
+      color: var(--text-muted);
+      border-bottom: 2px solid transparent;
+      transition: all 0.15s;
+    }
+    .view-tab:hover { color: var(--text); }
+    .view-tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+    .view-panel { display: none; }
+    .view-panel.active { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
+
+    /* ---- Benchmark view ---- */
+    .benchmark-view {
+      padding: 1.5rem 2rem;
+      overflow-y: auto;
+      flex: 1;
+    }
+    .benchmark-table {
+      border-collapse: collapse;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 0.8125rem;
+      width: 100%;
+      margin-bottom: 1.5rem;
+    }
+    .benchmark-table th, .benchmark-table td {
+      padding: 0.625rem 0.75rem;
+      text-align: left;
+      border: 1px solid var(--border);
+    }
+    .benchmark-table th {
+      font-family: 'Poppins', sans-serif;
+      background: var(--header-bg);
+      color: var(--header-text);
+      font-weight: 500;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .benchmark-table tr:hover { background: var(--bg); }
+    .benchmark-table tr.benchmark-row-with { background: rgba(33, 150, 243, 0.06); }
+    .benchmark-table tr.benchmark-row-without { background: rgba(255, 193, 7, 0.06); }
+    .benchmark-table tr.benchmark-row-with:hover { background: rgba(33, 150, 243, 0.12); }
+    .benchmark-table tr.benchmark-row-without:hover { background: rgba(255, 193, 7, 0.12); }
+    .benchmark-table tr.benchmark-row-avg { font-weight: 600; border-top: 2px solid var(--border); }
+    .benchmark-table tr.benchmark-row-avg.benchmark-row-with { background: rgba(33, 150, 243, 0.12); }
+    .benchmark-table tr.benchmark-row-avg.benchmark-row-without { background: rgba(255, 193, 7, 0.12); }
+    .benchmark-delta-positive { color: var(--green); font-weight: 600; }
+    .benchmark-delta-negative { color: var(--red); font-weight: 600; }
+    .benchmark-notes {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem;
+    }
+    .benchmark-notes h3 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+    }
+    .benchmark-notes ul {
+      list-style: disc;
+      padding-left: 1.25rem;
+    }
+    .benchmark-notes li {
+      font-size: 0.8125rem;
+      line-height: 1.6;
+      margin-bottom: 0.375rem;
+    }
+    .benchmark-empty {
+      color: var(--text-muted);
+      font-style: italic;
+      text-align: center;
+      padding: 3rem;
+    }
+
+    /* ---- Navigation ---- */
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+      flex-shrink: 0;
+    }
+    .nav-btn {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.5rem 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text);
+      transition: all 0.15s;
+    }
+    .nav-btn:hover:not(:disabled) {
+      background: var(--bg);
+      border-color: var(--text-muted);
+    }
+    .nav-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    .done-btn {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.5rem 1.5rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: all 0.15s;
+    }
+    .done-btn:hover {
+      background: var(--bg);
+      border-color: var(--text-muted);
+    }
+    .done-btn.ready {
+      border: none;
+      background: var(--accent);
+      color: white;
+      font-weight: 600;
+    }
+    .done-btn.ready:hover {
+      background: var(--accent-hover);
+    }
+    /* ---- Done overlay ---- */
+    .done-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 100;
+      justify-content: center;
+      align-items: center;
+    }
+    .done-overlay.visible {
+      display: flex;
+    }
+    .done-card {
+      background: var(--surface);
+      border-radius: 12px;
+      padding: 2rem 3rem;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      max-width: 500px;
+    }
+    .done-card h2 {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .done-card p {
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
+    }
+    .done-card .btn-row {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+    }
+    .done-card button {
+      padding: 0.5rem 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 0.875rem;
+    }
+    .done-card button:hover {
+      background: var(--bg);
+    }
+    /* ---- Toast ---- */
+    .toast {
+      position: fixed;
+      bottom: 5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--header-bg);
+      color: var(--header-text);
+      padding: 0.625rem 1.25rem;
+      border-radius: var(--radius);
+      font-size: 0.875rem;
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+      z-index: 200;
+    }
+    .toast.visible {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <div id="app" style="height:100vh; display:flex; flex-direction:column;">
+    <div class="header">
+      <div>
+        <h1>Eval Review: <span id="skill-name"></span></h1>
+        <div class="instructions">Review each output and leave feedback below. Navigate with arrow keys or buttons. When done, copy feedback and paste into Claude Code.</div>
+      </div>
+      <div class="progress" id="progress"></div>
+    </div>
+
+    <!-- View tabs (only shown when benchmark data exists) -->
+    <div class="view-tabs" id="view-tabs" style="display:none;">
+      <button class="view-tab active" onclick="switchView('outputs')">Outputs</button>
+      <button class="view-tab" onclick="switchView('benchmark')">Benchmark</button>
+    </div>
+
+    <!-- Outputs panel (qualitative review) -->
+    <div class="view-panel active" id="panel-outputs">
+    <div class="main">
+      <!-- Prompt -->
+      <div class="section">
+        <div class="section-header">Prompt <span class="config-badge" id="config-badge" style="display:none;"></span></div>
+        <div class="section-body">
+          <div class="prompt-text" id="prompt-text"></div>
+        </div>
+      </div>
+
+      <!-- Outputs -->
+      <div class="section">
+        <div class="section-header">Output</div>
+        <div class="section-body" id="outputs-body">
+          <div class="empty-state">No output files found</div>
+        </div>
+      </div>
+
+      <!-- Previous Output (collapsible) -->
+      <div class="section" id="prev-outputs-section" style="display:none;">
+        <div class="section-header">
+          <div class="grades-toggle" onclick="togglePrevOutputs()">
+            <span class="arrow" id="prev-outputs-arrow">&#9654;</span>
+            Previous Output
+          </div>
+        </div>
+        <div class="grades-content" id="prev-outputs-content"></div>
+      </div>
+
+      <!-- Grades (collapsible) -->
+      <div class="section" id="grades-section" style="display:none;">
+        <div class="section-header">
+          <div class="grades-toggle" onclick="toggleGrades()">
+            <span class="arrow" id="grades-arrow">&#9654;</span>
+            Formal Grades
+          </div>
+        </div>
+        <div class="grades-content" id="grades-content"></div>
+      </div>
+
+      <!-- Feedback -->
+      <div class="section">
+        <div class="section-header">Your Feedback</div>
+        <div class="section-body">
+          <textarea
+            class="feedback-textarea"
+            id="feedback"
+            placeholder="What do you think of this output? Any issues, suggestions, or things that look great?"
+          ></textarea>
+          <div class="feedback-status" id="feedback-status"></div>
+          <div class="prev-feedback" id="prev-feedback" style="display:none;">
+            <div class="prev-feedback-label">Previous feedback</div>
+            <div id="prev-feedback-text"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav" id="outputs-nav">
+      <button class="nav-btn" id="prev-btn" onclick="navigate(-1)">&#8592; Previous</button>
+      <button class="done-btn" id="done-btn" onclick="showDoneDialog()">Submit All Reviews</button>
+      <button class="nav-btn" id="next-btn" onclick="navigate(1)">Next &#8594;</button>
+    </div>
+    </div><!-- end panel-outputs -->
+
+    <!-- Benchmark panel (quantitative stats) -->
+    <div class="view-panel" id="panel-benchmark">
+      <div class="benchmark-view" id="benchmark-content">
+        <div class="benchmark-empty">No benchmark data available. Run a benchmark to see quantitative results here.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Done overlay -->
+  <div class="done-overlay" id="done-overlay">
+    <div class="done-card">
+      <h2>Review Complete</h2>
+      <p>Your feedback has been saved. Go back to your Claude Code session and tell Claude you're done reviewing.</p>
+      <div class="btn-row">
+        <button onclick="closeDoneDialog()">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ---- Embedded data (injected by generate_review.py) ----
+    const EMBEDDED_DATA = {"skill_name": "hormozi-offers", "runs": [{"id": "eval-1-ho-dog-trainer-with_skill-run-1", "prompt": "I'm a dog trainer charging $40 per session and competing with cheaper trainers on price. Using Alex Hormozi's $100M Offers, walk me through building a Grand Slam Offer so I can charge a lot more.", "eval_id": 1, "outputs": [{"name": "response.md", "type": "text", "content": "# Building a Grand Slam Offer for Your Dog Training Business\n\n## The problem: you're selling a commodity\n\n\"$40 per session\" is a commodity offer. Lots of trainers can sell an hour of dog training, so buyers compare on price, and the cheapest trainer wins. Hormozi calls that \"a race to the bottom.\"\n\nA **Grand Slam Offer** is \"an offer you present to the marketplace that cannot be compared to any other product or service available.\" Once nobody can line your offer up against the $30 trainer down the road, you're selling in a **category of one**, and price stops being the deciding factor.\n\nYour training can stay largely the same. What changes is **what you sell**: a result, not hours.\n\n> Stop selling \"a session.\" Sell \"a dog that walks calmly on a loose leash past other dogs in 6 weeks.\"\n\nBelow are the steps in the order the book teaches them, with a worked example for a dog trainer. The prices and numbers are illustrations to adapt, not benchmarks. Hormozi says himself that \"the numbers in this book are theoretical.\"\n\n---\n\n## Step 0: Pick a starving crowd and niche down\n\nHormozi's order of importance is **market > offer > persuasion**. \"Dog owners\" is too broad. Choose a group with all four of these indicators:\n\n| Indicator | What to look for in dog owners |\n|---|---|\n| **Massive pain** | They *desperately need* help, not just want it. \"The pain is the pitch.\" |\n| **Purchasing power** | They can afford premium help |\n| **Easy to target** | They gather somewhere you can reach |\n| **Growing** | The segment is expanding |\n\n**Candidate niches, ranked by pain:**\n\n1. **Reactive or leash-aggressive dogs.** Owners are embarrassed, stressed, walk at 5 a.m. to avoid other dogs, and may face a landlord or neighbor problem. Very high pain.\n2. **New puppy owners (8\u201316 weeks).** They're overwhelmed by biting, house-training and sleepless nights. They have a strong \"do it right from the start\" motive, and a new puppy cohort arrives every month.\n3. **Busy professionals with a \"doodle\" or other large, energetic adolescent dog.** They have money and no time, and the dog is pulling them down the street.\n4. **Rescue owners with fear or anxiety cases.**\n\n**Example pick:** *busy professional owners of reactive dogs within 20 miles.* This group:\n- has high pain;\n- has money;\n- is easy to find through vets, groomers, local Facebook groups, rescues and apartment complexes;\n- is growing, since pandemic-era dogs are now reactive adults.\n\nHormozi notes you can charge up to 100\u00d7 more for the same thing sold to a specific avatar. \"Riches are in the niches.\" Commit to the niche, and politely turn away or refer out work that doesn't fit.\n\n---\n\n## Step 1: Define the dream outcome\n\nWrite it in the owner's words, including the status and emotional payoff:\n\n> \"I can walk my dog around the neighborhood, past other dogs and people, without dread, lunging or embarrassment. I can have friends over, and I feel like a good dog owner again.\"\n\nNotice that this says nothing about \"sit,\" \"heel\" or \"sessions.\" It's about their life.\n\n---\n\n## Step 2: List every problem in the way (before, during and after)\n\nGo through the owner's whole journey. For each obstacle, note which Value Equation driver it attacks:\n- **Outcome:** \"it isn't worth it.\"\n- **Likelihood:** \"it won't work for my dog.\"\n- **Effort:** \"it's too hard.\"\n- **Time:** \"it takes too long.\"\n\n| # | Problem | Driver |\n|---|---|---|\n| 1 | \"I've tried a trainer before and it didn't stick.\" | Likelihood |\n| 2 | \"My dog is fine in class, then terrible on our real walk.\" | Likelihood |\n| 3 | \"I don't have time to practice every day.\" | Effort / Time |\n| 4 | \"I forget what to do in the moment when another dog appears.\" | Effort |\n| 5 | \"I don't know which tools to buy: harness, leash, treats, muzzle?\" | Effort |\n| 6 | \"It'll take months before anything changes.\" | Time |\n| 7 | \"My partner or kids handle the dog differently and undo the work.\" | Likelihood |\n| 8 | \"I panic when a setback happens and don't know if it's working.\" | Likelihood |\n| 9 | \"Getting to a training facility is a hassle.\" | Effort |\n| 10 | \"What happens after training ends? Will it fall apart?\" | Likelihood |\n| 11 | \"Is this even worth hundreds of dollars?\" | Outcome |\n| 12 | \"I can't get help between appointments when something goes wrong.\" | Time / Effort |\n\n---\n\n## Step 3: Turn each problem into a named solution\n\nReverse each problem with \"how to\u2026\":\n\n| Problem | Solution |\n|---|---|\n| Didn't stick before | How to make results last: a structured 6-week protocol with checkpoints |\n| Fine in class, bad on walks | How to train where the problem happens: real-world sessions on *your* route |\n| No time to practice | How to train in 10 minutes a day: daily micro-drills built into normal walks |\n| Forget what to do | How to know exactly what to do: a \"Trigger Playbook\" pocket card and a phone checklist |\n| Gear confusion | How to have the right tools on day 1: a starter kit |\n| Takes months | How to see a win in week 1: a fast \"decompression and distance\" win first |\n| Family inconsistency | How to get everyone on the same page: a family handling session plus a cheat sheet |\n| Setbacks | How to troubleshoot instantly: video review and text support |\n| Travel hassle | How to skip the commute: in-home and on-route sessions |\n| Falls apart after | How to keep results: graduation walks and a refresher plan |\n| Not worth it | How to make it a no-brainer: a guarantee and proof |\n| No help between sessions | How to get help when you need it: a response-time promise |\n\n---\n\n## Step 4: Create delivery vehicles with the \"cheat codes\"\n\nThis is the step Hormozi calls the most important. Brainstorm widely:\n\n1. **Level of personal attention**\n   - one-on-one in home or on route;\n   - small group \"reactive dog walks\" with 3\u20134 dogs at controlled distance;\n   - one-to-many recorded video lessons.\n2. **Effort expected of the owner**\n   - **DIY:** a video library and checklists.\n   - **DWY (done with you):** coached sessions and video review.\n   - **DFY (done for you):** board-and-train, or \"day training,\" where you train the dog while they're at work and then hand over.\n3. **Live medium:** in person, Zoom check-ins, text or WhatsApp.\n4. **Recorded format:** short phone-friendly videos and a one-page PDF per week.\n5. **Response speed:** \"Send me a video of any walk, and I'll reply with feedback within 24 hours on weekdays.\"\n6. **The 10x / one-tenth test**\n   - *If they paid you $10,000, what would you do?* Train the dog daily for them (day training), walk their route with them, coach the whole family, provide all gear, and give unlimited text support for 3 months.\n   - *How would you still get results at one-tenth of the price?* A self-paced video course, a group class and a private community.\n\n   Both answers become raw material for tiers, bonuses and downsells.\n\n---\n\n## Step 5: Trim and stack\n\nRemove anything that is **high cost and low value**, then anything that is **low cost and low value**. Keep:\n- **Low cost, high value:** checklists, the Trigger Playbook, recorded videos, text support with set hours, a family cheat sheet.\n- **High cost, high value:** one-on-one on-route sessions, day-training add-ons.\n\nWatch the **sales-to-fulfillment continuum**. Unlimited 24/7 texting sells easily but will burn you out. Bounded support (\"weekday replies within 24 hours\") is easy enough to fulfill. \"Create flow. Monetize flow. Then add friction.\" Over-deliver with your first clients, collect testimonials, then trim.\n\n### The stacked offer (example)\n\n**\"Calm Walks in 6 Weeks: The Reactive Dog Reset Program\"**\n\n| Component | What it is | Stated value |\n|---|---|---|\n| **Core:** 6 private coaching sessions | In-home and on *your* walking route, not a training floor | $480 at your old rate (6 \u00d7 $80 market rate for in-home) |\n| **Bonus 1:** \"Trigger Playbook\" | A pocket card and phone checklist so you know exactly what to do when a dog appears | $97 |\n| **Bonus 2:** \"10-Minute-a-Day\" micro-drill video library | A short drill for each week that fits into normal walks | $197 |\n| **Bonus 3:** Walk Review support | Send videos of real walks; feedback within 24 hours on weekdays for 6 weeks | $300 |\n| **Bonus 4:** Day-1 Starter Kit | A front-clip harness, a long line, a treat pouch and a high-value treat list | $85 |\n| **Bonus 5:** \"Whole Family on the Same Page\" session | One session for everyone who walks the dog, plus a fridge cheat sheet | $120 |\n| **Bonus 6:** Graduation Group Walks | Two controlled small-group walks to practice around other dogs | $100 |\n| **Bonus 7:** \"Keep It Calm\" 90-day maintenance plan | A follow-up check-in at 30, 60 and 90 days | $150 |\n| **Total stated value** | | **\u2248 $1,529** |\n| **Your price** | | **$997** (or 2 \u00d7 $525) |\n\nA few notes on the stack:\n- **\"Tools and checklists beat more training.\"** The Playbook and the starter kit cost you little, but they cut the owner's effort, so they're worth more to the owner.\n- **Each bonus answers a specific doubt** from Step 2: \"I'll forget,\" \"no time,\" \"my family undoes it,\" \"it'll fall apart afterwards.\"\n- **The bonuses together should be worth more than the core.** They are here: about $1,049 against $480.\n- **Base every stated value on something real**, such as your own \u00e0 la carte prices or what each item would actually cost bought separately. Don't inflate.\n\nThat's six sessions for $997, versus 6 \u00d7 $40 = $240 before. That's **about 4\u00d7 the revenue for similar contact hours**, and the owner gets far more value than they did from loose sessions.\n\n---\n\n## Step 6: Run the Value Equation over the offer\n\n> **Value = (Dream Outcome \u00d7 Perceived Likelihood) \u00f7 (Time Delay \u00d7 Effort & Sacrifice)**\n\n| Driver | How the offer moves it |\n|---|---|\n| \u2191 **Dream outcome** | It's framed as \"calm walks and pride in your dog,\" not \"6 lessons\" |\n| \u2191 **Likelihood** | Before-and-after videos of past reactive dogs, testimonials, a guarantee, real-route training, and family alignment |\n| \u2193 **Time delay** | A week-1 quick win (\"fast beats free\"): show visible progress by the second session |\n| \u2193 **Effort** | In-home visits, 10-minute drills, a starter kit, a pocket playbook, and video review in place of guesswork |\n\nHormozi's point is that the biggest gains are usually on the **bottom** of the equation: make it faster and easier. Bigger promises are \"easy, and it's lazy.\"\n\n---\n\n## Step 7: Enhance the offer\n\n### Scarcity (real only)\nYou're one person with a limited number of slots. Say so: *\"I take on 6 new reactive-dog clients per month so each one gets my full attention.\"* Use your true capacity. Never invent a limit.\n\n### Urgency (real only)\n- **Cohort-based rolling urgency:** start new clients on the 1st and 15th. \"Sign up this week and you're in the cohort starting on the 15th; otherwise it's the 1st.\"\n- **Seasonal urgency:** \"Get calm before spring walking season\" or \"before the holidays, when guests visit.\"\n- **Bonus urgency:** Graduation Group Walks are included for people who enroll by a real date.\n\n### Guarantee\nUse Hormozi's formula: **\"If you don't get X in Y time, we'll Z.\"**\n\nBehavior depends on the owner doing the work, so a **conditional** guarantee tied to the key actions fits best:\n\n> **\"Calm Walk Guarantee:** Do your 10-minute daily drills and send me at least one walk video a week. If your dog isn't noticeably calmer on walks (able to pass another dog at a distance we agree on at the start) by the end of week 6, I'll keep coaching you for free until they are.\"\n\nWhy this works:\n- It's \"better than money back\": they get the result, not just a refund.\n- It rewards the behavior that actually produces results.\n- It filters out people who want a magic fix.\n\nYou could also stack a short **unconditional** guarantee in front of it: \"If you're not happy after the first session, I'll refund it in full.\"\n\nHormozi's math says a strong guarantee usually adds more sales than it costs in refunds. Do that math on your own numbers.\n\n### Name it with M-A-G-I-C\nUse three to five of these components:\n- **M**agnetic reason why: \"Spring,\" \"New Year\"\n- **A**nnounce the avatar: \"Reactive Dog,\" \"Busy Owner,\" \"New Puppy\"\n- **G**ive them a goal: \"Calm Walks,\" \"Polite Puppy\"\n- **I**ndicate a time interval: \"in 6 Weeks\"\n- **C**ontainer word: Reset, Program, Bootcamp, Blueprint\n\nExamples:\n- *Calm Walks in 6 Weeks: Reactive Dog Reset*\n- *The 6-Week Leash-Calm Bootcamp for Busy Owners*\n- *Perfect Puppy Start: 30-Day Puppy Blueprint* (if you choose the puppy niche)\n\nName each bonus with the same formula.\n\n---\n\n## Step 8: Add a price ladder (optional)\n\nThe 10x / one-tenth test gives you natural tiers:\n\n| Tier | What's in it | Example price |\n|---|---|---|\n| **Self-guided** | Video library, Playbook, starter kit, one Zoom review | $197 |\n| **Core: Calm Walks Reset** | The stack above | $997 |\n| **VIP / done-for-you** | Adds day training while they're at work, extra sessions, and priority text support. Use real scarcity: \"3 spots per month\" | $2,500+ |\n\nThe low tier catches price-sensitive buyers *without* competing with $30 trainers. The VIP tier makes the core look reasonable. A few clients will happily buy the top tier.\n\n---\n\n## Why charging more helps your clients too\n\nHormozi's **virtuous cycle of price**: when people pay $997 instead of $40, they:\n- show up;\n- do the drills;\n- take it seriously.\n\nThat gets better results, which brings better testimonials, which justifies the price. You also have margin for gear, follow-ups and advertising. At $40 a session, you can't afford to give that level of care. \"Profit is oxygen.\"\n\n---\n\n## Your next five actions\n\n1. **Choose one niche** (for example, reactive dogs or new puppies) and write the dream outcome in their words.\n2. **Interview 3\u20135 past clients** about what nearly stopped them from buying and what went wrong after. Add their answers to the problems list.\n3. **Build the stack:** create the Playbook, the micro-drill videos and the starter kit list this week. They're cheap to make.\n4. **Collect proof:** before-and-after walk videos (with permission) and short testimonials.\n5. **Pitch the new offer to your next 10 leads.** Stop quoting per session. Track conversions, and adjust the stack, name or guarantee. \"If your offer doesn't work, it doesn't mean you suck. It means your offer sucks.\" Iterate.\n\n---\n\n## Honest guardrails\n\n- **Keep scarcity and urgency real.** No fake countdown timers or invented \"only 2 spots left.\" Hormozi insists on this too.\n- **Word guarantees and claims carefully.** Behavior can't be guaranteed in an absolute sense.\n  - Tie promises to measurable, agreed criteria and to the owner's participation.\n  - Honor every guarantee you make.\n  - Make sure your refund and guarantee terms meet local consumer-protection rules. In the US that includes FTC rules on advertising claims.\n- **Use real testimonials only**, and get permission before using client videos.\n- **Know your limits.** Serious aggression, bite history or severe anxiety may need a veterinary behaviorist or a vet check for pain or medical causes. Build a referral partner into your process, and exclude those cases from the guarantee or adapt it for them.\n- **Make your stated values defensible.** Base them on prices you actually charge, or on what the items really cost separately.\n\nThe core idea: **stop competing on price by making price irrelevant.** Sell a specific outcome, to a specific owner, with every obstacle removed, and back it with a guarantee. You'll no longer be compared to the $30 trainer, because they aren't selling the same thing.\n"}], "grading": {"expectations": [{"text": "Explains the commodity problem and selling in a 'category of one' (value-driven, not price-driven)", "passed": true, "evidence": "category of one"}, {"text": "Applies the Value Equation: dream outcome x perceived likelihood divided by time delay x effort/sacrifice", "passed": true, "evidence": "Value Equation"}, {"text": "Walks through the five steps: dream outcome, list problems, solutions, delivery vehicles, trim and stack", "passed": true, "evidence": "Steps 1-5"}, {"text": "Uses delivery 'cheat codes' such as one-on-one vs group vs one-to-many, DIY/DWY/DFY, or the 10x / 1/10th test", "passed": true, "evidence": "DIY, one-to-many, 10x"}, {"text": "Recommends charging a premium (virtuous cycle of price) and/or niching to a specific avatar", "passed": true, "evidence": "premium, virtuous cycle, niche"}, {"text": "Adds enhancers (bonuses, guarantee, scarcity/urgency, or naming) to the offer", "passed": true, "evidence": "bonuses, guarantee, scarcity, urgency"}], "summary": {"passed": 6, "failed": 0, "total": 6, "pass_rate": 1.0}}}, {"id": "eval-1-ho-dog-trainer-without_skill-run-1", "prompt": "I'm a dog trainer charging $40 per session and competing with cheaper trainers on price. Using Alex Hormozi's $100M Offers, walk me through building a Grand Slam Offer so I can charge a lot more.", "eval_id": 1, "outputs": [{"name": "response.md", "type": "text", "content": "# Building a Grand Slam Offer for Your Dog Training Business\n\n*Using the framework from Alex Hormozi's **$100M Offers***\n\n---\n\n## The Core Problem: You're a Commodity\n\nRight now you sell \"a dog training session for $40.\" A prospect can line that up next to the $30 trainer down the street and compare them like for like. When products look the same, the only thing left to compare is price, and that's a race to the bottom.\n\nHormozi's answer is to stop selling something people can compare. Build an offer so good that people would feel stupid saying no, and so different that no competitor has anything like it. That's a **Grand Slam Offer**. Once there's nothing to compare it to, you're no longer competing on price. You're a \"category of one.\"\n\nBelow is the process step by step, applied to your business.\n\n---\n\n## Step 0: Pick the Right Market (the \"Starving Crowd\")\n\nHormozi says market matters more than offer strength or persuasion skill. A good market has four traits:\n\n1. **Massive pain.** They need a fix, they don't just want one.\n2. **Purchasing power.** They can afford a premium.\n3. **Easy to target.** You can find them and reach them.\n4. **Growing.**\n\n\"Dog owners\" is too broad. Niche down to a group with an urgent, expensive, emotional problem. Some options:\n\n| Niche | Why the pain is high |\n|---|---|\n| **Owners of reactive or aggressive dogs** (lunging, biting, barking at people or dogs) | Liability, fear, embarrassment, risk of rehoming or euthanasia |\n| **New puppy owners in their first 90 days** | Overwhelm, chewing, potty accidents, sleepless nights |\n| **Busy professionals with \"out of control\" adolescent dogs** | No time, the dog is wrecking the house, guilt |\n| **Families with a new baby on the way** | Safety fear: \"Will the dog be okay with the baby?\" |\n| **Rescue and adoption owners with anxious dogs** | Separation anxiety, destruction, neighbor complaints |\n\nFor the rest of this walkthrough I'll use **reactive or aggressive dogs**. The pain is huge, the owners are desperate, and many trainers won't take these cases. Pick whichever niche fits your skills and your local market best.\n\n> Hormozi's point: an offer that's fine for \"everyone\" is great for no one. The narrower your target, the more you can charge, because the offer feels made for that person.\n\n---\n\n## Step 1: Charge What It's Worth (Why a Higher Price Helps)\n\nHormozi argues that raising prices starts a **virtuous cycle**:\n\n- A higher price brings in **more committed clients**. They do the homework, so they **get better results**.\n- Better margins let you **spend more on delivery**: more time, better tools, more support. That improves results further.\n- Better results bring **testimonials, referrals, and word of mouth**.\n- You can **afford to spend more to get a customer**, so you outspend the cheap competition on marketing.\n\nAt $40 a session you can't afford to over-deliver, can't afford ads, and have to work huge hours. The aim isn't $50. Hormozi pushes for prices **10x or more** above the market, backed by value that makes the price feel like a steal.\n\n---\n\n## Step 2: The Value Equation\n\nEverything you add to the offer should improve one of these four levers:\n\n```\n            Dream Outcome  x  Perceived Likelihood of Achievement\nValue  =  ---------------------------------------------------------\n                 Time Delay  x  Effort & Sacrifice\n```\n\n- **Dream Outcome \u2191**: what they really want.\n- **Perceived Likelihood \u2191**: how sure they are it will work *for them*.\n- **Time Delay \u2193**: how fast they see results.\n- **Effort & Sacrifice \u2193**: how easy it is for them.\n\nThe top two make the offer worth more. The bottom two are where the most leverage usually sits. Cheap trainers sell \"an hour of my time.\" You'll sell a fast, low-effort, near-certain path to the dream outcome.\n\nFor a reactive-dog owner:\n\n- **Dream outcome:** \"I can walk my dog calmly around the neighborhood, have guests over, and stop feeling anxious and embarrassed. My dog is safe and I keep him.\"\n- **Perceived likelihood:** They've probably tried YouTube, maybe another trainer, and failed. They doubt it can work.\n- **Time delay:** They want relief *now*, not in six months.\n- **Effort & sacrifice:** They're tired, busy, and scared of doing it wrong.\n\n---\n\n## Step 3: List Every Problem (the Obstacles)\n\nWrite down every obstacle between your client and the dream outcome. A useful method is to take each step of their journey and ask what goes wrong before, during, and after. Then put each problem in terms of the four value levers.\n\n**Reactive-dog owner problems:**\n\n1. \"My dog is different. Nothing works on him.\" *(likelihood)*\n2. \"I don't know what triggers him or why.\" *(likelihood)*\n3. \"I don't have time to train every day.\" *(effort)*\n4. \"I forget what to do in the moment when he's lunging.\" *(effort, likelihood)*\n5. \"It'll take forever to see a change.\" *(time)*\n6. \"Walks are stressful and I avoid them.\" *(effort)*\n7. \"I don't have the right equipment.\" *(effort)*\n8. \"My partner and kids don't train him the same way.\" *(likelihood)*\n9. \"He's fine with the trainer but not with me.\" *(likelihood)*\n10. \"What if he regresses after training ends?\" *(likelihood)*\n11. \"I can't practice around other dogs safely.\" *(effort, likelihood)*\n12. \"I'm afraid of a bite incident or a lawsuit.\" *(dream outcome, urgency)*\n13. \"Having guests over is a nightmare.\" *(dream outcome)*\n14. \"Scheduling sessions is a hassle.\" *(effort)*\n15. \"I've already wasted money on training that didn't work.\" *(likelihood)*\n\n---\n\n## Step 4: Turn Each Problem into a Solution\n\nFlip every problem into a \"how to\" solution. Don't worry about cost yet. Just list everything you *could* do.\n\n| Problem | Solution |\n|---|---|\n| \"My dog is different\" | Custom **Behavior Assessment & Trigger Map** for their dog |\n| \"Don't know the triggers\" | Written **Reactivity Profile** showing thresholds and triggers |\n| \"No time to train\" | **10-Minute-a-Day Training Plan**, short daily drills |\n| \"Forget what to do in the moment\" | Laminated **\"Emergency Calm\" pocket card** and phone lock-screen cheat sheet |\n| \"Takes forever\" | A **\"First Calm Walk in 14 Days\"** milestone protocol |\n| \"Walks are stressful\" | **Guided real-world walks** with you, on location |\n| \"Wrong equipment\" | **Starter Gear Kit**: fitted harness, long line, treat pouch, high-value treats |\n| \"Family inconsistent\" | **Family Training Session** plus a shared cue sheet for everyone |\n| \"Fine with trainer, not me\" | Sessions coach **the owner**, not just the dog, with video feedback |\n| \"Will regress\" | **90-day Maintenance Support** with check-ins and refresher sessions |\n| \"Can't practice around dogs\" | **Controlled \"neutral dog\" practice sessions** using your calm demo dogs |\n| \"Bite / liability fear\" | **Safety & Management Plan**, plus muzzle conditioning if needed |\n| \"Guests are a nightmare\" | **\"Doorbell & Guest Protocol\"** module and a mock-visitor session |\n| \"Scheduling hassle\" | Pre-booked session calendar and text-to-reschedule |\n| \"Wasted money before\" | A strong **results guarantee** (see Step 7) |\n\n---\n\n## Step 5: Pick Delivery Vehicles (How You Provide Each Solution)\n\nFor each solution, ask how you could deliver it. Hormozi suggests looking at a few dimensions:\n\n- **Level of effort for the client:** Do-It-Yourself (DIY), Done-With-You (DWY), Done-For-You (DFY). More DFY means more value and a higher price.\n- **1-on-1 vs. small group vs. one-to-many.**\n- **Live vs. recorded.**\n- **Format:** in-home, on location, video call, text support, app, printed materials.\n- **Speed and convenience:** 24/7 text access, same-week start.\n\nSome options for dog training:\n\n- **DFY:** Board-and-train or \"day training,\" where you train the dog without the owner, then do a handoff session.\n- **DWY:** 1-on-1 in-home and on-location coaching.\n- **DIY:** A video library of drills (\"Reactivity Academy\"), worksheets, cheat sheets.\n- **Support:** Unlimited text and video-review support. The owner films a walk and you send feedback.\n- **Group:** A monthly \"Reactive Rover\" group class or structured pack walk for graduates. Cheap to run, very valuable to clients.\n\n---\n\n## Step 6: Trim & Stack\n\nNow go through the list and sort each item:\n\n- **Cut** anything that's **high cost and low value**.\n- **Keep** anything that's **low cost and high value**. These are your best items: video libraries, cheat sheets, text support, group sessions.\n- Keep **high cost and high value** items selectively for premium tiers.\n\nThen **stack** what's left into one package.\n\n### Example Grand Slam Offer\n\n> ## The \"Calm Walk Guarantee\" Program\n> ### *Turn Your Reactive Dog into a Calm Walking Partner in 8 Weeks, or I Keep Training You for Free*\n>\n> **Core program:**\n> - In-depth **Behavior Assessment & Trigger Map** (90 min, in-home). *Value: $250*\n> - **8 private coaching sessions**, in-home and on real-world walks. *Value: $1,200*\n> - **2 controlled \"neutral dog\" practice sessions** with my trained demo dog. *Value: $300*\n> - **Family Training Session** so everyone uses the same cues. *Value: $150*\n> - **Unlimited text and video-review support for 8 weeks**: send me a clip, get feedback within 24 hrs. *Value: $500*\n>\n> **Bonuses:**\n> - **Bonus 1: \"Emergency Calm\" Pocket Card & Lock-Screen Guide.** Know exactly what to do mid-lunge. *Value: $49*\n> - **Bonus 2: Starter Gear Kit** (fitted harness, long line, treat pouch, first bag of high-value treats). *Value: $120*\n> - **Bonus 3: Reactivity Academy video library.** 30+ short drills you can do in 10 minutes a day. *Value: $297*\n> - **Bonus 4: Doorbell & Guest Protocol.** Have friends over again without chaos. *Value: $150*\n> - **Bonus 5: 90-Day Maintenance Plan** with monthly check-ins, plus free entry to the monthly graduate pack walk. *Value: $300*\n>\n> **Total value: $3,300+**\n> **Your investment: $1,497** (or 3 payments of $549)\n\nYou've gone from selling **one $40 hour** to selling a **$1,500 outcome**. The client is far more likely to get the result, because the program covers every obstacle they listed. Many of the high-value pieces (videos, cards, group walks, text support) cost you very little to deliver at scale.\n\n---\n\n## Step 7: Enhance the Offer\n\nHormozi uses five enhancers to make the offer even more compelling.\n\n### 1. Scarcity (limited supply)\nBe honest about real limits:\n> \"I take on only **6 new reactive-dog clients per month**, because these cases need my personal attention.\"\n\n### 2. Urgency (limited time)\nUse cohorts, seasonal start dates, or bonus deadlines:\n> \"Enroll before the 1st and get the Gear Kit and Guest Protocol free. After that, they're $270 extra.\"\nOr use the client's own urgency: \"Spring walking season starts in 3 weeks.\"\n\n### 3. Bonuses\n- Each bonus should **address a specific objection or obstacle**.\n- **Name each one** and **give it a value**.\n- Bonuses presented separately feel more valuable than one big bundle.\n- Bonuses can come from partners: a local groomer's discount, a vet's free behavior consult, a pet store gift card. That costs you nothing and builds your referral network.\n\n### 4. Guarantees\nThe guarantee removes risk. That's the biggest fear for someone who's already \"wasted money on training before.\" Hormozi describes several types:\n\n- **Unconditional:** \"Not happy in 30 days? Full refund, no questions.\"\n- **Conditional (often the strongest):** \"Attend all sessions, do your 10 minutes a day, and send me 2 walk videos a week. If your dog isn't walking calmly past other dogs at [defined distance] by week 8, **I'll keep training you for free until he is.**\"\n- **Anti-guarantee:** \"All sales final, because I give you everything up front.\" Works for some exclusive offers.\n- **Implied / performance-based:** \"Pay $500 now, and the remaining $1,000 only when we hit the milestone.\"\n\nFor dog training, a **conditional \"keep training you until you get the result\" guarantee** fits well. It shows confidence, the conditions make clients do the work (so results go up), and your cost is extra time with a client who's engaged.\n\n> Note: You can't guarantee a living animal's behavior with certainty. Set a **specific, measurable, reasonable** milestone, and make clear the guarantee depends on the owner following the plan. Check that your wording fits your local consumer-protection rules.\n\n### 5. Naming: the MAGIC formula\nHormozi's naming formula uses some or all of these:\n\n- **M**ake a magnetic reason why (\"Spring Kickoff,\" \"New Year,\" \"Grand Opening\")\n- **A**nnounce your avatar (\"Reactive Dog,\" \"New Puppy,\" \"Busy Owner\")\n- **G**ive them a goal (\"Calm Walks,\" \"Bite-Free,\" \"Potty Trained\")\n- **I**ndicate a time interval (\"in 8 Weeks,\" \"in 21 Days\")\n- **C**omplete with a container word (\"Program,\" \"Bootcamp,\" \"Blueprint,\" \"System,\" \"Challenge\")\n\n**Examples:**\n- \"The 8-Week Calm Walk Program for Reactive Dogs\"\n- \"21-Day Puppy Foundations Bootcamp\"\n- \"Spring Reactive Rover Rescue Challenge\"\n- \"The Baby-Ready Dog Blueprint: 6 Weeks to a Safe, Calm Home\"\n\nChange the name every so often, by season or cohort, to keep your marketing fresh without changing what you deliver.\n\n---\n\n## Step 8: Build a Simple Offer Ladder (Optional but Powerful)\n\nYou don't have to drop low-ticket work entirely. Hormozi-style businesses often use tiers:\n\n| Tier | Offer | Price |\n|---|---|---|\n| Entry / lead magnet | Free \"Reactivity Quiz\" or a $47 assessment call | Free\u2013$47 |\n| Core Grand Slam Offer | 8-Week Calm Walk Program | $1,497 |\n| Premium (DFY) | 2-week Board & Train plus the full program | $3,500\u2013$5,000 |\n| Continuity | Graduate Club: monthly pack walk, monthly check-in, video library | $49\u2013$99/mo |\n\nThe continuity tier gives you recurring revenue and keeps results from slipping, which in turn makes your guarantee safer.\n\n---\n\n## Step 9: Pricing Psychology Recap\n\n- **Anchor to the value, not to competitors.** Show the $3,300 value stack before you show the $1,497 price.\n- **Compare to the cost of the problem.** A bite incident, vet bills from a dog fight, a lawsuit, a ruined couch, the heartbreak of rehoming. Next to those, $1,497 is small.\n- **Offer payment plans** to make it easier to say yes.\n- **Never discount the price. Add bonuses instead.** Discounting cheapens the offer.\n- **Expect some people to say no.** If nobody says it's too expensive, you're still charging too little.\n\n---\n\n## Your Action Plan\n\n1. **Choose one niche** with high pain and the ability to pay (e.g., reactive dogs).\n2. **Write the dream outcome** in your client's own words.\n3. **List 15\u201325 problems** they face before, during, and after training.\n4. **Turn each into a named solution.**\n5. **Choose delivery vehicles**, favoring low-cost, high-value items (video, cards, text support, group sessions).\n6. **Trim and stack** into a single program with bonuses.\n7. **Add scarcity, urgency, a strong guarantee, and a MAGIC name.**\n8. **Price it at 10x+ your current session rate**, anchored to the value stack.\n9. **Test it** with your next 10 prospects. Track close rate and results, then refine.\n10. **Collect before/after videos** of calm walks. They're your best proof and will make the next sale easier.\n\n---\n\n### The Big Shift\n\n> Stop selling **dog training sessions**. Start selling **a guaranteed, fast, low-effort transformation**: a calm dog, a relaxed owner, and a household back to normal.\n\nYour competitors will keep fighting over $30\u2013$40 sessions. You'll be selling something they don't offer, at a price that lets you deliver your best work.\n"}], "grading": {"expectations": [{"text": "Explains the commodity problem and selling in a 'category of one' (value-driven, not price-driven)", "passed": true, "evidence": "commodity / category of one"}, {"text": "Applies the Value Equation: dream outcome x perceived likelihood divided by time delay x effort/sacrifice", "passed": true, "evidence": "dream outcome, likelihood, time delay, effort"}, {"text": "Walks through the five steps: dream outcome, list problems, solutions, delivery vehicles, trim and stack", "passed": true, "evidence": "dream outcome, problems, delivery, trim and stack"}, {"text": "Uses delivery 'cheat codes' such as one-on-one vs group vs one-to-many, DIY/DWY/DFY, or the 10x / 1/10th test", "passed": true, "evidence": "DIY/DWY/DFY, 10x"}, {"text": "Recommends charging a premium (virtuous cycle of price) and/or niching to a specific avatar", "passed": true, "evidence": "virtuous cycle, niche"}, {"text": "Adds enhancers (bonuses, guarantee, scarcity/urgency, or naming) to the offer", "passed": true, "evidence": "guarantees, scarcity, urgency, naming"}], "summary": {"passed": 6, "failed": 0, "total": 6, "pass_rate": 1.0}}}, {"id": "eval-2-ho-guarantee-with_skill-run-1", "prompt": "Per $100M Offers, what types of guarantees does Hormozi describe, how should I word one, and will a strong guarantee lose me money from refunds? I run a high-cost done-for-you marketing service.", "eval_id": 2, "outputs": [{"name": "response.md", "type": "text", "content": "# Guarantees in *$100M Offers*, applied to a high-cost done-for-you marketing service\n\nIn *$100M Offers* (Chapter 15), a guarantee is the enhancer that **raises demand by reversing risk**. The buyer stops carrying the risk that it won't work, and you carry it. Below are the four types Hormozi describes, how he says to word one, and his answer on refunds, each applied to a premium done-for-you (DFY) marketing agency.\n\n---\n\n## 1. The four types of guarantee\n\n| Type | What it is | When Hormozi says to use it |\n|---|---|---|\n| **Unconditional** | A no-questions-asked refund. In effect it is a paid trial, and it is the strongest kind. | Your fulfillment cost is low and you're confident in the results. |\n| **Conditional** | A guarantee with terms. It works best as a **\"better than money back\"** promise (double or triple their money back, or you keep working until they get the result), tied to the **key actions** that produce success. | High-cost services. The conditions push customers to do the things that get them results. |\n| **Anti-guarantee** | \"All sales are final\", backed by a **credible reason why**. The usual reasons are that you hand over proprietary material or do heavy customization. | Consumables, information that loses its value once given, and custom high-ticket work. |\n| **Implied (performance)** | Revenue share, profit share, pay per result, triggers, ratchets. | Only where outcomes can be measured openly and you have the client's trust or control over the result. |\n\nYou can also **stack** them. Hormozi's example is an unconditional 30-day guarantee plus a conditional 90-day \"triple your money back\" guarantee.\n\n### Which one fits a high-cost DFY marketing service?\n- **Conditional is your default.** Your costs to fulfill are high: ad spend management, creative, staff time. A no-strings refund would let clients take that work and leave. A conditional guarantee protects you and also gets clients to do their part: approve creative quickly, give you account access, follow up with leads fast.\n- **Implied/performance is a strong option** if you can track results openly, for example booked calls through a CRM you control or attributed revenue. Pay-per-appointment or a bonus once a threshold is hit (a \"trigger\") fits agencies well.\n- **Anti-guarantee** suits the parts of the work that are heavily custom, such as brand strategy or a custom build. You might say: \"Because we build your entire funnel and creative from scratch for your business, setup fees are non-refundable.\"\n- **Unconditional** is risky at your price and cost level. If you use it, keep it to a short window, for example the first 14 days, before your big costs land.\n\n---\n\n## 2. How to word it\n\n**Hormozi's formula:**\n\n> **\"If you do not get [X result] in [Y time period], we will [Z].\"**\n\nThe \"or what\" is the key part. A guarantee with no consequence sounds weak.\n\n- **Weak:** \"We will get you 20 clients guaranteed.\"\n- **Strong:** \"You will get 20 clients in your first 30 days, or we give you your money back plus your advertising dollars spent with us.\"\n\nThat strong example comes from the book, and it's already written for a marketing service.\n\n### Templates for your agency\n\n**Conditional, \"better than money back\":**\n> \"If you don't get at least **[30 qualified booked calls]** in your first **[90 days]**, we'll **keep running your campaigns at no charge until you do**, *provided you* approve creative within 48 hours, respond to leads within 5 minutes, and attend our weekly check-in.\"\n\n**Conditional, refund plus ad spend (Hormozi's own pattern):**\n> \"Get **[X new customers]** in your first **[60 days]**, or we refund **every dollar of our fee plus the ad spend you ran through us**, as long as you followed the launch checklist.\"\n\n**Stacked:**\n> \"**30-day 'love it or leave it' guarantee:** if you're not happy with the strategy and launch in the first 30 days, we refund your setup fee. **Plus our 90-day results guarantee:** hit [X] or we work for free until you do.\"\n\n**Implied/performance:**\n> \"We charge a reduced retainer plus **$[N] per qualified appointment** shown on your calendar. If we don't produce, you don't pay the performance fee.\"\n\n### Wording rules from the book\n1. **Be specific about X and Y.** Use a number and a deadline, not \"results\" or \"growth\".\n2. **Make Z vivid and costly to you.** \"Better than money back\" beats a plain refund.\n3. **Tie the conditions to the key actions** that predict success, so they read as part of the plan and not as fine print.\n4. **\"Hit your guarantee hard, even if you don't have one.\"** State it boldly and give a reason why: \"We only take clients we know we can help, so we put our fee on the line.\"\n5. **Give it a name.** Hormozi says to name every part of the stack, for example \"The 30-Calls-or-Free Guarantee\".\n\n---\n\n## 3. Will a strong guarantee lose you money on refunds?\n\n**Hormozi's answer: almost always no, if you do the math instead of reacting emotionally.** His example:\n\n| | Sales | Refund rate | Net sales |\n|---|---|---|---|\n| Weak or no guarantee | 100 | 5% | **95** |\n| Strong guarantee | 130 | 10% | **117** |\n\nRefunds doubled, yet you end up with **about 23% more net customers**. A strong guarantee lifts conversions more than it raises refunds. \"Don't be emotional, just do the math.\" (His numbers are illustrative. He says the book's figures are theoretical.)\n\n### Run your own version\nPlug in your own numbers:\n- **Net revenue = (sales x price) - (refunds x refund amount)**\n- At a high price, also count the **fulfillment costs you can't get back** on refunded clients, such as staff hours and setup. That's why a conditional guarantee usually beats an unconditional one for DFY. Clients who do the key actions rarely fail, and clients who skip them don't qualify for the guarantee.\n- Choose the remedy with the cost to you in mind. \"We keep working until you hit it\" often costs far less than a cash refund, because your marginal cost of delivery is lower than the price.\n\n### The real risk Hormozi warns about\nThe bigger danger isn't refunds. It's **attracting bad customers**. People who buy *only* because of a guarantee can be poor clients. You protect yourself by:\n- tying conditions to the work they must do;\n- qualifying clients before they buy, and taking only those you know you can help (that also makes a strong guarantee safer); and\n- adding real scarcity, such as \"we take on [N] new clients per month\", so you can be selective.\n\n---\n\n## Ethics and compliance\n- Make only promises you can keep, and honor them. Hormozi insists the enhancers be real, \"without being phony\".\n- Put the conditions in writing in your contract. Keep them clear and reasonable, not hidden traps.\n- Guarantees and refund terms have to comply with consumer-protection and advertising law, such as FTC rules on outcome claims in the US. Have a lawyer review the final wording, especially any revenue or earnings claims.\n\n---\n\n### Quick next step\nFill in this blank for your best-fit client:\n\n> \"If you don't get **____** (a measurable result) in **____** (a time frame), we will **____** (better than money back), as long as you **____** (2\u20133 key actions).\"\n\nThen work out what it costs you if 10\u201315% of clients claim it. Compare that cost with the conversion lift you'd need to come out ahead. Usually it's far smaller than you'd expect.\n"}], "grading": {"expectations": [{"text": "Lists four guarantee types: unconditional, conditional, anti-guarantee, implied/performance", "passed": true, "evidence": "four types"}, {"text": "Gives the 'If you do not get X result in Y time, we will Z' structure with a weak vs strong example", "passed": true, "evidence": "X/Y/Z with weak vs strong"}, {"text": "Works the refund math (e.g., 100 sales/5% refunds = 95 vs 130 sales/10% refunds = 117, about 23% more)", "passed": true, "evidence": "117 vs 95, 23%"}, {"text": "Notes that high-cost services should favor conditional or anti-guarantees", "passed": true, "evidence": "high-cost favor conditional/anti"}, {"text": "Recommends tying conditions to key actions the client must take and/or 'better than money back' guarantees", "passed": true, "evidence": "key actions, better than money back"}, {"text": "Mentions stacking guarantees or warns that guarantee-only buyers can be poor customers", "passed": true, "evidence": "stacking and guarantee-only buyer warning"}], "summary": {"passed": 6, "failed": 0, "total": 6, "pass_rate": 1.0}}}, {"id": "eval-2-ho-guarantee-without_skill-run-1", "prompt": "Per $100M Offers, what types of guarantees does Hormozi describe, how should I word one, and will a strong guarantee lose me money from refunds? I run a high-cost done-for-you marketing service.", "eval_id": 2, "outputs": [{"name": "response.md", "type": "text", "content": "# Guarantees in $100M Offers, Applied to a High-Ticket Done-For-You Marketing Service\n\n*Answered from memory of the book. Treat exact phrasings as close paraphrases, not quotes.*\n\n## Why guarantees matter (Hormozi's framing)\n\nIn *$100M Offers*, the guarantee is one of the main levers for **reducing perceived risk**. Risk lowers \"perceived likelihood of achievement\" in his Value Equation:\n\n> Value = (Dream Outcome x Perceived Likelihood of Achievement) / (Time Delay x Effort & Sacrifice)\n\nEvery purchase has risk, and by default the buyer carries it. A guarantee moves that risk onto you, the seller. Hormozi's main claim is that a strong guarantee **raises conversions by more than it raises refunds**, so the business makes more money overall. He also says the **wording** of the guarantee matters a great deal: a vague \"satisfaction guaranteed\" does almost nothing.\n\n## The four types of guarantees\n\n### 1. Unconditional guarantee\n\"No questions asked\" money back, usually within a set window such as 30 days.\n- Strongest pull and lowest friction for the buyer.\n- Best for lower-ticket offers, or offers where delivery costs you little.\n- Highest refund exposure, because the buyer can take the result and still ask for the money back.\n- **Variants:** a full refund, a refund plus a bonus they keep, or a refund of more than they paid (\"double your money back\").\n\n### 2. Conditional guarantee\nThe buyer qualifies for the guarantee by **doing specific things**: showing up, implementing, completing the work. Hormozi especially likes this type for services.\n- It lets you promise something bigger, because the client's actions drive results.\n- The conditions should be the actions that actually produce success, so the guarantee also gets clients to do the work.\n- **Common forms:**\n  - **Money back (or more)** if they did X, Y and Z and didn't hit the outcome.\n  - **Service guarantee:** \"We keep working with you for free until you hit the result.\" Hormozi favours this for services because your cost is extra labour, not cash leaving the business.\n  - **Outsized guarantees**, such as paying the client's costs or adding extra money if you fail.\n  - Guarantees tied to a clear **KPI** within a **time frame**.\n\n### 3. Anti-guarantee\n\"All sales are final\", **with an explicit reason** that adds to the value. Example: \"Because we give you our proprietary playbooks and accounts setup on day one, which can't be returned, all sales are final.\"\n- Fits offers where what the client gets can't be taken back, such as information, custom builds, or ad spend already used.\n- The reasoning has to be stated. It shows confidence and filters for committed buyers.\n\n### 4. Implied guarantees\nPerformance-based pricing in place of a stated promise:\n- **Pay-per-performance or revenue share:** a percentage of revenue or profit, or a fee per result such as per lead or appointment.\n- **Triggers:** you get paid only when certain milestones are hit.\n- Common in agency models. The client pays only when you deliver, so the risk reversal is built into the deal.\n\n### Stacking guarantees\nHormozi also describes **stacking** guarantees, meaning you combine more than one. For example:\n- an unconditional guarantee for the first 30 days (\"try us risk-free\"), plus\n- a conditional outcome guarantee for the longer term (\"hit X in 90 days or we work free until you do\").\n\nStacked guarantees can add up to more than the sum of their parts when each one targets a different fear.\n\n## How to word a guarantee\n\nHis formula, close to verbatim:\n\n> **\"If you do not get [X result] in [Y time period], we will [Z].\"**\n\nPrinciples:\n1. **Be specific.** Name a measurable outcome, a deadline, and exactly what you'll do.\n2. **Name the fear you're removing.** Base it on the objections clients actually raise on sales calls. For DFY marketing those are usually \"what if it doesn't work?\" and \"what if I'm locked in paying for nothing?\"\n3. **Give it a name** so it sticks, such as \"The Pipeline-or-We-Work-Free Guarantee\".\n4. **Make it bold.** A timid guarantee does little. Hormozi says the more painful the guarantee is for you if you fail, the more it persuades.\n5. **Spell out the conditions** in a conditional guarantee. List the client's required actions, and make them the actions that drive results.\n\n### Example wordings for a high-cost DFY marketing service\n\n**Conditional service guarantee (lowest cash risk, and the type Hormozi recommends for services):**\n> \"If we don't generate at least 40 qualified sales appointments for you in the first 90 days, we'll keep running your campaigns at no management fee until we do. You only need to: approve creative within 48 hours, maintain the agreed ad budget, and have your team respond to leads within 15 minutes.\"\n\n**Conditional money-back:**\n> \"Hit fewer than [X qualified leads] in 120 days while following our onboarding and lead-handling process, and we'll refund every dollar of your management fees.\"\n\n**Stacked:**\n> \"**30-Day Fit Guarantee:** If after our onboarding and strategy sprint you don't believe the plan will work, tell us within 30 days and we'll refund your setup fee, and you keep the full strategy and creative.\n> **90-Day Results Guarantee:** If we don't hit [X] by day 90 (and you've met the conditions below), we work for free until we do.\"\n\n**Implied (performance pricing):**\n> \"Lower retainer + $[Y] per qualified appointment booked\" or \"[N]% of attributable new revenue.\"\n\n**Anti-guarantee (for the custom-build part):**\n> \"Because we build your funnel, ad accounts, and creative assets custom from day one, and you keep them, setup fees are non-refundable.\"\n\n## Will a strong guarantee lose me money from refunds?\n\n**Usually not. Hormozi's answer is that it typically makes you more money, as long as your delivery is actually good.** His reasoning:\n\n1. **Run the maths on conversions vs. refunds.** If a bold guarantee lifts close rate from, say, 20% to 30%, refunds can roughly double and you still come out ahead. Compare net revenue after refunds, not just the refund rate.\n   - Example: 100 calls at $10k. At a 20% close rate with 5% refunds, net is about $190k. At a 30% close rate with 10% refunds, net is about $270k.\n2. **Most people don't claim guarantees**, even when they could. Many of those who do would have been unhappy anyway, and might have charged back or left bad reviews.\n3. **Conditional guarantees protect you.** Clients who complete the required actions almost always get results, so few qualify for a payout. Those who don't do the actions don't qualify. Write the conditions fairly, though, not as a trap. Hormozi warns against guarantees built to be impossible to claim, because they ruin trust and reputation.\n4. **Service guarantees cost labour, not cash.** \"We keep working until you hit it\" means your downside is extra fulfilment time, often at a low marginal cost, and it frequently turns into a long-term client.\n5. **A guarantee exposes delivery problems.** If refunds are high, the problem is the product or the client fit, not the guarantee. Hormozi treats the guarantee as a forcing function to improve fulfilment and to qualify clients harder.\n\n### Specific risks for a high-cost DFY service, and how to manage them\n\n- **Results you don't fully control** (the client's sales team, offer, pricing, follow-up). Guarantee something upstream that you do control, such as qualified leads, booked appointments, or cost per lead, rather than closed revenue. If you do guarantee revenue, make lead handling a condition.\n- **Large cash refunds on big retainers.** Prefer a \"work free until achieved\" or fee-credit guarantee over cash back. Or refund the management fee only, never the ad spend.\n- **Bad-fit clients.** Use qualification criteria before the sale, such as minimum budget, a proven offer, and sales capacity. A strong guarantee plus strict qualification is a strong combination.\n- **Gaming the guarantee.** Use tracked, objective conditions (attendance, approvals, response-time SLAs) and agree up front how the metric will be measured.\n- **Test before rolling out.** Run the new guarantee on a group of sales calls and track close rate, refund or claim rate, and net cash per call. Keep it if net cash rises.\n\n## Bottom line\n\nUse a **named, specific, conditional service guarantee** based on a metric you control, such as booked qualified appointments within 90 days. Make its conditions the behaviours that make clients succeed. If you want extra pull, **stack** a short \"fit\" guarantee on top, and consider an **implied/performance** pricing element. Done this way, the guarantee should raise your close rate by more than it costs you in refunds or extra work. If it doesn't, fix delivery and client qualification.\n"}], "grading": {"expectations": [{"text": "Lists four guarantee types: unconditional, conditional, anti-guarantee, implied/performance", "passed": true, "evidence": "four types"}, {"text": "Gives the 'If you do not get X result in Y time, we will Z' structure with a weak vs strong example", "passed": false, "evidence": "gives X/Y/Z template but no weak-vs-strong example"}, {"text": "Works the refund math (e.g., 100 sales/5% refunds = 95 vs 130 sales/10% refunds = 117, about 23% more)", "passed": true, "evidence": "refund math with own numbers (20%->30% close, 5%->10% refunds)"}, {"text": "Notes that high-cost services should favor conditional or anti-guarantees", "passed": true, "evidence": "prefers work-free/conditional for high-cost DFY"}, {"text": "Recommends tying conditions to key actions the client must take and/or 'better than money back' guarantees", "passed": true, "evidence": "conditions are the success actions; double-your-money variants"}, {"text": "Mentions stacking guarantees or warns that guarantee-only buyers can be poor customers", "passed": true, "evidence": "stacked unconditional + conditional"}], "summary": {"passed": 5, "failed": 1, "total": 6, "pass_rate": 0.83}}}, {"id": "eval-3-ho-naming-urgency-with_skill-run-1", "prompt": "I'm launching a 6-week weight-loss coaching program for new moms. Using Hormozi's $100M Offers, help me name it and add ethical scarcity and urgency.", "eval_id": 3, "outputs": [{"name": "response.md", "type": "text", "content": "# Naming + Ethical Scarcity & Urgency for Your 6-Week New-Mom Weight-Loss Program\n\nThis uses the \"Enhancing the Offer\" section of Hormozi's *$100M Offers* (naming, scarcity, urgency). His point is that these enhancers change demand **without changing the core product**. They only work long-term if they're real. In his words, the scarcity has to be \"without being phony.\"\n\nOne flag before the names: **weight loss is one of the most heavily regulated claim categories**, and postpartum bodies add a health layer on top. That affects how you name it (see the \"I\" in M-A-G-I-C below).\n\n---\n\n## Part 1: Naming with M-A-G-I-C\n\nHormozi's formula uses **3 to 5** of these five parts, in whatever order sounds punchy:\n\n| Letter | Component | Options for your program |\n|---|---|---|\n| **M** | Magnetic reason why (why now) | \"New Year\", \"Spring\", \"Fresh Start\", \"Founding\", \"Back-to-Me\" |\n| **A** | Announce your avatar | \"New Mom\", \"Mama\", \"Postpartum\", \"Busy Mom\", \"Mom-of-a-Newborn\" |\n| **G** | Give them a goal | \"Feel Like Me Again\", \"Strong\", \"Energized\", \"Jeans-Ready\", \"Fit\", \"Confident\" |\n| **I** | Indicate a time interval | \"6-Week\" (OK as program *length*, see note) |\n| **C** | Container word | Program, Reset, Challenge, Blueprint, Method, Bootcamp, Accelerator |\n\n### The compliance note on \"I\" and \"G\"\nThe book warns: avoid an outcome-plus-time claim where compliance forbids it, and use an **action goal** instead. For weight loss this matters a lot:\n- **Avoid:** \"Lose 20 lbs in 6 Weeks\", \"Drop the Baby Weight in 6 Weeks\". This is a specific results promise with a timeframe. In the US the FTC treats weight-loss claims strictly. Ad platforms (Meta, Google) restrict before/after and \"lose X lbs\" claims. And it sets a bad expectation for postpartum bodies, especially breastfeeding moms.\n- **Fine:** \"6-Week\" as the **length of the program** (\"The 6-Week Program\"), paired with a goal that is about actions, energy, strength or habits (\"Feel Like Yourself Again\", \"Strong Mama\", \"Build Your Mom Routine\").\n\n### Name options (strongest first)\n\n1. **The 6-Week Strong Mama Reset**: I + A + G + C. Short, alliterative-ish, and \"reset\" signals a fresh start without a weight promise.\n2. **Back-to-Me: The 6-Week New Mom Fit Method**: M + A + G + I + C (all five). \"Back-to-Me\" names the real emotional dream outcome, feeling like herself again.\n3. **The Mama Momentum 6-Week Program**: A + G + I + C. Uses alliteration, which Hormozi says helps.\n4. **Fresh Start Mama: 6 Weeks to Feeling Like You Again**: M + A + I + G. \"Feeling\" is an experience goal, not a pounds claim.\n5. **The New Year New Mom 6-Week Challenge** (seasonal version): M + A + I + C. Use it for a January cohort, then rename for spring (\"Spring Into Strong Mama\") to re-stimulate demand. Hormozi notes that renaming an old offer brings fresh demand.\n\n**Tip:** test 2\u20133 names in ads or to your email list and keep the winner. Hormozi says a good name can bring \"2x, 3x, or 10x the response rate.\" Also make sure the name **repels** the wrong people. \"New Mom\" / \"Postpartum\" filters out general dieters, which is what you want.\n\n### Name your bonuses the same way\nUse the same formula on each item in the stack so each one feels like its own asset:\n- \"The 15-Minute Nap-Time Workout Library\"\n- \"The One-Handed Meal Plan (Feeds You While You Feed Baby)\"\n- \"The Mama Sleep-Debt Survival Guide\"\n- \"The Grocery-Pickup Shopping Lists\"\n\nHormozi's rule: **tools and checklists beat more training**, because they take the buyer less time and effort. New moms have almost no time, so this matters even more here.\n\n---\n\n## Part 2: Ethical Scarcity (limits on *how many*)\n\nScarcity works by **reducing supply**. The book lists three types. Here they are applied to your program:\n\n### 1. Limited seats per cohort (use this as your main lever)\nCoaching really is capacity-limited. Work out your real number. For example: \"I can personally review check-ins and answer voice messages for **20 moms per cohort**.\" Then say it plainly.\n- Script: *\"Each cohort is capped at 20 moms so I can personally review every check-in. When 20 spots fill, enrollment closes until the next group.\"*\n- Hormozi: tell prospects your real limits \"and let psychology do the rest.\"\n- **Ethics test:** if spot #21 signs up, you **really** turn her away or move her to the next cohort. Show a live, honest count (\"14 of 20 spots taken\") only if it's accurate.\n\n### 2. Limited bonuses\nCap a high-touch bonus that costs you real time:\n- *\"The first 10 moms to enroll get a 1:1 45-minute Kickoff Call with me to build their personal plan around their baby's schedule.\"*\nThis is real because your 1:1 time is limited.\n\n### 3. \"Never available again\" (use sparingly)\n- A **Founding Mama** price or bonus for your first-ever cohort. *\"This is the only time this program will run at this price. Founding members get it, plus lifetime access to future updates.\"*\n- Only say \"never again\" if you will truly never offer it again. Breaking this once destroys trust with an audience that talks to each other a lot (mom groups and the like).\n\n### Extreme scarcity (premium tier)\nHormozi's pro tip: a very small, very high-priced tier of close access to you. For example, **\"VIP Mama: 3 spots\"**, with weekly 1:1 video calls plus daily text support. It adds income, and it makes the main program look like a bargain next to it.\n\n---\n\n## Part 3: Ethical Urgency (limits on *when*)\n\nUrgency works by **raising demand by lowering the threshold to act**. The book gives four ethical methods:\n\n### 1. Cohort-based rolling urgency (your best fit)\nA 6-week program is naturally cohort-based. Start groups on fixed dates (for example, the first Monday of every other month).\n- Script: *\"If you join by Thursday, you'll start with the March cohort on Monday, March 2nd. The next group doesn't start until May.\"*\n- The less often you start, the stronger the urgency. Monthly works; every 6\u20138 weeks is stronger.\n- It's 100% true, and the group start is a real benefit (community and accountability), not just a sales trick.\n\n### 2. Rolling seasonal urgency\nMoms already think in seasons:\n- **January**: \"New Year, New Mom\" cohort.\n- **Spring**: \"Feel strong before summer.\"\n- **Back-to-school / fall**: \"Your turn now that the routine's back.\"\n- **Pre-holiday**: \"Have energy for the holidays.\"\nTie each cohort's name and kickoff to the season.\n\n### 3. Promotional / pricing urgency\nA real discount or bonus that ends on a real date:\n- *\"Early-bird: enroll by Sunday at midnight and get $100 off plus the Meal Plan bonus. After that it's full price.\"*\n- **Ethics test:** at midnight the price actually goes up. No secret \"extensions\" and no countdown timers that reset when the page reloads (that's a fake deadline, and in some places a deceptive-practice problem).\n\n### 4. Exploding opportunity\nFor warm leads after a discovery call or a free workshop:\n- *\"Because you came to the workshop, this workshop-only bonus is yours if you enroll within 48 hours.\"*\nKeep it real and time-boxed, then let it go.\n\n**Why real deadlines are worth it:** Hormozi notes that the last 4 hours of a launch's last day can bring **up to 50\u201360% of sales**. People who were going to buy anyway act when there's a true cutoff. You don't need to fake anything to get that effect.\n\n---\n\n## Part 4: Putting It Together (example launch)\n\n> **Back-to-Me: The 6-Week New Mom Fit Method**\n> *For moms 3\u201312 months postpartum who want their energy, strength and confidence back, built around nap times and a baby on your hip.*\n>\n> - **Next cohort starts Monday, March 2** (the next one starts in May) \u2192 *cohort urgency*\n> - **Capped at 20 moms** so I can personally review every check-in \u2192 *seat scarcity*\n> - **First 10 get a 1:1 Kickoff Call** to build a plan around your baby's schedule \u2192 *bonus scarcity*\n> - **Early-bird $100 off ends Sunday at midnight** \u2192 *pricing urgency*\n> - **Founding Mama cohort**: this price will never be offered again \u2192 *never again* (first launch only)\n> - Bonuses: Nap-Time Workout Library, One-Handed Meal Plan, Grocery-Pickup Lists, Mama Sleep-Debt Survival Guide (each with a name and a price tag)\n\n---\n\n## Ethics & Safety Checklist (new-mom specific)\n\n- [ ] **Every limit is real.** The seat cap matches your real coaching capacity, and you enforce it.\n- [ ] **Every deadline is real.** Prices change and doors close when you say they will. No resetting timers.\n- [ ] **No pounds-in-weeks promises** in the name or ads. Talk about actions, energy, strength and habits. Any client results you share should be typical, or clearly labeled as not typical.\n- [ ] **Medical clearance.** Ask moms to confirm they've been cleared for exercise by their doctor or midwife (often at the ~6-week postpartum check, later after a C-section or complications). Say this up front.\n- [ ] **Breastfeeding-safe nutrition.** No crash calorie targets. Breastfeeding raises calorie needs, and aggressive deficits can affect milk supply.\n- [ ] **Mental-health awareness.** Avoid shame-based \"bounce back\" messaging. Postpartum depression and body-image struggles are common, so have a referral note ready and keep the tone supportive. The urgency should be \"your next group starts Monday\", **never** \"you're running out of time to fix your body.\"\n- [ ] **Guarantee and refund terms** (if you add one) are honored and follow your local consumer-protection rules.\n\n---\n\n### Next steps I'd suggest\n1. Pick your real cohort cap and start dates. Those two facts drive all your scarcity and urgency.\n2. Choose 2\u20133 names from above and test them.\n3. If you want, I can help with the rest of the Hormozi stack next: a **guarantee** (for example, a conditional one tied to completing workouts and check-ins), plus pricing and the value stack, so the offer feels like a \"category of one\" rather than another weight-loss program.\n\n*Note: the specific numbers above (20 seats, $100 off, dates) are examples. Use your real ones. As Hormozi says, the numbers in his book are illustrative too.*\n"}], "grading": {"expectations": [{"text": "Uses the M-A-G-I-C naming formula: Magnetic reason why, Announce avatar, Give goal, Indicate time interval, Complete with container word", "passed": true, "evidence": "M-A-G-I-C"}, {"text": "Produces example names using a container word (e.g., Challenge, Bootcamp, Blueprint, Program)", "passed": true, "evidence": "names with container words"}, {"text": "Describes the three types of scarcity: limited seats/slots, limited bonuses, never available again", "passed": true, "evidence": "limited seats, bonuses, never available again"}, {"text": "Describes urgency methods such as cohort-based rolling starts, seasonal urgency, promotional/pricing urgency or exploding offers", "passed": true, "evidence": "cohort, seasonal, exploding"}, {"text": "Stresses that scarcity and urgency must be real/ethical (not phony)", "passed": true, "evidence": "ethical, not phony"}, {"text": "Notes compliance caution for weight-loss outcome plus time claims or uses an action goal alternative", "passed": true, "evidence": "FTC/compliance caution"}], "summary": {"passed": 6, "failed": 0, "total": 6, "pass_rate": 1.0}}}, {"id": "eval-3-ho-naming-urgency-without_skill-run-1", "prompt": "I'm launching a 6-week weight-loss coaching program for new moms. Using Hormozi's $100M Offers, help me name it and add ethical scarcity and urgency.", "eval_id": 3, "outputs": [{"name": "response.md", "type": "text", "content": "# Naming and Ethical Scarcity/Urgency for Your 6-Week New-Mom Weight-Loss Program\n\n*(Using the frameworks from Alex Hormozi's* $100M Offers*: the M-A-G-I-C naming formula, and the chapters on scarcity, urgency, bonuses and guarantees.)*\n\n---\n\n## Part 1: Naming the Offer with M-A-G-I-C\n\nHormozi's naming formula has five parts. You usually use 3 to 5 of them in one name:\n\n| Letter | Meaning | What it looks like for you |\n|---|---|---|\n| **M** \u2013 Make a Magnetic reason why | A reason for the offer to exist right now (a launch, a season, \"free\", \"challenge\", \"new year\") | \"Fall Kickoff\", \"Founding Cohort\", \"Back-to-Me\", \"Holiday-Proof\" |\n| **A** \u2013 Announce your Avatar | Call out exactly who it is for, so the right person thinks \"that's me\" | \"New Moms\", \"Postpartum Moms\", \"Busy Moms\", \"Mamas\" |\n| **G** \u2013 Give them a Goal | The dream outcome, stated as a result they want | \"Lose the Baby Weight\", \"Feel Like Yourself Again\", \"Get Your Body Back\", \"Fit Into Your Jeans\" |\n| **I** \u2013 Indicate a time Interval | How long it takes. Your 6 weeks is a strong asset here | \"6-Week\", \"42-Day\" |\n| **C** \u2013 Complete with a Container word | A word that tells them it's a structured system | Challenge, Blueprint, Bootcamp, Program, Reset, Method, Accelerator, Sprint, System |\n\n### Name options\n\n**Lead recommendations**\n\n1. **The 6-Week Postpartum Reset** \u2014 avatar + time + container. Short, clear, safe.\n2. **New Mom 6-Week Body Comeback** \u2014 avatar + goal + time.\n3. **Back-to-Me: The 6-Week New Mom Reset** \u2014 magnetic reason + time + avatar + container. \"Back to me\" names the emotion most new moms actually feel: not just weight, but losing themselves.\n4. **The 42-Day Mama Momentum Challenge** \u2014 \"42 days\" sounds more specific and fresh than \"6 weeks\", and it lines up with the traditional 6-week postpartum window.\n\n**More options to test**\n\n- The New Mom Shred-the-Stress 6-Week Program\n- Fit Mama 6-Week Blueprint\n- The Nap-Time Fit Method: 6 Weeks for New Moms (the \"nap-time\" hook signals it fits a mom's schedule)\n- Founding Mamas 6-Week Bootcamp (good for the first cohort)\n- The Feel-Like-Me-Again 6-Week Sprint\n- Holiday-to-New-Year Mama Reset (a seasonal version; see urgency below)\n\n### Naming tips from the book\n\n- **Rotate the name, not the offer.** Hormozi notes that names \"fatigue\" in ads. Keep the core program and swap the magnetic reason (season, holiday, cohort number) each run.\n- **Test in ads or posts.** Run 2 or 3 names as headlines and keep the one with the best click and reply rate.\n- **Be careful with the goal word.** \"Lose the baby weight\" converts well but can trigger platform ad rules (Meta restricts before/after and body-shaming language) and can feel like pressure to some moms. \"Feel like yourself again\", \"get strong\", or \"get your energy back\" are softer alternatives. You can use the weight goal on the sales page, where you have room for context.\n- **Avoid numbers you can't promise.** \"Lose 20 lbs in 6 weeks\" is both an FTC risk and medically inappropriate for many postpartum women (especially those breastfeeding). Put the goal in the name, not a specific pound figure.\n\n**My pick:** *Back-to-Me: The 6-Week New Mom Reset* as the evergreen brand, with a rotating magnetic tag for each launch (for example, \"Founding Cohort\", \"January\", \"Spring\").\n\n---\n\n## Part 2: Ethical Scarcity\n\nHormozi defines scarcity as limiting **how much** people can buy (supply). His rule is that it must be real. Fake scarcity (\"only 3 spots left!\" forever) destroys trust, and with moms, who talk to each other constantly in groups and forums, it will be found out.\n\nCoaching has natural, honest limits. Use them:\n\n### 1. Limited seats per cohort (real capacity)\nYou can only give good feedback, check-ins and form reviews to so many women. Do the math, then publish it.\n> \"I personally review every check-in, so each cohort is capped at 25 moms. When it's full, the next cohort opens in [month].\"\n\nShow the real count (\"18 of 25 spots taken\") and **actually close** when you hit the number.\n\n### 2. Limited bonuses (scarce add-ons)\nKeep the core program available, but limit the extras:\n- First 10 to join get a **1:1 kickoff call** with you (30 minutes, real time cost).\n- First 15 get a **printed meal-plan and grocery kit** mailed to them.\n- Founding cohort only: **lifetime access to the recipe vault** or a **free seat in the next cohort** if they want to repeat it.\n\n### 3. Founding-member pricing\nThe first cohort is genuinely different: you need testimonials and feedback. That's an honest reason for a lower price.\n> \"This is the first cohort. In exchange for feedback and an honest review, founding moms get it at $X. The price goes up to $Y for the next round.\"\n\nThen **raise the price** for round two, so the claim stays true.\n\n### 4. Limited 1:1 tier\nOffer a premium tier with weekly 1:1 calls and cap it at a small, real number (for example 5). This creates scarcity and also gives you a price anchor that makes the group tier look like great value.\n\n---\n\n## Part 3: Ethical Urgency\n\nHormozi defines urgency as limiting **when** people can buy (time). Four main types, all of which can be honest:\n\n### 1. Cohort-based (rolling) start dates\nThis is the cleanest one for a 6-week program. Everyone starts together, so enrollment truly closes.\n> \"Enrollment closes Sunday at midnight. We start together Monday, [date]. The next cohort starts [date].\"\n\nA group start is a real benefit (community, accountability), not a trick.\n\n### 2. Seasonal urgency\nTie each cohort to a real moment:\n- **\"Before the holidays\"** \u2014 have energy and confidence for family gatherings and photos.\n- **New Year cohort** \u2014 ride the January motivation.\n- **\"Before summer\"** or **\"before baby's first birthday\"** \u2014 a personal deadline many moms already care about.\n\nGiven today's date (late November), a **\"Holiday-Proof\" December cohort** or a **January New-Year cohort** with doors closing in late December are natural fits.\n\n### 3. Price or bonus deadlines\n> \"Early-bird price until Friday. After that the regular price applies.\"\n> \"Join by Wednesday to get the bonus 1:1 kickoff call.\"\n\nAgain, actually end it. Do not reopen \"by popular demand\" every time.\n\n### 4. Exploding opportunity (use sparingly)\nFor leads who finished a free challenge or a consult call:\n> \"Because you completed the free 5-day challenge, you can join at the challenge price for the next 72 hours.\"\n\nThis is fair because it rewards action, but don't pair it with high-pressure sales calls aimed at sleep-deprived new moms.\n\n### Urgency based on the cost of waiting (the most honest kind)\nRemind them, without guilt, what waiting costs:\n> \"Every week you wait is another week of feeling tired and not like yourself. Six weeks from now you'll be six weeks older either way. The question is whether you'll have started.\"\n\n---\n\n## Part 4: Ethics Guardrails Specific to New Moms\n\nThis audience is vulnerable (sleep deprivation, hormonal changes, body-image pressure, possible postpartum depression). Keep the offer clean:\n\n1. **Medical clearance.** Require or strongly recommend clearance from their OB/midwife (typically after the 6-week postpartum checkup), and screen for diastasis recti, C-section recovery, and pelvic floor issues. Say so on the sales page. It also builds trust.\n2. **Breastfeeding-safe nutrition.** No aggressive calorie deficits. Say plainly that the plan protects milk supply.\n3. **No shame-based messaging.** Avoid \"get rid of that mom pouch\" or \"bounce back\" pressure. Sell energy, strength, confidence and feeling like yourself, with weight loss as one outcome.\n4. **Honest results claims.** Use real testimonials with \"results vary\" context. Don't promise a specific number of pounds.\n5. **Real scarcity only.** If you say 25 spots, close at 25. If you say the price goes up, raise it. Moms share screenshots.\n6. **Easy, fair refunds.** Pair the urgency with a strong guarantee so the pressure to decide is offset by low risk. Example (conditional guarantee, a Hormozi favorite):\n   > \"Do the workouts, log your meals 5 days a week, and attend the weekly calls. If you don't feel stronger and see progress in 6 weeks, I'll coach you for another 6 weeks free, or refund you in full.\"\n7. **Mental-health safety net.** Include a note pointing to postpartum depression resources (for example, Postpartum Support International) and refer out when needed.\n\n---\n\n## Putting It Together: Sample Launch Copy\n\n> **Back-to-Me: The 6-Week New Mom Reset \u2014 January Founding Cohort**\n>\n> For moms 3 to 24 months postpartum who are cleared to exercise and want their energy, strength and confidence back, without crash diets or 2-hour workouts.\n>\n> - 20-minute nap-time workouts, safe for core and pelvic floor recovery\n> - Breastfeeding-friendly meal plan and grocery lists\n> - Weekly group coaching calls plus daily check-ins with me\n> - A private community of moms starting with you\n>\n> **Only 25 spots**, because I personally review every check-in. (14 left.)\n> **First 10 moms** get a free 1:1 kickoff call.\n> **Founding price of $X ends December 28.** Doors close December 31 and we start together January 5.\n>\n> **Guarantee:** Show up and do the work. If you don't see progress in 6 weeks, I'll coach you for the next 6 weeks free, or refund you.\n\n---\n\n### Quick checklist\n- [ ] Pick one evergreen name and a rotating magnetic tag per cohort\n- [ ] Set a real seat cap based on your coaching capacity\n- [ ] Choose 1 or 2 limited bonuses that cost you real time or money\n- [ ] Set real dates: enrollment close, start, next cohort\n- [ ] Raise the price after the founding cohort (and actually do it)\n- [ ] Add a guarantee to offset the urgency\n- [ ] Add medical clearance, breastfeeding-safety and mental-health notes\n"}], "grading": {"expectations": [{"text": "Uses the M-A-G-I-C naming formula: Magnetic reason why, Announce avatar, Give goal, Indicate time interval, Complete with container word", "passed": true, "evidence": "M-A-G-I-C"}, {"text": "Produces example names using a container word (e.g., Challenge, Bootcamp, Blueprint, Program)", "passed": true, "evidence": "Reset, Challenge, Bootcamp names"}, {"text": "Describes the three types of scarcity: limited seats/slots, limited bonuses, never available again", "passed": false, "evidence": "seats, bonuses and a 1:1 tier, but not 'never available again'"}, {"text": "Describes urgency methods such as cohort-based rolling starts, seasonal urgency, promotional/pricing urgency or exploding offers", "passed": true, "evidence": "cohort, seasonal, deadlines, exploding"}, {"text": "Stresses that scarcity and urgency must be real/ethical (not phony)", "passed": true, "evidence": "must be real"}, {"text": "Notes compliance caution for weight-loss outcome plus time claims or uses an action goal alternative", "passed": true, "evidence": "ad-platform/claim caution"}], "summary": {"passed": 5, "failed": 1, "total": 6, "pass_rate": 0.83}}}], "previous_feedback": {}, "previous_outputs": {}, "benchmark": {"metadata": {"skill_name": "hormozi-offers", "skill_path": "\u003cpath/to/skill>", "executor_model": "\u003cmodel-name>", "analyzer_model": "\u003cmodel-name>", "timestamp": "2026-11-21T02:54:04Z", "evals_run": [1, 2, 3], "runs_per_configuration": 1}, "runs": [{"eval_id": 1, "eval_name": "ho-dog-trainer", "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 6, "failed": 0, "total": 6, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Explains the commodity problem and selling in a 'category of one' (value-driven, not price-driven)", "passed": true, "evidence": "category of one"}, {"text": "Applies the Value Equation: dream outcome x perceived likelihood divided by time delay x effort/sacrifice", "passed": true, "evidence": "Value Equation"}, {"text": "Walks through the five steps: dream outcome, list problems, solutions, delivery vehicles, trim and stack", "passed": true, "evidence": "Steps 1-5"}, {"text": "Uses delivery 'cheat codes' such as one-on-one vs group vs one-to-many, DIY/DWY/DFY, or the 10x / 1/10th test", "passed": true, "evidence": "DIY, one-to-many, 10x"}, {"text": "Recommends charging a premium (virtuous cycle of price) and/or niching to a specific avatar", "passed": true, "evidence": "premium, virtuous cycle, niche"}, {"text": "Adds enhancers (bonuses, guarantee, scarcity/urgency, or naming) to the offer", "passed": true, "evidence": "bonuses, guarantee, scarcity, urgency"}], "notes": []}, {"eval_id": 2, "eval_name": "ho-guarantee", "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 6, "failed": 0, "total": 6, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Lists four guarantee types: unconditional, conditional, anti-guarantee, implied/performance", "passed": true, "evidence": "four types"}, {"text": "Gives the 'If you do not get X result in Y time, we will Z' structure with a weak vs strong example", "passed": true, "evidence": "X/Y/Z with weak vs strong"}, {"text": "Works the refund math (e.g., 100 sales/5% refunds = 95 vs 130 sales/10% refunds = 117, about 23% more)", "passed": true, "evidence": "117 vs 95, 23%"}, {"text": "Notes that high-cost services should favor conditional or anti-guarantees", "passed": true, "evidence": "high-cost favor conditional/anti"}, {"text": "Recommends tying conditions to key actions the client must take and/or 'better than money back' guarantees", "passed": true, "evidence": "key actions, better than money back"}, {"text": "Mentions stacking guarantees or warns that guarantee-only buyers can be poor customers", "passed": true, "evidence": "stacking and guarantee-only buyer warning"}], "notes": []}, {"eval_id": 3, "eval_name": "ho-naming-urgency", "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 6, "failed": 0, "total": 6, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Uses the M-A-G-I-C naming formula: Magnetic reason why, Announce avatar, Give goal, Indicate time interval, Complete with container word", "passed": true, "evidence": "M-A-G-I-C"}, {"text": "Produces example names using a container word (e.g., Challenge, Bootcamp, Blueprint, Program)", "passed": true, "evidence": "names with container words"}, {"text": "Describes the three types of scarcity: limited seats/slots, limited bonuses, never available again", "passed": true, "evidence": "limited seats, bonuses, never available again"}, {"text": "Describes urgency methods such as cohort-based rolling starts, seasonal urgency, promotional/pricing urgency or exploding offers", "passed": true, "evidence": "cohort, seasonal, exploding"}, {"text": "Stresses that scarcity and urgency must be real/ethical (not phony)", "passed": true, "evidence": "ethical, not phony"}, {"text": "Notes compliance caution for weight-loss outcome plus time claims or uses an action goal alternative", "passed": true, "evidence": "FTC/compliance caution"}], "notes": []}, {"eval_id": 1, "eval_name": "ho-dog-trainer", "configuration": "without_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 6, "failed": 0, "total": 6, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Explains the commodity problem and selling in a 'category of one' (value-driven, not price-driven)", "passed": true, "evidence": "commodity / category of one"}, {"text": "Applies the Value Equation: dream outcome x perceived likelihood divided by time delay x effort/sacrifice", "passed": true, "evidence": "dream outcome, likelihood, time delay, effort"}, {"text": "Walks through the five steps: dream outcome, list problems, solutions, delivery vehicles, trim and stack", "passed": true, "evidence": "dream outcome, problems, delivery, trim and stack"}, {"text": "Uses delivery 'cheat codes' such as one-on-one vs group vs one-to-many, DIY/DWY/DFY, or the 10x / 1/10th test", "passed": true, "evidence": "DIY/DWY/DFY, 10x"}, {"text": "Recommends charging a premium (virtuous cycle of price) and/or niching to a specific avatar", "passed": true, "evidence": "virtuous cycle, niche"}, {"text": "Adds enhancers (bonuses, guarantee, scarcity/urgency, or naming) to the offer", "passed": true, "evidence": "guarantees, scarcity, urgency, naming"}], "notes": []}, {"eval_id": 2, "eval_name": "ho-guarantee", "configuration": "without_skill", "run_number": 1, "result": {"pass_rate": 0.83, "passed": 5, "failed": 1, "total": 6, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Lists four guarantee types: unconditional, conditional, anti-guarantee, implied/performance", "passed": true, "evidence": "four types"}, {"text": "Gives the 'If you do not get X result in Y time, we will Z' structure with a weak vs strong example", "passed": false, "evidence": "gives X/Y/Z template but no weak-vs-strong example"}, {"text": "Works the refund math (e.g., 100 sales/5% refunds = 95 vs 130 sales/10% refunds = 117, about 23% more)", "passed": true, "evidence": "refund math with own numbers (20%->30% close, 5%->10% refunds)"}, {"text": "Notes that high-cost services should favor conditional or anti-guarantees", "passed": true, "evidence": "prefers work-free/conditional for high-cost DFY"}, {"text": "Recommends tying conditions to key actions the client must take and/or 'better than money back' guarantees", "passed": true, "evidence": "conditions are the success actions; double-your-money variants"}, {"text": "Mentions stacking guarantees or warns that guarantee-only buyers can be poor customers", "passed": true, "evidence": "stacked unconditional + conditional"}], "notes": []}, {"eval_id": 3, "eval_name": "ho-naming-urgency", "configuration": "without_skill", "run_number": 1, "result": {"pass_rate": 0.83, "passed": 5, "failed": 1, "total": 6, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Uses the M-A-G-I-C naming formula: Magnetic reason why, Announce avatar, Give goal, Indicate time interval, Complete with container word", "passed": true, "evidence": "M-A-G-I-C"}, {"text": "Produces example names using a container word (e.g., Challenge, Bootcamp, Blueprint, Program)", "passed": true, "evidence": "Reset, Challenge, Bootcamp names"}, {"text": "Describes the three types of scarcity: limited seats/slots, limited bonuses, never available again", "passed": false, "evidence": "seats, bonuses and a 1:1 tier, but not 'never available again'"}, {"text": "Describes urgency methods such as cohort-based rolling starts, seasonal urgency, promotional/pricing urgency or exploding offers", "passed": true, "evidence": "cohort, seasonal, deadlines, exploding"}, {"text": "Stresses that scarcity and urgency must be real/ethical (not phony)", "passed": true, "evidence": "must be real"}, {"text": "Notes compliance caution for weight-loss outcome plus time claims or uses an action goal alternative", "passed": true, "evidence": "ad-platform/claim caution"}], "notes": []}], "run_summary": {"with_skill": {"pass_rate": {"mean": 1.0, "stddev": 0.0, "min": 1.0, "max": 1.0}, "time_seconds": null, "tokens": null}, "without_skill": {"pass_rate": {"mean": 0.8867, "stddev": 0.0981, "min": 0.83, "max": 1.0}, "time_seconds": null, "tokens": null}, "delta": {"pass_rate": "+0.11", "time_seconds": null, "tokens": null}}, "notes": ["Time recorded for 0 of 3 with_skill runs, 0 of 3 without_skill runs, so there is no time delta.", "Token count recorded for 0 of 3 with_skill runs, 0 of 3 without_skill runs, so there is no token count delta."]}};
+
+    // ---- State ----
+    let feedbackMap = {};  // run_id -> feedback text
+    let currentIndex = 0;
+    let visitedRuns = new Set();
+
+    // ---- Init ----
+    async function init() {
+      // Load saved feedback from server — but only if this isn't a fresh
+      // iteration (indicated by previous_feedback being present). When
+      // previous feedback exists, the feedback.json on disk is stale from
+      // the prior iteration and should not pre-fill the textareas.
+      const hasPrevious = Object.keys(EMBEDDED_DATA.previous_feedback || {}).length > 0
+        || Object.keys(EMBEDDED_DATA.previous_outputs || {}).length > 0;
+      if (!hasPrevious) {
+        try {
+          const resp = await fetch("/api/feedback");
+          const data = await resp.json();
+          if (data.reviews) {
+            for (const r of data.reviews) feedbackMap[r.run_id] = r.feedback;
+          }
+        } catch { /* first run, no feedback yet */ }
+      }
+
+      document.getElementById("skill-name").textContent = EMBEDDED_DATA.skill_name;
+      showRun(0);
+
+      // Wire up feedback auto-save
+      const textarea = document.getElementById("feedback");
+      let saveTimeout = null;
+      textarea.addEventListener("input", () => {
+        clearTimeout(saveTimeout);
+        document.getElementById("feedback-status").textContent = "";
+        saveTimeout = setTimeout(() => saveCurrentFeedback(), 800);
+      });
+    }
+
+    // ---- Navigation ----
+    function navigate(delta) {
+      const newIndex = currentIndex + delta;
+      if (newIndex >= 0 && newIndex < EMBEDDED_DATA.runs.length) {
+        saveCurrentFeedback();
+        showRun(newIndex);
+      }
+    }
+
+    function updateNavButtons() {
+      document.getElementById("prev-btn").disabled = currentIndex === 0;
+      document.getElementById("next-btn").disabled =
+        currentIndex === EMBEDDED_DATA.runs.length - 1;
+    }
+
+    // ---- Show a run ----
+    function showRun(index) {
+      currentIndex = index;
+      const run = EMBEDDED_DATA.runs[index];
+
+      // Progress
+      document.getElementById("progress").textContent =
+        `${index + 1} of ${EMBEDDED_DATA.runs.length}`;
+
+      // Prompt
+      document.getElementById("prompt-text").textContent = run.prompt;
+
+      // Config badge
+      const badge = document.getElementById("config-badge");
+      const configMatch = run.id.match(/(with_skill|without_skill|new_skill|old_skill)/);
+      if (configMatch) {
+        const config = configMatch[1];
+        const isBaseline = config === "without_skill" || config === "old_skill";
+        badge.textContent = config.replace(/_/g, " ");
+        badge.className = "config-badge " + (isBaseline ? "config-baseline" : "config-primary");
+        badge.style.display = "inline-block";
+      } else {
+        badge.style.display = "none";
+      }
+
+      // Outputs
+      renderOutputs(run);
+
+      // Previous outputs
+      renderPrevOutputs(run);
+
+      // Grades
+      renderGrades(run);
+
+      // Previous feedback
+      const prevFb = (EMBEDDED_DATA.previous_feedback || {})[run.id];
+      const prevEl = document.getElementById("prev-feedback");
+      if (prevFb) {
+        document.getElementById("prev-feedback-text").textContent = prevFb;
+        prevEl.style.display = "block";
+      } else {
+        prevEl.style.display = "none";
+      }
+
+      // Feedback
+      document.getElementById("feedback").value = feedbackMap[run.id] || "";
+      document.getElementById("feedback-status").textContent = "";
+
+      updateNavButtons();
+
+      // Track visited runs and promote done button when all visited
+      visitedRuns.add(index);
+      const doneBtn = document.getElementById("done-btn");
+      if (visitedRuns.size >= EMBEDDED_DATA.runs.length) {
+        doneBtn.classList.add("ready");
+      }
+
+      // Scroll main content to top
+      document.querySelector(".main").scrollTop = 0;
+    }
+
+    // ---- Render outputs ----
+    function renderOutputs(run) {
+      const container = document.getElementById("outputs-body");
+      container.innerHTML = "";
+
+      const outputs = run.outputs || [];
+      if (outputs.length === 0) {
+        container.innerHTML = '<div class="empty-state">No output files</div>';
+        return;
+      }
+
+      for (const file of outputs) {
+        const fileDiv = document.createElement("div");
+        fileDiv.className = "output-file";
+
+        // Always show file header with download link
+        const header = document.createElement("div");
+        header.className = "output-file-header";
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = file.name;
+        header.appendChild(nameSpan);
+        const dlBtn = document.createElement("a");
+        dlBtn.className = "dl-btn";
+        dlBtn.textContent = "Download";
+        dlBtn.download = file.name;
+        dlBtn.href = getDownloadUri(file);
+        header.appendChild(dlBtn);
+        fileDiv.appendChild(header);
+
+        const content = document.createElement("div");
+        content.className = "output-file-content";
+
+        if (file.type === "text") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          content.appendChild(pre);
+        } else if (file.type === "image") {
+          const img = document.createElement("img");
+          img.src = file.data_uri;
+          img.alt = file.name;
+          content.appendChild(img);
+        } else if (file.type === "pdf") {
+          const iframe = document.createElement("iframe");
+          iframe.src = file.data_uri;
+          content.appendChild(iframe);
+        } else if (file.type === "xlsx") {
+          renderXlsx(content, file.data_b64);
+        } else if (file.type === "binary") {
+          const a = document.createElement("a");
+          a.className = "download-link";
+          a.href = file.data_uri;
+          a.download = file.name;
+          a.textContent = "Download " + file.name;
+          content.appendChild(a);
+        } else if (file.type === "error") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          pre.style.color = "var(--red)";
+          content.appendChild(pre);
+        }
+
+        fileDiv.appendChild(content);
+        container.appendChild(fileDiv);
+      }
+    }
+
+    // ---- XLSX rendering via SheetJS ----
+    function renderXlsx(container, b64Data) {
+      try {
+        const raw = Uint8Array.from(atob(b64Data), c => c.charCodeAt(0));
+        const wb = XLSX.read(raw, { type: "array" });
+
+        for (let i = 0; i < wb.SheetNames.length; i++) {
+          const sheetName = wb.SheetNames[i];
+          const ws = wb.Sheets[sheetName];
+
+          if (wb.SheetNames.length > 1) {
+            const sheetLabel = document.createElement("div");
+            sheetLabel.style.cssText =
+              "font-weight:600; font-size:0.8rem; color:#b0aea5; margin-top:0.5rem; margin-bottom:0.25rem;";
+            sheetLabel.textContent = "Sheet: " + sheetName;
+            container.appendChild(sheetLabel);
+          }
+
+          const htmlStr = XLSX.utils.sheet_to_html(ws, { editable: false });
+          const wrapper = document.createElement("div");
+          wrapper.innerHTML = htmlStr;
+          container.appendChild(wrapper);
+        }
+      } catch (err) {
+        container.textContent = "Error rendering spreadsheet: " + err.message;
+      }
+    }
+
+    // ---- Grades ----
+    function renderGrades(run) {
+      const section = document.getElementById("grades-section");
+      const content = document.getElementById("grades-content");
+
+      if (!run.grading) {
+        section.style.display = "none";
+        return;
+      }
+
+      const grading = run.grading;
+      section.style.display = "block";
+      // Reset to collapsed
+      content.classList.remove("open");
+      document.getElementById("grades-arrow").classList.remove("open");
+
+      const summary = grading.summary || {};
+      const expectations = grading.expectations || [];
+
+      let html = '<div style="padding: 1rem;">';
+
+      // Summary line
+      const passRate = summary.pass_rate != null
+        ? Math.round(summary.pass_rate * 100) + "%"
+        : "?";
+      const badgeClass = summary.pass_rate >= 0.8 ? "grade-pass" : summary.pass_rate >= 0.5 ? "" : "grade-fail";
+      html += '<div class="grades-summary">';
+      html += '<span class="grade-badge ' + badgeClass + '">' + passRate + '</span>';
+      html += '<span>' + escapeHtml(summary.passed || 0) + ' passed, ' + escapeHtml(summary.failed || 0) + ' failed of ' + escapeHtml(summary.total || 0) + '</span>';
+      html += '</div>';
+
+      // Assertions list
+      html += '<ul class="assertion-list">';
+      for (const exp of expectations) {
+        const statusClass = exp.passed ? "pass" : "fail";
+        const statusIcon = exp.passed ? "\u2713" : "\u2717";
+        html += '<li class="assertion-item">';
+        html += '<span class="assertion-status ' + statusClass + '">' + statusIcon + '</span>';
+        html += '<span>' + escapeHtml(exp.text) + '</span>';
+        if (exp.evidence) {
+          html += '<div class="assertion-evidence">' + escapeHtml(exp.evidence) + '</div>';
+        }
+        html += '</li>';
+      }
+      html += '</ul>';
+
+      html += '</div>';
+      content.innerHTML = html;
+    }
+
+    function toggleGrades() {
+      const content = document.getElementById("grades-content");
+      const arrow = document.getElementById("grades-arrow");
+      content.classList.toggle("open");
+      arrow.classList.toggle("open");
+    }
+
+    // ---- Previous outputs (collapsible) ----
+    function renderPrevOutputs(run) {
+      const section = document.getElementById("prev-outputs-section");
+      const content = document.getElementById("prev-outputs-content");
+      const prevOutputs = (EMBEDDED_DATA.previous_outputs || {})[run.id];
+
+      if (!prevOutputs || prevOutputs.length === 0) {
+        section.style.display = "none";
+        return;
+      }
+
+      section.style.display = "block";
+      // Reset to collapsed
+      content.classList.remove("open");
+      document.getElementById("prev-outputs-arrow").classList.remove("open");
+
+      // Render the files into the content area
+      content.innerHTML = "";
+      const wrapper = document.createElement("div");
+      wrapper.style.padding = "1rem";
+
+      for (const file of prevOutputs) {
+        const fileDiv = document.createElement("div");
+        fileDiv.className = "output-file";
+
+        const header = document.createElement("div");
+        header.className = "output-file-header";
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = file.name;
+        header.appendChild(nameSpan);
+        const dlBtn = document.createElement("a");
+        dlBtn.className = "dl-btn";
+        dlBtn.textContent = "Download";
+        dlBtn.download = file.name;
+        dlBtn.href = getDownloadUri(file);
+        header.appendChild(dlBtn);
+        fileDiv.appendChild(header);
+
+        const fc = document.createElement("div");
+        fc.className = "output-file-content";
+
+        if (file.type === "text") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          fc.appendChild(pre);
+        } else if (file.type === "image") {
+          const img = document.createElement("img");
+          img.src = file.data_uri;
+          img.alt = file.name;
+          fc.appendChild(img);
+        } else if (file.type === "pdf") {
+          const iframe = document.createElement("iframe");
+          iframe.src = file.data_uri;
+          fc.appendChild(iframe);
+        } else if (file.type === "xlsx") {
+          renderXlsx(fc, file.data_b64);
+        } else if (file.type === "binary") {
+          const a = document.createElement("a");
+          a.className = "download-link";
+          a.href = file.data_uri;
+          a.download = file.name;
+          a.textContent = "Download " + file.name;
+          fc.appendChild(a);
+        }
+
+        fileDiv.appendChild(fc);
+        wrapper.appendChild(fileDiv);
+      }
+
+      content.appendChild(wrapper);
+    }
+
+    function togglePrevOutputs() {
+      const content = document.getElementById("prev-outputs-content");
+      const arrow = document.getElementById("prev-outputs-arrow");
+      content.classList.toggle("open");
+      arrow.classList.toggle("open");
+    }
+
+    // ---- Feedback (saved to server -> feedback.json) ----
+    function saveCurrentFeedback() {
+      const run = EMBEDDED_DATA.runs[currentIndex];
+      const text = document.getElementById("feedback").value;
+
+      if (text.trim() === "") {
+        delete feedbackMap[run.id];
+      } else {
+        feedbackMap[run.id] = text;
+      }
+
+      // Build reviews array from map
+      const reviews = [];
+      for (const [run_id, feedback] of Object.entries(feedbackMap)) {
+        if (feedback.trim()) {
+          reviews.push({ run_id, feedback, timestamp: new Date().toISOString() });
+        }
+      }
+
+      fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reviews, status: "in_progress" }),
+      }).then(() => {
+        document.getElementById("feedback-status").textContent = "Saved";
+      }).catch(() => {
+        // Static mode or server unavailable — no-op on auto-save,
+        // feedback will be downloaded on final submit
+        document.getElementById("feedback-status").textContent = "Will download on submit";
+      });
+    }
+
+    // ---- Done ----
+    function showDoneDialog() {
+      // Save current textarea to feedbackMap (but don't POST yet)
+      const run = EMBEDDED_DATA.runs[currentIndex];
+      const text = document.getElementById("feedback").value;
+      if (text.trim() === "") {
+        delete feedbackMap[run.id];
+      } else {
+        feedbackMap[run.id] = text;
+      }
+
+      // POST once with status: complete — include ALL runs so the model
+      // can distinguish "no feedback" (looks good) from "not reviewed"
+      const reviews = [];
+      const ts = new Date().toISOString();
+      for (const r of EMBEDDED_DATA.runs) {
+        reviews.push({ run_id: r.id, feedback: feedbackMap[r.id] || "", timestamp: ts });
+      }
+      const payload = JSON.stringify({ reviews, status: "complete" }, null, 2);
+      fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: payload,
+      }).then(() => {
+        document.getElementById("done-overlay").classList.add("visible");
+      }).catch(() => {
+        // Server not available (static mode) — download as file
+        const blob = new Blob([payload], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "feedback.json";
+        a.click();
+        URL.revokeObjectURL(url);
+        document.getElementById("done-overlay").classList.add("visible");
+      });
+    }
+
+    function closeDoneDialog() {
+      // Reset status back to in_progress
+      saveCurrentFeedback();
+      document.getElementById("done-overlay").classList.remove("visible");
+    }
+
+    // ---- Toast ----
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("visible");
+      setTimeout(() => toast.classList.remove("visible"), 2000);
+    }
+
+    // ---- Keyboard nav ----
+    document.addEventListener("keydown", (e) => {
+      // Don't capture when typing in textarea
+      if (e.target.tagName === "TEXTAREA") return;
+
+      if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+        e.preventDefault();
+        navigate(-1);
+      } else if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+        e.preventDefault();
+        navigate(1);
+      }
+    });
+
+    // ---- Util ----
+    function getDownloadUri(file) {
+      if (file.data_uri) return file.data_uri;
+      if (file.data_b64) return "data:application/octet-stream;base64," + file.data_b64;
+      if (file.type === "text") return "data:text/plain;charset=utf-8," + encodeURIComponent(file.content);
+      return "#";
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement("div");
+      div.textContent = text;
+      return div.innerHTML.replace(/"/g, "&quot;");
+    }
+
+    // ---- View switching ----
+    function switchView(view) {
+      document.querySelectorAll(".view-tab").forEach(t => t.classList.remove("active"));
+      document.querySelectorAll(".view-panel").forEach(p => p.classList.remove("active"));
+      document.querySelector(`[onclick="switchView('${view}')"]`).classList.add("active");
+      document.getElementById("panel-" + view).classList.add("active");
+    }
+
+    // ---- Benchmark rendering ----
+    function renderBenchmark() {
+      const data = EMBEDDED_DATA.benchmark;
+      if (!data) return;
+
+      // Show the tabs
+      document.getElementById("view-tabs").style.display = "flex";
+
+      const container = document.getElementById("benchmark-content");
+      const summary = data.run_summary || {};
+      const metadata = data.metadata || {};
+      const notes = data.notes || [];
+
+      let html = "";
+
+      // Header
+      html += "<h2 style='font-family: Poppins, sans-serif; margin-bottom: 0.5rem;'>Benchmark Results</h2>";
+      html += "<p style='color: var(--text-muted); font-size: 0.875rem; margin-bottom: 1.25rem;'>";
+      if (metadata.skill_name) html += "<strong>" + escapeHtml(metadata.skill_name) + "</strong> &mdash; ";
+      if (metadata.timestamp) html += escapeHtml(metadata.timestamp) + " &mdash; ";
+      if (metadata.evals_run) html += "Evals: " + escapeHtml(metadata.evals_run.join(", ")) + " &mdash; ";
+      html += escapeHtml(metadata.runs_per_configuration || "?") + (metadata.runs_per_configuration === 1 ? " run" : " runs") + " per configuration";
+      html += "</p>";
+
+      // Summary table
+      html += '<table class="benchmark-table">';
+
+      function fmtStat(stat, pct) {
+        if (!stat) return "—";
+        const suffix = pct ? "%" : "";
+        const m = pct ? (stat.mean * 100).toFixed(0) : stat.mean.toFixed(1);
+        const s = pct ? (stat.stddev * 100).toFixed(0) : stat.stddev.toFixed(1);
+        return m + suffix + " ± " + s + suffix;
+      }
+
+      function deltaClass(val) {
+        if (!val) return "";
+        const n = parseFloat(val);
+        if (n > 0) return "benchmark-delta-positive";
+        if (n < 0) return "benchmark-delta-negative";
+        return "";
+      }
+
+      // Discover config names dynamically (everything except "delta")
+      const configs = Object.keys(summary).filter(k => k !== "delta");
+      const configA = configs[0] || "config_a";
+      const configB = configs[1] || "config_b";
+      const labelA = configA.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      const labelB = configB.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      const a = summary[configA] || {};
+      const b = summary[configB] || {};
+      const delta = summary.delta || {};
+      // With a single configuration there is nothing to compare: only its column is shown
+      const compare = cells => configs.length >= 2 ? cells : "";
+
+      html += "<thead><tr><th>Metric</th><th>" + escapeHtml(labelA) + "</th>" + compare("<th>" + escapeHtml(labelB) + "</th><th>Delta</th>") + "</tr></thead>";
+      html += "<tbody>";
+
+      html += "<tr><td><strong>Pass Rate</strong></td>";
+      html += "<td>" + fmtStat(a.pass_rate, true) + "</td>";
+      html += compare("<td>" + fmtStat(b.pass_rate, true) + "</td>");
+      html += compare('<td class="' + deltaClass(delta.pass_rate) + '">' + escapeHtml(delta.pass_rate || "—") + "</td>") + "</tr>";
+
+      // Time (only show row if data exists)
+      if (a.time_seconds || b.time_seconds) {
+        html += "<tr><td><strong>Time (s)</strong></td>";
+        html += "<td>" + fmtStat(a.time_seconds, false) + "</td>";
+        html += compare("<td>" + fmtStat(b.time_seconds, false) + "</td>");
+        html += compare('<td class="' + deltaClass(delta.time_seconds) + '">' + escapeHtml(delta.time_seconds ? delta.time_seconds + "s" : "—") + "</td>") + "</tr>";
+      }
+
+      // Tokens (only show row if data exists)
+      if (a.tokens || b.tokens) {
+        html += "<tr><td><strong>Tokens</strong></td>";
+        html += "<td>" + fmtStat(a.tokens, false) + "</td>";
+        html += compare("<td>" + fmtStat(b.tokens, false) + "</td>");
+        html += compare('<td class="' + deltaClass(delta.tokens) + '">' + escapeHtml(delta.tokens || "—") + "</td>") + "</tr>";
+      }
+
+      html += "</tbody></table>";
+
+      // Per-eval breakdown (if runs data available)
+      const runs = data.runs || [];
+      if (runs.length > 0) {
+        // Numeric ids first, then ids that are names
+        const rank = id => typeof id === "number" ? 0 : 1;
+        const evalIds = [...new Set(runs.map(r => r.eval_id))].sort((a, b) =>
+          rank(a) - rank(b) || (rank(a) ? String(a).localeCompare(String(b)) : a - b));
+
+        html += "<h3 style='font-family: Poppins, sans-serif; margin-bottom: 0.75rem;'>Per-Eval Breakdown</h3>";
+
+        const hasTime = runs.some(r => r.result && r.result.time_seconds != null);
+        const hasErrors = runs.some(r => r.result && r.result.errors > 0);
+
+        for (const evalId of evalIds) {
+          const evalRuns = runs.filter(r => r.eval_id === evalId);
+          const evalName = evalRuns[0] && evalRuns[0].eval_name ? evalRuns[0].eval_name : "Eval " + evalId;
+
+          html += "<h4 style='font-family: Poppins, sans-serif; margin: 1rem 0 0.5rem; color: var(--text);'>" + escapeHtml(evalName) + "</h4>";
+          html += '<table class="benchmark-table">';
+          html += "<thead><tr><th>Config</th><th>Run</th><th>Pass Rate</th>";
+          if (hasTime) html += "<th>Time (s)</th>";
+          if (hasErrors) html += "<th>Crashes During Execution</th>";
+          html += "</tr></thead>";
+          html += "<tbody>";
+
+          // Group by config and render with average rows
+          const configGroups = [...new Set(evalRuns.map(r => r.configuration))];
+          for (let ci = 0; ci < configGroups.length; ci++) {
+            const config = configGroups[ci];
+            const configRuns = evalRuns.filter(r => r.configuration === config);
+            if (configRuns.length === 0) continue;
+
+            const rowClass = ci === 0 ? "benchmark-row-with" : "benchmark-row-without";
+            const configLabel = escapeHtml(config.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase()));
+
+            for (const run of configRuns) {
+              const r = run.result || {};
+              const prClass = r.pass_rate >= 0.8 ? "benchmark-delta-positive" : r.pass_rate < 0.5 ? "benchmark-delta-negative" : "";
+              html += '<tr class="' + rowClass + '">';
+              html += "<td>" + configLabel + "</td>";
+              html += "<td>" + escapeHtml(run.run_number) + "</td>";
+              html += '<td class="' + prClass + '">' + ((r.pass_rate || 0) * 100).toFixed(0) + "% (" + escapeHtml(r.passed || 0) + "/" + escapeHtml(r.total || 0) + ")</td>";
+              if (hasTime) html += "<td>" + (r.time_seconds != null ? r.time_seconds.toFixed(1) : "—") + "</td>";
+              if (hasErrors) html += "<td>" + escapeHtml(r.errors || 0) + "</td>";
+              html += "</tr>";
+            }
+
+            // Average row
+            const rates = configRuns.map(r => (r.result || {}).pass_rate || 0);
+            const avgRate = rates.reduce((a, b) => a + b, 0) / rates.length;
+            const avgPrClass = avgRate >= 0.8 ? "benchmark-delta-positive" : avgRate < 0.5 ? "benchmark-delta-negative" : "";
+            html += '<tr class="benchmark-row-avg ' + rowClass + '">';
+            html += "<td>" + configLabel + "</td>";
+            html += "<td>Avg</td>";
+            html += '<td class="' + avgPrClass + '">' + (avgRate * 100).toFixed(0) + "%</td>";
+            if (hasTime) {
+              const times = configRuns.map(r => (r.result || {}).time_seconds).filter(t => t != null);
+              html += "<td>" + (times.length ? (times.reduce((a, b) => a + b, 0) / times.length).toFixed(1) : "—") + "</td>";
+            }
+            if (hasErrors) html += "<td></td>";
+            html += "</tr>";
+          }
+          html += "</tbody></table>";
+
+          // Per-assertion detail for this eval
+          const runsWithExpectations = {};
+          for (const config of configGroups) {
+            runsWithExpectations[config] = evalRuns.filter(r => r.configuration === config && r.expectations && r.expectations.length > 0);
+          }
+          const hasAnyExpectations = Object.values(runsWithExpectations).some(runs => runs.length > 0);
+          if (hasAnyExpectations) {
+            // Collect all unique assertion texts across all configs
+            const allAssertions = [];
+            const seen = new Set();
+            for (const config of configGroups) {
+              for (const run of runsWithExpectations[config]) {
+                for (const exp of (run.expectations || [])) {
+                  if (!seen.has(exp.text)) {
+                    seen.add(exp.text);
+                    allAssertions.push(exp.text);
+                  }
+                }
+              }
+            }
+
+            html += '<table class="benchmark-table" style="margin-top: 0.5rem;">';
+            html += "<thead><tr><th>Assertion</th>";
+            for (const config of configGroups) {
+              const label = config.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+              html += "<th>" + escapeHtml(label) + "</th>";
+            }
+            html += "</tr></thead><tbody>";
+
+            for (const assertionText of allAssertions) {
+              html += "<tr><td>" + escapeHtml(assertionText) + "</td>";
+
+              for (const config of configGroups) {
+                html += "<td>";
+                for (const run of runsWithExpectations[config]) {
+                  const exp = (run.expectations || []).find(e => e.text === assertionText);
+                  if (exp) {
+                    const cls = exp.passed ? "benchmark-delta-positive" : "benchmark-delta-negative";
+                    const icon = exp.passed ? "\u2713" : "\u2717";
+                    html += '<span class="' + cls + '" title="Run ' + escapeHtml(run.run_number) + ': ' + escapeHtml(exp.evidence || "") + '">' + icon + "</span> ";
+                  } else {
+                    html += "— ";
+                  }
+                }
+                html += "</td>";
+              }
+              html += "</tr>";
+            }
+            html += "</tbody></table>";
+          }
+        }
+      }
+
+      // Notes
+      if (notes.length > 0) {
+        html += '<div class="benchmark-notes">';
+        html += "<h3>Analysis Notes</h3>";
+        html += "<ul>";
+        for (const note of notes) {
+          html += "<li>" + escapeHtml(note) + "</li>";
+        }
+        html += "</ul></div>";
+      }
+
+      container.innerHTML = html;
+    }
+
+    // ---- Start ----
+    init();
+    renderBenchmark();
+  </script>
+</body>
+</html>

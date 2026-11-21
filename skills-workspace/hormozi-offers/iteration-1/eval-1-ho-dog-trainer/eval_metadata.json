@@ -1,0 +1,13 @@
+{
+  "eval_id": 1,
+  "eval_name": "ho-dog-trainer",
+  "prompt": "I'm a dog trainer charging $40 per session and competing with cheaper trainers on price. Using Alex Hormozi's $100M Offers, walk me through building a Grand Slam Offer so I can charge a lot more.",
+  "assertions": [
+    "Explains the commodity problem and selling in a 'category of one' (value-driven, not price-driven)",
+    "Applies the Value Equation: dream outcome x perceived likelihood divided by time delay x effort/sacrifice",
+    "Walks through the five steps: dream outcome, list problems, solutions, delivery vehicles, trim and stack",
+    "Uses delivery 'cheat codes' such as one-on-one vs group vs one-to-many, DIY/DWY/DFY, or the 10x / 1/10th test",
+    "Recommends charging a premium (virtuous cycle of price) and/or niching to a specific avatar",
+    "Adds enhancers (bonuses, guarantee, scarcity/urgency, or naming) to the offer"
+  ]
+}

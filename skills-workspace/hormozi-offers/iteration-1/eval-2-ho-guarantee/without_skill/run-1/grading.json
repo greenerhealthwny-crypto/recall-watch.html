@@ -1,0 +1,40 @@
+{
+  "expectations": [
+    {
+      "text": "Lists four guarantee types: unconditional, conditional, anti-guarantee, implied/performance",
+      "passed": true,
+      "evidence": "four types"
+    },
+    {
+      "text": "Gives the 'If you do not get X result in Y time, we will Z' structure with a weak vs strong example",
+      "passed": false,
+      "evidence": "gives X/Y/Z template but no weak-vs-strong example"
+    },
+    {
+      "text": "Works the refund math (e.g., 100 sales/5% refunds = 95 vs 130 sales/10% refunds = 117, about 23% more)",
+      "passed": true,
+      "evidence": "refund math with own numbers (20%->30% close, 5%->10% refunds)"
+    },
+    {
+      "text": "Notes that high-cost services should favor conditional or anti-guarantees",
+      "passed": true,
+      "evidence": "prefers work-free/conditional for high-cost DFY"
+    },
+    {
+      "text": "Recommends tying conditions to key actions the client must take and/or 'better than money back' guarantees",
+      "passed": true,
+      "evidence": "conditions are the success actions; double-your-money variants"
+    },
+    {
+      "text": "Mentions stacking guarantees or warns that guarantee-only buyers can be poor customers",
+      "passed": true,
+      "evidence": "stacked unconditional + conditional"
+    }
+  ],
+  "summary": {
+    "passed": 5,
+    "failed": 1,
+    "total": 6,
+    "pass_rate": 0.83
+  }
+}

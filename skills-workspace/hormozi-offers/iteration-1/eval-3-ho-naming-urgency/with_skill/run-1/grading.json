@@ -1,0 +1,40 @@
+{
+  "expectations": [
+    {
+      "text": "Uses the M-A-G-I-C naming formula: Magnetic reason why, Announce avatar, Give goal, Indicate time interval, Complete with container word",
+      "passed": true,
+      "evidence": "M-A-G-I-C"
+    },
+    {
+      "text": "Produces example names using a container word (e.g., Challenge, Bootcamp, Blueprint, Program)",
+      "passed": true,
+      "evidence": "names with container words"
+    },
+    {
+      "text": "Describes the three types of scarcity: limited seats/slots, limited bonuses, never available again",
+      "passed": true,
+      "evidence": "limited seats, bonuses, never available again"
+    },
+    {
+      "text": "Describes urgency methods such as cohort-based rolling starts, seasonal urgency, promotional/pricing urgency or exploding offers",
+      "passed": true,
+      "evidence": "cohort, seasonal, exploding"
+    },
+    {
+      "text": "Stresses that scarcity and urgency must be real/ethical (not phony)",
+      "passed": true,
+      "evidence": "ethical, not phony"
+    },
+    {
+      "text": "Notes compliance caution for weight-loss outcome plus time claims or uses an action goal alternative",
+      "passed": true,
+      "evidence": "FTC/compliance caution"
+    }
+  ],
+  "summary": {
+    "passed": 6,
+    "failed": 0,
+    "total": 6,
+    "pass_rate": 1.0
+  }
+}

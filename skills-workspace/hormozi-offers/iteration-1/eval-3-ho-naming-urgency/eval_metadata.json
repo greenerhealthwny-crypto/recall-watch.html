@@ -1,0 +1,13 @@
+{
+  "eval_id": 3,
+  "eval_name": "ho-naming-urgency",
+  "prompt": "I'm launching a 6-week weight-loss coaching program for new moms. Using Hormozi's $100M Offers, help me name it and add ethical scarcity and urgency.",
+  "assertions": [
+    "Uses the M-A-G-I-C naming formula: Magnetic reason why, Announce avatar, Give goal, Indicate time interval, Complete with container word",
+    "Produces example names using a container word (e.g., Challenge, Bootcamp, Blueprint, Program)",
+    "Describes the three types of scarcity: limited seats/slots, limited bonuses, never available again",
+    "Describes urgency methods such as cohort-based rolling starts, seasonal urgency, promotional/pricing urgency or exploding offers",
+    "Stresses that scarcity and urgency must be real/ethical (not phony)",
+    "Notes compliance caution for weight-loss outcome plus time claims or uses an action goal alternative"
+  ]
+}

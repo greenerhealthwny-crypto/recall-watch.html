@@ -1,0 +1,13 @@
+{
+  "eval_id": 2,
+  "eval_name": "ho-guarantee",
+  "prompt": "Per $100M Offers, what types of guarantees does Hormozi describe, how should I word one, and will a strong guarantee lose me money from refunds? I run a high-cost done-for-you marketing service.",
+  "assertions": [
+    "Lists four guarantee types: unconditional, conditional, anti-guarantee, implied/performance",
+    "Gives the 'If you do not get X result in Y time, we will Z' structure with a weak vs strong example",
+    "Works the refund math (e.g., 100 sales/5% refunds = 95 vs 130 sales/10% refunds = 117, about 23% more)",
+    "Notes that high-cost services should favor conditional or anti-guarantees",
+    "Recommends tying conditions to key actions the client must take and/or 'better than money back' guarantees",
+    "Mentions stacking guarantees or warns that guarantee-only buyers can be poor customers"
+  ]
+}

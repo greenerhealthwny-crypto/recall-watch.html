@@ -1,0 +1,32 @@
+{
+  "skill_name": "hormozi-offers",
+  "evals": [
+    {"id": 1, "name": "ho-dog-trainer",
+     "prompt": "I'm a dog trainer charging $40 per session and competing with cheaper trainers on price. Using Alex Hormozi's $100M Offers, walk me through building a Grand Slam Offer so I can charge a lot more.",
+     "assertions": [
+      "Explains the commodity problem and selling in a 'category of one' (value-driven, not price-driven)",
+      "Applies the Value Equation: dream outcome x perceived likelihood divided by time delay x effort/sacrifice",
+      "Walks through the five steps: dream outcome, list problems, solutions, delivery vehicles, trim and stack",
+      "Uses delivery 'cheat codes' such as one-on-one vs group vs one-to-many, DIY/DWY/DFY, or the 10x / 1/10th test",
+      "Recommends charging a premium (virtuous cycle of price) and/or niching to a specific avatar",
+      "Adds enhancers (bonuses, guarantee, scarcity/urgency, or naming) to the offer"]},
+    {"id": 2, "name": "ho-guarantee",
+     "prompt": "Per $100M Offers, what types of guarantees does Hormozi describe, how should I word one, and will a strong guarantee lose me money from refunds? I run a high-cost done-for-you marketing service.",
+     "assertions": [
+      "Lists four guarantee types: unconditional, conditional, anti-guarantee, implied/performance",
+      "Gives the 'If you do not get X result in Y time, we will Z' structure with a weak vs strong example",
+      "Works the refund math (e.g., 100 sales/5% refunds = 95 vs 130 sales/10% refunds = 117, about 23% more)",
+      "Notes that high-cost services should favor conditional or anti-guarantees",
+      "Recommends tying conditions to key actions the client must take and/or 'better than money back' guarantees",
+      "Mentions stacking guarantees or warns that guarantee-only buyers can be poor customers"]},
+    {"id": 3, "name": "ho-naming-urgency",
+     "prompt": "I'm launching a 6-week weight-loss coaching program for new moms. Using Hormozi's $100M Offers, help me name it and add ethical scarcity and urgency.",
+     "assertions": [
+      "Uses the M-A-G-I-C naming formula: Magnetic reason why, Announce avatar, Give goal, Indicate time interval, Complete with container word",
+      "Produces example names using a container word (e.g., Challenge, Bootcamp, Blueprint, Program)",
+      "Describes the three types of scarcity: limited seats/slots, limited bonuses, never available again",
+      "Describes urgency methods such as cohort-based rolling starts, seasonal urgency, promotional/pricing urgency or exploding offers",
+      "Stresses that scarcity and urgency must be real/ethical (not phony)",
+      "Notes compliance caution for weight-loss outcome plus time claims or uses an action goal alternative"]}
+  ]
+}
