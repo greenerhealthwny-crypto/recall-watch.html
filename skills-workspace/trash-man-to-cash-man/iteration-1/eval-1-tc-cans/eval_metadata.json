@@ -1,0 +1,13 @@
+{
+ "eval_id": 1,
+ "eval_name": "tc-cans",
+ "prompt": "How does Myron Golden's 'From The Trash Man To The Cash Man' say I should split my paycheck? Explain the cans.",
+ "assertions": [
+  "Describes six cans",
+  "I can tithe can at 10% of gross",
+  "I can finish free can: 10%, never spent, used to buy income-producing assets / passive income",
+  "I can educate myself can at 10% for seminars, books, audio",
+  "I can save for what I want and I can have fun (spend every month) cans",
+  "I can pay my bills can at 50% for living expenses"
+ ]
+}

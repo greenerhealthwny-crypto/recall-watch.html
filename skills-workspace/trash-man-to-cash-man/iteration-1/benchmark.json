@@ -1,0 +1,342 @@
+{
+  "metadata": {
+    "skill_name": "trash-man-to-cash-man",
+    "skill_path": "<path/to/skill>",
+    "executor_model": "<model-name>",
+    "analyzer_model": "<model-name>",
+    "timestamp": "2026-11-21T21:37:18Z",
+    "evals_run": [
+      1,
+      2,
+      3
+    ],
+    "runs_per_configuration": 1
+  },
+  "runs": [
+    {
+      "eval_id": 1,
+      "eval_name": "tc-cans",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Describes six cans",
+          "passed": true,
+          "evidence": "Six cans"
+        },
+        {
+          "text": "I can tithe can at 10% of gross",
+          "passed": true,
+          "evidence": "Tithe 10% gross"
+        },
+        {
+          "text": "I can finish free can: 10%, never spent, used to buy income-producing assets / passive income",
+          "passed": true,
+          "evidence": "Finish free 10%, never spent, assets"
+        },
+        {
+          "text": "I can educate myself can at 10% for seminars, books, audio",
+          "passed": true,
+          "evidence": "Educate 10%"
+        },
+        {
+          "text": "I can save for what I want and I can have fun (spend every month) cans",
+          "passed": true,
+          "evidence": "Save for what I want; have fun spent monthly"
+        },
+        {
+          "text": "I can pay my bills can at 50% for living expenses",
+          "passed": true,
+          "evidence": "Pay bills 50%"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "tc-window",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Four panes: Have A Job (H.A.J.), Own A Job (O.A.J.), Sow Money Seeds (S.M.S.), Own A System (O.A.S.)",
+          "passed": true,
+          "evidence": "Four panes named"
+        },
+        {
+          "text": "Have/own a job are the two worst ways; Own A System best; Sow Money Seeds second best",
+          "passed": true,
+          "evidence": "Ranking worst to best"
+        },
+        {
+          "text": "Financial house windows: income, outgo, wealth reducing liabilities, income producing assets",
+          "passed": true,
+          "evidence": "Four windows"
+        },
+        {
+          "text": "Poor: all income goes out the outgo window",
+          "passed": true,
+          "evidence": "Poor: all out outgo"
+        },
+        {
+          "text": "Middle class: buy wealth reducing liabilities / live in debt keeping up with the Joneses",
+          "passed": true,
+          "evidence": "Middle class WRLs, Joneses"
+        },
+        {
+          "text": "Rich: buy income producing assets; difference is what you do with money, not how much you make",
+          "passed": true,
+          "evidence": "Rich IPAs; what you do with money"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 3,
+      "eval_name": "tc-traps",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Lists several of the 11 mental money traps (e.g., negativism for skepticism, value security over freedom, renter's mentality, technophobic, formal over self-education)",
+          "passed": true,
+          "evidence": "11 mental traps"
+        },
+        {
+          "text": "Lists several practical traps (e.g., paralyzed by a paycheck, don't invest in greatest asset, no financial mentor, bad debt, do everything themselves)",
+          "passed": true,
+          "evidence": "Practical traps, notes missing #12"
+        },
+        {
+          "text": "Hands-free plan: home business to $10,000/month within two years with minimal ('one finger') effort, then start another",
+          "passed": true,
+          "evidence": "$10,000/month in 2 years, one finger"
+        },
+        {
+          "text": "Prefers product-oriented over service business (time limits income)",
+          "passed": true,
+          "evidence": "Product over service"
+        },
+        {
+          "text": "Mentions virtual millionaire (V.M.) vs V.P. and/or 'you're in the marketing business'",
+          "passed": true,
+          "evidence": "Virtual millionaire / marketing"
+        },
+        {
+          "text": "Notes caveats such as due diligence / results not guaranteed",
+          "passed": true,
+          "evidence": "Results-vary disclaimer"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 1,
+      "eval_name": "tc-cans",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.16666666666666666,
+        "passed": 1,
+        "failed": 5,
+        "total": 6,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Describes six cans",
+          "passed": false,
+          "evidence": "Number of cans unsure"
+        },
+        {
+          "text": "I can tithe can at 10% of gross",
+          "passed": true,
+          "evidence": "Tithe about 10%"
+        },
+        {
+          "text": "I can finish free can: 10%, never spent, used to buy income-producing assets / passive income",
+          "passed": false,
+          "evidence": "No finish free can"
+        },
+        {
+          "text": "I can educate myself can at 10% for seminars, books, audio",
+          "passed": false,
+          "evidence": "No educate can"
+        },
+        {
+          "text": "I can save for what I want and I can have fun (spend every month) cans",
+          "passed": false,
+          "evidence": "No save/have fun cans"
+        },
+        {
+          "text": "I can pay my bills can at 50% for living expenses",
+          "passed": false,
+          "evidence": "Guesses ~80% living, no bills can"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "tc-window",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.5,
+        "passed": 3,
+        "failed": 3,
+        "total": 6,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Four panes: Have A Job (H.A.J.), Own A Job (O.A.J.), Sow Money Seeds (S.M.S.), Own A System (O.A.S.)",
+          "passed": false,
+          "evidence": "Window treated as margin, not four panes"
+        },
+        {
+          "text": "Have/own a job are the two worst ways; Own A System best; Sow Money Seeds second best",
+          "passed": false,
+          "evidence": "No ranking of four ways"
+        },
+        {
+          "text": "Financial house windows: income, outgo, wealth reducing liabilities, income producing assets",
+          "passed": false,
+          "evidence": "No four-window house"
+        },
+        {
+          "text": "Poor: all income goes out the outgo window",
+          "passed": true,
+          "evidence": "Poor: income straight out back door"
+        },
+        {
+          "text": "Middle class: buy wealth reducing liabilities / live in debt keeping up with the Joneses",
+          "passed": true,
+          "evidence": "Middle: liabilities, debt"
+        },
+        {
+          "text": "Rich: buy income producing assets; difference is what you do with money, not how much you make",
+          "passed": true,
+          "evidence": "Rich: assets first"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 3,
+      "eval_name": "tc-traps",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.16666666666666666,
+        "passed": 1,
+        "failed": 5,
+        "total": 6,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Lists several of the 11 mental money traps (e.g., negativism for skepticism, value security over freedom, renter's mentality, technophobic, formal over self-education)",
+          "passed": false,
+          "evidence": "Generic traps, not the book's list"
+        },
+        {
+          "text": "Lists several practical traps (e.g., paralyzed by a paycheck, don't invest in greatest asset, no financial mentor, bad debt, do everything themselves)",
+          "passed": true,
+          "evidence": "Job/paycheck and debt traps"
+        },
+        {
+          "text": "Hands-free plan: home business to $10,000/month within two years with minimal ('one finger') effort, then start another",
+          "passed": false,
+          "evidence": "Generic plan, no $10,000 hands-free plan"
+        },
+        {
+          "text": "Prefers product-oriented over service business (time limits income)",
+          "passed": false,
+          "evidence": "Products mentioned only as recurring income, no product vs service rule"
+        },
+        {
+          "text": "Mentions virtual millionaire (V.M.) vs V.P. and/or 'you're in the marketing business'",
+          "passed": false,
+          "evidence": "No V.M. or marketing business"
+        },
+        {
+          "text": "Notes caveats such as due diligence / results not guaranteed",
+          "passed": false,
+          "evidence": "No caveats"
+        }
+      ],
+      "notes": []
+    }
+  ],
+  "run_summary": {
+    "with_skill": {
+      "pass_rate": {
+        "mean": 1.0,
+        "stddev": 0.0,
+        "min": 1.0,
+        "max": 1.0
+      },
+      "time_seconds": null,
+      "tokens": null
+    },
+    "without_skill": {
+      "pass_rate": {
+        "mean": 0.2778,
+        "stddev": 0.1925,
+        "min": 0.1667,
+        "max": 0.5
+      },
+      "time_seconds": null,
+      "tokens": null
+    },
+    "delta": {
+      "pass_rate": "+0.72",
+      "time_seconds": null,
+      "tokens": null
+    }
+  },
+  "notes": [
+    "Time recorded for 0 of 3 with_skill runs, 0 of 3 without_skill runs, so there is no time delta.",
+    "Token count recorded for 0 of 3 with_skill runs, 0 of 3 without_skill runs, so there is no token count delta."
+  ]
+}

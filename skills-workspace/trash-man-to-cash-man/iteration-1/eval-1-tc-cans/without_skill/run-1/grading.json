@@ -1,0 +1,40 @@
+{
+ "expectations": [
+  {
+   "text": "Describes six cans",
+   "passed": false,
+   "evidence": "Number of cans unsure"
+  },
+  {
+   "text": "I can tithe can at 10% of gross",
+   "passed": true,
+   "evidence": "Tithe about 10%"
+  },
+  {
+   "text": "I can finish free can: 10%, never spent, used to buy income-producing assets / passive income",
+   "passed": false,
+   "evidence": "No finish free can"
+  },
+  {
+   "text": "I can educate myself can at 10% for seminars, books, audio",
+   "passed": false,
+   "evidence": "No educate can"
+  },
+  {
+   "text": "I can save for what I want and I can have fun (spend every month) cans",
+   "passed": false,
+   "evidence": "No save/have fun cans"
+  },
+  {
+   "text": "I can pay my bills can at 50% for living expenses",
+   "passed": false,
+   "evidence": "Guesses ~80% living, no bills can"
+  }
+ ],
+ "summary": {
+  "passed": 1,
+  "failed": 5,
+  "total": 6,
+  "pass_rate": 0.16666666666666666
+ }
+}

@@ -1,0 +1,40 @@
+{
+ "expectations": [
+  {
+   "text": "Four panes: Have A Job (H.A.J.), Own A Job (O.A.J.), Sow Money Seeds (S.M.S.), Own A System (O.A.S.)",
+   "passed": false,
+   "evidence": "Window treated as margin, not four panes"
+  },
+  {
+   "text": "Have/own a job are the two worst ways; Own A System best; Sow Money Seeds second best",
+   "passed": false,
+   "evidence": "No ranking of four ways"
+  },
+  {
+   "text": "Financial house windows: income, outgo, wealth reducing liabilities, income producing assets",
+   "passed": false,
+   "evidence": "No four-window house"
+  },
+  {
+   "text": "Poor: all income goes out the outgo window",
+   "passed": true,
+   "evidence": "Poor: income straight out back door"
+  },
+  {
+   "text": "Middle class: buy wealth reducing liabilities / live in debt keeping up with the Joneses",
+   "passed": true,
+   "evidence": "Middle: liabilities, debt"
+  },
+  {
+   "text": "Rich: buy income producing assets; difference is what you do with money, not how much you make",
+   "passed": true,
+   "evidence": "Rich: assets first"
+  }
+ ],
+ "summary": {
+  "passed": 3,
+  "failed": 3,
+  "total": 6,
+  "pass_rate": 0.5
+ }
+}

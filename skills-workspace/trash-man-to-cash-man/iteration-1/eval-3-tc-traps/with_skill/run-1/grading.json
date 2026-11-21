@@ -1,0 +1,40 @@
+{
+ "expectations": [
+  {
+   "text": "Lists several of the 11 mental money traps (e.g., negativism for skepticism, value security over freedom, renter's mentality, technophobic, formal over self-education)",
+   "passed": true,
+   "evidence": "11 mental traps"
+  },
+  {
+   "text": "Lists several practical traps (e.g., paralyzed by a paycheck, don't invest in greatest asset, no financial mentor, bad debt, do everything themselves)",
+   "passed": true,
+   "evidence": "Practical traps, notes missing #12"
+  },
+  {
+   "text": "Hands-free plan: home business to $10,000/month within two years with minimal ('one finger') effort, then start another",
+   "passed": true,
+   "evidence": "$10,000/month in 2 years, one finger"
+  },
+  {
+   "text": "Prefers product-oriented over service business (time limits income)",
+   "passed": true,
+   "evidence": "Product over service"
+  },
+  {
+   "text": "Mentions virtual millionaire (V.M.) vs V.P. and/or 'you're in the marketing business'",
+   "passed": true,
+   "evidence": "Virtual millionaire / marketing"
+  },
+  {
+   "text": "Notes caveats such as due diligence / results not guaranteed",
+   "passed": true,
+   "evidence": "Results-vary disclaimer"
+  }
+ ],
+ "summary": {
+  "passed": 6,
+  "failed": 0,
+  "total": 6,
+  "pass_rate": 1.0
+ }
+}

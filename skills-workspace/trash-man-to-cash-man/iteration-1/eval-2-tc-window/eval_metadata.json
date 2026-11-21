@@ -1,0 +1,13 @@
+{
+ "eval_id": 2,
+ "eval_name": "tc-window",
+ "prompt": "Explain Myron Golden's 'Window of Opportunity' and the 'financial house' of the poor, middle class and rich.",
+ "assertions": [
+  "Four panes: Have A Job (H.A.J.), Own A Job (O.A.J.), Sow Money Seeds (S.M.S.), Own A System (O.A.S.)",
+  "Have/own a job are the two worst ways; Own A System best; Sow Money Seeds second best",
+  "Financial house windows: income, outgo, wealth reducing liabilities, income producing assets",
+  "Poor: all income goes out the outgo window",
+  "Middle class: buy wealth reducing liabilities / live in debt keeping up with the Joneses",
+  "Rich: buy income producing assets; difference is what you do with money, not how much you make"
+ ]
+}

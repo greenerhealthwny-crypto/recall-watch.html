@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eval Review</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&family=Lora:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js" integrity="sha384-EnyY0/GSHQGSxSgMwaIPzSESbqoOLSexfnSMN2AP+39Ckmn92stwABZynq1JyzdT" crossorigin="anonymous"></script>
+  <style>
+    :root {
+      --bg: #faf9f5;
+      --surface: #ffffff;
+      --border: #e8e6dc;
+      --text: #141413;
+      --text-muted: #b0aea5;
+      --accent: #d97757;
+      --accent-hover: #c4613f;
+      --green: #788c5d;
+      --green-bg: #eef2e8;
+      --red: #c44;
+      --red-bg: #fceaea;
+      --header-bg: #141413;
+      --header-text: #faf9f5;
+      --radius: 6px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Lora', Georgia, serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ---- Header ---- */
+    .header {
+      background: var(--header-bg);
+      color: var(--header-text);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .header h1 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+    .header .instructions {
+      font-size: 0.8rem;
+      opacity: 0.7;
+      margin-top: 0.25rem;
+    }
+    .header .progress {
+      font-size: 0.875rem;
+      opacity: 0.8;
+      text-align: right;
+    }
+
+    /* ---- Main content ---- */
+    .main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.5rem 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    /* ---- Sections ---- */
+    .section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      flex-shrink: 0;
+    }
+    .section-header {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.75rem 1rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+    }
+    .section-body {
+      padding: 1rem;
+    }
+
+    /* ---- Config badge ---- */
+    .config-badge {
+      display: inline-block;
+      padding: 0.2rem 0.625rem;
+      border-radius: 9999px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      margin-left: 0.75rem;
+      vertical-align: middle;
+    }
+    .config-badge.config-primary {
+      background: rgba(33, 150, 243, 0.12);
+      color: #1976d2;
+    }
+    .config-badge.config-baseline {
+      background: rgba(255, 193, 7, 0.15);
+      color: #f57f17;
+    }
+
+    /* ---- Prompt ---- */
+    .prompt-text {
+      white-space: pre-wrap;
+      font-size: 0.9375rem;
+      line-height: 1.6;
+    }
+
+    /* ---- Outputs ---- */
+    .output-file {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .output-file + .output-file {
+      margin-top: 1rem;
+    }
+    .output-file-header {
+      padding: 0.5rem 0.75rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .output-file-header .dl-btn {
+      font-size: 0.7rem;
+      color: var(--accent);
+      text-decoration: none;
+      cursor: pointer;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-weight: 500;
+      opacity: 0.8;
+    }
+    .output-file-header .dl-btn:hover {
+      opacity: 1;
+      text-decoration: underline;
+    }
+    .output-file-content {
+      padding: 0.75rem;
+      overflow-x: auto;
+    }
+    .output-file-content pre {
+      font-size: 0.8125rem;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+    }
+    .output-file-content img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 4px;
+    }
+    .output-file-content iframe {
+      width: 100%;
+      height: 600px;
+      border: none;
+    }
+    .output-file-content table {
+      border-collapse: collapse;
+      font-size: 0.8125rem;
+      width: 100%;
+    }
+    .output-file-content table td,
+    .output-file-content table th {
+      border: 1px solid var(--border);
+      padding: 0.375rem 0.5rem;
+      text-align: left;
+    }
+    .output-file-content table th {
+      background: var(--bg);
+      font-weight: 600;
+    }
+    .output-file-content .download-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 0.875rem;
+      cursor: pointer;
+    }
+    .output-file-content .download-link:hover {
+      background: var(--border);
+    }
+    .empty-state {
+      color: var(--text-muted);
+      font-style: italic;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    /* ---- Feedback ---- */
+    .prev-feedback {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.625rem 0.75rem;
+      margin-top: 0.75rem;
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+    .prev-feedback-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.25rem;
+      color: var(--text-muted);
+    }
+    .feedback-textarea {
+      width: 100%;
+      min-height: 100px;
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 0.9375rem;
+      line-height: 1.5;
+      resize: vertical;
+      color: var(--text);
+    }
+    .feedback-textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    .feedback-status {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.5rem;
+      min-height: 1.1em;
+    }
+
+    /* ---- Grades (collapsible) ---- */
+    .grades-toggle {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+    }
+    .grades-toggle:hover {
+      color: var(--accent);
+    }
+    .grades-toggle .arrow {
+      margin-right: 0.5rem;
+      transition: transform 0.15s;
+      font-size: 0.75rem;
+    }
+    .grades-toggle .arrow.open {
+      transform: rotate(90deg);
+    }
+    .grades-content {
+      display: none;
+      margin-top: 0.75rem;
+    }
+    .grades-content.open {
+      display: block;
+    }
+    .grades-summary {
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .grade-badge {
+      display: inline-block;
+      padding: 0.125rem 0.5rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .grade-pass { background: var(--green-bg); color: var(--green); }
+    .grade-fail { background: var(--red-bg); color: var(--red); }
+    .assertion-list {
+      list-style: none;
+    }
+    .assertion-item {
+      padding: 0.625rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.8125rem;
+    }
+    .assertion-item:last-child { border-bottom: none; }
+    .assertion-status {
+      font-weight: 600;
+      margin-right: 0.5rem;
+    }
+    .assertion-status.pass { color: var(--green); }
+    .assertion-status.fail { color: var(--red); }
+    .assertion-evidence {
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      margin-top: 0.25rem;
+      padding-left: 1.5rem;
+    }
+
+    /* ---- View tabs ---- */
+    .view-tabs {
+      display: flex;
+      gap: 0;
+      padding: 0 2rem;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .view-tab {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.625rem 1.25rem;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      background: none;
+      color: var(--text-muted);
+      border-bottom: 2px solid transparent;
+      transition: all 0.15s;
+    }
+    .view-tab:hover { color: var(--text); }
+    .view-tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+    .view-panel { display: none; }
+    .view-panel.active { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
+
+    /* ---- Benchmark view ---- */
+    .benchmark-view {
+      padding: 1.5rem 2rem;
+      overflow-y: auto;
+      flex: 1;
+    }
+    .benchmark-table {
+      border-collapse: collapse;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 0.8125rem;
+      width: 100%;
+      margin-bottom: 1.5rem;
+    }
+    .benchmark-table th, .benchmark-table td {
+      padding: 0.625rem 0.75rem;
+      text-align: left;
+      border: 1px solid var(--border);
+    }
+    .benchmark-table th {
+      font-family: 'Poppins', sans-serif;
+      background: var(--header-bg);
+      color: var(--header-text);
+      font-weight: 500;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .benchmark-table tr:hover { background: var(--bg); }
+    .benchmark-table tr.benchmark-row-with { background: rgba(33, 150, 243, 0.06); }
+    .benchmark-table tr.benchmark-row-without { background: rgba(255, 193, 7, 0.06); }
+    .benchmark-table tr.benchmark-row-with:hover { background: rgba(33, 150, 243, 0.12); }
+    .benchmark-table tr.benchmark-row-without:hover { background: rgba(255, 193, 7, 0.12); }
+    .benchmark-table tr.benchmark-row-avg { font-weight: 600; border-top: 2px solid var(--border); }
+    .benchmark-table tr.benchmark-row-avg.benchmark-row-with { background: rgba(33, 150, 243, 0.12); }
+    .benchmark-table tr.benchmark-row-avg.benchmark-row-without { background: rgba(255, 193, 7, 0.12); }
+    .benchmark-delta-positive { color: var(--green); font-weight: 600; }
+    .benchmark-delta-negative { color: var(--red); font-weight: 600; }
+    .benchmark-notes {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem;
+    }
+    .benchmark-notes h3 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+    }
+    .benchmark-notes ul {
+      list-style: disc;
+      padding-left: 1.25rem;
+    }
+    .benchmark-notes li {
+      font-size: 0.8125rem;
+      line-height: 1.6;
+      margin-bottom: 0.375rem;
+    }
+    .benchmark-empty {
+      color: var(--text-muted);
+      font-style: italic;
+      text-align: center;
+      padding: 3rem;
+    }
+
+    /* ---- Navigation ---- */
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+      flex-shrink: 0;
+    }
+    .nav-btn {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.5rem 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text);
+      transition: all 0.15s;
+    }
+    .nav-btn:hover:not(:disabled) {
+      background: var(--bg);
+      border-color: var(--text-muted);
+    }
+    .nav-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    .done-btn {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.5rem 1.5rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: all 0.15s;
+    }
+    .done-btn:hover {
+      background: var(--bg);
+      border-color: var(--text-muted);
+    }
+    .done-btn.ready {
+      border: none;
+      background: var(--accent);
+      color: white;
+      font-weight: 600;
+    }
+    .done-btn.ready:hover {
+      background: var(--accent-hover);
+    }
+    /* ---- Done overlay ---- */
+    .done-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 100;
+      justify-content: center;
+      align-items: center;
+    }
+    .done-overlay.visible {
+      display: flex;
+    }
+    .done-card {
+      background: var(--surface);
+      border-radius: 12px;
+      padding: 2rem 3rem;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      max-width: 500px;
+    }
+    .done-card h2 {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .done-card p {
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
+    }
+    .done-card .btn-row {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+    }
+    .done-card button {
+      padding: 0.5rem 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 0.875rem;
+    }
+    .done-card button:hover {
+      background: var(--bg);
+    }
+    /* ---- Toast ---- */
+    .toast {
+      position: fixed;
+      bottom: 5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--header-bg);
+      color: var(--header-text);
+      padding: 0.625rem 1.25rem;
+      border-radius: var(--radius);
+      font-size: 0.875rem;
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+      z-index: 200;
+    }
+    .toast.visible {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <div id="app" style="height:100vh; display:flex; flex-direction:column;">
+    <div class="header">
+      <div>
+        <h1>Eval Review: <span id="skill-name"></span></h1>
+        <div class="instructions">Review each output and leave feedback below. Navigate with arrow keys or buttons. When done, copy feedback and paste into Claude Code.</div>
+      </div>
+      <div class="progress" id="progress"></div>
+    </div>
+
+    <!-- View tabs (only shown when benchmark data exists) -->
+    <div class="view-tabs" id="view-tabs" style="display:none;">
+      <button class="view-tab active" onclick="switchView('outputs')">Outputs</button>
+      <button class="view-tab" onclick="switchView('benchmark')">Benchmark</button>
+    </div>
+
+    <!-- Outputs panel (qualitative review) -->
+    <div class="view-panel active" id="panel-outputs">
+    <div class="main">
+      <!-- Prompt -->
+      <div class="section">
+        <div class="section-header">Prompt <span class="config-badge" id="config-badge" style="display:none;"></span></div>
+        <div class="section-body">
+          <div class="prompt-text" id="prompt-text"></div>
+        </div>
+      </div>
+
+      <!-- Outputs -->
+      <div class="section">
+        <div class="section-header">Output</div>
+        <div class="section-body" id="outputs-body">
+          <div class="empty-state">No output files found</div>
+        </div>
+      </div>
+
+      <!-- Previous Output (collapsible) -->
+      <div class="section" id="prev-outputs-section" style="display:none;">
+        <div class="section-header">
+          <div class="grades-toggle" onclick="togglePrevOutputs()">
+            <span class="arrow" id="prev-outputs-arrow">&#9654;</span>
+            Previous Output
+          </div>
+        </div>
+        <div class="grades-content" id="prev-outputs-content"></div>
+      </div>
+
+      <!-- Grades (collapsible) -->
+      <div class="section" id="grades-section" style="display:none;">
+        <div class="section-header">
+          <div class="grades-toggle" onclick="toggleGrades()">
+            <span class="arrow" id="grades-arrow">&#9654;</span>
+            Formal Grades
+          </div>
+        </div>
+        <div class="grades-content" id="grades-content"></div>
+      </div>
+
+      <!-- Feedback -->
+      <div class="section">
+        <div class="section-header">Your Feedback</div>
+        <div class="section-body">
+          <textarea
+            class="feedback-textarea"
+            id="feedback"
+            placeholder="What do you think of this output? Any issues, suggestions, or things that look great?"
+          ></textarea>
+          <div class="feedback-status" id="feedback-status"></div>
+          <div class="prev-feedback" id="prev-feedback" style="display:none;">
+            <div class="prev-feedback-label">Previous feedback</div>
+            <div id="prev-feedback-text"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav" id="outputs-nav">
+      <button class="nav-btn" id="prev-btn" onclick="navigate(-1)">&#8592; Previous</button>
+      <button class="done-btn" id="done-btn" onclick="showDoneDialog()">Submit All Reviews</button>
+      <button class="nav-btn" id="next-btn" onclick="navigate(1)">Next &#8594;</button>
+    </div>
+    </div><!-- end panel-outputs -->
+
+    <!-- Benchmark panel (quantitative stats) -->
+    <div class="view-panel" id="panel-benchmark">
+      <div class="benchmark-view" id="benchmark-content">
+        <div class="benchmark-empty">No benchmark data available. Run a benchmark to see quantitative results here.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Done overlay -->
+  <div class="done-overlay" id="done-overlay">
+    <div class="done-card">
+      <h2>Review Complete</h2>
+      <p>Your feedback has been saved. Go back to your Claude Code session and tell Claude you're done reviewing.</p>
+      <div class="btn-row">
+        <button onclick="closeDoneDialog()">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ---- Embedded data (injected by generate_review.py) ----
+    const EMBEDDED_DATA = {"skill_name": "trash-man-to-cash-man", "runs": [{"id": "eval-1-tc-cans-with_skill-run-1", "prompt": "How does Myron Golden's 'From The Trash Man To The Cash Man' say I should split my paycheck? Explain the cans.", "eval_id": 1, "outputs": [{"name": "response.md", "type": "text", "content": "# Splitting your paycheck: Myron Golden's six cans\n\nIn Chapter 13 of *From The Trash Man To The Cash Man* (2007), titled \"You can if your cans say you can,\" Myron Golden says to buy **six paint cans**, give each one a label that starts with \"I can...\", and split **every paycheck** among them before you spend anything. The labels are meant to work on two levels. They split up the money, and they also tell you what you *can* do with it.\n\n## The six cans\n\n| # | Can | Share | What it's for |\n|---|-----|-------|---------------|\n| 1 | **\"I can tithe\"** | **10% of gross** | Giving to God's work through your church, or to charity if that fits your beliefs. |\n| 2 | **\"I can finish free\"** | **10%** | Never spent. It only buys **income producing assets** or businesses. You may spend the *profits* those assets earn, but not the money itself. |\n| 3 | **\"I can educate myself\"** | **10%** | Seminars, books and audio programs, so you keep investing in your mind. |\n| 4 | **\"I can save for what I want\"** | ~10%* | Saving for big items such as vacations, down payments, furniture and emergencies. |\n| 5 | **\"I can have fun\"** | ~10%* | This can **has to be spent every month** on something you enjoy. |\n| 6 | **\"I can pay my bills\"** | **50%** | Rent or mortgage, utilities, food and other living costs. |\n\n*\\*The text I checked gives the percentages for cans 1, 2, 3 and 6 (10/10/10/50). That leaves 20% for cans 4 and 5, which most likely means 10% each. Treat that split as a likely reading, not a quote from the book.*\n\n## Why the cans matter in Golden's system\n\n- **Can 2 is the engine.** Golden's \"financial house\" has four windows: Income, Outgo, Wealth Reducing Liabilities, and Income Producing Assets. Poor people send everything out the Outgo window. Middle-class people buy liabilities. Rich people buy income producing assets. The \"finish free\" can makes you fill that last window on purpose, until the cash flow from your assets covers your expenses. Golden says the difference between rich and poor isn't how much you make. It's what you do with money after you make it.\n- **Can 3 fits his central theme of self-education.** His list of practical money traps includes \"don't invest in their greatest asset (their mind)\" and \"entertain themselves more than educate themselves.\"\n- **Can 5 is required.** Making you spend the fun money every month keeps the plan livable, so you don't quit out of feeling deprived.\n- **Living on 50%** forces the \"good money management practices\" whose absence Golden counts as a money trap.\n\n## Example: a $4,000 paycheck\n\n| Can | Amount |\n|-----|--------|\n| I can tithe (10% of gross) | $400 |\n| I can finish free | $400 |\n| I can educate myself | $400 |\n| I can save for what I want | $400* |\n| I can have fun | $400* |\n| I can pay my bills | $2,000 |\n\n*\\*Assumes the 10% / 10% reading for cans 4 and 5.*\n\n## How to start\n1. Set up six \"cans\". These can be real jars, envelopes or separate bank sub-accounts.\n2. Each payday, split the money **before** you spend any of it.\n3. Use the finish-free money only for assets or businesses that produce income. In Golden's words, that means \"Sow Money Seeds\" (investing) and work toward \"Own A System\" (a business that runs without you).\n4. If you can't live on 50% right now, start with smaller percentages for the other cans and raise them over time. Keep the habit going even when the amounts are small.\n\n## Caveats\n- The tithing can comes from Golden's Christian faith. If that isn't your belief, he suggests charity instead, or you can adapt it as you see fit.\n- The book also promotes the author's own businesses and programs. Do your own research before putting \"finish free\" money into any opportunity.\n- This is a summary of the book's framework, not personal financial, tax or investment advice.\n"}], "grading": {"expectations": [{"text": "Describes six cans", "passed": true, "evidence": "Six cans"}, {"text": "I can tithe can at 10% of gross", "passed": true, "evidence": "Tithe 10% gross"}, {"text": "I can finish free can: 10%, never spent, used to buy income-producing assets / passive income", "passed": true, "evidence": "Finish free 10%, never spent, assets"}, {"text": "I can educate myself can at 10% for seminars, books, audio", "passed": true, "evidence": "Educate 10%"}, {"text": "I can save for what I want and I can have fun (spend every month) cans", "passed": true, "evidence": "Save for what I want; have fun spent monthly"}, {"text": "I can pay my bills can at 50% for living expenses", "passed": true, "evidence": "Pay bills 50%"}], "summary": {"passed": 6, "failed": 0, "total": 6, "pass_rate": 1.0}}}, {"id": "eval-1-tc-cans-without_skill-run-1", "prompt": "How does Myron Golden's 'From The Trash Man To The Cash Man' say I should split my paycheck? Explain the cans.", "eval_id": 1, "outputs": [{"name": "response.md", "type": "text", "content": "# How Myron Golden Says to Split Your Paycheck (\"The Cans\")\n\n**A caveat first:** I'm answering from memory, without the book in front of me. I'm confident about Myron Golden's overall philosophy in *From the Trash Man to the Cash Man*. I'm **not** confident about the exact number of \"cans,\" their names, or the percentages he gives. Check the details below against the book before you build a budget on them.\n\n## The core idea\n\nGolden's money teaching rests on biblical stewardship and on the \"pay yourself first\" principle, which you also find in books like *The Richest Man in Babylon*. The point of splitting your paycheck into separate containers (\"cans,\" jars or accounts) is this:\n\n1. **Every dollar gets a job before you spend any of it.** You don't spend first and save what's left. You divide the money first and spend only from the spending portion.\n2. **Some money must go toward owning things, not just consuming.** Golden's whole book is about moving from trading time for money (the \"trash man\") to owning assets and businesses (the \"cash man\"). The cans are how an ordinary paycheck starts paying for that move.\n3. **Keeping the money physically or mentally separate keeps you disciplined.** Once money is in the \"investing\" can, it isn't available for impulse purchases.\n\n## The typical can structure in his teaching (verify the details)\n\nAs best I can reconstruct it, the paycheck is divided roughly like this:\n\n| Can | Purpose | Rough share |\n|---|---|---|\n| **Giving / Tithe** | Returning the first portion to God or giving generously. Golden treats this as the first step, not an afterthought. | ~10% |\n| **Saving / Investing (\"pay yourself\")** | Money you keep and grow. You never spend it on lifestyle. It goes into assets, skills and business-building that produce income. | ~10% or more |\n| **Living / Spending** | Bills, necessities and lifestyle. You live on what's left after the first cans are filled. | the remainder (~80%) |\n\nSome versions of this teaching split the saving portion further, for example into:\n- an **emergency or reserve** can,\n- an **investment / wealth-building** can that you never touch for spending, and\n- a **business or education** can for skills and ventures that raise your earning power.\n\nI can't confirm which of these sub-cans (if any) Golden names specifically, or the exact percentages he uses.\n\n## How to apply the spirit of it\n\n- **Do it the moment you get paid.** Move the money into the cans before you touch anything else.\n- **Start small if you have to.** The habit matters more than the percentage. Even 1\u20132% per can builds the discipline, and you raise the share over time.\n- **Live on the remainder.** If your expenses don't fit, the answer is to cut costs or increase income, not to raid the giving or investing cans.\n- **Point the investing can at ownership.** In Golden's framework, the goal is to eventually own income-producing assets or a business. That's what moves you up from laborer toward owner.\n\n## Bottom line\n\nGolden's message is: **give first, pay yourself second, live on the rest, and use the \"pay yourself\" money to buy assets, not liabilities.** For the exact can names and percentages, check the relevant chapter of *From the Trash Man to the Cash Man*. I don't want to state specific figures as his when I can't verify them.\n"}], "grading": {"expectations": [{"text": "Describes six cans", "passed": false, "evidence": "Number of cans unsure"}, {"text": "I can tithe can at 10% of gross", "passed": true, "evidence": "Tithe about 10%"}, {"text": "I can finish free can: 10%, never spent, used to buy income-producing assets / passive income", "passed": false, "evidence": "No finish free can"}, {"text": "I can educate myself can at 10% for seminars, books, audio", "passed": false, "evidence": "No educate can"}, {"text": "I can save for what I want and I can have fun (spend every month) cans", "passed": false, "evidence": "No save/have fun cans"}, {"text": "I can pay my bills can at 50% for living expenses", "passed": false, "evidence": "Guesses ~80% living, no bills can"}], "summary": {"passed": 1, "failed": 5, "total": 6, "pass_rate": 0.16666666666666666}}}, {"id": "eval-2-tc-window-with_skill-run-1", "prompt": "Explain Myron Golden's 'Window of Opportunity' and the 'financial house' of the poor, middle class and rich.", "eval_id": 2, "outputs": [{"name": "response.md", "type": "text", "content": "# Myron Golden's Window of Opportunity and the Financial House\n\nThese two ideas come from Myron Golden's *From The Trash Man To The Cash Man: How Anyone Can Get Rich Starting From Anywhere* (2007). The Window of Opportunity is chapter 3 and the financial house is chapter 4 (\"What kind of house do you live in?\"). Golden is a former trash collector. The first idea is about **how you earn** money. The second is about **what you do with it after you earn it**.\n\n---\n\n## 1. The Window of Opportunity: four ways to make money\n\nGolden pictures a window with four panes. Each pane is one way to make money, and they run from worst to best.\n\n| Pane | Short name | What it is | Golden's verdict |\n|---|---|---|---|\n| **H.A.J.** | Have A Job | You work for someone else and trade your time for a paycheck. | One of the two **worst** ways |\n| **O.A.J.** | Own A Job | Self-employment, where you are the business (a solo plumber, consultant, or shop owner who has to be there). | Also one of the two **worst** ways |\n| **S.M.S.** | Sow Money Seeds | Investing: putting money into things that produce more money. | **Second best** |\n| **O.A.S.** | Own A System | A business that runs without you doing the work. | **The best** way |\n\n**Why the first two are the worst:** with a job, or with self-employment that depends on you, **the income stops when you stop**. If you get sick, retire, or take time off, the money stops. Owning a job gives you more control than having one, but you are still trading time for money.\n\n**Why the last two are better:** money seeds and systems keep producing whether or not you are working. Sowing money seeds lets your money work for you. Owning a system goes further, because it is a business with processes, people, products and technology that brings in income without your daily effort.\n\n**How this ties into the rest of the book:**\n- His **Hands-Free Money business plan** is about moving to the O.A.S. pane. You build a home business that makes **$10,000 a month within two years** and takes no more than \"one finger's worth of effort\" to run. Then you start a different business and do it again.\n- He prefers **product businesses over service businesses**. A service business sells your time, which puts you back in the Own A Job pane. A product business can sell 1 unit or 100,000 in the same time.\n- His **\"I can finish free\" can** (10% of every paycheck) can be spent only on income producing assets or businesses. That is how a paycheck from the first two panes pays for a move into the last two.\n\n---\n\n## 2. The financial house: poor, middle class and rich\n\nGolden's second picture is a house with four windows. Money moves through these windows:\n\n1. **Income**: money coming in.\n2. **Outgo**: money going out for living expenses.\n3. **WRL (Wealth Reducing Liabilities)**: things you buy that take money from you over time, usually with debt. Examples are a car loan, an oversized house payment, credit card purchases and toys.\n4. **IPA (Income Producing Assets)**: things that put money into your pocket. Examples are a rental building, a business, or investments that pay you.\n\nWhat makes someone poor, middle class or rich is **which windows their money flows through**.\n\n### The poor man's house\nIncome comes in one window and **every dime goes straight out the Outgo window**. Nothing is left over, nothing is built, and the next paycheck has to cover the next round of bills. There are no assets, only survival.\n\n```\nIncome  \u2500\u2500\u25ba  Outgo\n```\n\n### The middle-class house\nIncome comes in, pays the bills, and the rest goes into **wealth reducing liabilities**. The middle class buys the bigger house, the newer car and the nicer things, often on credit, to **keep up with the Joneses**. It looks like prosperity, but each liability adds payments that pull more money out. Many middle-class people **live in debt**, and their raises go into bigger liabilities.\n\n```\nIncome  \u2500\u2500\u25ba  Outgo\n        \u2500\u2500\u25ba  Wealth Reducing Liabilities (debt payments)  \u2500\u2500\u25ba  more Outgo\n```\n\n### The rich man's house\nIncome comes in, and the rich send part of it through the **Income Producing Assets** window first, buying something like a rental building or a business. Those assets produce **cash flow**, which comes back in as more income. Over time **the assets' income covers the living expenses**, and the person no longer depends on a job. Liabilities, if they buy them at all, are paid for out of the assets' income rather than the paycheck.\n\n```\nIncome  \u2500\u2500\u25ba  Income Producing Assets  \u2500\u2500\u25ba  cash flow \u2500\u2500\u25ba back to Income\n        \u2500\u2500\u25ba  Outgo (eventually covered by asset income)\n```\n\n### The main point\nIn Golden's words, the difference is **not how much you make but what you do with money after you make it**. A high earner can live in the poor man's house or the middle-class house. A modest earner who keeps buying income producing assets can move into the rich man's house.\n\n---\n\n## 3. How the two ideas fit together\n\n- The **Window of Opportunity** is about **where income comes from**: job, self-employment, investments, or systems.\n- The **financial house** is about **where income goes**: outgo, liabilities, or assets.\n\nMoney from the H.A.J. or O.A.J. panes is the starting fuel. If you put it into the IPA window, through investing (S.M.S.) or by building a business (O.A.S.), you gradually move your income into the better panes and your house becomes the rich man's house.\n\n## 4. Applying it to yourself\n\n1. **Find your pane.** List each source of income and label it H.A.J., O.A.J., S.M.S. or O.A.S. Most people find that all of it comes from the first two.\n2. **Draw your house.** For one month, sort where every dollar went: Outgo, WRL (debt payments, depreciating purchases), or IPA. One test is to ask whether a thing puts money into your pocket or takes it out.\n3. **Divert money to the IPA window.** Golden's six-can system sets aside 10% (\"I can finish free\") only for income producing assets, along with a tithe (10%), self-education (10%), savings, fun, and 50% for bills.\n4. **Stop adding liabilities.** Golden's practical money traps include having \"no financial assets, only wealth-reducing liabilities\" and letting \"bad debt use them\" instead of using good debt.\n5. **Plan your move to a system.** Look for a product-based business you could leverage with technology so it works without you.\n\n---\n\n### Caveats\n- The book promotes the author's own businesses, network marketing and programs, and its income claims include a disclaimer that results vary. Check any business opportunity carefully before putting money into it.\n- The labels \"poor,\" \"middle class\" and \"rich\" are Golden's teaching shorthand for money habits. They are not economic definitions.\n- This is a summary of the book's ideas, not personal financial, tax or investment advice.\n"}], "grading": {"expectations": [{"text": "Four panes: Have A Job (H.A.J.), Own A Job (O.A.J.), Sow Money Seeds (S.M.S.), Own A System (O.A.S.)", "passed": true, "evidence": "Four panes named"}, {"text": "Have/own a job are the two worst ways; Own A System best; Sow Money Seeds second best", "passed": true, "evidence": "Ranking worst to best"}, {"text": "Financial house windows: income, outgo, wealth reducing liabilities, income producing assets", "passed": true, "evidence": "Four windows"}, {"text": "Poor: all income goes out the outgo window", "passed": true, "evidence": "Poor: all out outgo"}, {"text": "Middle class: buy wealth reducing liabilities / live in debt keeping up with the Joneses", "passed": true, "evidence": "Middle class WRLs, Joneses"}, {"text": "Rich: buy income producing assets; difference is what you do with money, not how much you make", "passed": true, "evidence": "Rich IPAs; what you do with money"}], "summary": {"passed": 6, "failed": 0, "total": 6, "pass_rate": 1.0}}}, {"id": "eval-2-tc-window-without_skill-run-1", "prompt": "Explain Myron Golden's 'Window of Opportunity' and the 'financial house' of the poor, middle class and rich.", "eval_id": 2, "outputs": [{"name": "response.md", "type": "text", "content": "# Myron Golden: The \"Window of Opportunity\" and the Financial House\n\n> **How sure I am:** This is written from memory, without the book in front of me. The overall framework below matches what Myron Golden teaches in *From the Trash Man to the Cash Man* and in his talks. The exact wording, diagrams and labels in his book may differ, so check the book before you quote it.\n\n---\n\n## 1. The core idea: every household is a \"financial house\"\n\nGolden pictures each person's finances as a **house**. Money moves into it and out of it through openings:\n\n- **The front door is income.** Money comes in through a paycheck, business revenue or other earnings.\n- **The back door is expenses.** Money leaves to pay for living costs, consumption and debt payments.\n- **The window is opportunity.** This third opening is where money goes out to buy or build **assets**. Those assets then send money back into the house.\n\nHis point is that most people only think about the doors: earn more at the front, spend less at the back. The wealthy put their attention on the **window**. They use income to acquire or create things that produce more income.\n\n## 2. The \"Window of Opportunity\"\n\nTo Golden, the Window of Opportunity is the space between what comes in and what has to go out. It is your **margin**: money that is not already spoken for. You can use that margin to:\n\n1. **Consume it.** Spend it on lifestyle, and the window \"closes.\"\n2. **Commit it to liabilities.** Take on payments for things that lose value, such as cars, gadgets or a bigger house financed with debt.\n3. **Invest it through the window into assets.** Buy or build things that put money in your pocket: a business, offers and products, real estate, intellectual property, investments.\n\nHe usually adds that the window is about **seeing** opportunity as much as having money. A rich mindset looks for problems to solve and value to create, because that is how wealth is built. A poor mindset looks at price tags and limits.\n\nRelated teachings he links to this:\n- **Assets put money in your pocket. Liabilities take money out.** This is a Kiyosaki-style definition that Golden uses heavily.\n- **The marketplace pays you for the value you bring.** To widen your window, raise the value you deliver. Moving from selling time to selling skills, products and offers is how you climb.\n- **Stewardship and multiplication.** He often draws on Bible principles, such as the parable of the talents: money is meant to be put to work, not buried.\n\n## 3. The financial house of the poor, middle class and rich\n\n| | **Poor** | **Middle class** | **Rich** |\n|---|---|---|---|\n| **Where income comes from** | Mostly trading time for money (a job or hourly work) | Mostly a job or profession with higher pay, still time-for-money | Mostly assets: businesses, investments, IP, real estate |\n| **Where money goes** | Straight out the back door to living expenses | To liabilities they *think* are assets: house, cars, toys, financed with debt | Through the window into assets first, then lifestyle is paid *from* asset income |\n| **State of the window** | Effectively shut. There is no margin, and money goes out as fast as it comes in. | Shut by payments. There is margin in theory, but debt service uses it up. | Wide open. Margin is put to work on purpose. |\n| **Typical mindset** | \"I can't afford it.\" Survival and consumption. | \"I deserve it.\" Status, security and looking rich. | \"How can I afford it?\" Ownership, value creation and multiplication. |\n| **Result over time** | Stuck: income in, income out | The rat race: higher income, matching expenses, often more debt | Compounding: assets buy more assets, and income grows without more hours worked |\n\n### The poor man's house\nMoney comes in the front door and goes right out the back door. Every dollar is already spent on necessities and consumption. There is no window, so nothing is left to send out that could come back. The way out is to **create margin** and **raise the value you bring to the marketplace**.\n\n### The middle-class house\nIncome is higher, but so are expenses. The middle class fills the house with **liabilities that look like assets**, such as a bigger mortgage, new cars and consumer debt. The window exists, but monthly payments block it. They often look prosperous while having little real freedom. Golden's critique is that they are trying to *look* rich instead of *becoming* rich.\n\n### The rich man's house\nThe rich route money **through the window first**. They buy or build income-producing assets, and those assets pay for the lifestyle. Income from the assets comes back in the front door, which makes the margin bigger, which means more can go through the window. That is the compounding loop that builds wealth over generations.\n\n## 4. The practical takeaways Golden draws from it\n\n1. **Open your window.** Create margin by spending less than you earn and avoiding consumer debt.\n2. **Know what an asset is.** If it doesn't put money in your pocket, don't count it as one.\n3. **Feed assets before lifestyle.** Let asset income pay for the luxuries.\n4. **Raise your value in the marketplace.** Move from selling time to selling skills, then products and offers, then ownership. This is the \"trash man to cash man\" climb.\n5. **Change how you see things first.** The window is opened by thinking about opportunity, not about lack.\n\n---\n\n*Summary:* The doors of the financial house (income and expenses) decide whether you get by. The window (opportunity, meaning margin sent into assets) decides whether you get rich. The poor have no window, the middle class block theirs with liabilities, and the rich keep theirs wide open.\n"}], "grading": {"expectations": [{"text": "Four panes: Have A Job (H.A.J.), Own A Job (O.A.J.), Sow Money Seeds (S.M.S.), Own A System (O.A.S.)", "passed": false, "evidence": "Window treated as margin, not four panes"}, {"text": "Have/own a job are the two worst ways; Own A System best; Sow Money Seeds second best", "passed": false, "evidence": "No ranking of four ways"}, {"text": "Financial house windows: income, outgo, wealth reducing liabilities, income producing assets", "passed": false, "evidence": "No four-window house"}, {"text": "Poor: all income goes out the outgo window", "passed": true, "evidence": "Poor: income straight out back door"}, {"text": "Middle class: buy wealth reducing liabilities / live in debt keeping up with the Joneses", "passed": true, "evidence": "Middle: liabilities, debt"}, {"text": "Rich: buy income producing assets; difference is what you do with money, not how much you make", "passed": true, "evidence": "Rich: assets first"}], "summary": {"passed": 3, "failed": 3, "total": 6, "pass_rate": 0.5}}}, {"id": "eval-3-tc-traps-with_skill-run-1", "prompt": "What money traps does Myron Golden list in From The Trash Man To The Cash Man, and what's his hands-free business plan?", "eval_id": 3, "outputs": [{"name": "response.md", "type": "text", "content": "# Myron Golden's Money Traps and Hands-Free Money Business Plan\n\n*From The Trash Man To The Cash Man: How Anyone Can Get Rich Starting From Anywhere* (2007) has two chapters on money traps. Chapter 14 covers **eleven mental money traps** and chapter 15 covers what Golden titles **thirteen practical money traps**. Chapter 5 sets out the **Hands-Free Money business plan**.\n\n## The 11 mental money traps (chapter 14)\n\nThese are about mindset. Golden phrases each one as something \"poor people...\" do:\n\n1. **Mistake negativism for skepticism.** They write off ideas instead of checking them.\n2. **Are too myopic about money.** They think about the next paycheck, not long-term wealth.\n3. **Don't desire or like money.**\n4. **Value consumption more than production.**\n5. **Don't trust or like people with money.**\n6. **Are technophobic.** They avoid the technology that gives a business leverage.\n7. **Value security more than freedom.**\n8. **Value formal education over self-education.**\n9. **Have no financial education.**\n10. **Don't understand and use the power of principles.**\n11. **Have a renter's mentality rather than an owner's mentality.**\n\n## The practical money traps (chapter 15)\n\nThese are about behavior. The chapter is titled \"thirteen,\" but the copy I worked from goes straight from #11 to #13, so it gives only 12 traps:\n\n1. **Don't protect their minds** from negative input.\n2. **Don't invest in their greatest asset**, which is their mind.\n3. **Have no financial assets**, only wealth-reducing liabilities.\n4. **Entertain themselves more than they educate themselves.**\n5. **Are paralyzed by a paycheck.** The steady check keeps them from building anything of their own.\n6. **Do everything themselves** instead of outsourcing.\n7. **Don't have good money management practices.** Golden's fix is the six \"cans\" (see below).\n8. **Operate on a cash basis.**\n9. **Don't have a financial mentor or coach.**\n10. **Don't set a good financial example for their children.**\n11. **Don't teach their children how to become financially free.**\n12. *(No #12 found. It may have been lost in the scan or skipped in the book's numbering.)*\n13. **Don't use good debt. Instead, bad debt uses them.**\n\n## The Hands-Free Money business plan (chapter 5)\n\n**The goal:** build a home-based business that makes **$10,000 a month within two years** and needs no more than **\"one finger's worth of effort\"** to keep running.\n\n**Then repeat it:** once the first business reaches that point, start a **second, different business** and bring it to the same level. Keep going, one hands-free business after another.\n\n**Why it matters:** the plan puts Golden's \"Window of Opportunity\" into action. He names four ways to make money:\n\n| Way to make money | What it means | Golden's rating |\n|---|---|---|\n| H.A.J. (Have A Job) | Employee | Worst: income stops when you stop |\n| O.A.J. (Own A Job) | Self-employed | Also worst, for the same reason |\n| S.M.S. (Sow Money Seeds) | Investing | Second best |\n| **O.A.S. (Own A System)** | **A business that runs without you** | **Best** |\n\nThe Hands-Free plan is how you get to **Own A System**. Golden bases it on Scripture, citing 1 Thessalonians 4 (work quietly with your own hands) and Ecclesiastes 5:3 (dreams come from a multitude of business).\n\n**How the plan fits with the rest of the book:**\n- **Pick a product business over a service business** (ch. 6). A service business sells your hours. A product business can sell 1 unit or 100,000 units in the same amount of time.\n- **Use technology for leverage** (ch. 7). Use the internet to market, research and sell.\n- **Aim to be a V.M., a \"Virtual Millionaire\"** (ch. 8). This means having enough business income to live a million-dollar lifestyle, for example income equal to what $1 million would pay at 6%, without needing a million in the bank.\n- **Remember that you're in the marketing business** (ch. 9), whatever your product is.\n- **Fund it with the \"I can finish free\" can** (ch. 13). Ten percent of every paycheck goes only toward income-producing assets or businesses. You can spend what they earn, but never the 10% itself. The other cans are: tithe 10%, educate yourself 10%, save for what you want, have fun, and pay bills 50%.\n\n## How to use this\n\n- **Check yourself against both lists.** The mental traps (like valuing security over freedom, or having a renter's mentality) often explain the practical ones (like being paralyzed by a paycheck, or having no assets).\n- **Name your current pane in the window.** If all your income comes from H.A.J. or O.A.J., the first step is a part-time business you could build toward $10,000 a month over two years, preferably product-based and leveraged with technology.\n- **Start the six cans now.** The \"finish free\" can is what pays for the move from a job to owning a system.\n\n## Caveats\n\n- Golden also promotes his own programs and network-marketing opportunities in the book, and his income claims come with a \"results vary\" disclaimer. Check any business opportunity carefully before you invest.\n- The faith and tithing framing reflects the author's personal beliefs.\n- This summary comes from a scanned (OCR) copy, so some details may be imperfect, especially the missing practical trap #12.\n- This is not personalized financial, tax or investment advice.\n"}], "grading": {"expectations": [{"text": "Lists several of the 11 mental money traps (e.g., negativism for skepticism, value security over freedom, renter's mentality, technophobic, formal over self-education)", "passed": true, "evidence": "11 mental traps"}, {"text": "Lists several practical traps (e.g., paralyzed by a paycheck, don't invest in greatest asset, no financial mentor, bad debt, do everything themselves)", "passed": true, "evidence": "Practical traps, notes missing #12"}, {"text": "Hands-free plan: home business to $10,000/month within two years with minimal ('one finger') effort, then start another", "passed": true, "evidence": "$10,000/month in 2 years, one finger"}, {"text": "Prefers product-oriented over service business (time limits income)", "passed": true, "evidence": "Product over service"}, {"text": "Mentions virtual millionaire (V.M.) vs V.P. and/or 'you're in the marketing business'", "passed": true, "evidence": "Virtual millionaire / marketing"}, {"text": "Notes caveats such as due diligence / results not guaranteed", "passed": true, "evidence": "Results-vary disclaimer"}], "summary": {"passed": 6, "failed": 0, "total": 6, "pass_rate": 1.0}}}, {"id": "eval-3-tc-traps-without_skill-run-1", "prompt": "What money traps does Myron Golden list in From The Trash Man To The Cash Man, and what's his hands-free business plan?", "eval_id": 3, "outputs": [{"name": "response.md", "type": "text", "content": "# Myron Golden, *From The Trash Man To The Cash Man*: money traps and the hands-free business\n\n**A note on accuracy first.** I'm answering from memory, without the book in front of me. I'm sure of the book's overall message and of Golden's well-known frameworks. I'm less sure of the exact chapter names, how many traps he lists, and his precise wording. Check the specific labels below against the text before you quote or teach them.\n\n---\n\n## The book's core idea\n\nGolden spent years working as a garbage man. He moved from that to running seminars and businesses, and he says the move came from changing how he thought about money, not from luck or education. Here is his central argument, which draws heavily on Bible principles:\n\n- Poor people, middle-class people and rich people follow different rules with money.\n- Most people are caught in traps that keep them trading time for dollars.\n- The way out is to stop being a consumer and an employee. Instead, become a **producer and owner** of income-producing assets, above all a business that doesn't need you there to make money.\n\n## The money traps\n\nGolden describes thinking habits and behaviours that keep people broke or stuck in the middle class. As best I recall, the main traps are these:\n\n1. **The Job (Employee) Trap.** You rely on a single paycheck you don't control. Your income is limited by the hours you can work and by what your employer decides you're worth. Golden's line is that a J-O-B keeps you \"Just Over Broke.\"\n2. **The Time-for-Money Trap.** Your income stops when you stop working. You can't scale it, and illness, age or a layoff can wipe it out.\n3. **The Debt / Consumer-Credit Trap.** You borrow to buy things that lose value, such as cars, gadgets and lifestyle purchases. That makes you a servant to the lender (\"the borrower is servant to the lender,\" Proverbs 22:7). Interest moves your future income to someone else.\n4. **The Consumption (Liabilities-as-Assets) Trap.** You spend raises and windfalls on a bigger lifestyle instead of buying assets. You treat your house and car as \"investments\" even though they take money out of your pocket.\n5. **The Tax Trap.** As a W-2 employee you're taxed first and live on what's left. A business owner can legally spend on business purposes before tax. Golden uses this to show the employee structure itself costs you money.\n6. **The Mindset (Poverty-Thinking) Trap.** This means scarcity thinking, seeing money as evil, envying rich people, and believing you lack the education or background to succeed. Golden treats this as the root trap that holds all the others in place. He separates \"the love of money,\" which is the problem, from money itself, which is a tool.\n\nThe book may group or name these differently, for example as a smaller set of named traps. The themes, though (jobs, time-for-money, debt, consumption, taxes and poverty thinking), are the ones Golden keeps returning to.\n\n## The hands-free business plan\n\nGolden's answer is to build or own a business that makes income **without your constant presence**. A summary of the plan:\n\n1. **Change your identity from worker to owner.** Your goal is to own systems that do the work, not to do the work yourself. An owner gets paid on what the system produces, not on hours.\n2. **Start with what you have, while you're still employed.** Keep your job at first and start a business part-time. Use skills, knowledge or a product you can sell. Grow it until the business income can replace your paycheck.\n3. **Solve a problem people will pay for.** Golden argues that wealth is the reward for solving problems for other people. The bigger the problem you solve, or the more people you solve it for, the more you earn.\n4. **Learn sales and marketing.** He treats the ability to sell as the highest-paid skill in the marketplace. Every business depends on bringing in customers.\n5. **Systematize everything.** Document how the work gets done so other people, automation or tools can deliver the product or service the same way every time. If the business needs you every day, you've built yourself a job, not a business.\n6. **Leverage other people's time, money and effort.** Hire, delegate, outsource, and use partners or joint ventures. This breaks the link between your hours and your income.\n7. **Create recurring and residual income.** Favour products and models that pay again and again, such as information products, subscriptions, licensing and repeat customers, over one-off transactions.\n8. **Reinvest profits into more assets.** Use the business's cash flow to buy or build more income-producing assets, such as more businesses, real estate and investments, instead of spending it on lifestyle.\n9. **Give and steward faithfully.** In Golden's faith-based framework, generosity and good stewardship are part of the plan, not an afterthought.\n\n### In short\nGet out of the traps that tie your income to your time and your debts. Then build a problem-solving business, systematize it, staff it, and point its cash flow at buying more assets, so that eventually it runs \"hands-free\" and you become the cash man instead of the trash man.\n"}], "grading": {"expectations": [{"text": "Lists several of the 11 mental money traps (e.g., negativism for skepticism, value security over freedom, renter's mentality, technophobic, formal over self-education)", "passed": false, "evidence": "Generic traps, not the book's list"}, {"text": "Lists several practical traps (e.g., paralyzed by a paycheck, don't invest in greatest asset, no financial mentor, bad debt, do everything themselves)", "passed": true, "evidence": "Job/paycheck and debt traps"}, {"text": "Hands-free plan: home business to $10,000/month within two years with minimal ('one finger') effort, then start another", "passed": false, "evidence": "Generic plan, no $10,000 hands-free plan"}, {"text": "Prefers product-oriented over service business (time limits income)", "passed": false, "evidence": "Products mentioned only as recurring income, no product vs service rule"}, {"text": "Mentions virtual millionaire (V.M.) vs V.P. and/or 'you're in the marketing business'", "passed": false, "evidence": "No V.M. or marketing business"}, {"text": "Notes caveats such as due diligence / results not guaranteed", "passed": false, "evidence": "No caveats"}], "summary": {"passed": 1, "failed": 5, "total": 6, "pass_rate": 0.16666666666666666}}}], "previous_feedback": {}, "previous_outputs": {}, "benchmark": {"metadata": {"skill_name": "trash-man-to-cash-man", "skill_path": "\u003cpath/to/skill>", "executor_model": "\u003cmodel-name>", "analyzer_model": "\u003cmodel-name>", "timestamp": "2026-11-21T21:37:18Z", "evals_run": [1, 2, 3], "runs_per_configuration": 1}, "runs": [{"eval_id": 1, "eval_name": "tc-cans", "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 6, "failed": 0, "total": 6, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Describes six cans", "passed": true, "evidence": "Six cans"}, {"text": "I can tithe can at 10% of gross", "passed": true, "evidence": "Tithe 10% gross"}, {"text": "I can finish free can: 10%, never spent, used to buy income-producing assets / passive income", "passed": true, "evidence": "Finish free 10%, never spent, assets"}, {"text": "I can educate myself can at 10% for seminars, books, audio", "passed": true, "evidence": "Educate 10%"}, {"text": "I can save for what I want and I can have fun (spend every month) cans", "passed": true, "evidence": "Save for what I want; have fun spent monthly"}, {"text": "I can pay my bills can at 50% for living expenses", "passed": true, "evidence": "Pay bills 50%"}], "notes": []}, {"eval_id": 2, "eval_name": "tc-window", "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 6, "failed": 0, "total": 6, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Four panes: Have A Job (H.A.J.), Own A Job (O.A.J.), Sow Money Seeds (S.M.S.), Own A System (O.A.S.)", "passed": true, "evidence": "Four panes named"}, {"text": "Have/own a job are the two worst ways; Own A System best; Sow Money Seeds second best", "passed": true, "evidence": "Ranking worst to best"}, {"text": "Financial house windows: income, outgo, wealth reducing liabilities, income producing assets", "passed": true, "evidence": "Four windows"}, {"text": "Poor: all income goes out the outgo window", "passed": true, "evidence": "Poor: all out outgo"}, {"text": "Middle class: buy wealth reducing liabilities / live in debt keeping up with the Joneses", "passed": true, "evidence": "Middle class WRLs, Joneses"}, {"text": "Rich: buy income producing assets; difference is what you do with money, not how much you make", "passed": true, "evidence": "Rich IPAs; what you do with money"}], "notes": []}, {"eval_id": 3, "eval_name": "tc-traps", "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 6, "failed": 0, "total": 6, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Lists several of the 11 mental money traps (e.g., negativism for skepticism, value security over freedom, renter's mentality, technophobic, formal over self-education)", "passed": true, "evidence": "11 mental traps"}, {"text": "Lists several practical traps (e.g., paralyzed by a paycheck, don't invest in greatest asset, no financial mentor, bad debt, do everything themselves)", "passed": true, "evidence": "Practical traps, notes missing #12"}, {"text": "Hands-free plan: home business to $10,000/month within two years with minimal ('one finger') effort, then start another", "passed": true, "evidence": "$10,000/month in 2 years, one finger"}, {"text": "Prefers product-oriented over service business (time limits income)", "passed": true, "evidence": "Product over service"}, {"text": "Mentions virtual millionaire (V.M.) vs V.P. and/or 'you're in the marketing business'", "passed": true, "evidence": "Virtual millionaire / marketing"}, {"text": "Notes caveats such as due diligence / results not guaranteed", "passed": true, "evidence": "Results-vary disclaimer"}], "notes": []}, {"eval_id": 1, "eval_name": "tc-cans", "configuration": "without_skill", "run_number": 1, "result": {"pass_rate": 0.16666666666666666, "passed": 1, "failed": 5, "total": 6, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Describes six cans", "passed": false, "evidence": "Number of cans unsure"}, {"text": "I can tithe can at 10% of gross", "passed": true, "evidence": "Tithe about 10%"}, {"text": "I can finish free can: 10%, never spent, used to buy income-producing assets / passive income", "passed": false, "evidence": "No finish free can"}, {"text": "I can educate myself can at 10% for seminars, books, audio", "passed": false, "evidence": "No educate can"}, {"text": "I can save for what I want and I can have fun (spend every month) cans", "passed": false, "evidence": "No save/have fun cans"}, {"text": "I can pay my bills can at 50% for living expenses", "passed": false, "evidence": "Guesses ~80% living, no bills can"}], "notes": []}, {"eval_id": 2, "eval_name": "tc-window", "configuration": "without_skill", "run_number": 1, "result": {"pass_rate": 0.5, "passed": 3, "failed": 3, "total": 6, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Four panes: Have A Job (H.A.J.), Own A Job (O.A.J.), Sow Money Seeds (S.M.S.), Own A System (O.A.S.)", "passed": false, "evidence": "Window treated as margin, not four panes"}, {"text": "Have/own a job are the two worst ways; Own A System best; Sow Money Seeds second best", "passed": false, "evidence": "No ranking of four ways"}, {"text": "Financial house windows: income, outgo, wealth reducing liabilities, income producing assets", "passed": false, "evidence": "No four-window house"}, {"text": "Poor: all income goes out the outgo window", "passed": true, "evidence": "Poor: income straight out back door"}, {"text": "Middle class: buy wealth reducing liabilities / live in debt keeping up with the Joneses", "passed": true, "evidence": "Middle: liabilities, debt"}, {"text": "Rich: buy income producing assets; difference is what you do with money, not how much you make", "passed": true, "evidence": "Rich: assets first"}], "notes": []}, {"eval_id": 3, "eval_name": "tc-traps", "configuration": "without_skill", "run_number": 1, "result": {"pass_rate": 0.16666666666666666, "passed": 1, "failed": 5, "total": 6, "time_seconds": null, "tokens": null, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Lists several of the 11 mental money traps (e.g., negativism for skepticism, value security over freedom, renter's mentality, technophobic, formal over self-education)", "passed": false, "evidence": "Generic traps, not the book's list"}, {"text": "Lists several practical traps (e.g., paralyzed by a paycheck, don't invest in greatest asset, no financial mentor, bad debt, do everything themselves)", "passed": true, "evidence": "Job/paycheck and debt traps"}, {"text": "Hands-free plan: home business to $10,000/month within two years with minimal ('one finger') effort, then start another", "passed": false, "evidence": "Generic plan, no $10,000 hands-free plan"}, {"text": "Prefers product-oriented over service business (time limits income)", "passed": false, "evidence": "Products mentioned only as recurring income, no product vs service rule"}, {"text": "Mentions virtual millionaire (V.M.) vs V.P. and/or 'you're in the marketing business'", "passed": false, "evidence": "No V.M. or marketing business"}, {"text": "Notes caveats such as due diligence / results not guaranteed", "passed": false, "evidence": "No caveats"}], "notes": []}], "run_summary": {"with_skill": {"pass_rate": {"mean": 1.0, "stddev": 0.0, "min": 1.0, "max": 1.0}, "time_seconds": null, "tokens": null}, "without_skill": {"pass_rate": {"mean": 0.2778, "stddev": 0.1925, "min": 0.1667, "max": 0.5}, "time_seconds": null, "tokens": null}, "delta": {"pass_rate": "+0.72", "time_seconds": null, "tokens": null}}, "notes": ["Time recorded for 0 of 3 with_skill runs, 0 of 3 without_skill runs, so there is no time delta.", "Token count recorded for 0 of 3 with_skill runs, 0 of 3 without_skill runs, so there is no token count delta."]}};
+
+    // ---- State ----
+    let feedbackMap = {};  // run_id -> feedback text
+    let currentIndex = 0;
+    let visitedRuns = new Set();
+
+    // ---- Init ----
+    async function init() {
+      // Load saved feedback from server — but only if this isn't a fresh
+      // iteration (indicated by previous_feedback being present). When
+      // previous feedback exists, the feedback.json on disk is stale from
+      // the prior iteration and should not pre-fill the textareas.
+      const hasPrevious = Object.keys(EMBEDDED_DATA.previous_feedback || {}).length > 0
+        || Object.keys(EMBEDDED_DATA.previous_outputs || {}).length > 0;
+      if (!hasPrevious) {
+        try {
+          const resp = await fetch("/api/feedback");
+          const data = await resp.json();
+          if (data.reviews) {
+            for (const r of data.reviews) feedbackMap[r.run_id] = r.feedback;
+          }
+        } catch { /* first run, no feedback yet */ }
+      }
+
+      document.getElementById("skill-name").textContent = EMBEDDED_DATA.skill_name;
+      showRun(0);
+
+      // Wire up feedback auto-save
+      const textarea = document.getElementById("feedback");
+      let saveTimeout = null;
+      textarea.addEventListener("input", () => {
+        clearTimeout(saveTimeout);
+        document.getElementById("feedback-status").textContent = "";
+        saveTimeout = setTimeout(() => saveCurrentFeedback(), 800);
+      });
+    }
+
+    // ---- Navigation ----
+    function navigate(delta) {
+      const newIndex = currentIndex + delta;
+      if (newIndex >= 0 && newIndex < EMBEDDED_DATA.runs.length) {
+        saveCurrentFeedback();
+        showRun(newIndex);
+      }
+    }
+
+    function updateNavButtons() {
+      document.getElementById("prev-btn").disabled = currentIndex === 0;
+      document.getElementById("next-btn").disabled =
+        currentIndex === EMBEDDED_DATA.runs.length - 1;
+    }
+
+    // ---- Show a run ----
+    function showRun(index) {
+      currentIndex = index;
+      const run = EMBEDDED_DATA.runs[index];
+
+      // Progress
+      document.getElementById("progress").textContent =
+        `${index + 1} of ${EMBEDDED_DATA.runs.length}`;
+
+      // Prompt
+      document.getElementById("prompt-text").textContent = run.prompt;
+
+      // Config badge
+      const badge = document.getElementById("config-badge");
+      const configMatch = run.id.match(/(with_skill|without_skill|new_skill|old_skill)/);
+      if (configMatch) {
+        const config = configMatch[1];
+        const isBaseline = config === "without_skill" || config === "old_skill";
+        badge.textContent = config.replace(/_/g, " ");
+        badge.className = "config-badge " + (isBaseline ? "config-baseline" : "config-primary");
+        badge.style.display = "inline-block";
+      } else {
+        badge.style.display = "none";
+      }
+
+      // Outputs
+      renderOutputs(run);
+
+      // Previous outputs
+      renderPrevOutputs(run);
+
+      // Grades
+      renderGrades(run);
+
+      // Previous feedback
+      const prevFb = (EMBEDDED_DATA.previous_feedback || {})[run.id];
+      const prevEl = document.getElementById("prev-feedback");
+      if (prevFb) {
+        document.getElementById("prev-feedback-text").textContent = prevFb;
+        prevEl.style.display = "block";
+      } else {
+        prevEl.style.display = "none";
+      }
+
+      // Feedback
+      document.getElementById("feedback").value = feedbackMap[run.id] || "";
+      document.getElementById("feedback-status").textContent = "";
+
+      updateNavButtons();
+
+      // Track visited runs and promote done button when all visited
+      visitedRuns.add(index);
+      const doneBtn = document.getElementById("done-btn");
+      if (visitedRuns.size >= EMBEDDED_DATA.runs.length) {
+        doneBtn.classList.add("ready");
+      }
+
+      // Scroll main content to top
+      document.querySelector(".main").scrollTop = 0;
+    }
+
+    // ---- Render outputs ----
+    function renderOutputs(run) {
+      const container = document.getElementById("outputs-body");
+      container.innerHTML = "";
+
+      const outputs = run.outputs || [];
+      if (outputs.length === 0) {
+        container.innerHTML = '<div class="empty-state">No output files</div>';
+        return;
+      }
+
+      for (const file of outputs) {
+        const fileDiv = document.createElement("div");
+        fileDiv.className = "output-file";
+
+        // Always show file header with download link
+        const header = document.createElement("div");
+        header.className = "output-file-header";
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = file.name;
+        header.appendChild(nameSpan);
+        const dlBtn = document.createElement("a");
+        dlBtn.className = "dl-btn";
+        dlBtn.textContent = "Download";
+        dlBtn.download = file.name;
+        dlBtn.href = getDownloadUri(file);
+        header.appendChild(dlBtn);
+        fileDiv.appendChild(header);
+
+        const content = document.createElement("div");
+        content.className = "output-file-content";
+
+        if (file.type === "text") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          content.appendChild(pre);
+        } else if (file.type === "image") {
+          const img = document.createElement("img");
+          img.src = file.data_uri;
+          img.alt = file.name;
+          content.appendChild(img);
+        } else if (file.type === "pdf") {
+          const iframe = document.createElement("iframe");
+          iframe.src = file.data_uri;
+          content.appendChild(iframe);
+        } else if (file.type === "xlsx") {
+          renderXlsx(content, file.data_b64);
+        } else if (file.type === "binary") {
+          const a = document.createElement("a");
+          a.className = "download-link";
+          a.href = file.data_uri;
+          a.download = file.name;
+          a.textContent = "Download " + file.name;
+          content.appendChild(a);
+        } else if (file.type === "error") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          pre.style.color = "var(--red)";
+          content.appendChild(pre);
+        }
+
+        fileDiv.appendChild(content);
+        container.appendChild(fileDiv);
+      }
+    }
+
+    // ---- XLSX rendering via SheetJS ----
+    function renderXlsx(container, b64Data) {
+      try {
+        const raw = Uint8Array.from(atob(b64Data), c => c.charCodeAt(0));
+        const wb = XLSX.read(raw, { type: "array" });
+
+        for (let i = 0; i < wb.SheetNames.length; i++) {
+          const sheetName = wb.SheetNames[i];
+          const ws = wb.Sheets[sheetName];
+
+          if (wb.SheetNames.length > 1) {
+            const sheetLabel = document.createElement("div");
+            sheetLabel.style.cssText =
+              "font-weight:600; font-size:0.8rem; color:#b0aea5; margin-top:0.5rem; margin-bottom:0.25rem;";
+            sheetLabel.textContent = "Sheet: " + sheetName;
+            container.appendChild(sheetLabel);
+          }
+
+          const htmlStr = XLSX.utils.sheet_to_html(ws, { editable: false });
+          const wrapper = document.createElement("div");
+          wrapper.innerHTML = htmlStr;
+          container.appendChild(wrapper);
+        }
+      } catch (err) {
+        container.textContent = "Error rendering spreadsheet: " + err.message;
+      }
+    }
+
+    // ---- Grades ----
+    function renderGrades(run) {
+      const section = document.getElementById("grades-section");
+      const content = document.getElementById("grades-content");
+
+      if (!run.grading) {
+        section.style.display = "none";
+        return;
+      }
+
+      const grading = run.grading;
+      section.style.display = "block";
+      // Reset to collapsed
+      content.classList.remove("open");
+      document.getElementById("grades-arrow").classList.remove("open");
+
+      const summary = grading.summary || {};
+      const expectations = grading.expectations || [];
+
+      let html = '<div style="padding: 1rem;">';
+
+      // Summary line
+      const passRate = summary.pass_rate != null
+        ? Math.round(summary.pass_rate * 100) + "%"
+        : "?";
+      const badgeClass = summary.pass_rate >= 0.8 ? "grade-pass" : summary.pass_rate >= 0.5 ? "" : "grade-fail";
+      html += '<div class="grades-summary">';
+      html += '<span class="grade-badge ' + badgeClass + '">' + passRate + '</span>';
+      html += '<span>' + escapeHtml(summary.passed || 0) + ' passed, ' + escapeHtml(summary.failed || 0) + ' failed of ' + escapeHtml(summary.total || 0) + '</span>';
+      html += '</div>';
+
+      // Assertions list
+      html += '<ul class="assertion-list">';
+      for (const exp of expectations) {
+        const statusClass = exp.passed ? "pass" : "fail";
+        const statusIcon = exp.passed ? "\u2713" : "\u2717";
+        html += '<li class="assertion-item">';
+        html += '<span class="assertion-status ' + statusClass + '">' + statusIcon + '</span>';
+        html += '<span>' + escapeHtml(exp.text) + '</span>';
+        if (exp.evidence) {
+          html += '<div class="assertion-evidence">' + escapeHtml(exp.evidence) + '</div>';
+        }
+        html += '</li>';
+      }
+      html += '</ul>';
+
+      html += '</div>';
+      content.innerHTML = html;
+    }
+
+    function toggleGrades() {
+      const content = document.getElementById("grades-content");
+      const arrow = document.getElementById("grades-arrow");
+      content.classList.toggle("open");
+      arrow.classList.toggle("open");
+    }
+
+    // ---- Previous outputs (collapsible) ----
+    function renderPrevOutputs(run) {
+      const section = document.getElementById("prev-outputs-section");
+      const content = document.getElementById("prev-outputs-content");
+      const prevOutputs = (EMBEDDED_DATA.previous_outputs || {})[run.id];
+
+      if (!prevOutputs || prevOutputs.length === 0) {
+        section.style.display = "none";
+        return;
+      }
+
+      section.style.display = "block";
+      // Reset to collapsed
+      content.classList.remove("open");
+      document.getElementById("prev-outputs-arrow").classList.remove("open");
+
+      // Render the files into the content area
+      content.innerHTML = "";
+      const wrapper = document.createElement("div");
+      wrapper.style.padding = "1rem";
+
+      for (const file of prevOutputs) {
+        const fileDiv = document.createElement("div");
+        fileDiv.className = "output-file";
+
+        const header = document.createElement("div");
+        header.className = "output-file-header";
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = file.name;
+        header.appendChild(nameSpan);
+        const dlBtn = document.createElement("a");
+        dlBtn.className = "dl-btn";
+        dlBtn.textContent = "Download";
+        dlBtn.download = file.name;
+        dlBtn.href = getDownloadUri(file);
+        header.appendChild(dlBtn);
+        fileDiv.appendChild(header);
+
+        const fc = document.createElement("div");
+        fc.className = "output-file-content";
+
+        if (file.type === "text") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          fc.appendChild(pre);
+        } else if (file.type === "image") {
+          const img = document.createElement("img");
+          img.src = file.data_uri;
+          img.alt = file.name;
+          fc.appendChild(img);
+        } else if (file.type === "pdf") {
+          const iframe = document.createElement("iframe");
+          iframe.src = file.data_uri;
+          fc.appendChild(iframe);
+        } else if (file.type === "xlsx") {
+          renderXlsx(fc, file.data_b64);
+        } else if (file.type === "binary") {
+          const a = document.createElement("a");
+          a.className = "download-link";
+          a.href = file.data_uri;
+          a.download = file.name;
+          a.textContent = "Download " + file.name;
+          fc.appendChild(a);
+        }
+
+        fileDiv.appendChild(fc);
+        wrapper.appendChild(fileDiv);
+      }
+
+      content.appendChild(wrapper);
+    }
+
+    function togglePrevOutputs() {
+      const content = document.getElementById("prev-outputs-content");
+      const arrow = document.getElementById("prev-outputs-arrow");
+      content.classList.toggle("open");
+      arrow.classList.toggle("open");
+    }
+
+    // ---- Feedback (saved to server -> feedback.json) ----
+    function saveCurrentFeedback() {
+      const run = EMBEDDED_DATA.runs[currentIndex];
+      const text = document.getElementById("feedback").value;
+
+      if (text.trim() === "") {
+        delete feedbackMap[run.id];
+      } else {
+        feedbackMap[run.id] = text;
+      }
+
+      // Build reviews array from map
+      const reviews = [];
+      for (const [run_id, feedback] of Object.entries(feedbackMap)) {
+        if (feedback.trim()) {
+          reviews.push({ run_id, feedback, timestamp: new Date().toISOString() });
+        }
+      }
+
+      fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reviews, status: "in_progress" }),
+      }).then(() => {
+        document.getElementById("feedback-status").textContent = "Saved";
+      }).catch(() => {
+        // Static mode or server unavailable — no-op on auto-save,
+        // feedback will be downloaded on final submit
+        document.getElementById("feedback-status").textContent = "Will download on submit";
+      });
+    }
+
+    // ---- Done ----
+    function showDoneDialog() {
+      // Save current textarea to feedbackMap (but don't POST yet)
+      const run = EMBEDDED_DATA.runs[currentIndex];
+      const text = document.getElementById("feedback").value;
+      if (text.trim() === "") {
+        delete feedbackMap[run.id];
+      } else {
+        feedbackMap[run.id] = text;
+      }
+
+      // POST once with status: complete — include ALL runs so the model
+      // can distinguish "no feedback" (looks good) from "not reviewed"
+      const reviews = [];
+      const ts = new Date().toISOString();
+      for (const r of EMBEDDED_DATA.runs) {
+        reviews.push({ run_id: r.id, feedback: feedbackMap[r.id] || "", timestamp: ts });
+      }
+      const payload = JSON.stringify({ reviews, status: "complete" }, null, 2);
+      fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: payload,
+      }).then(() => {
+        document.getElementById("done-overlay").classList.add("visible");
+      }).catch(() => {
+        // Server not available (static mode) — download as file
+        const blob = new Blob([payload], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "feedback.json";
+        a.click();
+        URL.revokeObjectURL(url);
+        document.getElementById("done-overlay").classList.add("visible");
+      });
+    }
+
+    function closeDoneDialog() {
+      // Reset status back to in_progress
+      saveCurrentFeedback();
+      document.getElementById("done-overlay").classList.remove("visible");
+    }
+
+    // ---- Toast ----
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("visible");
+      setTimeout(() => toast.classList.remove("visible"), 2000);
+    }
+
+    // ---- Keyboard nav ----
+    document.addEventListener("keydown", (e) => {
+      // Don't capture when typing in textarea
+      if (e.target.tagName === "TEXTAREA") return;
+
+      if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+        e.preventDefault();
+        navigate(-1);
+      } else if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+        e.preventDefault();
+        navigate(1);
+      }
+    });
+
+    // ---- Util ----
+    function getDownloadUri(file) {
+      if (file.data_uri) return file.data_uri;
+      if (file.data_b64) return "data:application/octet-stream;base64," + file.data_b64;
+      if (file.type === "text") return "data:text/plain;charset=utf-8," + encodeURIComponent(file.content);
+      return "#";
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement("div");
+      div.textContent = text;
+      return div.innerHTML.replace(/"/g, "&quot;");
+    }
+
+    // ---- View switching ----
+    function switchView(view) {
+      document.querySelectorAll(".view-tab").forEach(t => t.classList.remove("active"));
+      document.querySelectorAll(".view-panel").forEach(p => p.classList.remove("active"));
+      document.querySelector(`[onclick="switchView('${view}')"]`).classList.add("active");
+      document.getElementById("panel-" + view).classList.add("active");
+    }
+
+    // ---- Benchmark rendering ----
+    function renderBenchmark() {
+      const data = EMBEDDED_DATA.benchmark;
+      if (!data) return;
+
+      // Show the tabs
+      document.getElementById("view-tabs").style.display = "flex";
+
+      const container = document.getElementById("benchmark-content");
+      const summary = data.run_summary || {};
+      const metadata = data.metadata || {};
+      const notes = data.notes || [];
+
+      let html = "";
+
+      // Header
+      html += "<h2 style='font-family: Poppins, sans-serif; margin-bottom: 0.5rem;'>Benchmark Results</h2>";
+      html += "<p style='color: var(--text-muted); font-size: 0.875rem; margin-bottom: 1.25rem;'>";
+      if (metadata.skill_name) html += "<strong>" + escapeHtml(metadata.skill_name) + "</strong> &mdash; ";
+      if (metadata.timestamp) html += escapeHtml(metadata.timestamp) + " &mdash; ";
+      if (metadata.evals_run) html += "Evals: " + escapeHtml(metadata.evals_run.join(", ")) + " &mdash; ";
+      html += escapeHtml(metadata.runs_per_configuration || "?") + (metadata.runs_per_configuration === 1 ? " run" : " runs") + " per configuration";
+      html += "</p>";
+
+      // Summary table
+      html += '<table class="benchmark-table">';
+
+      function fmtStat(stat, pct) {
+        if (!stat) return "—";
+        const suffix = pct ? "%" : "";
+        const m = pct ? (stat.mean * 100).toFixed(0) : stat.mean.toFixed(1);
+        const s = pct ? (stat.stddev * 100).toFixed(0) : stat.stddev.toFixed(1);
+        return m + suffix + " ± " + s + suffix;
+      }
+
+      function deltaClass(val) {
+        if (!val) return "";
+        const n = parseFloat(val);
+        if (n > 0) return "benchmark-delta-positive";
+        if (n < 0) return "benchmark-delta-negative";
+        return "";
+      }
+
+      // Discover config names dynamically (everything except "delta")
+      const configs = Object.keys(summary).filter(k => k !== "delta");
+      const configA = configs[0] || "config_a";
+      const configB = configs[1] || "config_b";
+      const labelA = configA.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      const labelB = configB.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      const a = summary[configA] || {};
+      const b = summary[configB] || {};
+      const delta = summary.delta || {};
+      // With a single configuration there is nothing to compare: only its column is shown
+      const compare = cells => configs.length >= 2 ? cells : "";
+
+      html += "<thead><tr><th>Metric</th><th>" + escapeHtml(labelA) + "</th>" + compare("<th>" + escapeHtml(labelB) + "</th><th>Delta</th>") + "</tr></thead>";
+      html += "<tbody>";
+
+      html += "<tr><td><strong>Pass Rate</strong></td>";
+      html += "<td>" + fmtStat(a.pass_rate, true) + "</td>";
+      html += compare("<td>" + fmtStat(b.pass_rate, true) + "</td>");
+      html += compare('<td class="' + deltaClass(delta.pass_rate) + '">' + escapeHtml(delta.pass_rate || "—") + "</td>") + "</tr>";
+
+      // Time (only show row if data exists)
+      if (a.time_seconds || b.time_seconds) {
+        html += "<tr><td><strong>Time (s)</strong></td>";
+        html += "<td>" + fmtStat(a.time_seconds, false) + "</td>";
+        html += compare("<td>" + fmtStat(b.time_seconds, false) + "</td>");
+        html += compare('<td class="' + deltaClass(delta.time_seconds) + '">' + escapeHtml(delta.time_seconds ? delta.time_seconds + "s" : "—") + "</td>") + "</tr>";
+      }
+
+      // Tokens (only show row if data exists)
+      if (a.tokens || b.tokens) {
+        html += "<tr><td><strong>Tokens</strong></td>";
+        html += "<td>" + fmtStat(a.tokens, false) + "</td>";
+        html += compare("<td>" + fmtStat(b.tokens, false) + "</td>");
+        html += compare('<td class="' + deltaClass(delta.tokens) + '">' + escapeHtml(delta.tokens || "—") + "</td>") + "</tr>";
+      }
+
+      html += "</tbody></table>";
+
+      // Per-eval breakdown (if runs data available)
+      const runs = data.runs || [];
+      if (runs.length > 0) {
+        // Numeric ids first, then ids that are names
+        const rank = id => typeof id === "number" ? 0 : 1;
+        const evalIds = [...new Set(runs.map(r => r.eval_id))].sort((a, b) =>
+          rank(a) - rank(b) || (rank(a) ? String(a).localeCompare(String(b)) : a - b));
+
+        html += "<h3 style='font-family: Poppins, sans-serif; margin-bottom: 0.75rem;'>Per-Eval Breakdown</h3>";
+
+        const hasTime = runs.some(r => r.result && r.result.time_seconds != null);
+        const hasErrors = runs.some(r => r.result && r.result.errors > 0);
+
+        for (const evalId of evalIds) {
+          const evalRuns = runs.filter(r => r.eval_id === evalId);
+          const evalName = evalRuns[0] && evalRuns[0].eval_name ? evalRuns[0].eval_name : "Eval " + evalId;
+
+          html += "<h4 style='font-family: Poppins, sans-serif; margin: 1rem 0 0.5rem; color: var(--text);'>" + escapeHtml(evalName) + "</h4>";
+          html += '<table class="benchmark-table">';
+          html += "<thead><tr><th>Config</th><th>Run</th><th>Pass Rate</th>";
+          if (hasTime) html += "<th>Time (s)</th>";
+          if (hasErrors) html += "<th>Crashes During Execution</th>";
+          html += "</tr></thead>";
+          html += "<tbody>";
+
+          // Group by config and render with average rows
+          const configGroups = [...new Set(evalRuns.map(r => r.configuration))];
+          for (let ci = 0; ci < configGroups.length; ci++) {
+            const config = configGroups[ci];
+            const configRuns = evalRuns.filter(r => r.configuration === config);
+            if (configRuns.length === 0) continue;
+
+            const rowClass = ci === 0 ? "benchmark-row-with" : "benchmark-row-without";
+            const configLabel = escapeHtml(config.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase()));
+
+            for (const run of configRuns) {
+              const r = run.result || {};
+              const prClass = r.pass_rate >= 0.8 ? "benchmark-delta-positive" : r.pass_rate < 0.5 ? "benchmark-delta-negative" : "";
+              html += '<tr class="' + rowClass + '">';
+              html += "<td>" + configLabel + "</td>";
+              html += "<td>" + escapeHtml(run.run_number) + "</td>";
+              html += '<td class="' + prClass + '">' + ((r.pass_rate || 0) * 100).toFixed(0) + "% (" + escapeHtml(r.passed || 0) + "/" + escapeHtml(r.total || 0) + ")</td>";
+              if (hasTime) html += "<td>" + (r.time_seconds != null ? r.time_seconds.toFixed(1) : "—") + "</td>";
+              if (hasErrors) html += "<td>" + escapeHtml(r.errors || 0) + "</td>";
+              html += "</tr>";
+            }
+
+            // Average row
+            const rates = configRuns.map(r => (r.result || {}).pass_rate || 0);
+            const avgRate = rates.reduce((a, b) => a + b, 0) / rates.length;
+            const avgPrClass = avgRate >= 0.8 ? "benchmark-delta-positive" : avgRate < 0.5 ? "benchmark-delta-negative" : "";
+            html += '<tr class="benchmark-row-avg ' + rowClass + '">';
+            html += "<td>" + configLabel + "</td>";
+            html += "<td>Avg</td>";
+            html += '<td class="' + avgPrClass + '">' + (avgRate * 100).toFixed(0) + "%</td>";
+            if (hasTime) {
+              const times = configRuns.map(r => (r.result || {}).time_seconds).filter(t => t != null);
+              html += "<td>" + (times.length ? (times.reduce((a, b) => a + b, 0) / times.length).toFixed(1) : "—") + "</td>";
+            }
+            if (hasErrors) html += "<td></td>";
+            html += "</tr>";
+          }
+          html += "</tbody></table>";
+
+          // Per-assertion detail for this eval
+          const runsWithExpectations = {};
+          for (const config of configGroups) {
+            runsWithExpectations[config] = evalRuns.filter(r => r.configuration === config && r.expectations && r.expectations.length > 0);
+          }
+          const hasAnyExpectations = Object.values(runsWithExpectations).some(runs => runs.length > 0);
+          if (hasAnyExpectations) {
+            // Collect all unique assertion texts across all configs
+            const allAssertions = [];
+            const seen = new Set();
+            for (const config of configGroups) {
+              for (const run of runsWithExpectations[config]) {
+                for (const exp of (run.expectations || [])) {
+                  if (!seen.has(exp.text)) {
+                    seen.add(exp.text);
+                    allAssertions.push(exp.text);
+                  }
+                }
+              }
+            }
+
+            html += '<table class="benchmark-table" style="margin-top: 0.5rem;">';
+            html += "<thead><tr><th>Assertion</th>";
+            for (const config of configGroups) {
+              const label = config.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+              html += "<th>" + escapeHtml(label) + "</th>";
+            }
+            html += "</tr></thead><tbody>";
+
+            for (const assertionText of allAssertions) {
+              html += "<tr><td>" + escapeHtml(assertionText) + "</td>";
+
+              for (const config of configGroups) {
+                html += "<td>";
+                for (const run of runsWithExpectations[config]) {
+                  const exp = (run.expectations || []).find(e => e.text === assertionText);
+                  if (exp) {
+                    const cls = exp.passed ? "benchmark-delta-positive" : "benchmark-delta-negative";
+                    const icon = exp.passed ? "\u2713" : "\u2717";
+                    html += '<span class="' + cls + '" title="Run ' + escapeHtml(run.run_number) + ': ' + escapeHtml(exp.evidence || "") + '">' + icon + "</span> ";
+                  } else {
+                    html += "— ";
+                  }
+                }
+                html += "</td>";
+              }
+              html += "</tr>";
+            }
+            html += "</tbody></table>";
+          }
+        }
+      }
+
+      // Notes
+      if (notes.length > 0) {
+        html += '<div class="benchmark-notes">';
+        html += "<h3>Analysis Notes</h3>";
+        html += "<ul>";
+        for (const note of notes) {
+          html += "<li>" + escapeHtml(note) + "</li>";
+        }
+        html += "</ul></div>";
+      }
+
+      container.innerHTML = html;
+    }
+
+    // ---- Start ----
+    init();
+    renderBenchmark();
+  </script>
+</body>
+</html>
