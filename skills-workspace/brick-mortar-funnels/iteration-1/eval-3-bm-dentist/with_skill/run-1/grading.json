@@ -1,0 +1,40 @@
+{
+ "expectations": [
+  {
+   "text": "Describes Anissa Holmes' four-phase plan with day ranges (1-45 warm audience; 46-50 funnels; 51-80 nurture; 81-100 traffic)",
+   "passed": true,
+   "evidence": "Four phases with day ranges"
+  },
+  {
+   "text": "Includes the local business gift card giveaway and smile makeover competition",
+   "passed": true,
+   "evidence": "Gift-card giveaway and smile makeover"
+  },
+  {
+   "text": "Mentions building Facebook retargeting audiences and training the team on phone conversion",
+   "passed": true,
+   "evidence": "Retargeting audiences and phone training"
+  },
+  {
+   "text": "Mentions high-value treatment funnels (implants, Invisalign) and/or the 30-Day Floss Challenge",
+   "passed": true,
+   "evidence": "Implants/Invisalign funnels and floss challenge"
+  },
+  {
+   "text": "Covers reviews/referrals via Tyler Shaule's NPS rate-review-referral funnel (~300 five-star reviews) or similar book method",
+   "passed": true,
+   "evidence": "NPS rate-review-referral, about 300 reviews"
+  },
+  {
+   "text": "Includes compliance cautions (e.g., TCPA/SMS consent, HIPAA/testimonials, review gating)",
+   "passed": true,
+   "evidence": "TCPA, HIPAA, review-gating cautions"
+  }
+ ],
+ "summary": {
+  "passed": 6,
+  "failed": 0,
+  "total": 6,
+  "pass_rate": 1.0
+ }
+}

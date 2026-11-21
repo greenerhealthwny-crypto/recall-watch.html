@@ -1,0 +1,342 @@
+{
+  "metadata": {
+    "skill_name": "brick-mortar-funnels",
+    "skill_path": "<path/to/skill>",
+    "executor_model": "<model-name>",
+    "analyzer_model": "<model-name>",
+    "timestamp": "2026-11-21T13:32:04Z",
+    "evals_run": [
+      1,
+      2,
+      3
+    ],
+    "runs_per_configuration": 1
+  },
+  "runs": [
+    {
+      "eval_id": 1,
+      "eval_name": "bm-gym",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Explains client-financed acquisition (point-of-sale cash covers this customer AND the next)",
+          "passed": true,
+          "evidence": "Client-financed acquisition explained"
+        },
+        {
+          "text": "Recommends high-ticket packages/challenge offers instead of a cheap commodity membership (e.g., 6-Week challenge, $99/week tiers)",
+          "passed": true,
+          "evidence": "Challenges and $99/week tiers"
+        },
+        {
+          "text": "Gives the ~$1,100 average cash per sale (e.g., 1 whale $2,500, 1 above average $1,200, 3 normal $600 out of 5 sales from 10 prospects)",
+          "passed": true,
+          "evidence": "$1,100 cash per sale from whale/above/normal mix"
+        },
+        {
+          "text": "Calculates spend per show (~$550 per show at 50% close, so ~$275 per show)",
+          "passed": true,
+          "evidence": "$550 per show, spend about $275"
+        },
+        {
+          "text": "Describes the funnel: ad -> opt-in -> scheduling page -> Facebook group, and contacting all leads",
+          "passed": true,
+          "evidence": "Ad > opt-in > scheduling > Facebook group, contact all leads"
+        },
+        {
+          "text": "Mentions the follow-on sales (food, supplements, 12-month, paid in full) and/or the $1 -> $3 reinvestment rule",
+          "passed": true,
+          "evidence": "Food, supplements, 12-month, paid in full; $1 to $3"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "bm-home-service",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Explains max CAC = annual revenue per client x profit margin (e.g., $40 x 30 = $1,200 x 25% = $300)",
+          "passed": true,
+          "evidence": "$40 x 30 x 25% = $300 max CAC"
+        },
+        {
+          "text": "Explains the value ladder / front-end offers (e.g., 10 exterior windows for $99)",
+          "passed": true,
+          "evidence": "Value ladder, 10 windows for $99"
+        },
+        {
+          "text": "Says to build one landing page per single offer (not a broad website)",
+          "passed": true,
+          "evidence": "One landing page per offer; broad website fails"
+        },
+        {
+          "text": "Lists ad copy elements: hook headline, body, benefits, urgency/scarcity",
+          "passed": true,
+          "evidence": "Hook headline, body, benefits, urgency/scarcity"
+        },
+        {
+          "text": "Covers traffic sources including emailing existing clients, Facebook posts/Live, and Facebook ads, then measuring results",
+          "passed": true,
+          "evidence": "Existing clients email, Facebook Live, ads, measure"
+        },
+        {
+          "text": "Adds at least one other expert tactic from the book (e.g., Shaule reactivation/SMS or review/referral funnel, Frey referrals)",
+          "passed": true,
+          "evidence": "Shaule reactivation/SMS and review funnel"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 3,
+      "eval_name": "bm-dentist",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Describes Anissa Holmes' four-phase plan with day ranges (1-45 warm audience; 46-50 funnels; 51-80 nurture; 81-100 traffic)",
+          "passed": true,
+          "evidence": "Four phases with day ranges"
+        },
+        {
+          "text": "Includes the local business gift card giveaway and smile makeover competition",
+          "passed": true,
+          "evidence": "Gift-card giveaway and smile makeover"
+        },
+        {
+          "text": "Mentions building Facebook retargeting audiences and training the team on phone conversion",
+          "passed": true,
+          "evidence": "Retargeting audiences and phone training"
+        },
+        {
+          "text": "Mentions high-value treatment funnels (implants, Invisalign) and/or the 30-Day Floss Challenge",
+          "passed": true,
+          "evidence": "Implants/Invisalign funnels and floss challenge"
+        },
+        {
+          "text": "Covers reviews/referrals via Tyler Shaule's NPS rate-review-referral funnel (~300 five-star reviews) or similar book method",
+          "passed": true,
+          "evidence": "NPS rate-review-referral, about 300 reviews"
+        },
+        {
+          "text": "Includes compliance cautions (e.g., TCPA/SMS consent, HIPAA/testimonials, review gating)",
+          "passed": true,
+          "evidence": "TCPA, HIPAA, review-gating cautions"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 1,
+      "eval_name": "bm-gym",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.3333333333333333,
+        "passed": 2,
+        "failed": 4,
+        "total": 6,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Explains client-financed acquisition (point-of-sale cash covers this customer AND the next)",
+          "passed": true,
+          "evidence": "Client-financed acquisition named"
+        },
+        {
+          "text": "Recommends high-ticket packages/challenge offers instead of a cheap commodity membership (e.g., 6-Week challenge, $99/week tiers)",
+          "passed": true,
+          "evidence": "High-ticket challenge offer"
+        },
+        {
+          "text": "Gives the ~$1,100 average cash per sale (e.g., 1 whale $2,500, 1 above average $1,200, 3 normal $600 out of 5 sales from 10 prospects)",
+          "passed": false,
+          "evidence": "Uses own $299 numbers, not the book's $1,100 mix"
+        },
+        {
+          "text": "Calculates spend per show (~$550 per show at 50% close, so ~$275 per show)",
+          "passed": false,
+          "evidence": "No spend-per-show calculation"
+        },
+        {
+          "text": "Describes the funnel: ad -> opt-in -> scheduling page -> Facebook group, and contacting all leads",
+          "passed": false,
+          "evidence": "Funnel lacks scheduling page/Facebook group steps"
+        },
+        {
+          "text": "Mentions the follow-on sales (food, supplements, 12-month, paid in full) and/or the $1 -> $3 reinvestment rule",
+          "passed": false,
+          "evidence": "Only a continuation membership; no five-sale sequence or $1:$3 rule"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "bm-home-service",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.5,
+        "passed": 3,
+        "failed": 3,
+        "total": 6,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Explains max CAC = annual revenue per client x profit margin (e.g., $40 x 30 = $1,200 x 25% = $300)",
+          "passed": true,
+          "evidence": "Lifetime value x margin approach to max acquisition cost"
+        },
+        {
+          "text": "Explains the value ladder / front-end offers (e.g., 10 exterior windows for $99)",
+          "passed": true,
+          "evidence": "Front-end offer ladder"
+        },
+        {
+          "text": "Says to build one landing page per single offer (not a broad website)",
+          "passed": false,
+          "evidence": "No one-offer-per-page rule"
+        },
+        {
+          "text": "Lists ad copy elements: hook headline, body, benefits, urgency/scarcity",
+          "passed": false,
+          "evidence": "No ad copy elements"
+        },
+        {
+          "text": "Covers traffic sources including emailing existing clients, Facebook posts/Live, and Facebook ads, then measuring results",
+          "passed": false,
+          "evidence": "No traffic plan with existing clients/Facebook Live or measurement"
+        },
+        {
+          "text": "Adds at least one other expert tactic from the book (e.g., Shaule reactivation/SMS or review/referral funnel, Frey referrals)",
+          "passed": true,
+          "evidence": "Generic reviews and referrals"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 3,
+      "eval_name": "bm-dentist",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.3333333333333333,
+        "passed": 2,
+        "failed": 4,
+        "total": 6,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Describes Anissa Holmes' four-phase plan with day ranges (1-45 warm audience; 46-50 funnels; 51-80 nurture; 81-100 traffic)",
+          "passed": false,
+          "evidence": "No Holmes four-phase plan"
+        },
+        {
+          "text": "Includes the local business gift card giveaway and smile makeover competition",
+          "passed": false,
+          "evidence": "No giveaway or smile makeover"
+        },
+        {
+          "text": "Mentions building Facebook retargeting audiences and training the team on phone conversion",
+          "passed": false,
+          "evidence": "No retargeting audiences"
+        },
+        {
+          "text": "Mentions high-value treatment funnels (implants, Invisalign) and/or the 30-Day Floss Challenge",
+          "passed": true,
+          "evidence": "Mentions implant cases"
+        },
+        {
+          "text": "Covers reviews/referrals via Tyler Shaule's NPS rate-review-referral funnel (~300 five-star reviews) or similar book method",
+          "passed": false,
+          "evidence": "Generic review ask, no NPS funnel"
+        },
+        {
+          "text": "Includes compliance cautions (e.g., TCPA/SMS consent, HIPAA/testimonials, review gating)",
+          "passed": true,
+          "evidence": "Compliance cautions present"
+        }
+      ],
+      "notes": []
+    }
+  ],
+  "run_summary": {
+    "with_skill": {
+      "pass_rate": {
+        "mean": 1.0,
+        "stddev": 0.0,
+        "min": 1.0,
+        "max": 1.0
+      },
+      "time_seconds": null,
+      "tokens": null
+    },
+    "without_skill": {
+      "pass_rate": {
+        "mean": 0.3889,
+        "stddev": 0.0962,
+        "min": 0.3333,
+        "max": 0.5
+      },
+      "time_seconds": null,
+      "tokens": null
+    },
+    "delta": {
+      "pass_rate": "+0.61",
+      "time_seconds": null,
+      "tokens": null
+    }
+  },
+  "notes": [
+    "Time recorded for 0 of 3 with_skill runs, 0 of 3 without_skill runs, so there is no time delta.",
+    "Token count recorded for 0 of 3 with_skill runs, 0 of 3 without_skill runs, so there is no token count delta."
+  ]
+}

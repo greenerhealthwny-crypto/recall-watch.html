@@ -1,0 +1,40 @@
+{
+ "expectations": [
+  {
+   "text": "Explains max CAC = annual revenue per client x profit margin (e.g., $40 x 30 = $1,200 x 25% = $300)",
+   "passed": true,
+   "evidence": "Lifetime value x margin approach to max acquisition cost"
+  },
+  {
+   "text": "Explains the value ladder / front-end offers (e.g., 10 exterior windows for $99)",
+   "passed": true,
+   "evidence": "Front-end offer ladder"
+  },
+  {
+   "text": "Says to build one landing page per single offer (not a broad website)",
+   "passed": false,
+   "evidence": "No one-offer-per-page rule"
+  },
+  {
+   "text": "Lists ad copy elements: hook headline, body, benefits, urgency/scarcity",
+   "passed": false,
+   "evidence": "No ad copy elements"
+  },
+  {
+   "text": "Covers traffic sources including emailing existing clients, Facebook posts/Live, and Facebook ads, then measuring results",
+   "passed": false,
+   "evidence": "No traffic plan with existing clients/Facebook Live or measurement"
+  },
+  {
+   "text": "Adds at least one other expert tactic from the book (e.g., Shaule reactivation/SMS or review/referral funnel, Frey referrals)",
+   "passed": true,
+   "evidence": "Generic reviews and referrals"
+  }
+ ],
+ "summary": {
+  "passed": 3,
+  "failed": 3,
+  "total": 6,
+  "pass_rate": 0.5
+ }
+}
