@@ -1,0 +1,40 @@
+{
+ "expectations": [
+  {
+   "text": "Names the three pillars: focus, energy, experience",
+   "passed": true,
+   "evidence": "Focus, energy, experience"
+  },
+  {
+   "text": "Energy: 'energy flows where attention goes'; mental energy = attention, intention, will",
+   "passed": true,
+   "evidence": "Energy flows where attention goes"
+  },
+  {
+   "text": "Experience: what's in front of you / present moment; enjoyment",
+   "passed": true,
+   "evidence": "Present-moment experience"
+  },
+  {
+   "text": "Level of mind: every problem demands increasing level of mind (openness of perspective), solved via self-education, self-experimentation, persistence",
+   "passed": true,
+   "evidence": "Level of mind defined per book"
+  },
+  {
+   "text": "Fill/empty/use: how you fill, empty, and use your mind in a daily system",
+   "passed": true,
+   "evidence": "Fill/empty/use"
+  },
+  {
+   "text": "Schedule narrow-focused output in peak energy hours / lifelong experiment",
+   "passed": true,
+   "evidence": "Peak-energy hours, experiment"
+  }
+ ],
+ "summary": {
+  "passed": 6,
+  "failed": 0,
+  "total": 6,
+  "pass_rate": 1.0
+ }
+}

@@ -1,0 +1,40 @@
+{
+ "expectations": [
+  {
+   "text": "'You are the niche' \u2014 most profitable niche is you (overlap of skills, interests, experience) rather than niching down into work you hate",
+   "passed": true,
+   "evidence": "You are the niche"
+  },
+  {
+   "text": "Skill stack / specialized generalism",
+   "passed": false,
+   "evidence": "No skill stack"
+  },
+  {
+   "text": "Message (capture attention; relatable/understandable/actionable) and Medium (distribution equals freedom)",
+   "passed": false,
+   "evidence": "No message/medium"
+  },
+  {
+   "text": "Results-oriented skills: write, speak, market, sell",
+   "passed": true,
+   "evidence": "Writing and selling"
+  },
+  {
+   "text": "Project to product: get paid for problems you solve for yourself; take projects public",
+   "passed": true,
+   "evidence": "Solve own problems, learn in public, one offer"
+  },
+  {
+   "text": "Start as one person rather than a big company (and/or cites Koe's revenue progression with caveat)",
+   "passed": true,
+   "evidence": "One person with leverage"
+  }
+ ],
+ "summary": {
+  "passed": 4,
+  "failed": 2,
+  "total": 6,
+  "pass_rate": 0.6666666666666666
+ }
+}

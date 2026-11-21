@@ -1,0 +1,13 @@
+{
+ "eval_id": 3,
+ "eval_name": "af-pillars",
+ "prompt": "What are the 3 pillars in Dan Koe's The Art of Focus, and what is 'level of mind' and 'fill, empty, use'?",
+ "assertions": [
+  "Names the three pillars: focus, energy, experience",
+  "Energy: 'energy flows where attention goes'; mental energy = attention, intention, will",
+  "Experience: what's in front of you / present moment; enjoyment",
+  "Level of mind: every problem demands increasing level of mind (openness of perspective), solved via self-education, self-experimentation, persistence",
+  "Fill/empty/use: how you fill, empty, and use your mind in a daily system",
+  "Schedule narrow-focused output in peak energy hours / lifelong experiment"
+ ]
+}

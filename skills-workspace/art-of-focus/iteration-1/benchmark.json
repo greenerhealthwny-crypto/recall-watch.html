@@ -1,0 +1,342 @@
+{
+  "metadata": {
+    "skill_name": "art-of-focus",
+    "skill_path": "<path/to/skill>",
+    "executor_model": "<model-name>",
+    "analyzer_model": "<model-name>",
+    "timestamp": "2026-11-21T21:41:00Z",
+    "evals_run": [
+      1,
+      2,
+      3
+    ],
+    "runs_per_configuration": 1
+  },
+  "runs": [
+    {
+      "eval_id": 1,
+      "eval_name": "af-formula",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Starts with an anti-vision: detailed writing of the life you don't want until uncomfortable",
+          "passed": true,
+          "evidence": "Anti-vision until uncomfortable"
+        },
+        {
+          "text": "Then a vision derived from the anti-vision; big, emotionally compelling; 'dance between' them for daily decisions",
+          "passed": true,
+          "evidence": "Vision, dance between"
+        },
+        {
+          "text": "Purpose turned into a big goal / path of mastery",
+          "passed": true,
+          "evidence": "Purpose / path of mastery"
+        },
+        {
+          "text": "Breaks into yearly, monthly, weekly and daily goals",
+          "passed": true,
+          "evidence": "Yearly to daily goals"
+        },
+        {
+          "text": "Mentions self-discipline as desire for highest self outweighing cheap pleasures, or goals that repel distractions",
+          "passed": true,
+          "evidence": "Self-discipline definition"
+        },
+        {
+          "text": "Gives concrete prompts/questions to answer",
+          "passed": true,
+          "evidence": "Worksheet prompts"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "af-business",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "'You are the niche' \u2014 most profitable niche is you (overlap of skills, interests, experience) rather than niching down into work you hate",
+          "passed": true,
+          "evidence": "You are the niche"
+        },
+        {
+          "text": "Skill stack / specialized generalism",
+          "passed": true,
+          "evidence": "Skill stack"
+        },
+        {
+          "text": "Message (capture attention; relatable/understandable/actionable) and Medium (distribution equals freedom)",
+          "passed": true,
+          "evidence": "Message and medium"
+        },
+        {
+          "text": "Results-oriented skills: write, speak, market, sell",
+          "passed": true,
+          "evidence": "Write, speak, market, sell"
+        },
+        {
+          "text": "Project to product: get paid for problems you solve for yourself; take projects public",
+          "passed": true,
+          "evidence": "Project to product"
+        },
+        {
+          "text": "Start as one person rather than a big company (and/or cites Koe's revenue progression with caveat)",
+          "passed": true,
+          "evidence": "One-person business, revenue caveat"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 3,
+      "eval_name": "af-pillars",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Names the three pillars: focus, energy, experience",
+          "passed": true,
+          "evidence": "Focus, energy, experience"
+        },
+        {
+          "text": "Energy: 'energy flows where attention goes'; mental energy = attention, intention, will",
+          "passed": true,
+          "evidence": "Energy flows where attention goes"
+        },
+        {
+          "text": "Experience: what's in front of you / present moment; enjoyment",
+          "passed": true,
+          "evidence": "Present-moment experience"
+        },
+        {
+          "text": "Level of mind: every problem demands increasing level of mind (openness of perspective), solved via self-education, self-experimentation, persistence",
+          "passed": true,
+          "evidence": "Level of mind defined per book"
+        },
+        {
+          "text": "Fill/empty/use: how you fill, empty, and use your mind in a daily system",
+          "passed": true,
+          "evidence": "Fill/empty/use"
+        },
+        {
+          "text": "Schedule narrow-focused output in peak energy hours / lifelong experiment",
+          "passed": true,
+          "evidence": "Peak-energy hours, experiment"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 1,
+      "eval_name": "af-formula",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.8333333333333334,
+        "passed": 5,
+        "failed": 1,
+        "total": 6,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Starts with an anti-vision: detailed writing of the life you don't want until uncomfortable",
+          "passed": true,
+          "evidence": "Anti-vision"
+        },
+        {
+          "text": "Then a vision derived from the anti-vision; big, emotionally compelling; 'dance between' them for daily decisions",
+          "passed": true,
+          "evidence": "Vision step"
+        },
+        {
+          "text": "Purpose turned into a big goal / path of mastery",
+          "passed": true,
+          "evidence": "Mission as 1-year goal (close to purpose)"
+        },
+        {
+          "text": "Breaks into yearly, monthly, weekly and daily goals",
+          "passed": true,
+          "evidence": "1-year, 1-month, daily levers"
+        },
+        {
+          "text": "Mentions self-discipline as desire for highest self outweighing cheap pleasures, or goals that repel distractions",
+          "passed": false,
+          "evidence": "No self-discipline / distraction framing"
+        },
+        {
+          "text": "Gives concrete prompts/questions to answer",
+          "passed": true,
+          "evidence": "Gives prompts"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "af-business",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.6666666666666666,
+        "passed": 4,
+        "failed": 2,
+        "total": 6,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "'You are the niche' \u2014 most profitable niche is you (overlap of skills, interests, experience) rather than niching down into work you hate",
+          "passed": true,
+          "evidence": "You are the niche"
+        },
+        {
+          "text": "Skill stack / specialized generalism",
+          "passed": false,
+          "evidence": "No skill stack"
+        },
+        {
+          "text": "Message (capture attention; relatable/understandable/actionable) and Medium (distribution equals freedom)",
+          "passed": false,
+          "evidence": "No message/medium"
+        },
+        {
+          "text": "Results-oriented skills: write, speak, market, sell",
+          "passed": true,
+          "evidence": "Writing and selling"
+        },
+        {
+          "text": "Project to product: get paid for problems you solve for yourself; take projects public",
+          "passed": true,
+          "evidence": "Solve own problems, learn in public, one offer"
+        },
+        {
+          "text": "Start as one person rather than a big company (and/or cites Koe's revenue progression with caveat)",
+          "passed": true,
+          "evidence": "One person with leverage"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 3,
+      "eval_name": "af-pillars",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.16666666666666666,
+        "passed": 1,
+        "failed": 5,
+        "total": 6,
+        "time_seconds": null,
+        "tokens": null,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Names the three pillars: focus, energy, experience",
+          "passed": false,
+          "evidence": "Wrong pillars (vision, mind, creation)"
+        },
+        {
+          "text": "Energy: 'energy flows where attention goes'; mental energy = attention, intention, will",
+          "passed": false,
+          "evidence": "Not covered"
+        },
+        {
+          "text": "Experience: what's in front of you / present moment; enjoyment",
+          "passed": false,
+          "evidence": "Not covered"
+        },
+        {
+          "text": "Level of mind: every problem demands increasing level of mind (openness of perspective), solved via self-education, self-experimentation, persistence",
+          "passed": false,
+          "evidence": "Level of mind as developmental stages, not book's definition"
+        },
+        {
+          "text": "Fill/empty/use: how you fill, empty, and use your mind in a daily system",
+          "passed": true,
+          "evidence": "Fill/empty/use loop described"
+        },
+        {
+          "text": "Schedule narrow-focused output in peak energy hours / lifelong experiment",
+          "passed": false,
+          "evidence": "No peak-hours point"
+        }
+      ],
+      "notes": []
+    }
+  ],
+  "run_summary": {
+    "with_skill": {
+      "pass_rate": {
+        "mean": 1.0,
+        "stddev": 0.0,
+        "min": 1.0,
+        "max": 1.0
+      },
+      "time_seconds": null,
+      "tokens": null
+    },
+    "without_skill": {
+      "pass_rate": {
+        "mean": 0.5556,
+        "stddev": 0.3469,
+        "min": 0.1667,
+        "max": 0.8333
+      },
+      "time_seconds": null,
+      "tokens": null
+    },
+    "delta": {
+      "pass_rate": "+0.44",
+      "time_seconds": null,
+      "tokens": null
+    }
+  },
+  "notes": [
+    "Time recorded for 0 of 3 with_skill runs, 0 of 3 without_skill runs, so there is no time delta.",
+    "Token count recorded for 0 of 3 with_skill runs, 0 of 3 without_skill runs, so there is no token count delta."
+  ]
+}

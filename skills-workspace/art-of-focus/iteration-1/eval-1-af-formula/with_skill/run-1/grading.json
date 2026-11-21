@@ -1,0 +1,40 @@
+{
+ "expectations": [
+  {
+   "text": "Starts with an anti-vision: detailed writing of the life you don't want until uncomfortable",
+   "passed": true,
+   "evidence": "Anti-vision until uncomfortable"
+  },
+  {
+   "text": "Then a vision derived from the anti-vision; big, emotionally compelling; 'dance between' them for daily decisions",
+   "passed": true,
+   "evidence": "Vision, dance between"
+  },
+  {
+   "text": "Purpose turned into a big goal / path of mastery",
+   "passed": true,
+   "evidence": "Purpose / path of mastery"
+  },
+  {
+   "text": "Breaks into yearly, monthly, weekly and daily goals",
+   "passed": true,
+   "evidence": "Yearly to daily goals"
+  },
+  {
+   "text": "Mentions self-discipline as desire for highest self outweighing cheap pleasures, or goals that repel distractions",
+   "passed": true,
+   "evidence": "Self-discipline definition"
+  },
+  {
+   "text": "Gives concrete prompts/questions to answer",
+   "passed": true,
+   "evidence": "Worksheet prompts"
+  }
+ ],
+ "summary": {
+  "passed": 6,
+  "failed": 0,
+  "total": 6,
+  "pass_rate": 1.0
+ }
+}
